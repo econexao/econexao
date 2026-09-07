@@ -15,7 +15,7 @@
       content="Rotas, praias e negócios locais em um só lugar."
     />
     <meta property="og:image" content="assets/images/alter3.png" />
-    <meta name="econexao-api-base-url" content="https://econexao-backend-staging-30dt.onrender.com" />
+    <meta name="econexao-api-base-url" content="https://econexao-backend-production.onrender.com" />
     <link rel="icon" href="assets/brand/logo-econexao-transparent.png" type="image/png" />
 
     <title>ECOnexão — Descubra destinos. Viva experiências.</title>
@@ -1589,7 +1589,7 @@
           hostname.includes("staging") ||
           hostname.includes("vercel.app")
         ) {
-          return "https://econexao-backend-staging-30dt.onrender.com";
+          return "https://econexao-backend-production.onrender.com";
         }
         return "";
       }
