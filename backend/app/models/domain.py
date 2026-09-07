@@ -857,3 +857,19 @@ class AuditLog(Base):
     changes: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
     reason: Mapped[str | None] = mapped_column(TEXT, nullable=True)
     request_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+
+
+class NewsletterSubscription(Base):
+    __tablename__ = "newsletter_subscriptions"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    email: Mapped[str] = mapped_column(VARCHAR(255), unique=True, nullable=False)
+    source: Mapped[str] = mapped_column(VARCHAR(50), default="landing_page", nullable=False)
+    status: Mapped[str] = mapped_column(VARCHAR(20), default="active", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.clock_timestamp(), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.clock_timestamp(), nullable=False
+    )
+

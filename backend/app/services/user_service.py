@@ -263,3 +263,36 @@ class UserService:
             "route_title": trip.route.title if trip.route else None,
         }
         return TripEnvelope(data=TripSchema.model_validate(data))
+
+    async def transition_trip(
+        self, user_id: uuid.UUID, trip_id: uuid.UUID, target_status: str
+    ) -> TripEnvelope:
+        allowed = {
+            "paused": {"in_progress"},
+            "in_progress": {"paused"},
+            "completed": {"in_progress", "paused"},
+        }
+        trip = await self.repo.get_trip(user_id=user_id, trip_id=trip_id)
+        if not trip:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Viagem não encontrada."
+            )
+        if trip.status != target_status and trip.status not in allowed.get(target_status, set()):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT, detail="Transição de viagem inválida."
+            )
+        trip = await self.repo.transition_trip(user_id, trip_id, target_status)
+        assert trip is not None
+        return TripEnvelope(data=TripSchema.model_validate(self._trip_data(trip)))
+
+    @staticmethod
+    def _trip_data(trip: Any) -> dict[str, Any]:
+        return {
+            "id": str(trip.id), "user_id": str(trip.user_id), "route_id": str(trip.route_id),
+            "started_at": trip.started_at.isoformat() if trip.started_at else None,
+            "completed_at": trip.completed_at.isoformat() if trip.completed_at else None,
+            "status": trip.status,
+            "created_at": trip.created_at.isoformat() if trip.created_at else None,
+            "updated_at": trip.updated_at.isoformat() if trip.updated_at else None,
+            "route_title": trip.route.title if trip.route else None,
+        }

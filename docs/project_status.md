@@ -1,6 +1,6 @@
 # ECOnexão — documento único de tarefas
 
-Atualizado em: 05/09/2026. Consolidação **revisada; commit local autorizado pelo owner após verificação**.
+Atualizado em: 06/09/2026. Auditoria local de planejamento; alterações desta revisão ainda não commitadas.
 Este é o único cadastro de tasks: concluídas, parciais, novas, adiadas e substituídas.
 Os documentos de iniciativas preservam aceites/evidências históricos, mas não definem
 prioridade ou estado atual. A sequência abaixo orienta a próxima execução; decisões
@@ -8,9 +8,12 @@ ainda abertas permanecem em ECO-2603 e não são aprovadas pelo commit documenta
 
 ## Como acompanhar
 
-- **Agora:** ECO-2602 concluída localmente; baseline `c49a83c` verificada e lacunas
-  registradas em [baseline_eco_2602.md](baseline_eco_2602.md). Próxima task: ECO-2603,
-  reconciliação de decisões, contratos e pré-requisitos antes de implementar o novo escopo.
+- **Agora:** corrigir o gate P1 da ECO-2002 antes de qualquer operação remota do pipeline.
+  A ECO-2617 foi concluída localmente: este checkout está em `befc503`; a ref local
+  `origin/staging` está em `94245d9` e contém entregas ECO-2603–2606. Não reimplementar
+  essas tasks por ler a raiz antiga. A ref não foi atualizada pela rede nem o ambiente
+  servido foi verificado nesta auditoria. Ver [auditoria da V1](audit_v1_2026-09-06.md)
+  para evidências e limites.
 - **Objetivo:** Web com dez rotas, mapa fluido, pins sem clusters, catálogo por categorias
   e experiências, login Google, favoritos e histórico de viagens.
 - **Dados:** owner entrega dez rotas até sexta; data absoluta ainda a confirmar
@@ -52,11 +55,11 @@ antecipar escrita remota. Cada task concluída recebe evidência e commit, quand
 
 | Marco | Tasks em ordem | Ponto de controle/commit |
 |---|---|---|
-| 0 — Consolidar e proteger base | ECO-2601 → ECO-2602 → ECO-2603 | Consolidação revisada; identificar baseline e reconciliar contratos |
+| 0 — Consolidar e proteger base | ECO-2601 → ECO-2602 → ECO-2603; agora ECO-2617 | Reconciliar entregas já existentes antes de escolher novo incremento |
 | 1 — Preparar alimentação | ECO-2604 → ECO-2605 | Template/pipeline reproduzíveis sem depender do painel |
 | 2 — Conta e viagens | ECO-2606 → ECO-2607 | Login e persistência verificados; configurar dependências cedo |
 | 3 — Experiência Web | ECO-2608 → ECO-2609 → ECO-2610 → ECO-2611 → ECO-2612 → ECO-2613 → ECO-2614 | Commits pequenos por comportamento funcional, sem aguardar todo marco |
-| 4 — Dez rotas | ECO-2621 → ECO-2622 → ECO-2623 → ECO-2624 → ECO-2625 → ECO-2626 → ECO-2627 → ECO-2628 → ECO-2629 → ECO-2630 | Primeira/segunda rota comprovam padrão; demais têm aceite individual |
+| 4 — Dez rotas | ECO-2621 → ECO-2622; depois ECO-2623–ECO-2630 conforme insumos | Primeira/segunda rota comprovam padrão; demais têm aceite individual, uma execução por vez |
 | 5 — Fluidez e homologação | ECO-2615 → ECO-2315 → ECO-2513 → ECO-2101 | Navegador e API reais; novos aceites não herdam aprovação antiga |
 | 6 — Auditoria e release | ECO-2104 → ECO-2201 → ECO-2202 → ECO-2203 → ECO-2205 | Artefato imutável, GO separado, dados/publicação/observação |
 
@@ -66,6 +69,41 @@ sem retirar o acompanhamento da posição: decisão explícita em ECO-2603.
 Pré-condições antigas de segurança/dados permanecem obrigatórias quando aplicáveis;
 lacuna descoberta em task de base deve ser corrigida antes do consumidor, sem fingir
 que RQ-01/RQ-02 concluíram todos os aceites operacionais individuais.
+
+Preparar medições representativas de API fria, mapa, fotos e custos assim que a base
+for reconciliada, dentro do incremento afetado; não esperar dez rotas para descobrir
+inviabilidade. ECO-2615 conserva a qualificação final com o conteúdo completo.
+Antes da próxima operação pelo pipeline, corrigir o gate de identidade em ECO-2002.
+Qualificação final exige também instalação congelada de dependências (ECO-2201).
+
+## Condição de encerramento da primeira versão Web
+
+O escopo prometido continua sendo dez rotas e as jornadas abaixo. Piloto é uma
+etapa de validação com conteúdo explicitamente delimitado; não encerra a V1 nem
+autoriza reduzir silenciosamente o escopo do evento. Nenhum marco abaixo está
+aprovado por esta auditoria. Estados individuais permanecem no cadastro de tasks.
+
+| Resultado verificável | Tasks responsáveis | Evidência exigida para encerrar |
+|---|---|---|
+| Base única e reproduzível | ECO-2617, ECO-2002, ECO-2201 | SHA integrado, documentação coerente, CI/artefato identificados, instalação congelada, target independente validado |
+| Dez rotas utilizáveis | ECO-2604/2605, ECO-2621–ECO-2630 | Cada ficha revisada, proveniência, origens/geometrias, atores e associações; carga e idempotência verificadas no ambiente declarado; API e Web conferidas |
+| Conta, favoritos e viagens | ECO-2606/2607, ECO-2101 | Login/callback/logout/refresh, guest→conta/conflito, isolamento A/B, favoritos e transições de viagem persistidos; falha/retry sem duplicação |
+| Mapa e descoberta | ECO-2608–ECO-2612, ECO-2315, ECO-2513 | Sem clusters; seleção preservada; posição consentida e alternativa sem GPS; catálogo/categorias/experiências e ordenação funcionais; geometrias compatíveis com o mapa escolhido |
+| Conteúdo, mídia e identidade | ECO-2613/2614, ECO-1306 | Contatos verificáveis, ausências honestas, assets aprovados, atribuições; fotos sob demanda no detalhe, cards sem chamadas Google por padrão |
+| Homologação e capacidade | ECO-2615, ECO-2101/2104 | Chrome desktop/Android e Safari iPhone Web, jornadas reais em staging, teclado/leitor de tela, erro/offline/retry; metas de rede/aparelho/pico aprovadas e medidas; orçamento total R$ 500/mês com contenção comprovada |
+| Publicação e aceite operacional | ECO-2201/2202/2203/2205 | Manifesto de código/configuração pública/migrations/dados, GO por ação, revisão servida, rollback/restore, janela observada e aceite do owner; nenhum P0/P1 aberto |
+
+Cada evidência informa data, executor/revisor, SHA, ambiente, cenário/comando,
+resultado e limite. Teste com fixtures não substitui banco, OAuth, navegador móvel
+ou ambiente real. Mudança após qualificação invalida os gates afetados.
+
+ECO-1306 deve registrar datas absolutas de piloto/evento, corte de conteúdo, go/no-go,
+assets e responsáveis. ECO-2201 fixa início/fim da operação assistida, indicadores,
+denominadores, limiares, contatos validados e rollback. Sem esses dados, o gate
+correspondente permanece aberto. Conteúdo faltante implica NO-GO da entrega de dez
+rotas ou nova decisão explícita de escopo pelo owner. Nativo, painel completo,
+comentários, contribuições e voz/curva a curva continuam fora do lançamento;
+ECO-2616 e ECO-2695 não bloqueiam quando suas opções permanecem desabilitadas.
 
 **Gate de dependências em ECO-2602/2603:** para cada base PARCIAL citada abaixo,
 registrar se o requisito necessário já passa, se a nova task assume sua conclusão
@@ -119,9 +157,9 @@ Os aceites históricos são referências técnicas; se houver conflito com ADR/d
 atual, a task ECO-2603 resolve antes de executar. Nenhuma alteração de schema/API é
 autorizada simplesmente por estar nesta lista.
 
-Total: **205 registros**, incluindo histórico substituído; não usar como percentual de progresso.
+Total: **206 registros**, incluindo histórico substituído; são 203 headings `ECO-*` e 3 registros `RQ-*`; não usar como percentual de progresso.
 
-A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELADA NO ESCOPO: 1 | CONCLUÍDA DOCUMENTAL: 13 | CONCLUÍDA LOCAL: 14 | CONCLUÍDA STAGING LIMITADA: 1 | CONDICIONAL: 1 | DECISÃO PENDENTE: 1 | PARCIAL: 47 | PENDENTE: 13 | SUBSTITUÍDA: 86
+A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELADA NO ESCOPO: 1 | CONCLUÍDA DOCUMENTAL: 13 | CONCLUÍDA LOCAL: 15 | CONCLUÍDA STAGING LIMITADA: 1 | CONDICIONAL: 1 | DECISÃO PENDENTE: 1 | EM REVISÃO: 4 | PARCIAL: 47 | PENDENTE: 9 | SUBSTITUÍDA: 86
 
 ### Novas tasks para concluir a versão e conteúdo
 
@@ -143,35 +181,43 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 
 #### ECO-2603 — Reconciliar decisões, contratos e pré-requisitos do evento
 
-- **Estado / horizonte / alteração:** PENDENTE / Versão do evento / NOVA.
+- **Estado / horizonte / alteração:** EM REVISÃO / Versão do evento / NOVA.
 - **Dependências ou sucessoras:** ECO-2602.
 - **Conclusão / aceite:** Atualizar ADRs/spec/aceites afetados: sem clusters/voz, Web, painel adiado, posição versus origem dinâmica, mapa compatível, login Google e mídia. Confirmar datas, assets, callbacks e orçamento R$ 500; separar decisões abertas de autorizadas; nenhum gasto/deploy implícito. Ajustar a sequência com correções de bases indicadas em ECO-2602 e registrar aceites absorvidos pelas sucessoras antes de liberar cada consumidor. Resolver o destino do runner fora da árvore principal, o fluxo aprovado de publicação de região, o subescopo de importação da equipe e a correção do runbook antes de uso remoto.
 - **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
+- **Auditoria 06/09 — inventário, sem rebaixar aceites anteriores:** Entrega documental em `a6fbf9f`; alterações também presentes na ref local `origin/staging` `94245d9`. A reconciliação da base e dos limites foi registrada na ECO-2617; não refazer a entrega nem presumir todas as decisões encerradas.
+
 
 #### ECO-2604 — Padronizar pacote de dados e revisão de cada rota
 
-- **Estado / horizonte / alteração:** PENDENTE / Versão do evento / NOVA.
+- **Estado / horizonte / alteração:** EM REVISÃO / Versão do evento / NOVA.
 - **Dependências ou sucessoras:** ECO-2603.
 - **Conclusão / aceite:** Template preenchido com Pindobal: ficha, destino, origens, geometria/proveniência, atores, contatos, categorias, tags e mídia/licença/alt; valores ausentes explícitos; instrução utilizável pelo owner/IA.
 - **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
+- **Auditoria 06/09 — inventário, sem rebaixar aceites anteriores:** Entrega em `2028908`, com ajustes documentais até `4f3cded`; pacote/template presentes em `94245d9`. Conclusão local relatada nessa ref, não reexecutada aqui; conteúdo das dez rotas não está homologado.
+
 
 #### ECO-2605 — Generalizar importação para múltiplas rotas e regiões
 
-- **Estado / horizonte / alteração:** PENDENTE / Versão do evento / NOVA.
+- **Estado / horizonte / alteração:** EM REVISÃO / Versão do evento / NOVA.
 - **Dependências ou sucessoras:** ECO-2604, ECO-2005.
 - **Conclusão / aceite:** Reusar pipeline existente; dry-run e erros/rejeições claros; segunda carga sem duplicação, preservação de origem, transação/rollback/isolamento testados; sem CSV em runtime e sem IDs Google inventados; carga remota separadamente autorizada.
 - **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
+- **Auditoria 06/09 — inventário, sem rebaixar aceites anteriores:** Entrega em `c8c9396`; três módulos do importador comparados com `94245d9` sem diferença. Essa ref relata testes e carga em test, que esta auditoria não reproduziu. Não confundir integração por squash com ausência por ancestralidade.
+
 
 #### ECO-2606 — Entregar login Google com favoritos preservados
 
-- **Estado / horizonte / alteração:** PENDENTE / Versão do evento / NOVA.
+- **Estado / horizonte / alteração:** EM REVISÃO / Versão do evento / NOVA.
 - **Dependências ou sucessoras:** ECO-2603, ECO-1902.
 - **Conclusão / aceite:** Login/callback/logout/retorno após refresh, guest→conta e conflito com conta existente respeitam ADR; favoritos preservados no fluxo aceito e isolamento A/B testado; configuração externa homologada antes de concluir.
 - **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
+- **Auditoria 06/09 — inventário, sem rebaixar aceites anteriores:** OAuth e correção de perfil presentes em `94245d9` (#14/#15); runtime de `a694436` coincide com essa ref. `a694436` relata conclusão staging, enquanto `94245d9` registra local. Homologação remota não reexecutada; o alcance desse relato foi reconciliado na ECO-2617.
+
 
 #### ECO-2607 — Completar ciclo e histórico de viagens
 
@@ -188,6 +234,8 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Conclusão / aceite:** Sem bolhas numéricas; cor+ícone por categoria, colisões controladas, mais pontos com zoom/filtro e selecionado sempre visível; coordenadas não falsificadas; catálogo conserva acesso aos demais; teclado e toque verificados.
 - **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
+- **Gate de regressão:** substituir asserts de clusters numéricos na suíte de navegador pelos aceites de densidade/seleção; não contar o teste antigo como comprovação do desenho novo.
+
 
 #### ECO-2609 — Simplificar origens e acompanhar posição no mapa
 
@@ -228,6 +276,8 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Conclusão / aceite:** Ficha com contatos/localização/serviços/redes verificáveis, ausências honestas; Google consultado ao abrir detalhe, atribuição/link à fonte, timeout/fallback; sem espelhar fotos em Storage; conteúdo principal não espera galeria.
 - **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
+- **Correção obrigatória antes da qualificação:** `ActorCard` já monta foto Google quando falta capa e o componente consulta ao montar. Desabilitar esse consumo por padrão nos cards, com mídia editorial/placeholder e teste de zero solicitações nesse modo. Ativação somente em ECO-2616, após medição e gate; manter detalhe sob demanda funcional.
+
 
 #### ECO-2614 — Aplicar identidade e cards das rotas na Web
 
@@ -240,10 +290,12 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 #### ECO-2615 — Medir fluidez, orçamento e recuperação de integrações
 
 - **Estado / horizonte / alteração:** PENDENTE / Versão do evento / NOVA.
-- **Dependências ou sucessoras:** ECO-2607, ECO-2608, ECO-2609, ECO-2610, ECO-2611, ECO-2612, ECO-2613, ECO-2614, ECO-2630.
+- **Dependências ou sucessoras:** ECO-2607, ECO-2608, ECO-2609, ECO-2610, ECO-2611, ECO-2612, ECO-2613, ECO-2614, ECO-2621, ECO-2622, ECO-2623, ECO-2624, ECO-2625, ECO-2626, ECO-2627, ECO-2628, ECO-2629, ECO-2630.
 - **Conclusão / aceite:** Acordar e medir metas em rede/aparelho definidos (proposta: feedback 200 ms, conteúdo 3 s, mapa 5 s); abertura fria/cache/rede degradada; medir pico separado de 300 visitantes; custos fixos+variáveis+reserva dentro de R$ 500; limites e fallback testados, inclusive tráfego de compartilhamentos.
 - **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
+- **Preparação antecipada e reutilização:** definir cenário de pico, rede/aparelho e critérios antes de investir em integrações; medir amostra no primeiro incremento. Já existe `DatabaseMonthlyUsageGuard` no conector Google Routes: verificar sua aplicação real e os demais serviços, sem duplicar esse guard. Qualificação final exige todas as dez rotas acima.
+
 
 #### ECO-2616 — Avaliar e habilitar fotos Google nos cards se viável
 
@@ -252,6 +304,14 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Conclusão / aceite:** Medir custo total/SKU e desempenho com cards visíveis; atribuição compatível; ativação somente se orçamento permitir; caso contrário detalhe sob demanda satisfaz base aceita e registrar adiamento sem bloquear release.
 - **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
+
+#### ECO-2617 — Reconciliar base integrada e evidências antes do próximo incremento
+
+- **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Versão do evento / NOVA.
+- **Dependências ou sucessoras:** ECO-2602; insumos das entregas ECO-2603–2606 já existentes. Não exige sua reimplementação ou nova homologação remota para concluir o inventário local.
+- **Conclusão / aceite:** Identificar a revisão integrada atual em checkout isolado; comparar conteúdo e histórico, incluindo squash; reconciliar estado e próxima tarefa sem apagar aceites anteriores. Conferir ADRs/spec/aceites para mapa/proveniência, posição versus recálculo e decisões abertas. Registrar SHA, evidências locais reproduzidas e o que continua apenas relatado ou depende de ambiente. Encaminhar correção P1 de ECO-2002 antes de operação remota. Quando não existir consumidor desbloqueado, registrar formalmente o bloqueio e a próxima ação de desbloqueio; não implementar consumidores nesta reconciliação.
+- **Evidência e limite:** Reconciliação independente em 06/09/2026 confirmou checkout `codex/fix-staging-smoke-host` em `befc503bbabc6d19d72f8c90e66d1f4486a5a1fd` e ref local `origin/staging` em `94245d9`. O conteúdo dos módulos do importador (`c8c9396`) e do runtime OAuth/perfil (`a694436`) é igual ao da ref integrada local, embora esses commits não sejam ancestrais por causa de squash. As verificações locais documentadas no relatório `audit_v1_2026-09-06.md` permanecem reproduzíveis; não houve fetch, consulta remota, staging atual, OAuth real, GPS real ou produção. Aceites anteriores foram preservados nos níveis declarados e não promovidos por esta reconciliação. ECO-2002 continua sendo correção P1 obrigatória antes de qualquer operação remota do pipeline. **Bloqueio formal:** não há consumidor desbloqueado nesta revisão, pois ECO-2603, ECO-2604 e ECO-2606 seguem EM REVISÃO. A próxima ação é resolver o gate independente de ECO-2002 e então reavaliar uma única task consumidora.
+- **Referência:** [audit_v1_2026-09-06.md](audit_v1_2026-09-06.md). **Commit:** Não vinculado.
 
 #### ECO-2621 — Preparar, importar e verificar rota: Pindobal
 
@@ -272,7 +332,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 #### ECO-2623 — Preparar, importar e verificar rota: Vila Socorro
 
 - **Estado / horizonte / alteração:** BLOQUEADA POR DADOS / Versão do evento / NOVA.
-- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2622.
+- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2622 (prova da segunda rota); independente das demais rotas.
 - **Conclusão / aceite:** Ficha/origens/percursos/modos de acesso revisados, atores pertinentes, categorias/tags/mídia/proveniência válidos; dry-run aprovado, carga autorizada em ambiente confirmado e conferência via API/Web. Não exige infraestrutura turística inexistente nem inventa conteúdo.
 - **Evidência e limite:** Owner prevê informações até sexta; insumo final e revisão ainda não conferidos.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
@@ -280,7 +340,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 #### ECO-2624 — Preparar, importar e verificar rota: Ponta de Pedras
 
 - **Estado / horizonte / alteração:** BLOQUEADA POR DADOS / Versão do evento / NOVA.
-- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2623.
+- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2622 (prova da segunda rota); independente das demais rotas.
 - **Conclusão / aceite:** Ficha/origens/percursos/modos de acesso revisados, atores pertinentes, categorias/tags/mídia/proveniência válidos; dry-run aprovado, carga autorizada em ambiente confirmado e conferência via API/Web. Não exige infraestrutura turística inexistente nem inventa conteúdo.
 - **Evidência e limite:** Owner prevê informações até sexta; insumo final e revisão ainda não conferidos.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
@@ -288,7 +348,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 #### ECO-2625 — Preparar, importar e verificar rota: Eramanai (grafia a confirmar)
 
 - **Estado / horizonte / alteração:** BLOQUEADA POR DADOS / Versão do evento / NOVA.
-- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2624.
+- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2622 (prova da segunda rota); independente das demais rotas.
 - **Conclusão / aceite:** Ficha/origens/percursos/modos de acesso revisados, atores pertinentes, categorias/tags/mídia/proveniência válidos; dry-run aprovado, carga autorizada em ambiente confirmado e conferência via API/Web. Não exige infraestrutura turística inexistente nem inventa conteúdo.
 - **Evidência e limite:** Owner prevê informações até sexta; insumo final e revisão ainda não conferidos.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
@@ -296,7 +356,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 #### ECO-2626 — Preparar, importar e verificar rota: Altamira 1 — nome a fornecer
 
 - **Estado / horizonte / alteração:** BLOQUEADA POR DADOS / Versão do evento / NOVA.
-- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2625.
+- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2622 (prova da segunda rota); independente das demais rotas.
 - **Conclusão / aceite:** Ficha/origens/percursos/modos de acesso revisados, atores pertinentes, categorias/tags/mídia/proveniência válidos; dry-run aprovado, carga autorizada em ambiente confirmado e conferência via API/Web. Não exige infraestrutura turística inexistente nem inventa conteúdo.
 - **Evidência e limite:** Owner prevê informações até sexta; insumo final e revisão ainda não conferidos.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
@@ -304,7 +364,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 #### ECO-2627 — Preparar, importar e verificar rota: Altamira 2 — nome a fornecer
 
 - **Estado / horizonte / alteração:** BLOQUEADA POR DADOS / Versão do evento / NOVA.
-- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2626.
+- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2622 (prova da segunda rota); independente das demais rotas.
 - **Conclusão / aceite:** Ficha/origens/percursos/modos de acesso revisados, atores pertinentes, categorias/tags/mídia/proveniência válidos; dry-run aprovado, carga autorizada em ambiente confirmado e conferência via API/Web. Não exige infraestrutura turística inexistente nem inventa conteúdo.
 - **Evidência e limite:** Owner prevê informações até sexta; insumo final e revisão ainda não conferidos.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
@@ -312,7 +372,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 #### ECO-2628 — Preparar, importar e verificar rota: Altamira 3 — nome a fornecer
 
 - **Estado / horizonte / alteração:** BLOQUEADA POR DADOS / Versão do evento / NOVA.
-- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2627.
+- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2622 (prova da segunda rota); independente das demais rotas.
 - **Conclusão / aceite:** Ficha/origens/percursos/modos de acesso revisados, atores pertinentes, categorias/tags/mídia/proveniência válidos; dry-run aprovado, carga autorizada em ambiente confirmado e conferência via API/Web. Não exige infraestrutura turística inexistente nem inventa conteúdo.
 - **Evidência e limite:** Owner prevê informações até sexta; insumo final e revisão ainda não conferidos.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
@@ -320,7 +380,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 #### ECO-2629 — Preparar, importar e verificar rota: Altamira 4 — nome a fornecer
 
 - **Estado / horizonte / alteração:** BLOQUEADA POR DADOS / Versão do evento / NOVA.
-- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2628.
+- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2622 (prova da segunda rota); independente das demais rotas.
 - **Conclusão / aceite:** Ficha/origens/percursos/modos de acesso revisados, atores pertinentes, categorias/tags/mídia/proveniência válidos; dry-run aprovado, carga autorizada em ambiente confirmado e conferência via API/Web. Não exige infraestrutura turística inexistente nem inventa conteúdo.
 - **Evidência e limite:** Owner prevê informações até sexta; insumo final e revisão ainda não conferidos.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
@@ -328,7 +388,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 #### ECO-2630 — Preparar, importar e verificar rota: Altamira 5 — nome a fornecer
 
 - **Estado / horizonte / alteração:** BLOQUEADA POR DADOS / Versão do evento / NOVA.
-- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2629.
+- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2622 (prova da segunda rota); independente das demais rotas.
 - **Conclusão / aceite:** Ficha/origens/percursos/modos de acesso revisados, atores pertinentes, categorias/tags/mídia/proveniência válidos; dry-run aprovado, carga autorizada em ambiente confirmado e conferência via API/Web. Não exige infraestrutura turística inexistente nem inventa conteúdo.
 - **Evidência e limite:** Owner prevê informações até sexta; insumo final e revisão ainda não conferidos.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
@@ -358,6 +418,8 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Conclusão / aceite:** Manifesto imutável de código/config/migrations/dados das dez rotas, evidências e rollback revisados; GO humano explícito, sem implantar nesta task.
 - **Evidência e limite:** Depende de homologação e GO específico; nenhuma execução de produção comprovada aqui.
 - **Referência:** [finalization/tasks.md](finalization/tasks.md). **Commit:** Não vinculado.
+- **Pré-requisitos adicionais de qualificação:** CI e deploy devem instalar resolução congelada e verificável das dependências (o `uv.lock` existente não é consumido por `pip install .`). Corrigir antes da qualificação final e repetir checks afetados; registrar hash/versões e reprodução do rollback. Aprovar janela operacional, métricas/denominadores/limiares, responsáveis e contatos reais antes do GO; ver [guia operacional](runbooks/assisted_operation_and_slo_guide.md).
+
 
 #### ECO-2202 — Promoção controlada de migrations e pacote das dez rotas (antes: Pindobal)
 
@@ -382,6 +444,8 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Conclusão / aceite:** Janela acordada de operação: monitorar disponibilidade, erros, integridade, custos e compartilhamentos; suporte responsável e nenhum P0/P1 aberto; sem depender de ECO-2204.
 - **Evidência e limite:** Depende de homologação e GO específico; nenhuma execução de produção comprovada aqui.
 - **Referência:** [finalization/tasks.md](finalization/tasks.md). **Commit:** Não vinculado.
+- **Aceite final real:** registrar janela observada, amostra, falhas/incidentes, custos, versão servida, suporte e aceite do owner, com pendências residuais e responsáveis. Documento preparado não atesta homologação. Não declarar SLO de 30 dias comprovado por janela de 24–72h nem exigir métricas de app nativo para a Web.
+
 
 ### Histórico de fundações, integração e operação
 
@@ -432,6 +496,8 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Conclusão / aceite:** Datas, identidade, contatos, termos e responsáveis de lançamento Web confirmados; contas de lojas ficam para depois.
 - **Evidência e limite:** Reconciliação RQ-01 registrada em nível local; execução remota completa não demonstrada nesta consolidação.
 - **Referência:** [finalization/tasks.md](finalization/tasks.md). **Commit:** Não vinculado.
+- **Planejamento verificável:** registrar datas absolutas de piloto, evento, entrega/corte de conteúdo e go/no-go, responsável por cada insumo e política de NO-GO ou mudança explícita de escopo quando faltar rota. Nenhuma data foi confirmada pela auditoria.
+
 
 #### ECO-1401 — Isolar e verificar Supabase development/test/staging/production
 
@@ -664,6 +730,11 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Conclusão / aceite:** workflow dispatch on staging branch; failure prevents deploy; migration drift/advisor blocks; smoke and rollback rehearsal.
 - **Evidência e limite:** RQ-02 registrada como aprovada em LOCAL_TEST (150 testes e linters); comprovação operacional completa continua pendente.
 - **Referência:** [finalization/tasks.md](finalization/tasks.md). **Commit:** Não vinculado.
+- **Correção P1, bloqueia próximo uso remoto do pipeline:** remover comparação tautológica `EXPECTED_STAGING_PROJECT_REF || SUPABASE_PROJECT_REF`; identidade esperada independente obrigatória no script e workflow. Testar ausência/vazio/divergência e colisão de ambientes antes de link/conexão/efeito externo. A validação atual aceita ref sintética sem identidade esperada; nenhum acesso indevido foi demonstrado nesta auditoria.
+- **Correção local executada em 06/09/2026:** workflow sem fallback para `SUPABASE_PROJECT_REF`; script fail-closed para identidade esperada ausente ou inválida; testes de ausência, vazio, formato, divergência e colisões adicionados. `pytest -q tests/test_staging_migration_gate.py`: 54 passed; Ruff: exit 0; sem conexão remota.
+- **Dependências congeladas executadas em 06/09/2026:** CI e Render passaram a usar `uv sync --frozen` com `backend/uv.lock`; comandos de qualidade usam `uv run`. Validação local: `uv sync --frozen --extra dev` (50 pacotes auditados), 55 testes da ECO-2002 e Ruff passaram; sem deploy ou conexão remota.
+- **Incremento local seguinte, antes da qualificação final:** alinhar CI e build do backend para instalar dependências congeladas, reutilizando o lock existente e verificando sua compatibilidade. Registrar reprodução da instalação e checks afetados; ECO-2201 confere essa evidência no artefato final. Manter a correção de identidade e a de build em incrementos revisáveis, sem executar deploy implicitamente.
+
 
 #### ECO-2003 — Staging web, HTTPS, domains and CORS
 
@@ -806,7 +877,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 #### ECO-2315 — Verificação final
 
 - **Estado / horizonte / alteração:** PARCIAL / Base da versão Web / EDITADA.
-- **Dependências ou sucessoras:** ECO-2608, ECO-2609, ECO-2615, ECO-2630.
+- **Dependências ou sucessoras:** ECO-2608, ECO-2609, ECO-2615, ECO-2621, ECO-2622, ECO-2623, ECO-2624, ECO-2625, ECO-2626, ECO-2627, ECO-2628, ECO-2629, ECO-2630.
 - **Conclusão / aceite:** Homologar mapa Web atualizado com dados das dez rotas, seleção/pins/posição/origens, catálogo sincronizado e caminhos de falha; registrar configuração real; DEVICE separado.
 - **Evidência e limite:** RQ-03: evidência local registrada; homologação de staging da experiência final ainda pendente.
 - **Referência:** [mapa_dinamico/tasks.md](mapa_dinamico/tasks.md). **Commit:** Não vinculado.
@@ -910,7 +981,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 #### ECO-2513 — Homologação final e decisão de promoção
 
 - **Estado / horizonte / alteração:** PARCIAL / Base da versão Web / EDITADA.
-- **Dependências ou sucessoras:** ECO-2610, ECO-2611, ECO-2612, ECO-2613, ECO-2630.
+- **Dependências ou sucessoras:** ECO-2610, ECO-2611, ECO-2612, ECO-2613, ECO-2621, ECO-2622, ECO-2623, ECO-2624, ECO-2625, ECO-2626, ECO-2627, ECO-2628, ECO-2629, ECO-2630.
 - **Conclusão / aceite:** Homologar catálogo real das dez rotas, vínculos, filtros, mídia, contatos e ordenação; proveniência e atribuição corretas; sem aprovar apenas mocks.
 - **Evidência e limite:** RQ-03 reconcilia implementação local; alegações antigas de homologação total não comprovam staging.
 - **Referência:** [catalogo_territorial/tasks.md](catalogo_territorial/tasks.md). **Commit:** Não vinculado.

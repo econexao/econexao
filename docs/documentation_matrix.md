@@ -1,7 +1,8 @@
 # ECOnexão — matriz de documentação
 
-Status: proposta da ECO-2402; nenhuma movimentação ou remoção foi executada.  
+Status: consolidada na ECO-2402; nenhuma movimentação ou remoção foi executada.
 Objetivo: decidir o que deve permanecer versionado e o que pertence apenas ao processo local do owner.
+
 
 ## Regra de classificação
 
@@ -30,9 +31,9 @@ Objetivo: decidir o que deve permanecer versionado e o que pertence apenas ao pr
 | `docs/repository_health/` | `PROCESSO_LOCAL` | retirar do índice Git após concluir a limpeza; manter cópia local | governa a higiene do workspace e o processo pessoal |
 | `docs/mapa_dinamico/tasks.md`, `docs/catalogo_territorial/tasks.md`, `docs/finalization/tasks.md` | `HISTORICO_VERSIONADO` | preservar como registro até ECO-2403; depois arquivar com índice | contêm evidência e contexto, mas não são mais backlogs ativos |
 | planos de implementação e dependency graphs antigos | `HISTORICO_VERSIONADO` | arquivar em ECO-2403 | preservam decisões e sequência histórica sem competir com o backlog único |
-| `docs/finalization/artifacts/` | `REVISAR` | manter apenas evidência selecionada e não sensível | mistura evidência útil, snapshots e possíveis artefatos regeneráveis |
+| `docs/finalization/artifacts/` | `HISTORICO_VERSIONADO` | manter apenas evidência não sensível e não regenerável | classificado pelo owner; nesta task apenas registrada a classificação, sem mover nem remover arquivos |
 | `docs/archive/` | `HISTORICO_VERSIONADO` | manter indexado e sem promover status | fornece rastreabilidade deliberada |
-| cópia `elementos_interativos_telas.txt` na raiz | `REVISAR` | confirmar consumidores e depois arquivar/remover em task própria | a cópia canônica já está em `docs/` |
+| cópia `elementos_interativos_telas.txt` na raiz | `PROCESSO_LOCAL` | arquivamento futuro condicionado à prova de ausência de consumidores | decisão do owner; não mover nem remover a cópia nesta task |
 
 ## Regras para a futura retirada do GitHub
 
@@ -44,10 +45,10 @@ Objetivo: decidir o que deve permanecer versionado e o que pertence apenas ao pr
    migrations, runbooks e documentação do produto continuam versionados.
 6. Não incluir segredos, dados pessoais ou credenciais no histórico ou na cópia local.
 
-## Decisão necessária do owner
+## Decisão do owner aplicada
 
-Aprovar ou ajustar as linhas `docs/finalization/artifacts/` e a cópia raiz de
-`elementos_interativos_telas.txt`. `AGENTS.md`, `docs/project_status.md` e esta
-matriz já seguem a decisão do owner de permanecerem locais. Somente uma task posterior
-poderá executar movimentação, `git rm --cached` ou alteração do `.gitignore`; nessa
-mesma mudança, `docs/README.md` deve deixar de apontar para arquivos desindexados.
+Decisão formalmente registrada na ECO-2402:
+- `docs/finalization/artifacts/` classificado como `HISTORICO_VERSIONADO` (preservando somente evidência não sensível e não regenerável).
+- Cópia `elementos_interativos_telas.txt` da raiz classificada para arquivamento futuro após comprovação de ausência de consumidores.
+- `AGENTS.md`, `docs/project_status.md` e esta matriz classificados como `PROCESSO_LOCAL` para futura desindexação sem perda de cópia local.
+- Nenhuma movimentação, remoção material ou alteração de `.gitignore` / `git rm --cached` é executada nesta task.

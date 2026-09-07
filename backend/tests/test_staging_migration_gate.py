@@ -66,6 +66,18 @@ def test_run_gate_fails_closed_on_missing_or_whitespace_secrets(
         assert label in captured
 
 
+def test_run_gate_fails_closed_without_expected_staging_identity(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A valid-looking target cannot reach link without an independent identity."""
+    with patch("scripts.staging_migration_gate.link_staging_project") as mock_link:
+        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN)
+
+    assert code == 1
+    mock_link.assert_not_called()
+    assert "EXPECTED_STAGING_PROJECT_REF is missing" in capsys.readouterr().out
+
+
 # ==============================================================================
 # 2. VALIDAÇÃO DE PROJECT REF E ISOLAMENTO DE AMBIENTES
 # ==============================================================================
@@ -89,8 +101,27 @@ def test_extract_project_ref_from_url() -> None:
 
 def test_validate_staging_project_ref_valid() -> None:
     """Valid 20-character alphanumeric ref is accepted and lowercased."""
-    assert validate_staging_project_ref("abcdefghijklmnopqrst") == "abcdefghijklmnopqrst"
-    assert validate_staging_project_ref("  abcdefghijklmnopqrst  ") == "abcdefghijklmnopqrst"
+    assert validate_staging_project_ref(
+        "abcdefghijklmnopqrst", expected_staging_ref="abcdefghijklmnopqrst"
+    ) == "abcdefghijklmnopqrst"
+    assert validate_staging_project_ref(
+        "  abcdefghijklmnopqrst  ", expected_staging_ref=" abcdefghijklmnopqrst "
+    ) == "abcdefghijklmnopqrst"
+
+
+@pytest.mark.parametrize("expected_ref", [None, "", "   "])
+def test_validate_staging_project_ref_requires_independent_expected_identity(
+    expected_ref: str | None,
+) -> None:
+    """A syntactically valid target cannot pass without an independent expected ref."""
+    with pytest.raises(ValueError, match="EXPECTED_STAGING_PROJECT_REF is missing"):
+        validate_staging_project_ref(VALID_REF, expected_staging_ref=expected_ref)
+
+
+def test_validate_staging_project_ref_rejects_invalid_expected_identity() -> None:
+    """The expected identity is validated before it can authorize a target."""
+    with pytest.raises(ValueError, match="EXPECTED_STAGING_PROJECT_REF must be exactly 20"):
+        validate_staging_project_ref(VALID_REF, expected_staging_ref="invalid")
 
 
 def test_validate_staging_project_ref_expected_match() -> None:
@@ -143,15 +174,29 @@ def test_validate_staging_project_ref_prevents_collisions() -> None:
 
     # Dev collision
     with pytest.raises(ValueError, match="development"):
-        validate_staging_project_ref("abcdefghijklmnopqrst", dev_ref=dev_ref, test_ref=test_ref)
+        validate_staging_project_ref(
+            "abcdefghijklmnopqrst",
+            expected_staging_ref="abcdefghijklmnopqrst",
+            dev_ref=dev_ref,
+            test_ref=test_ref,
+        )
 
     # Test collision
     with pytest.raises(ValueError, match="test"):
-        validate_staging_project_ref("zyxwvutsrqponmlkjihg", dev_ref=dev_ref, test_ref=test_ref)
+        validate_staging_project_ref(
+            "zyxwvutsrqponmlkjihg",
+            expected_staging_ref="zyxwvutsrqponmlkjihg",
+            dev_ref=dev_ref,
+            test_ref=test_ref,
+        )
 
     # Prod collision
     with pytest.raises(ValueError, match="production"):
-        validate_staging_project_ref("0123456789abcdefghij", prod_ref=prod_ref)
+        validate_staging_project_ref(
+            "0123456789abcdefghij",
+            expected_staging_ref="0123456789abcdefghij",
+            prod_ref=prod_ref,
+        )
 
 
 # ==============================================================================
@@ -288,7 +333,10 @@ def test_run_gate_drift_detected_without_apply_authorization_fails() -> None:
         patch("scripts.staging_migration_gate.apply_staging_migrations") as mock_apply,
         patch("scripts.staging_migration_gate.check_supabase_advisors") as mock_advisors,
     ):
-        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN, apply_migrations=False)
+        code = run_gate(
+            VALID_REF, VALID_PASS, VALID_TOKEN,
+            expected_staging_ref=VALID_REF, apply_migrations=False
+        )
         assert code == 1
         mock_apply.assert_not_called()
         mock_advisors.assert_not_called()
@@ -308,7 +356,10 @@ def test_run_gate_drift_detected_with_apply_authorization_apply_fails() -> None:
         ),
         patch("scripts.staging_migration_gate.check_supabase_advisors") as mock_advisors,
     ):
-        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN, apply_migrations=True)
+        code = run_gate(
+            VALID_REF, VALID_PASS, VALID_TOKEN,
+            expected_staging_ref=VALID_REF, apply_migrations=True
+        )
         assert code == 1
         mock_advisors.assert_not_called()
 
@@ -330,7 +381,10 @@ def test_run_gate_drift_detected_with_apply_authorization_success() -> None:
             return_value=(True, "No issues"),
         ),
     ):
-        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN, apply_migrations=True)
+        code = run_gate(
+            VALID_REF, VALID_PASS, VALID_TOKEN,
+            expected_staging_ref=VALID_REF, apply_migrations=True
+        )
         assert code == 0
 
 
@@ -403,7 +457,10 @@ def test_run_gate_fails_when_advisors_fail() -> None:
             return_value=(False, "RLS violation"),
         ),
     ):
-        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN, apply_migrations=False)
+        code = run_gate(
+            VALID_REF, VALID_PASS, VALID_TOKEN,
+            expected_staging_ref=VALID_REF, apply_migrations=False
+        )
         assert code == 1
 
 
@@ -500,7 +557,10 @@ def test_run_gate_returns_zero_only_when_all_steps_succeed() -> None:
             "scripts.staging_migration_gate.check_supabase_advisors", return_value=(True, "clean")
         ) as mock_advisors,
     ):
-        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN, apply_migrations=False)
+        code = run_gate(
+            VALID_REF, VALID_PASS, VALID_TOKEN,
+            expected_staging_ref=VALID_REF, apply_migrations=False
+        )
         assert code == 0
         mock_drift.assert_called_once()
         mock_advisors.assert_called_once()

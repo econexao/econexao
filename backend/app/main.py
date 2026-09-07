@@ -242,9 +242,19 @@ def create_app(app_settings: Settings | None = None) -> FastAPI:
         req_id = _get_request_id(request)
         safe_errors = []
         for error in exc.errors():
-            safe_error = {key: value for key, value in error.items() if key != "input"}
+            safe_error = {}
+            for key, value in error.items():
+                if key == "input":
+                    continue
+                if key == "ctx" and isinstance(value, dict):
+                    safe_error[key] = {
+                        k: str(v) if isinstance(v, Exception) else v for k, v in value.items()
+                    }
+                else:
+                    safe_error[key] = value
             safe_errors.append(safe_error)
         content = {
+
             "error": {
                 "code": "VALIDATION_ERROR",
                 "message": "Dados de requisição inválidos",

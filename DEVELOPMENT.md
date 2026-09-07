@@ -127,8 +127,8 @@ O backend é executado como Web Service nativo Python no Render, sem dependênci
 
 - **Blueprint declarativo:** [`render.yaml`](../render.yaml) na raiz do repositório.
 - **Root Directory:** `backend`
-- **Build Command:** `pip install .`
-- **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- **Build Command:** `pip install uv && uv sync --frozen --no-dev` (Render Native Python)
+- **Start Command:** `.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 - **Health Check:** `/api/v1/health` (e `/api/v1/health/live`)
 - **Graceful Shutdown:** Gerenciado nativamente via `lifespan` com descarte de conexões do pool PostgreSQL.
 - **Variáveis de ambiente:** Configuradas com `sync: false` no blueprint e injetadas de forma criptografada no Dashboard do Render (sem expor segredos no repositório).
@@ -209,7 +209,22 @@ cd backend
 .\.venv\Scripts\python.exe -m scripts.verify_actor_region_layers --env-file .env.test
 ```
 
+### Exportação Administrativa de Leads da Newsletter
+
+Para exportar os e-mails capturados pela landing page para arquivo CSV local:
+
+```powershell
+cd backend
+python -m scripts.export_newsletter_leads --output leads.csv --status active
+```
+
+Opções disponíveis:
+- `--output` / `-o`: Caminho do arquivo CSV de saída (padrão: `newsletter_leads.csv`).
+- `--status` / `-s`: Filtro por status (`active`, `unsubscribed`, `all` — padrão: `active`).
+- `--dry-run`: Exibe contagem e relatório no terminal sem gravar o arquivo no disco.
+
 ## Variáveis de ambiente
+
 
 Copie `econexao-app/.env.example` para `econexao-app/.env.local` e
 `backend/.env.example` para `backend/.env`. Os arquivos locais são ignorados

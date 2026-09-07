@@ -10,6 +10,7 @@ e seu commit local autorizado; decisões abertas e gates de execução continuam
 | Documento | Finalidade |
 |---|---|
 | `project_status.md` | **Documento único de tasks:** histórico completo, estado/evidência, dependências, aceites, commits e sequência Web |
+| `project-dashboard.html` | Painel visual e pesquisável das tasks; regenerar com `node scripts/generate-project-dashboard.mjs` na raiz |
 | `direcionamento_versao_web_evento.md` | Briefing complementar de produto e decisões; não é outro backlog |
 | `documentation_matrix.md` | Classificação proposta entre documentação versionável e processo local |
 | `../AGENTS.md` | Regras obrigatórias para agentes |
@@ -25,6 +26,7 @@ e seu commit local autorizado; decisões abertas e gates de execução continuam
 | `../DEVELOPMENT.md` | Setup e comandos locais/remotos |
 | `acceptance_criteria.md` | Cenários ponta a ponta por tela |
 | `testing_strategy.md` | Pirâmide, ambientes, fixtures e comandos |
+| `privacy_location_policy.md` | Política pré-publicação para localização dinâmica e Google Routes |
 | `backend_integration_progress.md` | Índice do progresso histórico arquivado |
 | `data/pindobal_data_contract.md` | Contrato de importação da primeira rota |
 
