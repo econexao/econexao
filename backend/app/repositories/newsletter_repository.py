@@ -38,7 +38,7 @@ class NewsletterRepository:
             if existing.status != "active":
                 existing.status = "active"
                 existing.source = source
-                await self.db.commit()
+                await self.db.flush()
             return existing, False
 
         subscription = NewsletterSubscription(
@@ -49,7 +49,7 @@ class NewsletterRepository:
         )
         self.db.add(subscription)
         try:
-            await self.db.commit()
+            await self.db.flush()
             return subscription, True
         except IntegrityError:
             await self.db.rollback()
