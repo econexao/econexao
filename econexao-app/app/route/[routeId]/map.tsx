@@ -697,6 +697,7 @@ export default function MapScreen() {
                   selectedActorSummary?.id ||
                   selectedActorId;
                 if (targetActorId) {
+                  closeActorSheet();
                   router.push(
                     `/route/${encodeURIComponent(routeId)}/catalog?${new URLSearchParams({
                       ...(originId ? { originId } : {}),

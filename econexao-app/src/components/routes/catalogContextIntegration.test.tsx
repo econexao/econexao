@@ -116,8 +116,10 @@ describe('CatalogScreen route context', () => {
     );
     const cards = tree.root.findAllByType(ActorCard);
     expect(cards).toHaveLength(2);
-    expect(cards[0].props.focusOnMount).toBe(false);
-    expect(cards[1].props.focusOnMount).toBe(true);
+    const actor1Card = cards.find((c) => c.props.actor.id === 'actor-1');
+    const actor2Card = cards.find((c) => c.props.actor.id === 'actor-2');
+    expect(actor1Card?.props.focusOnMount).toBe(false);
+    expect(actor2Card?.props.focusOnMount).toBe(true);
   });
 
   it('preserves origin context when the focused actor opens', async () => {
@@ -126,7 +128,8 @@ describe('CatalogScreen route context', () => {
       tree = renderer.create(<CatalogScreen />);
     });
 
-    const focusedCard = tree.root.findAllByType(ActorCard)[1];
+    const cards = tree.root.findAllByType(ActorCard);
+    const focusedCard = cards.find((c) => c.props.actor.id === 'actor-2')!;
     await act(async () => focusedCard.props.onPress());
 
     expect(push).toHaveBeenCalledWith('/actor/actor-2?originId=origin-porto');
@@ -153,7 +156,8 @@ describe('CatalogScreen route context', () => {
       tree = renderer.create(<CatalogScreen />);
     });
 
-    const favoriteCard = tree.root.findAllByType(ActorCard)[1];
+    const cards = tree.root.findAllByType(ActorCard);
+    const favoriteCard = cards.find((c) => c.props.actor.id === 'actor-2')!;
     expect(favoriteCard.props.isFavorite).toBe(true);
     await act(async () => favoriteCard.props.onToggleFavorite());
     expect(mockToggleFavoriteActor).toHaveBeenCalledWith(favoriteCard.props.actor, true);
