@@ -1653,7 +1653,8 @@
 
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000);
+          // Render Free may take up to 50s to wake from inactivity.
+          const timeoutId = setTimeout(() => controller.abort(), 60000);
 
           const response = await fetch(endpoint, {
 
