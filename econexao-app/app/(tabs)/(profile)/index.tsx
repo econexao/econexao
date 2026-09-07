@@ -30,8 +30,15 @@ export default function ProfileScreen() {
   const avatarBusyRef = useRef(false);
 
 
-  const isAnonymous = user?.is_anonymous ?? true;
-  const userName = profile?.name || (isAnonymous ? 'Visitante' : 'Usuário ECOnexão');
+  const isAnonymous = user ? (user.is_anonymous === true && !user.email) : true;
+  const googleName = (user?.user_metadata?.full_name || user?.user_metadata?.name || '').trim();
+  const userName =
+    profile?.name ||
+    googleName ||
+    (isAnonymous ? 'Visitante' : user?.email?.split('@')[0] || 'Usuário ECOnexão');
+
+  const googleAvatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+  const avatarUri = profile?.avatar?.url || googleAvatarUrl;
 
   const handleAvatarPress = async () => {
     if (avatarBusyRef.current) return;
@@ -65,11 +72,43 @@ export default function ProfileScreen() {
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      queryClient.clear();
+      await signOut();
+      AccessibilityInfo.announceForAccessibility('Sessão encerrada com sucesso.');
+    } catch {
+      Alert.alert('Erro ao sair', 'Não foi possível encerrar a sessão. Tente novamente.');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <AppHeader title="Meu Perfil" />
 
       <ScrollView contentContainerStyle={styles.content}>
+        {/* Banner de Convidado / Salvar Conta com Google (ADR 0007 / ECO-2606) */}
+        {isAnonymous && (
+          <View style={styles.guestBanner}>
+            <View style={styles.guestBannerTextCol}>
+              <View style={styles.guestBannerHeader}>
+                <Ionicons name="sparkles" size={16} color="#059669" />
+                <Text style={styles.guestBannerTitle}>Salvar Conta e Favoritos</Text>
+              </View>
+              <Text style={styles.guestBannerBody}>
+                Vincule sua conta com o Google para salvar suas rotas e estabelecimentos favoritos permanentemente.
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.guestBannerButton}
+              onPress={() => setIsAuthModalVisible(true)}
+              {...makeAccessibleButton('Salvar conta', 'Abrir opções de login e vinculação')}
+            >
+              <Text style={styles.guestBannerButtonText}>Salvar Conta</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
         {/* Profile Info Header (ECO-1101) */}
         <View style={styles.profileHeaderCard}>
           <View style={styles.avatarRow}>
@@ -87,9 +126,9 @@ export default function ProfileScreen() {
                   color={theme.colors.brandForest}
                   accessibilityLabel="Upload da foto em andamento"
                 />
-              ) : profile?.avatar?.url ? (
+              ) : avatarUri ? (
                 <Image
-                  source={{ uri: profile.avatar.url }}
+                  source={{ uri: avatarUri }}
                   style={styles.avatarImage}
                   accessible={false}
                 />
@@ -205,7 +244,7 @@ export default function ProfileScreen() {
         <View style={styles.footerActionsCard}>
           <TouchableOpacity
             style={styles.signOutButton}
-            onPress={() => void signOut()}
+            onPress={handleSignOut}
             {...makeAccessibleButton('Encerrar sessão', 'Fazer logout da conta atual')}
           >
             <Ionicons name="log-out-outline" size={18} color={theme.colors.brandDeep} />

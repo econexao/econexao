@@ -169,7 +169,7 @@ def test_validate_staging_project_ref_invalid_formats_and_markers(
 ) -> None:
     """Validate that invalid lengths, formats, and placeholder markers are rejected."""
     with pytest.raises(ValueError, match=error_match):
-        validate_staging_project_ref(invalid_ref)
+        validate_staging_project_ref(invalid_ref, expected_staging_ref=VALID_REF)
 
 
 def test_validate_staging_project_ref_prevents_collisions() -> None:
@@ -558,7 +558,7 @@ def test_run_gate_short_circuit_on_drift_check_failure() -> None:
         patch("scripts.staging_migration_gate.link_staging_project", return_value=(True, "linked")),
         patch("scripts.staging_migration_gate.check_supabase_advisors") as mock_advisors,
     ):
-        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN)
+        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN, expected_staging_ref=VALID_REF)
         assert code == 1
         mock_advisors.assert_not_called()
 
