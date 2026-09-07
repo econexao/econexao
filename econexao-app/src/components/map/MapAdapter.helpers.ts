@@ -53,6 +53,7 @@ export const filterPinsByModeAndCategory = <T extends FlexiblePinItem>(
 };
 
 export const SELECTION_PIN_COLOR = '#EA580C';
+export const USER_LOCATION_PIN_COLOR = '#0284C7';
 
 export const CONTRACT_PIN_ICONS = [
   'utensils', 'compass', 'bed', 'palette', 'bus', 'heart-pulse', 'cross', 'shield', 'help-circle',
@@ -74,6 +75,44 @@ export const getSelectionPinAccessibilityLabel = (
   const base = customLabel || 'Ponto de partida selecionado no mapa';
   if (!coord) return base;
   return `${base}: ${formatCoordinateDisplay(coord)}. Arraste para reposicionar.`;
+};
+
+export const getUserLocationAccessibilityLabel = (
+  coord?: MapCoordinate | null,
+  customLabel?: string
+): string => {
+  const base = customLabel || 'Sua localização atual';
+  if (!coord) return base;
+  return `${base}: ${formatCoordinateDisplay(coord)}.`;
+};
+
+export const isCoordinateWithinBounds = (
+  coord: MapCoordinate | null | undefined,
+  bounds: MapBounds | null | undefined,
+  marginDegrees = 0.05
+): boolean => {
+  if (!coord || !bounds) return false;
+  if (
+    !isFiniteCoordinate(coord.latitude, coord.longitude) ||
+    !isFiniteCoordinate(bounds.min_lat, bounds.min_lng) ||
+    !isFiniteCoordinate(bounds.max_lat, bounds.max_lng) ||
+    bounds.min_lat > bounds.max_lat ||
+    bounds.min_lng > bounds.max_lng
+  ) {
+    return false;
+  }
+
+  const minLat = bounds.min_lat - marginDegrees;
+  const maxLat = bounds.max_lat + marginDegrees;
+  const minLng = bounds.min_lng - marginDegrees;
+  const maxLng = bounds.max_lng + marginDegrees;
+
+  return (
+    coord.latitude >= minLat &&
+    coord.latitude <= maxLat &&
+    coord.longitude >= minLng &&
+    coord.longitude <= maxLng
+  );
 };
 
 export const getItemPinColor = (item: FlexiblePinItem): string | null =>

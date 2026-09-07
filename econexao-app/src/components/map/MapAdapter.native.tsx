@@ -7,6 +7,7 @@ import { theme } from '../../theme/theme';
 import { MapControls } from './MapControls';
 import {
   SELECTION_PIN_COLOR,
+  USER_LOCATION_PIN_COLOR,
   filterPinsByDensity,
   getFitCoordinates,
   getGeometryCoordinates,
@@ -18,6 +19,7 @@ import {
   getItemPinColor,
   getItemPinIcon,
   getSelectionPinAccessibilityLabel,
+  getUserLocationAccessibilityLabel,
 } from './MapAdapter.helpers';
 import type { MapAdapterProps } from './MapAdapter.types';
 import { getCategoryIonicons } from '../catalog/CategoryFilters';
@@ -42,6 +44,8 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   selectedCoordinate,
   onSelectCoordinate,
   selectionPinLabel,
+  userLocation,
+  userLocationLabel,
 }) => {
   const mapRef = useRef<MapView>(null);
   const [zoomLevel, setZoomLevel] = useState(12);
@@ -86,6 +90,11 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   const selectionPinA11y = useMemo(
     () => getSelectionPinAccessibilityLabel(selectedCoordinate, selectionPinLabel),
     [selectedCoordinate, selectionPinLabel]
+  );
+
+  const userLocationA11y = useMemo(
+    () => getUserLocationAccessibilityLabel(userLocation, userLocationLabel),
+    [userLocation, userLocationLabel]
   );
 
   return (
@@ -150,6 +159,18 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
             </Marker>
           );
         })}
+
+        {userLocation && (
+          <Marker
+            coordinate={userLocation}
+            title={userLocationLabel || 'Sua Localização Atual'}
+            description={userLocationA11y}
+            pinColor={USER_LOCATION_PIN_COLOR}
+            zIndex={1500}
+            accessibilityRole="image"
+            accessibilityLabel={userLocationA11y}
+          />
+        )}
 
         {selectedCoordinate && (
           <Marker

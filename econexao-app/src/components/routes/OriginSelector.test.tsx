@@ -503,25 +503,90 @@ describe('OriginSelector Component', () => {
 
       expect(onStartSelectOnMap).toHaveBeenCalled();
     });
+  });
 
-    it('unmounts cleanly without errors or dangling timers', () => {
+  describe('ECO-2609 — Validação de resiliência e origens fixas sob falha de GPS', () => {
+    it('retorna à origem fixa sem quebrar o fluxo quando a permissão de GPS é negada pelo usuário', async () => {
+      (Location.hasServicesEnabledAsync as jest.Mock).mockResolvedValue(true);
+      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+        status: Location.PermissionStatus.DENIED,
+        canAskAgain: true,
+      });
+      (Location.requestForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+        status: Location.PermissionStatus.DENIED,
+        canAskAgain: true,
+      });
+
+      const onSelectOrigin = jest.fn();
       let root: renderer.ReactTestRenderer;
+
       act(() => {
         root = renderer.create(
           <OriginSelector
             origins={mockOrigins}
             selectedOriginId="origin-porto"
-            onSelectOrigin={jest.fn()}
+            onSelectOrigin={onSelectOrigin}
             enableDynamicRouting={true}
           />
         );
       });
 
-      expect(() => {
-        act(() => {
-          root.unmount();
-        });
-      }).not.toThrow();
+      const gpsButton = root!.root.findAllByType(TouchableOpacity).find(
+        (b) => b.props.accessibilityLabel === 'Usar minha localização atual como origem'
+      );
+
+      await act(async () => {
+        await gpsButton?.props.onPress();
+      });
+
+      // Em falha, alerta exibido e origem mantida na fixa (Porto Fluvial)
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Aviso de Localização',
+        expect.stringContaining('Permissão de localização foi negada'),
+        expect.anything()
+      );
+      expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledWith(
+        expect.stringContaining('Permissão de localização foi negada')
+      );
+    });
+
+    it('trata erro de GPS com fallback gracioso sem travar a interface', async () => {
+      (Location.hasServicesEnabledAsync as jest.Mock).mockResolvedValue(true);
+      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+        status: Location.PermissionStatus.GRANTED,
+        canAskAgain: true,
+      });
+      (Location.getCurrentPositionAsync as jest.Mock).mockRejectedValue(
+        new Error('LOCATION_TIMEOUT')
+      );
+
+      const onSelectOrigin = jest.fn();
+      let root: renderer.ReactTestRenderer;
+
+      act(() => {
+        root = renderer.create(
+          <OriginSelector
+            origins={mockOrigins}
+            selectedOriginId="origin-porto"
+            onSelectOrigin={onSelectOrigin}
+            enableDynamicRouting={true}
+          />
+        );
+      });
+
+      const gpsButton = root!.root.findAllByType(TouchableOpacity).find(
+        (b) => b.props.accessibilityLabel === 'Usar minha localização atual como origem'
+      );
+
+      await act(async () => {
+        await gpsButton?.props.onPress();
+      });
+
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Aviso de Localização',
+        expect.stringContaining('Tempo limite esgotado'),
+        expect.anything()
+      );
     });
   });
 });

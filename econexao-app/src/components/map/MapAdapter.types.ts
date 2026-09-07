@@ -45,4 +45,6 @@ export interface MapAdapterProps {
   selectedCoordinate?: MapCoordinate | null;
   onSelectCoordinate?: (coord: MapCoordinate) => void;
   selectionPinLabel?: string;
+  userLocation?: MapCoordinate | null;
+  userLocationLabel?: string;
 }

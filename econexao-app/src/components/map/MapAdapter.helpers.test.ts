@@ -14,6 +14,8 @@ import {
   getItemPinColor,
   getItemPinIcon,
   getSelectionPinAccessibilityLabel,
+  getUserLocationAccessibilityLabel,
+  isCoordinateWithinBounds,
 } from './MapAdapter.helpers';
 
 const pin: MapPin = {
@@ -125,6 +127,40 @@ describe('MapAdapter shared geospatial helpers', () => {
       expect(getSelectionPinAccessibilityLabel(null)).toBe(
         'Ponto de partida selecionado no mapa'
       );
+    });
+
+    it('formats coordinates and generates accessible user location label (ECO-2609)', () => {
+      const coord = { latitude: -2.4431, longitude: -54.7083 };
+      expect(getUserLocationAccessibilityLabel(coord)).toBe(
+        'Sua localização atual: -2.4431, -54.7083.'
+      );
+      expect(getUserLocationAccessibilityLabel(coord, 'Posição GPS')).toBe(
+        'Posição GPS: -2.4431, -54.7083.'
+      );
+      expect(getUserLocationAccessibilityLabel(null)).toBe(
+        'Sua localização atual'
+      );
+    });
+
+    it('determina corretamente se uma coordenada está dentro dos limites territoriais da rota (ECO-2609)', () => {
+      const routeBounds = { min_lat: -2.7, max_lat: -2.4, min_lng: -55.0, max_lng: -54.7 };
+
+      // Ponto dentro do território (Pindobal / Santarém)
+      const insideCoord = { latitude: -2.5, longitude: -54.9 };
+      expect(isCoordinateWithinBounds(insideCoord, routeBounds)).toBe(true);
+
+      // Ponto na margem aceitável
+      const marginCoord = { latitude: -2.72, longitude: -54.9 };
+      expect(isCoordinateWithinBounds(marginCoord, routeBounds, 0.05)).toBe(true);
+
+      // Ponto em região distante (ex: Belém / São Paulo) que não deve criar corredor intermunicipal
+      const distantCoord = { latitude: -1.4558, longitude: -48.4902 }; // Belém
+      expect(isCoordinateWithinBounds(distantCoord, routeBounds)).toBe(false);
+
+      const invalidBounds = { min_lat: -2.4, max_lat: -2.7, min_lng: -54.7, max_lng: -55.0 };
+      expect(isCoordinateWithinBounds(insideCoord, invalidBounds)).toBe(false);
+      expect(isCoordinateWithinBounds(null, routeBounds)).toBe(false);
+      expect(isCoordinateWithinBounds(insideCoord, null)).toBe(false);
     });
   });
 

@@ -239,11 +239,11 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 
 #### ECO-2609 — Simplificar origens e acompanhar posição no mapa
 
-- **Estado / horizonte / alteração:** PENDENTE / Versão do evento / NOVA.
-- **Dependências ou sucessoras:** ECO-2603, ECO-2608.
-- **Conclusão / aceite:** Seletor compacto, pontos de saída por rota e posição em primeiro plano com consentimento; região distante não produz corredor intermunicipal; falha/negação GPS permite origem fixa; rota não se recalcula só por exibir posição; sem voz/curva a curva.
-- **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
-- **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
+- **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Versão do evento / NOVA.
+- **Dependências ou sucessoras:** ECO-2603 (CONCLUÍDA DOCUMENTAL), ECO-2608 (CONCLUÍDA LOCAL). Desbloqueia ECO-2615.
+- **Conclusão / aceite:** Seletor compacto, responsivo e acessível por toque, teclado e leitor de tela (WCAG 2.1 AA) com pontos de saída pertencentes à rota ativa; consentimento explícito prévio exigido antes de qualquer acesso à localização; acompanhamento da posição do usuário em primeiro plano com marcador azul e anel de destaque sem recalcular desnecessariamente a geometria da rota fixa; verificação de limites territoriais (`isCoordinateWithinBounds`) impedindo a geração de corredores intermunicipais artificiais quando a posição GPS estiver em região distante; fallback gracioso para origens fixas sob negação, permissão ausente, serviços desativados ou timeout; sem navegação curva-a-curva ou instruções por voz.
+- **Evidência e limite:** Em 07/09/2026: 41 suítes de testes unitários Jest aprovadas (`npm test` com 261 testes passados, 0 falhas), `npm run typecheck` (`tsc --noEmit`) aprovado com exit 0, build web `npm run export:web` aprovado gerando bundle `dist/`, testes de navegador Playwright `npx playwright test` aprovados em Chromium Desktop e Mobile (4/4 passed, zero violações WCAG 2.1 AA), scanner de segredos `python backend/scripts/scan_secrets.py` aprovado (`SECRET_SCAN=OK`), `git diff --check` aprovado com exit 0. Nenhuma alteração de schema, migration ou escrita remota realizada.
+- **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** commit desta task.
 
 #### ECO-2610 — Organizar catálogo em carrosséis por categoria
 
