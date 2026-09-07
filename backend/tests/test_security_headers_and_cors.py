@@ -235,6 +235,20 @@ def test_cors_origins_validator_rejects_wildcard() -> None:
         Settings(_env_file=None, CORS_ORIGINS="https://valid.com, *")  # type: ignore[call-arg]
 
 
+def test_staging_keeps_canonical_frontend_origin_when_env_is_incomplete() -> None:
+    settings = Settings(
+        _env_file=None,
+        APP_ENV="staging",
+        CORS_ORIGINS=["https://legacy-staging.example.com"],
+        SUPABASE_URL="https://example.supabase.co",
+        SUPABASE_PUBLISHABLE_KEY="sb_publishable_test",
+        DATABASE_URL="postgresql+psycopg://user:pass@localhost:5432/test",
+        ROUTING_PROVIDER="google_routes",
+    )
+
+    assert "https://econexao-app-staging.vercel.app" in settings.CORS_ORIGINS
+
+
 @pytest.mark.asyncio
 async def test_explicit_cors_settings_isolated_from_conflicting_env(
     monkeypatch: pytest.MonkeyPatch,

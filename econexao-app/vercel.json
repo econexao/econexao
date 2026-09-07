@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd .. && cd econexao-app && npm install && npm run export:web",
+  "buildCommand": "npm install && npm run export:web",
   "outputDirectory": "dist",
   "routes": [
     {

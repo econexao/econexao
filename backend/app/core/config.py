@@ -113,6 +113,9 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def validate_deployed_environment(self) -> "Settings":
         """Reject missing or placeholder credentials outside local environments."""
+        canonical_staging_origin = "https://econexao-app-staging.vercel.app"
+        if self.APP_ENV == "staging" and canonical_staging_origin not in self.CORS_ORIGINS:
+            self.CORS_ORIGINS.append(canonical_staging_origin)
         expected_issuer = f"{self.SUPABASE_URL.rstrip('/')}/auth/v1"
         expected_jwks_url = f"{expected_issuer}/.well-known/jwks.json"
         # These values are project identity, not independent configuration. Deriving
