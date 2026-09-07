@@ -880,6 +880,8 @@ descobertos com `supabase --help`; production nunca é usada sem aprovação.
 - **Evidência/riscos/rollback/DoD:** URLs/cert report; DNS risk; rollback record/config;
   DoD with owner confirmation.
 - **Evidências reais capturadas em staging:**
+  - Home Desktop (Chromium 1280x800): `docs/finalization/evidence/ECO-2003/01_home_screen_desktop_chromium.png`
+  - Home Mobile (WebKit real 390x844): `docs/finalization/evidence/ECO-2003/02_home_screen_mobile_webkit.png`
   - Home: `docs/finalization/evidence/ECO-2003/01_home_screen.png`
   - Rota Pindobal: `docs/finalization/evidence/ECO-2003/02_route_pindobal_screen.png`
   - Mapa Leaflet: `docs/finalization/evidence/ECO-2003/03_leaflet_map_screen.png`
