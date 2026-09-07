@@ -472,60 +472,30 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     const mapContainer = page.locator('.leaflet-container');
     await expect(mapContainer).toBeVisible({ timeout: 10000 });
 
-    // Salvar Screenshot 04: Mapa Inicial com Clusters
+    // 2. Verificar que NENHUM cluster/bolha numérica é exibido e que pins individuais canônicos estão presentes
+    const clusterMarkers = page.locator('.leaflet-marker-icon.econexao-cluster-icon-wrapper');
+    await expect(clusterMarkers).toHaveCount(0);
+
+    const pinMarkers = page.locator('.leaflet-marker-icon.econexao-map-marker-wrapper');
+    await expect(pinMarkers.first()).toBeVisible({ timeout: 10000 });
+    const pinCount = await pinMarkers.count();
+    expect(pinCount).toBeGreaterThanOrEqual(1);
+
+    // Salvar Screenshot 04: Mapa Inicial com Pins Sem Clusters
     const screenshot04Path = testInfo.outputPath(`${testInfo.project.name}_04_map_initial.png`);
     await page.screenshot({ path: screenshot04Path });
     await testInfo.attach('04_map_initial', { path: screenshot04Path, contentType: 'image/png' });
 
-    // 2. Verificar que 175 pins da fixture foram agrupados em clusters não sobrepostos
-    const clusterMarkers = page.locator('.leaflet-marker-icon.econexao-cluster-icon-wrapper');
-    await expect(clusterMarkers.first()).toBeVisible({ timeout: 10000 });
-    const clusterCount = await clusterMarkers.count();
-    expect(clusterCount).toBeGreaterThanOrEqual(2);
-    expect(clusterCount).toBeLessThanOrEqual(10);
-
-    // Métrica visual estrita: Verificar que NENHUM cluster tem bounding box sobreposto na tela
-    await page.waitForTimeout(400); // Aguardar posicionamento inicial do Leaflet
-    const clusterBoxes = await clusterMarkers.evaluateAll((elements) =>
-      elements.map((el) => {
-        const rect = el.getBoundingClientRect();
-        return {
-          left: rect.left,
-          right: rect.right,
-          top: rect.top,
-          bottom: rect.bottom,
-          width: rect.width,
-          height: rect.height,
-          x: rect.x,
-          y: rect.y,
-        };
-      })
-    );
-    expect(clusterBoxes.length).toBeGreaterThanOrEqual(2);
-    expect(clusterBoxes.length).toBeLessThanOrEqual(10);
-
-    let overlapCount = 0;
-    for (let i = 0; i < clusterBoxes.length; i++) {
-      for (let j = i + 1; j < clusterBoxes.length; j++) {
-        const b1 = clusterBoxes[i];
-        const b2 = clusterBoxes[j];
-        const overlaps =
-          !(b1.right < b2.left || b1.left > b2.right || b1.bottom < b2.top || b1.top > b2.bottom);
-        if (overlaps) overlapCount++;
-      }
-    }
-    expect(overlapCount).toBe(0);
-
-    // 3. Testar Operabilidade do Cluster por TECLADO (Focus + Enter)
-    const targetCluster = clusterMarkers.first();
-    await targetCluster.focus();
+    // 3. Testar Operabilidade dos Pins por TECLADO (Focus + Enter no pin)
+    const targetPin = pinMarkers.first();
+    await targetPin.focus();
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(600); // Esperar transição de zoom do Leaflet
+    await page.waitForTimeout(400);
 
-    // Salvar Screenshot 05: Cluster Expandido
-    const screenshot05Path = testInfo.outputPath(`${testInfo.project.name}_05_cluster_expanded.png`);
+    // Salvar Screenshot 05: Pin Selecionado por Teclado
+    const screenshot05Path = testInfo.outputPath(`${testInfo.project.name}_05_pin_selected_keyboard.png`);
     await page.screenshot({ path: screenshot05Path });
-    await testInfo.attach('05_cluster_expanded', { path: screenshot05Path, contentType: 'image/png' });
+    await testInfo.attach('05_pin_selected_keyboard', { path: screenshot05Path, contentType: 'image/png' });
 
     // 4. Testar Filtro de Categoria Temática
     await page.goto('/route/rota-santarem-pindobal/map');

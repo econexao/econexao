@@ -2,11 +2,10 @@ import type { MapPin, RouteGeometry } from '../../api/types';
 import {
   SELECTION_PIN_COLOR,
   applyCoincidentOffsets,
-  clusterPins,
+  filterPinsByDensity,
   filterPinsByModeAndCategory,
   formatCoordinateDisplay,
   getBoundsCoordinates,
-  getClusterAccessibilityLabel,
   getFitCoordinates,
   getGeometryCoordinates,
   getInitialRegion,
@@ -16,7 +15,6 @@ import {
   getItemPinColor,
   getItemPinIcon,
   getSelectionPinAccessibilityLabel,
-  isClusterItem,
 } from './MapAdapter.helpers';
 
 const pin: MapPin = {
@@ -234,7 +232,7 @@ describe('MapAdapter shared geospatial helpers', () => {
     });
   });
 
-  describe('clusterPins and applyCoincidentOffsets (ECO-2307/ECO-2315)', () => {
+  describe('filterPinsByDensity and applyCoincidentOffsets (ECO-2608 / sem clusters)', () => {
     const densePins: MapPin[] = Array.from({ length: 30 }, (_, i) => ({
       id: `dense-pin-${i}`,
       actor_id: `actor-${i}`,
@@ -248,33 +246,43 @@ describe('MapAdapter shared geospatial helpers', () => {
       layer: 'route_corridor',
     }));
 
-    it('clusters dense pins at low zoom level and produces accessible labels', () => {
-      const renderables = clusterPins(densePins, 12);
+    it('controla a densidade visual em zoom baixo exibindo apenas pins individuais sem bolhas numéricas', () => {
+      const renderables = filterPinsByDensity(densePins, 12);
       expect(renderables.length).toBeLessThan(densePins.length);
-      const clusters = renderables.filter(isClusterItem);
-      expect(clusters.length).toBeGreaterThan(0);
+      expect(renderables.length).toBeGreaterThan(0);
 
-      const firstCluster = clusters[0];
-      expect(firstCluster.count).toBeGreaterThanOrEqual(2);
-      expect(firstCluster.bounds.min_lat).toBeLessThanOrEqual(firstCluster.latitude);
-      expect(firstCluster.bounds.max_lat).toBeGreaterThanOrEqual(firstCluster.latitude);
-
-      const a11yLabel = getClusterAccessibilityLabel(firstCluster);
-      expect(a11yLabel).toContain('Grupo com');
-      expect(a11yLabel).toContain('Toque para aproximar');
+      // Nenhum item deve ser cluster ou possuir propriedades de cluster
+      for (const item of renderables) {
+        expect((item as any).isCluster).toBeUndefined();
+        expect((item as any).count).toBeUndefined();
+        expect(item.category_slug).toBeDefined();
+        expect(item.color).toBeDefined();
+        expect(item.icon).toBeDefined();
+      }
     });
 
-    it('preserves the selected actor as an individual pin even when surrounding pins cluster', () => {
-      const selectedId = 'actor-5';
-      const renderables = clusterPins(densePins, 12, selectedId);
+    it('revela progressivamente mais pins individuais quando o nível de zoom aumenta', () => {
+      const lowZoomPins = filterPinsByDensity(densePins, 11);
+      const midZoomPins = filterPinsByDensity(densePins, 13);
+      const highZoomPins = filterPinsByDensity(densePins, 15);
+
+      expect(midZoomPins.length).toBeGreaterThanOrEqual(lowZoomPins.length);
+      expect(highZoomPins.length).toBeGreaterThan(midZoomPins.length);
+      expect(highZoomPins.length).toBe(densePins.length);
+    });
+
+    it('mantém o empreendimento selecionado sempre visível e destacado mesmo em colisão de densidade', () => {
+      const selectedId = 'actor-28';
+      const renderables = filterPinsByDensity(densePins, 10, selectedId);
 
       const selectedRenderable = renderables.find(
-        (r) => !isClusterItem(r) && ('actor_id' in r ? r.actor_id === selectedId : r.id === selectedId)
+        (r) => ('actor_id' in r ? r.actor_id === selectedId : r.id === selectedId)
       );
       expect(selectedRenderable).toBeDefined();
+      expect(selectedRenderable?.name).toBe('Ponto 28');
     });
 
-    it('applies coincident offsets at high zoom instead of clustering', () => {
+    it('preserva as coordenadas reais e aplica micro-offsets circulares apenas para pontos coincidentes', () => {
       const coincidentPins: MapPin[] = [
         {
           id: 'p1',
@@ -302,18 +310,20 @@ describe('MapAdapter shared geospatial helpers', () => {
         },
       ];
 
-      const renderables = clusterPins(coincidentPins, 16);
+      const renderables = filterPinsByDensity(coincidentPins, 16);
       expect(renderables.length).toBe(2);
-      expect(renderables.every((r) => !isClusterItem(r))).toBe(true);
 
       const [p1, p2] = renderables as (MapPin & { offsetCoordinate?: { latitude: number; longitude: number } })[];
       expect(p1.offsetCoordinate).toBeDefined();
       expect(p2.offsetCoordinate).toBeDefined();
       expect(p1.offsetCoordinate!.latitude).not.toEqual(p2.offsetCoordinate!.latitude);
+      // Coordenadas originais permanecem inalteradas
+      expect(p1.latitude).toBe(-2.63000);
+      expect(p2.latitude).toBe(-2.63000);
     });
 
-    it('handles empty items array gracefully', () => {
-      expect(clusterPins([], 12)).toEqual([]);
+    it('trata array vazio de forma resiliente', () => {
+      expect(filterPinsByDensity([], 12)).toEqual([]);
       expect(applyCoincidentOffsets([])).toEqual([]);
     });
   });
