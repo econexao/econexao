@@ -1,5 +1,6 @@
 """Repository layer for newsletter subscriptions."""
 
+import uuid
 from collections.abc import Sequence
 from typing import cast
 
@@ -34,19 +35,18 @@ class NewsletterRepository:
             if existing.status != "active":
                 existing.status = "active"
                 existing.source = source
-                await self.db.commit()
-                await self.db.refresh(existing)
+                await self.db.flush()
             return existing, False
 
         subscription = NewsletterSubscription(
+            id=uuid.uuid4(),
             email=email,
             source=source,
             status="active",
         )
         self.db.add(subscription)
         try:
-            await self.db.commit()
-            await self.db.refresh(subscription)
+            await self.db.flush()
             return subscription, True
         except IntegrityError:
             await self.db.rollback()
