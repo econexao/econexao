@@ -19,10 +19,7 @@ async def archive_metadata_is_enforced(connection: AsyncConnection, link_id: uui
     savepoint = await connection.begin_nested()
     try:
         await connection.execute(
-            text(
-                "update app_private.route_actors set archived_at = now() "
-                "where id = :link_id"
-            ),
+            text("update app_private.route_actors set archived_at = now() where id = :link_id"),
             {"link_id": link_id},
         )
     except SQLAlchemyError:
@@ -34,18 +31,20 @@ async def archive_metadata_is_enforced(connection: AsyncConnection, link_id: uui
 
 async def verify_transaction(connection: AsyncConnection) -> dict[str, bool]:
     actor_id = (
-        await connection.execute(
-            text("select id from auth.users order by created_at desc limit 1")
-        )
+        await connection.execute(text("select id from auth.users order by created_at desc limit 1"))
     ).scalar_one_or_none()
     link = (
-        await connection.execute(
-            text(
-                "select id, route_id, actor_id from app_private.route_actors "
-                "where archived_at is null order by created_at limit 1"
+        (
+            await connection.execute(
+                text(
+                    "select id, route_id, actor_id from app_private.route_actors "
+                    "where archived_at is null order by created_at limit 1"
+                )
             )
         )
-    ).mappings().first()
+        .mappings()
+        .first()
+    )
     if actor_id is None or link is None:
         return {"test identity and active route link available": False}
 

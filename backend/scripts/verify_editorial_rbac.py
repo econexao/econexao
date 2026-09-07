@@ -96,7 +96,7 @@ async def verify_transaction(connection: AsyncConnection) -> dict[str, bool]:
                 "insert into app_private.audit_logs "
                 "(actor_id, action, resource_type, resource_id, changes, reason) values "
                 "(:admin_id, 'MEMBERSHIP_REVOKE', 'editorial_membership', "
-                ":membership_id, '{\"before\":{},\"after\":{}}'::jsonb, "
+                ':membership_id, \'{"before":{},"after":{}}\'::jsonb, '
                 "'rbac smoke rollback') returning id"
             ),
             {"admin_id": admin_id, "membership_id": membership_id},
@@ -155,9 +155,7 @@ async def verify() -> int:
         await engine.dispose()
 
     results["anon denied"] = await private_role_denied(connection_url, "anon")
-    results["authenticated denied"] = await private_role_denied(
-        connection_url, "authenticated"
-    )
+    results["authenticated denied"] = await private_role_denied(connection_url, "authenticated")
     failures = [name for name, passed in results.items() if not passed]
     if failures:
         print("EDITORIAL_RBAC=ERROR")

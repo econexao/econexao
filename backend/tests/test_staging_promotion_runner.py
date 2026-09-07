@@ -132,7 +132,9 @@ def test_extract_ref_from_database_url_direct_host_port_5432() -> None:
 
 def test_extract_ref_from_database_url_direct_host_default_port() -> None:
     """Direct host connection string without explicit port (default 5432) resolves ref."""
-    dsn = f"postgresql://postgres:secret_pass@db.{CANONICAL_STAGING_PROJECT_REF}.supabase.co/postgres"
+    dsn = (
+        f"postgresql://postgres:secret_pass@db.{CANONICAL_STAGING_PROJECT_REF}.supabase.co/postgres"
+    )
     assert extract_ref_from_database_url(dsn) == CANONICAL_STAGING_PROJECT_REF
 
 
@@ -532,10 +534,10 @@ async def test_integration_lock_transaction_with_real_repository_operation() -> 
 
 
 def test_load_canonical_migrations_manifest() -> None:
-    """Baseline manifest must load successfully with 26 migrations."""
+    """Baseline manifest must load successfully with 27 migrations."""
     manifest = load_canonical_migrations_manifest()
-    assert manifest["total_migrations"] == 26
-    assert len(manifest["migrations"]) == 26
+    assert manifest["total_migrations"] == 27
+    assert len(manifest["migrations"]) == 27
     assert manifest["baseline_ref"] == "origin/staging"
 
 
@@ -544,7 +546,7 @@ def test_validate_manifest_structure_canonical() -> None:
     manifest = load_canonical_migrations_manifest()
     validate_manifest_structure(manifest)
     assert manifest["schema_version"] == 1
-    assert manifest["total_migrations"] == 26
+    assert manifest["total_migrations"] == 27
 
 
 def test_validate_manifest_structure_unsupported_schema_version() -> None:
@@ -638,7 +640,7 @@ def test_verify_migrations_alignment_success() -> None:
     info = verify_migrations_alignment(migrations_dir)
     assert info["status"] == "aligned_locally"
     assert info["scope"] == "local_directory_only"
-    assert info["count"] == 26
+    assert info["count"] == 27
     assert info["manifest_verified"] is True
 
 
@@ -648,7 +650,7 @@ def test_migrations_identical_to_baseline_manifest() -> None:
     manifest = load_canonical_migrations_manifest()
     sql_files = sorted(migrations_dir.glob("*.sql"), key=lambda f: f.name)
 
-    assert len(sql_files) == 26
+    assert len(sql_files) == 27
     for sql_file, entry in zip(sql_files, manifest["migrations"], strict=True):
         assert sql_file.name == entry["filename"]
         file_bytes = sql_file.read_bytes()
@@ -715,8 +717,8 @@ def test_verify_migrations_fails_on_duplicate_timestamp(tmp_path: Path) -> None:
     """Duplicate 14-digit timestamps must fail closed."""
     (tmp_path / "20260811000000_migration_a.sql").write_bytes(b"SELECT 1;")
     (tmp_path / "20260811000000_migration_b.sql").write_bytes(b"SELECT 1;")
-    # Pad to 26 files
-    for i in range(2, 26):
+    # Pad to 27 files
+    for i in range(2, 27):
         (tmp_path / f"202608120000{i:02d}_migration.sql").write_bytes(b"SELECT 1;")
 
     with pytest.raises(PreflightVerificationError, match="Duplicidade de versão"):
@@ -867,9 +869,7 @@ def test_execute_phase1_preflight_offline_dry_run_pure() -> None:
     assert report["remote_write_performed"] is False
     assert report["target_project_ref"] is None
     assert report["remote_configuration"]["validated"] is False
-    assert (
-        report["remote_configuration"]["status"] == "offline_dry_run_no_remote_config_validated"
-    )
+    assert report["remote_configuration"]["status"] == "offline_dry_run_no_remote_config_validated"
     assert report["manifest"]["valid_files"] == 9
     assert report["canonical_counts"]["counts"]["read"] == 1714
 
@@ -1169,7 +1169,6 @@ async def test_execute_phase2_staging_promotion_success() -> None:
     assert report["persisted_counts"]["rejected"] == 0
     assert report["territorial_counts"]["regions_created"] == 1
     mock_persist.assert_awaited_once()
-
 
 
 @pytest.mark.asyncio
@@ -1908,9 +1907,7 @@ async def test_state_guard_rejects_any_updated_count() -> None:
             return_value=(fake_run_id, bad_stats),
         ),
     ):
-        with pytest.raises(
-            PromotionExecutionError, match="State Guard violação: updated != 0"
-        ):
+        with pytest.raises(PromotionExecutionError, match="State Guard violação: updated != 0"):
             await execute_phase2_staging_promotion(
                 session=session,
                 snapshot_dir=Path("dummy"),

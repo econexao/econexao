@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from app.services.actor_admin import ActorAdminService
     from app.services.avatar_lifecycle import AvatarLifecycleService
     from app.services.media_lifecycle import MediaLifecycleService
+    from app.services.newsletter_service import NewsletterService
     from app.services.territorial_admin import TerritorialAdminService
     from app.services.workflow_admin import WorkflowAdminService
 
@@ -205,3 +206,11 @@ def get_account_lifecycle_service(db: DatabaseSession) -> "AccountLifecycleServi
     from app.services.account_lifecycle import AccountLifecycleService
 
     return AccountLifecycleService(AccountLifecycleRepository(db))
+
+
+def get_newsletter_service(db: DatabaseSession) -> "NewsletterService":
+    """Build the newsletter service for one request."""
+    from app.repositories.newsletter_repository import NewsletterRepository
+    from app.services.newsletter_service import NewsletterService
+
+    return NewsletterService(NewsletterRepository(db))

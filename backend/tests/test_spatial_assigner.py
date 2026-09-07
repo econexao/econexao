@@ -1,6 +1,5 @@
 """Unit and spatial verification tests for ECO-2506 (spatial assigner and layer scopes)."""
 
-
 from app.core.taxonomy import (
     get_canonical_category,
 )

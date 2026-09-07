@@ -22,9 +22,7 @@ from urllib.parse import urlparse
 DEFAULT_STAGING_HOST = "econexao-backend-staging-30dt.onrender.com"
 FORBIDDEN_HOST_PATTERNS = ("eco-nexao-v3.onrender.com", "econexao.app", "prod")
 
-DEFAULT_REQUIRED_ORIGINS = (
-    "https://econexao-app-staging.vercel.app",
-)
+DEFAULT_REQUIRED_ORIGINS = ("https://econexao-app-staging.vercel.app",)
 FORBIDDEN_TEST_ORIGIN = "https://evil.com"
 
 ALLOWED_PIN_ICONS = frozenset(
@@ -61,9 +59,7 @@ def validate_staging_target(
     host = parsed.hostname.lower()
     for forbidden in FORBIDDEN_HOST_PATTERNS:
         if forbidden in host or host == forbidden:
-            raise ValueError(
-                f"Target host '{host}' is forbidden (production or legacy endpoint)."
-            )
+            raise ValueError(f"Target host '{host}' is forbidden (production or legacy endpoint).")
 
     expected = allowed_host.strip().lower()
     if host != expected:
@@ -129,8 +125,8 @@ def check_cors_preflight_and_get(
     if not ok or status != 200:
         return False, f"OPTIONS preflight failed with HTTP status {status}"
 
-    allow_origin = (
-        headers.get("access-control-allow-origin") or headers.get("Access-Control-Allow-Origin")
+    allow_origin = headers.get("access-control-allow-origin") or headers.get(
+        "Access-Control-Allow-Origin"
     )
     if allow_origin != origin:
         return (
@@ -139,9 +135,8 @@ def check_cors_preflight_and_get(
             f"(expected '{origin}', got '{allow_origin}')",
         )
 
-    allow_cred = (
-        headers.get("access-control-allow-credentials")
-        or headers.get("Access-Control-Allow-Credentials")
+    allow_cred = headers.get("access-control-allow-credentials") or headers.get(
+        "Access-Control-Allow-Credentials"
     )
     if allow_cred != "true":
         return (
@@ -160,8 +155,8 @@ def check_cors_preflight_and_get(
     if not ok or status != 200:
         return False, f"GET request with Origin failed with HTTP status {status}"
 
-    allow_origin = (
-        headers.get("access-control-allow-origin") or headers.get("Access-Control-Allow-Origin")
+    allow_origin = headers.get("access-control-allow-origin") or headers.get(
+        "Access-Control-Allow-Origin"
     )
     if allow_origin != origin:
         return (
@@ -192,8 +187,7 @@ def check_cors_denied_origin(
     if status_opt == 0:
         return (
             False,
-            f"OPTIONS preflight on denied origin transport error/timeout: "
-            f"{body_opt.get('error')}",
+            f"OPTIONS preflight on denied origin transport error/timeout: {body_opt.get('error')}",
         )
     if status_opt >= 500:
         return (
@@ -206,9 +200,8 @@ def check_cors_denied_origin(
             f"OPTIONS preflight on denied origin expected HTTP 400/403, got HTTP {status_opt}",
         )
 
-    allow_origin_opt = (
-        headers_opt.get("access-control-allow-origin")
-        or headers_opt.get("Access-Control-Allow-Origin")
+    allow_origin_opt = headers_opt.get("access-control-allow-origin") or headers_opt.get(
+        "Access-Control-Allow-Origin"
     )
     if allow_origin_opt:
         return (
@@ -227,8 +220,7 @@ def check_cors_denied_origin(
     if status_get == 0:
         return (
             False,
-            f"GET request on denied origin transport error/timeout: "
-            f"{body_get.get('error')}",
+            f"GET request on denied origin transport error/timeout: {body_get.get('error')}",
         )
     if status_get >= 500:
         return (
@@ -241,9 +233,8 @@ def check_cors_denied_origin(
             f"GET request on denied origin expected HTTP 200, got HTTP {status_get}",
         )
 
-    allow_origin_get = (
-        headers_get.get("access-control-allow-origin")
-        or headers_get.get("Access-Control-Allow-Origin")
+    allow_origin_get = headers_get.get("access-control-allow-origin") or headers_get.get(
+        "Access-Control-Allow-Origin"
     )
     if allow_origin_get:
         return (
@@ -270,9 +261,8 @@ def check_cors_error_responses(
     )
     if status_401 != 401:
         return False, f"401 probe: expected HTTP 401, got HTTP {status_401}"
-    cors_401 = (
-        headers_401.get("access-control-allow-origin")
-        or headers_401.get("Access-Control-Allow-Origin")
+    cors_401 = headers_401.get("access-control-allow-origin") or headers_401.get(
+        "Access-Control-Allow-Origin"
     )
     if cors_401 != origin:
         return False, f"401 probe missing or mismatched Access-Control-Allow-Origin: {cors_401}"
@@ -286,9 +276,8 @@ def check_cors_error_responses(
     )
     if status_404 != 404:
         return False, f"404 probe: expected HTTP 404, got HTTP {status_404}"
-    cors_404 = (
-        headers_404.get("access-control-allow-origin")
-        or headers_404.get("Access-Control-Allow-Origin")
+    cors_404 = headers_404.get("access-control-allow-origin") or headers_404.get(
+        "Access-Control-Allow-Origin"
     )
     if cors_404 != origin:
         return False, f"404 probe missing or mismatched Access-Control-Allow-Origin: {cors_404}"
@@ -303,9 +292,8 @@ def check_cors_error_responses(
     )
     if status_422 != 422:
         return False, f"422 probe: expected HTTP 422, got HTTP {status_422}"
-    cors_422 = (
-        headers_422.get("access-control-allow-origin")
-        or headers_422.get("Access-Control-Allow-Origin")
+    cors_422 = headers_422.get("access-control-allow-origin") or headers_422.get(
+        "Access-Control-Allow-Origin"
     )
     if cors_422 != origin:
         return False, f"422 probe missing or mismatched Access-Control-Allow-Origin: {cors_422}"
@@ -319,9 +307,8 @@ def check_cors_error_responses(
     )
     if status_500 != 500:
         return False, f"500 probe: expected HTTP 500, got HTTP {status_500}"
-    cors_500 = (
-        headers_500.get("access-control-allow-origin")
-        or headers_500.get("Access-Control-Allow-Origin")
+    cors_500 = headers_500.get("access-control-allow-origin") or headers_500.get(
+        "Access-Control-Allow-Origin"
     )
     if cors_500 != origin:
         return False, f"500 probe missing or mismatched Access-Control-Allow-Origin: {cors_500}"
@@ -498,9 +485,7 @@ def run_smoke_test(
     live_url = f"{target}/api/v1/health/live"
     live_ok = False
     for attempt in range(1, max_retries + 1):
-        print(
-            f"[SMOKE] Checking liveness & revision (attempt {attempt}/{max_retries})..."
-        )
+        print(f"[SMOKE] Checking liveness & revision (attempt {attempt}/{max_retries})...")
 
         ok, status, headers, payload = check_endpoint(live_url, timeout_seconds=timeout_per_request)
         if ok and status == 200 and payload.get("status") == "ok":
@@ -542,9 +527,7 @@ def run_smoke_test(
     ready_url = f"{target}/api/v1/health/ready"
     ready_ok = False
     for attempt in range(1, max_retries + 1):
-        print(
-            f"[SMOKE] Checking readiness and database state (attempt {attempt}/{max_retries})..."
-        )
+        print(f"[SMOKE] Checking readiness and database state (attempt {attempt}/{max_retries})...")
         ok, status, _headers, payload = check_endpoint(
             ready_url, timeout_seconds=timeout_per_request
         )
@@ -611,8 +594,7 @@ def run_smoke_test(
 
     # Negative CORS Verification (Denied origin must never receive allow-origin)
     print(
-        f"[SMOKE] Checking negative CORS rejection for "
-        f"unauthorized origin: {FORBIDDEN_TEST_ORIGIN}"
+        f"[SMOKE] Checking negative CORS rejection for unauthorized origin: {FORBIDDEN_TEST_ORIGIN}"
     )
     neg_ok, neg_msg = check_cors_denied_origin(
         target_url=target,
@@ -714,9 +696,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--base-url",
-        default=os.environ.get(
-            "STAGING_API_BASE_URL", f"https://{DEFAULT_STAGING_HOST}"
-        ),
+        default=os.environ.get("STAGING_API_BASE_URL", f"https://{DEFAULT_STAGING_HOST}"),
         help=f"Base URL of staging backend service (default: https://{DEFAULT_STAGING_HOST})",
     )
     parser.add_argument(

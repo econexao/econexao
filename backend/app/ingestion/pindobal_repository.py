@@ -349,9 +349,7 @@ class PindobalPersistenceRepository:
                 "rodoviaria": "rota_rodoviaria_OSRM_01.csv",
             }[code]
             source_hash = next(
-                item["sha256"]
-                for item in report["manifest"]["files"]
-                if item["name"] == filename
+                item["sha256"] for item in report["manifest"]["files"] if item["name"] == filename
             )
             origin = await self._one(RouteOrigin, route_id=route.id, code=code)
             if origin is None:
@@ -404,9 +402,7 @@ class PindobalPersistenceRepository:
             ).tuples()
         )
         for record in semtur_records:
-            await self._raw(
-                run_id, record.external_id, record, "SEMTUR; uso interno controlado"
-            )
+            await self._raw(run_id, record.external_id, record, "SEMTUR; uso interno controlado")
             if not record.is_valid:
                 counts.rejected += 1
                 continue

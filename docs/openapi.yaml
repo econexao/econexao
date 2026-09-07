@@ -3234,7 +3234,8 @@ paths:
       tags:
       - Territorial - Actors
       summary: Foto Google temporária do ator
-      description: Emite um grant opaco a partir de Place Details recente; não expõe URLs Google.
+      description: Emite um grant opaco a partir de Place Details recente; não expõe
+        URLs Google.
       operationId: get_actor_google_photo_api_v1_actors__actor_id__google_photo_get
       parameters:
       - name: actor_id
@@ -3715,6 +3716,72 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - HTTPBearer: []
+  /api/v1/me/trips/{trip_id}/pause:
+    post:
+      tags:
+      - User - Profile & Preferences
+      summary: Pause Trip
+      operationId: pause_trip_api_v1_me_trips__trip_id__pause_post
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripEnvelope'
+      security:
+      - HTTPBearer: []
+  /api/v1/me/trips/{trip_id}/resume:
+    post:
+      tags:
+      - User - Profile & Preferences
+      summary: Resume Trip
+      operationId: resume_trip_api_v1_me_trips__trip_id__resume_post
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripEnvelope'
+      security:
+      - HTTPBearer: []
+  /api/v1/me/trips/{trip_id}/finish:
+    post:
+      tags:
+      - User - Profile & Preferences
+      summary: Finish Trip
+      operationId: finish_trip_api_v1_me_trips__trip_id__finish_post
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripEnvelope'
+      security:
+      - HTTPBearer: []
   /api/v1/places/photos/{token}/metadata:
     get:
       tags:
@@ -3804,6 +3871,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SupportContentEnvelope'
+  /api/v1/newsletter/subscribe:
+    post:
+      tags:
+      - Newsletter
+      summary: Inscrever e-mail no informativo
+      description: Registra um endereço de e-mail na lista de informativos a partir
+        da landing page.
+      operationId: subscribe_newsletter_api_v1_newsletter_subscribe_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewsletterSubscribeRequest'
+        required: true
+      responses:
+        '200':
+          description: Inscrição processada com sucesso (nova ou idempotente).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsletterSubscribeEnvelope'
+        '422':
+          description: Formato de e-mail inválido ou dados de entrada inconsistentes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Limite de requisições excedido. Tente novamente mais tarde.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno do servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     ActorCategoryListEnvelope:
@@ -7849,6 +7955,65 @@ components:
       - msg
       - type
       title: ValidationError
+    NewsletterSubscribeRequest:
+      properties:
+        email:
+          type: string
+          maxLength: 255
+          minLength: 3
+          title: Email
+          description: Endereço de e-mail do interessado.
+          example: usuario@exemplo.com
+        source:
+          type: string
+          enum:
+          - landing_page
+          - landing_hero
+          - landing_footer
+          - landing_business
+          title: Source
+          description: Origem ou contexto aprovado da inscrição.
+          default: landing_page
+          example: landing_page
+      type: object
+      required:
+      - email
+      title: NewsletterSubscribeRequest
+      description: Payload for newsletter/leads subscription from landing page.
+      example:
+        email: usuario@exemplo.com
+        source: landing_page
+    NewsletterSubscribeData:
+      properties:
+        status:
+          type: string
+          enum:
+          - subscribed
+          - already_subscribed
+          title: Status
+          description: 'Estado da inscrição: subscribed (nova) ou already_subscribed
+            (já cadastrado).'
+          example: subscribed
+        message:
+          type: string
+          title: Message
+          description: Mensagem informativa em português para exibição segura na interface.
+          example: Inscrição realizada com sucesso! Você receberá nossas novidades.
+      type: object
+      required:
+      - status
+      - message
+      title: NewsletterSubscribeData
+      description: Result data for newsletter subscription.
+    NewsletterSubscribeEnvelope:
+      properties:
+        data:
+          $ref: '#/components/schemas/NewsletterSubscribeData'
+      type: object
+      required:
+      - data
+      title: NewsletterSubscribeEnvelope
+      description: Standard envelope for newsletter subscription response.
   securitySchemes:
     HTTPBearer:
       type: http

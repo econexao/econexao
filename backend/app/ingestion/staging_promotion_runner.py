@@ -63,7 +63,7 @@ CANONICAL_PINDOBAL_METRICS: dict[str, int] = {
     "unchanged": 0,
     "updated": 0,
 }
-CANONICAL_MIGRATIONS_COUNT: int = 26
+CANONICAL_MIGRATIONS_COUNT: int = 27
 
 
 class CanonicalPromotionProfile(NamedTuple):
@@ -199,9 +199,7 @@ def sanitize_message(text_content: str) -> str:
     # 3. Mask Supabase Secret Keys: sb_secret_...
     sanitized = re.sub(r"\bsb_secret_[a-zA-Z0-9_-]+\b", "[REDACTED_SECRET]", sanitized)
     # 4. Mask Supabase Publishable Keys: sb_publishable_...
-    sanitized = re.sub(
-        r"\bsb_publishable_[a-zA-Z0-9_-]+\b", "[REDACTED_PUBLISHABLE]", sanitized
-    )
+    sanitized = re.sub(r"\bsb_publishable_[a-zA-Z0-9_-]+\b", "[REDACTED_PUBLISHABLE]", sanitized)
     # 5. Mask Supabase Management / Personal Tokens: sbp_...
     sanitized = re.sub(r"\bsbp_[a-zA-Z0-9_-]+\b", "[REDACTED_SBP]", sanitized)
     # 6. Mask JWTs (RFC 7519 3-part base64url)
@@ -255,9 +253,7 @@ def _extract_raw_ref_from_supabase_url(url: str | None) -> str:
         )
     ref = parts[0].lower()
     if not PROJECT_REF_PATTERN.fullmatch(ref):
-        raise TargetValidationError(
-            "Formato de project ref na SUPABASE_URL inválido."
-        )
+        raise TargetValidationError("Formato de project ref na SUPABASE_URL inválido.")
     return ref
 
 
@@ -367,9 +363,7 @@ def validate_environment_config(env_values: dict[str, str]) -> str:
     raw_database_ref = _extract_raw_ref_from_database_url(raw_database_url)
 
     if raw_supabase_ref != raw_database_ref:
-        raise TargetValidationError(
-            "Divergência de project ref entre SUPABASE_URL e DATABASE_URL."
-        )
+        raise TargetValidationError("Divergência de project ref entre SUPABASE_URL e DATABASE_URL.")
 
     return validate_target_project_ref(raw_supabase_ref)
 
@@ -482,9 +476,7 @@ def validate_manifest_structure(manifest_data: dict[str, Any]) -> None:
                 f"Versão inválida no manifesto (item {idx + 1}): '{version}'. Deve ter 14 dígitos."
             )
         if version in seen_versions:
-            raise PreflightVerificationError(
-                f"Versão duplicada no manifesto: '{version}'."
-            )
+            raise PreflightVerificationError(f"Versão duplicada no manifesto: '{version}'.")
         seen_versions.add(version)
 
         filename = str(entry["filename"])
@@ -964,8 +956,7 @@ async def execute_phase2_staging_promotion(
             and reconciliation.get("unchanged") == CANONICAL_INITIAL_LOAD_PROFILE.unchanged
             and reconciliation.get("rejected") == CANONICAL_INITIAL_LOAD_PROFILE.rejected
             and reconciliation.get("candidates") == CANONICAL_INITIAL_LOAD_PROFILE.candidates
-            and territorial.get("regions_created")
-            == CANONICAL_INITIAL_LOAD_PROFILE.regions_created
+            and territorial.get("regions_created") == CANONICAL_INITIAL_LOAD_PROFILE.regions_created
             and territorial.get("regions_unchanged")
             == CANONICAL_INITIAL_LOAD_PROFILE.regions_unchanged
             and territorial.get("routes_created") == CANONICAL_INITIAL_LOAD_PROFILE.routes_created

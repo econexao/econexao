@@ -1,8 +1,8 @@
 """Repository layer for user domain data access (ECO-0604, ECO-0605) with AsyncSession."""
 
 import uuid
-from datetime import datetime
-from typing import Any
+from datetime import UTC, datetime
+from typing import Any, cast
 
 from geoalchemy2.functions import ST_X, ST_Y
 from sqlalchemy import and_, func, or_, select
@@ -261,3 +261,34 @@ class UserRepository:
         stmt = select(Trip).options(joinedload(Trip.route)).where(Trip.id == new_trip.id)
         created = await self.db.scalar(stmt)
         return created or new_trip
+
+    async def transition_trip(
+        self, user_id: uuid.UUID, trip_id: uuid.UUID, target_status: str
+    ) -> Trip | None:
+        """Apply an idempotent, ownership-scoped trip transition."""
+        stmt = (
+            select(Trip)
+            .options(joinedload(Trip.route))
+            .where(Trip.id == trip_id, Trip.user_id == user_id)
+        )
+        trip = await self.db.scalar(stmt)
+        if not trip:
+            return None
+        if trip.status == target_status:
+            return trip
+        trip.status = target_status
+        if target_status == "completed":
+            trip.completed_at = datetime.now(UTC)
+        else:
+            trip.completed_at = None
+        await self.db.commit()
+        await self.db.refresh(trip)
+        return trip
+
+    async def get_trip(self, user_id: uuid.UUID, trip_id: uuid.UUID) -> Trip | None:
+        stmt = (
+            select(Trip)
+            .options(joinedload(Trip.route))
+            .where(Trip.id == trip_id, Trip.user_id == user_id)
+        )
+        return cast(Trip | None, await self.db.scalar(stmt))

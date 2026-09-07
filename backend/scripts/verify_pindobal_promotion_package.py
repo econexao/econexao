@@ -37,8 +37,7 @@ def main() -> int:
         and state["second_load_updated"] == 0
         and state["route_actors"] == 313
         and state["fuzzy_candidates_pending"] == 53
-        and manifest["package"]["promotion_status"]
-        == "blocked_pending_editorial_acceptance"
+        and manifest["package"]["promotion_status"] == "blocked_pending_editorial_acceptance"
         and bool(manifest["promotion_blockers"])
         and manifest["publication_classification"]["media"].startswith("excluded_")
         and manifest["source_revision"]["kind"] == "unavailable"
