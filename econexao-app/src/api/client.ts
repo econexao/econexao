@@ -519,6 +519,18 @@ export class ApiClient {
     }, false, true);
   }
 
+  public async pauseTrip(tripId: string): Promise<TripEnvelope> {
+    return this.request<TripEnvelope>(`/me/trips/${encodeURIComponent(tripId)}/pause`, { method: "POST" }, false, true);
+  }
+
+  public async resumeTrip(tripId: string): Promise<TripEnvelope> {
+    return this.request<TripEnvelope>(`/me/trips/${encodeURIComponent(tripId)}/resume`, { method: "POST" }, false, true);
+  }
+
+  public async finishTrip(tripId: string): Promise<TripEnvelope> {
+    return this.request<TripEnvelope>(`/me/trips/${encodeURIComponent(tripId)}/finish`, { method: "POST" }, false, true);
+  }
+
   public async getSupportContent(): Promise<SupportContentEnvelope> {
     return this.request<SupportContentEnvelope>("/content/support", {}, false, false);
   }
