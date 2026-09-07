@@ -36,25 +36,30 @@ jobs:
         with:
           python-version: "3.13"
           cache: pip
-          cache-dependency-path: backend/pyproject.toml
+          cache-dependency-path: backend/uv.lock
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e ".[dev]"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.10.6"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Install dependencies from frozen lock
+        run: uv sync --frozen --extra dev
 
       - name: Ruff Linter & Formatter Check
-        run: python -m ruff check app tests scripts
+        run: uv run ruff check app tests scripts
 
       - name: Mypy Strict Type Check
-        run: python -m mypy app scripts
+        run: uv run mypy app scripts
 
       - name: Migration Ordering Check
-        run: python -m scripts.check_migrations
+        run: uv run python -m scripts.check_migrations
 
       - name: Security & RLS Policy Contract Tests
         run: >-
-          python -m pytest
+          uv run python -m pytest
           tests/test_check_migrations.py
           tests/test_rls_policies.py
           tests/test_media_lifecycle_schema.py
@@ -62,7 +67,7 @@ jobs:
           tests/test_staging_migration_gate.py
 
       - name: Pytest Suite with Coverage (Minimum 85%)
-        run: python -m pytest --cov=app --cov-report=term --cov-fail-under=85
+        run: uv run python -m pytest --cov=app --cov-report=term --cov-fail-under=85
 
   frontend-gate:
     name: Frontend Contract & Quality Gate
@@ -108,10 +113,15 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install backend dependencies for gate scripts
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e "./backend[dev]"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.10.6"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Install backend dependencies from frozen lock
+        run: uv sync --directory backend --frozen --extra dev
 
       - name: Set up Node.js 22 for Supabase CLI
         uses: actions/setup-node@v4
@@ -125,10 +135,10 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
-          EXPECTED_STAGING_PROJECT_REF: ${{ secrets.EXPECTED_STAGING_PROJECT_REF || secrets.SUPABASE_PROJECT_REF }}
+          EXPECTED_STAGING_PROJECT_REF: ${{ secrets.EXPECTED_STAGING_PROJECT_REF }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
           APPLY_STAGING_MIGRATIONS: ${{ inputs.apply_staging_migrations || 'false' }}
-        run: python backend/scripts/staging_migration_gate.py
+        run: uv run --directory backend python scripts/staging_migration_gate.py
 
   deploy-staging:
     name: Deploy to Render Staging
