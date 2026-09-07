@@ -1,5 +1,9 @@
 """Repository layer for newsletter subscriptions."""
 
+<<<<<<< HEAD
+=======
+import logging
+>>>>>>> origin/staging
 import uuid
 from collections.abc import Sequence
 from typing import cast
@@ -9,6 +13,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.domain import NewsletterSubscription
+
+logger = logging.getLogger(__name__)
 
 
 class NewsletterRepository:
@@ -53,6 +59,10 @@ class NewsletterRepository:
             existing = await self.db.scalar(stmt)
             if existing is not None:
                 return existing, False
+            raise
+        except Exception as exc:
+            await self.db.rollback()
+            logger.exception("Error persisting newsletter subscription for %s: %s", email, exc)
             raise
 
     async def list_subscriptions(

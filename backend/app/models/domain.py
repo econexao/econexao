@@ -861,6 +861,7 @@ class AuditLog(Base):
 
 class NewsletterSubscription(Base):
     __tablename__ = "newsletter_subscriptions"
+    __table_args__ = {"schema": "app_private"}
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email: Mapped[str] = mapped_column(VARCHAR(255), unique=True, nullable=False)
