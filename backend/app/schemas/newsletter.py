@@ -2,6 +2,7 @@
 
 from typing import Any, Literal
 
+from email_validator import EmailNotValidError, validate_email
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 ALLOWED_SOURCES = frozenset({"landing_page", "landing_hero", "landing_footer", "landing_business"})
@@ -40,13 +41,17 @@ class NewsletterSubscribeRequest(BaseModel):
     @field_validator("email", mode="before")
     @classmethod
     def validate_email_field(cls, v: Any) -> str:
-        """Sanitize email string before Pydantic EmailStr validation."""
+        """Sanitize and normalize email address using email-validator."""
         if not isinstance(v, str):
             raise ValueError("O endereço de e-mail deve ser um texto válido.")
         sanitized = v.strip()
         if not sanitized:
             raise ValueError("O endereço de e-mail é obrigatório.")
-        return str(sanitized)
+        try:
+            valid = validate_email(sanitized, check_deliverability=False)
+            return str(valid.normalized.lower())
+        except EmailNotValidError as exc:
+            raise ValueError(f"Formato de e-mail inválido: {str(exc)}") from exc
 
     @field_validator("source", mode="before")
     @classmethod
