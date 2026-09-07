@@ -63,6 +63,9 @@ SCHEMA_NAMES = {
     "AdminUploadReferenceSchema": "AdminUploadReferenceSchema",
     "AdminContextDataSchema": "AdminContextDataSchema",
     "AdminContextEnvelope": "AdminContextEnvelope",
+    "NewsletterSubscribeRequest": "NewsletterSubscribeRequest",
+    "NewsletterSubscribeData": "NewsletterSubscribeData",
+    "NewsletterSubscribeEnvelope": "NewsletterSubscribeEnvelope",
 }
 
 

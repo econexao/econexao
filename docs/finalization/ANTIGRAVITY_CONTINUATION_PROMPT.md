@@ -13,7 +13,7 @@ Continue o desenvolvimento do ECOnexão a partir do estado real do repositório,
 - O banco remoto anteriormente inspecionado tinha PostgreSQL 17/PostGIS e 24 tabelas privadas, mas estava sem regiões, rotas, origens, atores, mídia ou execuções de ingestão.
 - A migration local de Storage ainda não estava promovida; buckets/policies não existiam no remoto verificado.
 - `seed_pindobal.py --apply` não persiste; avatar/signed upload são stubs; API/painel editorial ainda não existem.
-- ADR 0005 (Cloud Run em `southamerica-east1`) e ADR 0006 (RBAC/workflow editorial) estão aceitos.
+- ADR 0005 (Render Native Python) e ADR 0006 (RBAC/workflow editorial) estão aceitos.
 - ECO-1304, ECO-1305 e ECO-1306 continuam dependentes de decisão do proprietário.
 - A cópia auditada não contém `.git`. Isso bloqueia comprovação de status/diff/histórico e **bloqueia trabalho paralelo com escrita** até restaurar um worktree íntegro.
 - O próximo ponto de entrada deve ser lido em `docs/project_status.md`. Não fixe um

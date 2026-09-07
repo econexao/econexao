@@ -277,15 +277,11 @@ def create_app(app_settings: Settings | None = None) -> FastAPI:
             },
             "request_id": req_id,
         }
-        current_settings: Settings = getattr(request.app.state, "settings", cfg)
         cors_headers = _get_cors_headers(request)
-        resp_headers = {"X-Request-ID": req_id, **cors_headers}
-        if current_settings.APP_ENV in ("staging", "development", "test"):
-            resp_headers["X-Debug-Error"] = f"{exc.__class__.__name__}: {str(exc)[:200]}"
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content=content,
-            headers=resp_headers,
+            headers={"X-Request-ID": req_id, **cors_headers},
         )
 
     application.include_router(api_v1_router, prefix="/api/v1")

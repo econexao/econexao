@@ -397,7 +397,7 @@ async def test_repository_subscribe_creates_and_handles_duplicates() -> None:
     assert is_new is True
     assert sub.email == "visitante@santarem.com"
     assert db.add.called
-    assert db.flush.called
+    assert db.commit.called
 
     # 2. Existing check returns existing record (duplicate)
     existing = NewsletterSubscription(

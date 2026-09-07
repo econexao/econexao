@@ -1,9 +1,8 @@
 # Direcionamento da versão Web para testes e evento
 
 Data: 2026-09-05.
-Estado: requisitos, contratos e decisões reconciliados na task ECO-2603; tasks consolidadas e
-revisadas em project_status.md. As tarefas consumidoras imediatas (ECO-2604, ECO-2606, ECO-2608)
-estão desbloqueadas para execução sequencial local.
+Estado: requisitos e decisões complementares registrados; tasks consolidadas e
+revisadas em project_status.md. Reconciliação de ADRs/contratos pendente na ECO-2603.
 Este documento é um briefing de produto, não um segundo backlog ativo.
 `project_status.md` é a fonte única de ordem e estado das tasks.
 

@@ -12,7 +12,7 @@ Requer Python 3.13.
 cd backend
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install -e ".[dev]"
+uv sync --frozen --extra dev
 uvicorn app.main:app --reload
 ```
 
@@ -24,9 +24,9 @@ Smoke checks:
 Qualidade:
 
 ```powershell
-python -m pytest
-python -m ruff check .
-python -m mypy app
+uv run python -m pytest
+uv run ruff check .
+uv run mypy app
 ```
 
 O endpoint de liveness não depende de banco. O readiness só poderá ser
