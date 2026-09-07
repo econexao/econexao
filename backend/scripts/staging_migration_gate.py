@@ -72,12 +72,17 @@ def validate_staging_project_ref(
             "SUPABASE_PROJECT_REF must be exactly 20 lowercase alphanumeric characters."
         )
 
-    if expected_staging_ref:
-        exp = expected_staging_ref.strip().lower()
-        if exp and ref != exp:
-            raise ValueError(
-                f"SUPABASE_PROJECT_REF '{ref}' does not match EXPECTED_STAGING_PROJECT_REF '{exp}'."
-            )
+    exp = (expected_staging_ref or "").strip().lower()
+    if not exp:
+        raise ValueError("EXPECTED_STAGING_PROJECT_REF is missing; staging identity is required.")
+    if not PROJECT_REF_PATTERN.fullmatch(exp):
+        raise ValueError(
+            "EXPECTED_STAGING_PROJECT_REF must be exactly 20 lowercase alphanumeric characters."
+        )
+    if ref != exp:
+        raise ValueError(
+            f"SUPABASE_PROJECT_REF '{ref}' does not match EXPECTED_STAGING_PROJECT_REF '{exp}'."
+        )
 
     if dev_ref and ref == dev_ref.strip().lower():
         raise ValueError("Staging SUPABASE_PROJECT_REF collides with development project ref.")
