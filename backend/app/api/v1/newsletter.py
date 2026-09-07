@@ -1,5 +1,6 @@
 """Newsletter subscription endpoints for ECOnexão."""
 
+import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
@@ -12,6 +13,8 @@ from app.schemas.newsletter import (
 )
 from app.services.dependencies import get_newsletter_service
 from app.services.newsletter_service import NewsletterService
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/newsletter", tags=["Newsletter"])
 

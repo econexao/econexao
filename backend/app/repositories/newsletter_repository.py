@@ -1,5 +1,7 @@
 """Repository layer for newsletter subscriptions."""
 
+import logging
+import uuid
 from collections.abc import Sequence
 from typing import cast
 
@@ -8,6 +10,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.domain import NewsletterSubscription
+
+logger = logging.getLogger(__name__)
 
 
 class NewsletterRepository:
@@ -35,10 +39,10 @@ class NewsletterRepository:
                 existing.status = "active"
                 existing.source = source
                 await self.db.commit()
-                await self.db.refresh(existing)
             return existing, False
 
         subscription = NewsletterSubscription(
+            id=uuid.uuid4(),
             email=email,
             source=source,
             status="active",
@@ -46,13 +50,16 @@ class NewsletterRepository:
         self.db.add(subscription)
         try:
             await self.db.commit()
-            await self.db.refresh(subscription)
             return subscription, True
         except IntegrityError:
             await self.db.rollback()
             existing = await self.db.scalar(stmt)
             if existing is not None:
                 return existing, False
+            raise
+        except Exception as exc:
+            await self.db.rollback()
+            logger.exception("Error persisting newsletter subscription for %s: %s", email, exc)
             raise
 
     async def list_subscriptions(
