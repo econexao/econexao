@@ -1,9 +1,6 @@
 """Repository layer for newsletter subscriptions."""
 
-<<<<<<< HEAD
-=======
 import logging
->>>>>>> origin/staging
 import uuid
 from collections.abc import Sequence
 from typing import cast
