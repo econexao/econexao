@@ -1,7 +1,6 @@
 import type { MapPin, RouteGeometry } from '../../api/types';
 import {
   SELECTION_PIN_COLOR,
-  applyCoincidentOffsets,
   filterPinsByDensity,
   filterPinsByModeAndCategory,
   formatCoordinateDisplay,
@@ -232,7 +231,7 @@ describe('MapAdapter shared geospatial helpers', () => {
     });
   });
 
-  describe('filterPinsByDensity and applyCoincidentOffsets (ECO-2608 / sem clusters)', () => {
+  describe('filterPinsByDensity (ECO-2608 / sem clusters e sem distorção de coordenadas)', () => {
     const densePins: MapPin[] = Array.from({ length: 30 }, (_, i) => ({
       id: `dense-pin-${i}`,
       actor_id: `actor-${i}`,
@@ -282,7 +281,7 @@ describe('MapAdapter shared geospatial helpers', () => {
       expect(selectedRenderable?.name).toBe('Ponto 28');
     });
 
-    it('preserva as coordenadas reais e aplica micro-offsets circulares apenas para pontos coincidentes', () => {
+    it('preserva estritamente as coordenadas geográficas reais de cada pin sem aplicar offsets ou distorções', () => {
       const coincidentPins: MapPin[] = [
         {
           id: 'p1',
@@ -313,18 +312,18 @@ describe('MapAdapter shared geospatial helpers', () => {
       const renderables = filterPinsByDensity(coincidentPins, 16);
       expect(renderables.length).toBe(2);
 
-      const [p1, p2] = renderables as (MapPin & { offsetCoordinate?: { latitude: number; longitude: number } })[];
-      expect(p1.offsetCoordinate).toBeDefined();
-      expect(p2.offsetCoordinate).toBeDefined();
-      expect(p1.offsetCoordinate!.latitude).not.toEqual(p2.offsetCoordinate!.latitude);
-      // Coordenadas originais permanecem inalteradas
+      const [p1, p2] = renderables;
+      expect((p1 as any).offsetCoordinate).toBeUndefined();
+      expect((p2 as any).offsetCoordinate).toBeUndefined();
+      // Coordenadas originais permanecem estritamente preservadas
       expect(p1.latitude).toBe(-2.63000);
+      expect(p1.longitude).toBe(-54.94000);
       expect(p2.latitude).toBe(-2.63000);
+      expect(p2.longitude).toBe(-54.94000);
     });
 
     it('trata array vazio de forma resiliente', () => {
       expect(filterPinsByDensity([], 12)).toEqual([]);
-      expect(applyCoincidentOffsets([])).toEqual([]);
     });
   });
 });

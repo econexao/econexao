@@ -212,73 +212,6 @@ export const getInitialRegion = (
 };
 
 /**
- * Calculates a gentle circular offset for pins sharing identical or near-identical coordinates
- * so that all points remain visually distinct, clickable, and accessible at high zoom.
- */
-export const applyCoincidentOffsets = <T extends FlexiblePinItem>(
-  items: T[],
-  selectedActorId?: string | null
-): (T & { offsetCoordinate?: MapCoordinate })[] => {
-  if (items.length <= 1) return items;
-
-  const groups = new Map<string, T[]>();
-  for (const item of items) {
-    const coord = getItemCoordinate(item);
-    if (!coord) continue;
-    const key = `${coord.latitude.toFixed(5)},${coord.longitude.toFixed(5)}`;
-    const group = groups.get(key) || [];
-    group.push(item);
-    groups.set(key, group);
-  }
-
-  const result: (T & { offsetCoordinate?: MapCoordinate })[] = [];
-
-  for (const item of items) {
-    const coord = getItemCoordinate(item);
-    if (!coord) {
-      result.push(item);
-      continue;
-    }
-    const key = `${coord.latitude.toFixed(5)},${coord.longitude.toFixed(5)}`;
-    const group = groups.get(key) || [];
-
-    if (group.length <= 1) {
-      result.push(item);
-      continue;
-    }
-
-    const indexInGroup = group.indexOf(item);
-    const isSelected = Boolean(
-      selectedActorId &&
-        (getItemId(item) === selectedActorId ||
-          ('actor_id' in item && item.actor_id === selectedActorId))
-    );
-
-    if (isSelected) {
-      result.push({
-        ...item,
-        offsetCoordinate: coord,
-      });
-      continue;
-    }
-
-    const angle = (2 * Math.PI * indexInGroup) / group.length;
-    const radius = 0.00018;
-    const offsetCoordinate: MapCoordinate = {
-      latitude: coord.latitude + radius * Math.cos(angle),
-      longitude: coord.longitude + radius * Math.sin(angle),
-    };
-
-    result.push({
-      ...item,
-      offsetCoordinate,
-    });
-  }
-
-  return result;
-};
-
-/**
  * Prioridade de renderização estável por relevância de categoria em caso de colisão.
  */
 const CATEGORY_VISUAL_PRIORITY: Record<string, number> = {
@@ -297,7 +230,7 @@ const CATEGORY_VISUAL_PRIORITY: Record<string, number> = {
  * - Pins são exibidos individualmente com sua cor e ícone de categoria (ADR 0010).
  * - O item selecionado (selectedActorId) SEMPRE é incluído e destacado com máxima prioridade.
  * - Conforme o zoom aumenta, mais pontos são revelados.
- * - Coordenadas reais nunca são distorcidas; pontos coincidentes recebem micro-offsets concêntricos.
+ * - Coordenadas geográficas reais são estritamente preservadas (sem offsets ou distorções).
  */
 export const filterPinsByDensity = (
   items: FlexiblePinItem[],
@@ -306,9 +239,9 @@ export const filterPinsByDensity = (
 ): MapRenderableItem[] => {
   if (items.length === 0) return [];
 
-  // Em zoom alto (>= 15), todos os pins válidos são renderizados diretamente com micro-offsets se coincidentes
+  // Em zoom alto (>= 15), todos os pins válidos são renderizados diretamente com suas coordenadas reais
   if (zoomLevel >= 15) {
-    return applyCoincidentOffsets(items, selectedActorId);
+    return items.filter((item) => getItemCoordinate(item) !== null);
   }
 
   // Raio de colisão em pixels na tela convertido para graus no zoom atual
@@ -377,7 +310,7 @@ export const filterPinsByDensity = (
     }
   }
 
-  return applyCoincidentOffsets(acceptedPins, selectedActorId);
+  return acceptedPins;
 };
 
 /**

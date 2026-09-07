@@ -291,10 +291,7 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
         )}
 
         {renderableItems.map((item) => {
-          const coordinate =
-            ('offsetCoordinate' in item && item.offsetCoordinate)
-              ? item.offsetCoordinate
-              : getItemCoordinate(item);
+          const coordinate = getItemCoordinate(item);
           if (!coordinate) return null;
           const itemId = getItemId(item);
           const isSelected = itemId === selectedActorId;

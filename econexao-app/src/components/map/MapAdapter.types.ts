@@ -25,11 +25,7 @@ export interface MapCoordinate {
 
 export type GeoBounds = MapBounds;
 export type MapViewMode = 'route' | 'city';
-
-export type MapRenderableItem = FlexiblePinItem & {
-  offsetCoordinate?: MapCoordinate;
-  isVisible?: boolean;
-};
+export type MapRenderableItem = FlexiblePinItem;
 
 export interface MapAdapterProps {
   /** @deprecated Real adapters use map tiles rather than a raster source. */
