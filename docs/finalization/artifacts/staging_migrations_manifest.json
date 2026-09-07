@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "baseline_ref": "origin/staging",
-  "total_migrations": 26,
+  "total_migrations": 27,
   "migrations": [
     {
       "version": "20260811000000",
@@ -184,6 +184,13 @@
       "path": "supabase/migrations/20260906125246_eco_2605_widen_route_metadata_columns.sql",
       "bytes": 455,
       "sha256": "380efaa6c487ce04cf37bafa7096d347ad76fd362febc920c439fc8df252be2e"
+    },
+    {
+      "version": "20260907120000",
+      "filename": "20260907120000_create_newsletter_subscriptions.sql",
+      "path": "supabase/migrations/20260907120000_create_newsletter_subscriptions.sql",
+      "bytes": 1342,
+      "sha256": "16c3f9f6a970435178c6209ed208f77a5b60c88e4f00ac566fad6ddf9145e460"
     }
   ]
 }
