@@ -314,3 +314,30 @@ async def create_trip(
     service: UserServiceDep,
 ) -> TripEnvelope:
     return await service.create_trip(user_id=current_user.id, route_id=trip_data.route_id)
+
+
+@router.post("/trips/{trip_id}/pause", response_model=TripEnvelope)
+async def pause_trip(
+    trip_id: uuid.UUID,
+    current_user: Annotated[AuthUser, Depends(get_current_user)],
+    service: UserServiceDep,
+) -> TripEnvelope:
+    return await service.transition_trip(current_user.id, trip_id, "paused")
+
+
+@router.post("/trips/{trip_id}/resume", response_model=TripEnvelope)
+async def resume_trip(
+    trip_id: uuid.UUID,
+    current_user: Annotated[AuthUser, Depends(get_current_user)],
+    service: UserServiceDep,
+) -> TripEnvelope:
+    return await service.transition_trip(current_user.id, trip_id, "in_progress")
+
+
+@router.post("/trips/{trip_id}/finish", response_model=TripEnvelope)
+async def finish_trip(
+    trip_id: uuid.UUID,
+    current_user: Annotated[AuthUser, Depends(get_current_user)],
+    service: UserServiceDep,
+) -> TripEnvelope:
+    return await service.transition_trip(current_user.id, trip_id, "completed")
