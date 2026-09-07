@@ -69,7 +69,6 @@ SCHEMA_NAMES = {
 }
 
 
-
 def _parameters(operation: dict[str, Any]) -> set[tuple[str, str, bool]]:
     parameters = operation.get("parameters", [])
     result: set[tuple[str, str, bool]] = set()

@@ -4,8 +4,8 @@ import argparse
 import asyncio
 import csv
 import sys
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 

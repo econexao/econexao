@@ -35,4 +35,3 @@ api_v1_router.include_router(me_router)
 api_v1_router.include_router(place_photos_router)
 api_v1_router.include_router(content_router)
 api_v1_router.include_router(newsletter_router)
-

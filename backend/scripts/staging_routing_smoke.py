@@ -14,9 +14,7 @@ import sys
 import urllib.request
 from urllib.parse import urlparse
 
-CANONICAL_STAGING_HOSTS: frozenset[str] = frozenset(
-    {"econexao-backend-staging-30dt.onrender.com"}
-)
+CANONICAL_STAGING_HOSTS: frozenset[str] = frozenset({"econexao-backend-staging-30dt.onrender.com"})
 DEFAULT_STAGING_HOST: str = "econexao-backend-staging-30dt.onrender.com"
 DEFAULT_CLIENT_TIMEOUT_SECONDS: float = 20.0
 FORBIDDEN_HOST_PATTERNS: tuple[str, ...] = (
@@ -51,9 +49,7 @@ def validate_staging_target(
 
     for forbidden in FORBIDDEN_HOST_PATTERNS:
         if forbidden in host or host == forbidden:
-            raise ValueError(
-                f"target host '{host}' is forbidden (production or legacy endpoint)"
-            )
+            raise ValueError(f"target host '{host}' is forbidden (production or legacy endpoint)")
 
     if host not in CANONICAL_STAGING_HOSTS:
         raise ValueError(

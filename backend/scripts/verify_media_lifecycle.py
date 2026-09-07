@@ -24,18 +24,16 @@ async def rejected(connection: AsyncConnection, statement: str, values: dict[str
         if not isinstance(exc, DBAPIError):
             return False
         original = exc.orig
-        return (
-            getattr(original, "sqlstate", None) == "23514"
-            and getattr(getattr(original, "diag", None), "constraint_name", "")
-            in {
-                "media_assets_checksum_sha256_check",
-                "media_assets_dimensions_check",
-                "media_assets_license_code_check",
-                "media_assets_processing_result_check",
-                "media_assets_quarantine_check",
-                "media_assets_storage_mode_check",
-            }
-        )
+        return getattr(original, "sqlstate", None) == "23514" and getattr(
+            getattr(original, "diag", None), "constraint_name", ""
+        ) in {
+            "media_assets_checksum_sha256_check",
+            "media_assets_dimensions_check",
+            "media_assets_license_code_check",
+            "media_assets_processing_result_check",
+            "media_assets_quarantine_check",
+            "media_assets_storage_mode_check",
+        }
     await savepoint.rollback()
     return False
 
@@ -53,12 +51,12 @@ async def verify_constraints(connection: AsyncConnection) -> dict[str, bool]:
         "processing_status, checksum_sha256, width_px, height_px, processed_at, derivatives) "
         "values ('route', :owner_id, :storage_key, 'image/webp', 'Vista da rota', "
         "'SEMTUR', 'SEMTUR_INSTITUTIONAL', 'ready', :checksum, 1200, 800, now(), "
-        "'{\"thumb\": {\"storage_key\": \"thumb.webp\", \"checksum_sha256\": "
-        "\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}, "
-        "\"card\": {\"storage_key\": \"card.webp\", \"checksum_sha256\": "
-        "\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"}, "
-        "\"hero\": {\"storage_key\": \"hero.webp\", \"checksum_sha256\": "
-        "\"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\"}}'::jsonb) "
+        '\'{"thumb": {"storage_key": "thumb.webp", "checksum_sha256": '
+        '"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}, '
+        '"card": {"storage_key": "card.webp", "checksum_sha256": '
+        '"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"}, '
+        '"hero": {"storage_key": "hero.webp", "checksum_sha256": '
+        '"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}}\'::jsonb) '
         "returning id"
     )
     media_id = (await connection.execute(text(ready_statement), base)).scalar_one()
@@ -99,12 +97,12 @@ async def verify_constraints(connection: AsyncConnection) -> dict[str, bool]:
     ready_without_derivatives = await rejected(
         connection,
         ready_statement.replace(
-            "'{\"thumb\": {\"storage_key\": \"thumb.webp\", \"checksum_sha256\": "
-            "\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}, "
-            "\"card\": {\"storage_key\": \"card.webp\", \"checksum_sha256\": "
-            "\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"}, "
-            "\"hero\": {\"storage_key\": \"hero.webp\", \"checksum_sha256\": "
-            "\"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\"}}'::jsonb",
+            '\'{"thumb": {"storage_key": "thumb.webp", "checksum_sha256": '
+            '"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}, '
+            '"card": {"storage_key": "card.webp", "checksum_sha256": '
+            '"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"}, '
+            '"hero": {"storage_key": "hero.webp", "checksum_sha256": '
+            '"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}}\'::jsonb',
             "'{}'::jsonb",
         ),
         {**base, "storage_key": f"routes/{owner_id}/without-derivatives.webp"},
@@ -112,13 +110,13 @@ async def verify_constraints(connection: AsyncConnection) -> dict[str, bool]:
     ready_with_empty_derivatives = await rejected(
         connection,
         ready_statement.replace(
-            "'{\"thumb\": {\"storage_key\": \"thumb.webp\", \"checksum_sha256\": "
-            "\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}, "
-            "\"card\": {\"storage_key\": \"card.webp\", \"checksum_sha256\": "
-            "\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"}, "
-            "\"hero\": {\"storage_key\": \"hero.webp\", \"checksum_sha256\": "
-            "\"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\"}}'::jsonb",
-            "'{\"thumb\": {}, \"card\": {}, \"hero\": {}}'::jsonb",
+            '\'{"thumb": {"storage_key": "thumb.webp", "checksum_sha256": '
+            '"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}, '
+            '"card": {"storage_key": "card.webp", "checksum_sha256": '
+            '"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"}, '
+            '"hero": {"storage_key": "hero.webp", "checksum_sha256": '
+            '"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}}\'::jsonb',
+            '\'{"thumb": {}, "card": {}, "hero": {}}\'::jsonb',
         ),
         {**base, "storage_key": f"routes/{owner_id}/empty-derivatives.webp"},
     )

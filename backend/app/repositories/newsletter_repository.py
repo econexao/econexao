@@ -1,6 +1,7 @@
 """Repository layer for newsletter subscriptions."""
 
 from collections.abc import Sequence
+from typing import cast
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -18,7 +19,7 @@ class NewsletterRepository:
     async def get_by_email(self, email: str) -> NewsletterSubscription | None:
         """Find an existing subscription by email."""
         stmt = select(NewsletterSubscription).where(NewsletterSubscription.email == email)
-        return await self.db.scalar(stmt)
+        return cast(NewsletterSubscription | None, await self.db.scalar(stmt))
 
     async def subscribe(
         self, email: str, source: str = "landing_page"

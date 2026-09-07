@@ -1,8 +1,7 @@
 """Schemas for newsletter subscription endpoints."""
 
-from typing import Literal
+from typing import Any, Literal
 
-from email_validator import EmailNotValidError, validate_email
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 ALLOWED_SOURCES = frozenset({"landing_page", "landing_hero", "landing_footer", "landing_business"})
@@ -38,30 +37,26 @@ class NewsletterSubscribeRequest(BaseModel):
         json_schema_extra={"example": "landing_page"},
     )
 
-    @field_validator("email")
+    @field_validator("email", mode="before")
     @classmethod
-    def validate_and_normalize_email(cls, v: str) -> str:
-        if not v or not v.strip():
-            raise ValueError("O endereço de e-mail não pode ser vazio.")
-        normalized = v.strip().lower()
-        try:
-            valid = validate_email(normalized, check_deliverability=False)
-            normalized = valid.normalized.lower()
-        except EmailNotValidError as exc:
-            raise ValueError(f"Formato de e-mail inválido: {str(exc)}") from exc
-        return normalized
+    def validate_email_field(cls, v: Any) -> str:
+        """Sanitize email string before Pydantic EmailStr validation."""
+        if not isinstance(v, str):
+            raise ValueError("O endereço de e-mail deve ser um texto válido.")
+        sanitized = v.strip()
+        if not sanitized:
+            raise ValueError("O endereço de e-mail é obrigatório.")
+        return str(sanitized)
 
     @field_validator("source", mode="before")
     @classmethod
-    def validate_source(cls, v: str | None) -> str:
-        if not v or not str(v).strip():
-            return "landing_page"
-        sanitized = str(v).strip().lower()
+    def validate_source_field(cls, v: Any) -> str:
+        """Validate source against the explicit allowed whitelist."""
+        sanitized = str(v).strip().lower() if v is not None else "landing_page"
         if sanitized not in ALLOWED_SOURCES:
-            raise ValueError(
-                f"Origem não autorizada: {sanitized}. Permitidas: {', '.join(sorted(ALLOWED_SOURCES))}"
-            )
-        return sanitized
+            allowed_str = ", ".join(sorted(ALLOWED_SOURCES))
+            raise ValueError(f"Origem não autorizada: {sanitized}. Permitidas: {allowed_str}")
+        return str(sanitized)
 
 
 class NewsletterSubscribeData(SchemaBase):
@@ -75,7 +70,9 @@ class NewsletterSubscribeData(SchemaBase):
     message: str = Field(
         ...,
         description="Mensagem informativa em português para exibição segura na interface.",
-        json_schema_extra={"example": "Inscrição realizada com sucesso! Você receberá nossas novidades."},
+        json_schema_extra={
+            "example": "Inscrição realizada com sucesso! Você receberá nossas novidades."
+        },
     )
 
 

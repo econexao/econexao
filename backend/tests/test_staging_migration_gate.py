@@ -101,12 +101,18 @@ def test_extract_project_ref_from_url() -> None:
 
 def test_validate_staging_project_ref_valid() -> None:
     """Valid 20-character alphanumeric ref is accepted and lowercased."""
-    assert validate_staging_project_ref(
-        "abcdefghijklmnopqrst", expected_staging_ref="abcdefghijklmnopqrst"
-    ) == "abcdefghijklmnopqrst"
-    assert validate_staging_project_ref(
-        "  abcdefghijklmnopqrst  ", expected_staging_ref=" abcdefghijklmnopqrst "
-    ) == "abcdefghijklmnopqrst"
+    assert (
+        validate_staging_project_ref(
+            "abcdefghijklmnopqrst", expected_staging_ref="abcdefghijklmnopqrst"
+        )
+        == "abcdefghijklmnopqrst"
+    )
+    assert (
+        validate_staging_project_ref(
+            "  abcdefghijklmnopqrst  ", expected_staging_ref=" abcdefghijklmnopqrst "
+        )
+        == "abcdefghijklmnopqrst"
+    )
 
 
 @pytest.mark.parametrize("expected_ref", [None, "", "   "])
@@ -334,8 +340,11 @@ def test_run_gate_drift_detected_without_apply_authorization_fails() -> None:
         patch("scripts.staging_migration_gate.check_supabase_advisors") as mock_advisors,
     ):
         code = run_gate(
-            VALID_REF, VALID_PASS, VALID_TOKEN,
-            expected_staging_ref=VALID_REF, apply_migrations=False
+            VALID_REF,
+            VALID_PASS,
+            VALID_TOKEN,
+            expected_staging_ref=VALID_REF,
+            apply_migrations=False,
         )
         assert code == 1
         mock_apply.assert_not_called()
@@ -357,8 +366,11 @@ def test_run_gate_drift_detected_with_apply_authorization_apply_fails() -> None:
         patch("scripts.staging_migration_gate.check_supabase_advisors") as mock_advisors,
     ):
         code = run_gate(
-            VALID_REF, VALID_PASS, VALID_TOKEN,
-            expected_staging_ref=VALID_REF, apply_migrations=True
+            VALID_REF,
+            VALID_PASS,
+            VALID_TOKEN,
+            expected_staging_ref=VALID_REF,
+            apply_migrations=True,
         )
         assert code == 1
         mock_advisors.assert_not_called()
@@ -382,8 +394,11 @@ def test_run_gate_drift_detected_with_apply_authorization_success() -> None:
         ),
     ):
         code = run_gate(
-            VALID_REF, VALID_PASS, VALID_TOKEN,
-            expected_staging_ref=VALID_REF, apply_migrations=True
+            VALID_REF,
+            VALID_PASS,
+            VALID_TOKEN,
+            expected_staging_ref=VALID_REF,
+            apply_migrations=True,
         )
         assert code == 0
 
@@ -458,8 +473,11 @@ def test_run_gate_fails_when_advisors_fail() -> None:
         ),
     ):
         code = run_gate(
-            VALID_REF, VALID_PASS, VALID_TOKEN,
-            expected_staging_ref=VALID_REF, apply_migrations=False
+            VALID_REF,
+            VALID_PASS,
+            VALID_TOKEN,
+            expected_staging_ref=VALID_REF,
+            apply_migrations=False,
         )
         assert code == 1
 
@@ -558,8 +576,11 @@ def test_run_gate_returns_zero_only_when_all_steps_succeed() -> None:
         ) as mock_advisors,
     ):
         code = run_gate(
-            VALID_REF, VALID_PASS, VALID_TOKEN,
-            expected_staging_ref=VALID_REF, apply_migrations=False
+            VALID_REF,
+            VALID_PASS,
+            VALID_TOKEN,
+            expected_staging_ref=VALID_REF,
+            apply_migrations=False,
         )
         assert code == 0
         mock_drift.assert_called_once()

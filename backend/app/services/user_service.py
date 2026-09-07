@@ -288,7 +288,9 @@ class UserService:
     @staticmethod
     def _trip_data(trip: Any) -> dict[str, Any]:
         return {
-            "id": str(trip.id), "user_id": str(trip.user_id), "route_id": str(trip.route_id),
+            "id": str(trip.id),
+            "user_id": str(trip.user_id),
+            "route_id": str(trip.route_id),
             "started_at": trip.started_at.isoformat() if trip.started_at else None,
             "completed_at": trip.completed_at.isoformat() if trip.completed_at else None,
             "status": trip.status,

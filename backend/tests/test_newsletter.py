@@ -1,29 +1,24 @@
 """Comprehensive tests for newsletter / landing page email capture (proposta extra-oficial)."""
 
 import uuid
-from datetime import UTC, datetime
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import settings
 from app.core.rate_limit import limiter
 from app.main import app
 from app.models.domain import NewsletterSubscription
 from app.repositories.newsletter_repository import NewsletterRepository
 from app.schemas.newsletter import (
     ALLOWED_SOURCES,
-    NewsletterSubscribeData,
-    NewsletterSubscribeEnvelope,
     NewsletterSubscribeRequest,
 )
 from app.services.dependencies import get_newsletter_service
 from app.services.newsletter_service import NewsletterService
-
 
 # ---------------------------------------------------------------------------
 # 1. Schema & Validation Tests
@@ -107,9 +102,7 @@ async def test_service_subscribe_new_email() -> None:
 
     assert status_res == "subscribed"
     assert "sucesso" in message.lower()
-    mock_repo.subscribe.assert_awaited_once_with(
-        email="novo@exemplo.com", source="landing_page"
-    )
+    mock_repo.subscribe.assert_awaited_once_with(email="novo@exemplo.com", source="landing_page")
 
 
 @pytest.mark.asyncio
@@ -378,7 +371,10 @@ def test_migration_sql_contains_rls_and_revokes() -> None:
     content = migration_path.read_text(encoding="utf-8")
 
     assert "ENABLE ROW LEVEL SECURITY" in content
-    assert "REVOKE ALL ON app_private.newsletter_subscriptions FROM PUBLIC, anon, authenticated;" in content
+    expected_revoke = (
+        "REVOKE ALL ON app_private.newsletter_subscriptions FROM PUBLIC, anon, authenticated;"
+    )
+    assert expected_revoke in content
     assert "uq_newsletter_subscriptions_email" in content
     assert "app_private.newsletter_subscriptions" in content
 

@@ -28,9 +28,7 @@ def headers(api_key: str, access_token: str | None = None) -> dict[str, str]:
     return result
 
 
-async def create_anonymous_session(
-    client: httpx.AsyncClient, api_key: str
-) -> Session:
+async def create_anonymous_session(client: httpx.AsyncClient, api_key: str) -> Session:
     response = await client.post("/auth/v1/signup", headers=headers(api_key), json={})
     response.raise_for_status()
     payload = response.json()

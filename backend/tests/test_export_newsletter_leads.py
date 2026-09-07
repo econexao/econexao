@@ -1,6 +1,5 @@
 """Unit and integration tests for administrative newsletter CSV exporter."""
 
-import argparse
 import csv
 import uuid
 from datetime import UTC, datetime
@@ -11,7 +10,6 @@ import pytest
 
 from app.models.domain import NewsletterSubscription
 from scripts.export_newsletter_leads import (
-    fetch_leads,
     parse_args,
     run_export,
     write_csv,
@@ -46,7 +44,7 @@ def test_write_csv_creates_deterministic_header_and_records(tmp_path: Path) -> N
     assert count == 2
     assert output_file.exists()
 
-    with open(output_file, "r", encoding="utf-8") as f:
+    with open(output_file, encoding="utf-8") as f:
         reader = list(csv.reader(f))
 
     header = reader[0]
@@ -82,7 +80,9 @@ def test_parse_args_defaults_and_custom_options() -> None:
 
 
 @pytest.mark.asyncio
-async def test_run_export_dry_run_does_not_create_file(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+async def test_run_export_dry_run_does_not_create_file(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     """Dry-run mode prints report and does not write CSV file."""
     output_file = tmp_path / "should_not_exist.csv"
 
@@ -102,7 +102,9 @@ async def test_run_export_dry_run_does_not_create_file(tmp_path: Path, capsys: p
 
 
 @pytest.mark.asyncio
-async def test_run_export_writes_file_successfully(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+async def test_run_export_writes_file_successfully(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     """Normal run exports records and reports output path."""
     output_file = tmp_path / "exported_leads.csv"
     mock_records = [

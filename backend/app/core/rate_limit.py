@@ -154,9 +154,7 @@ async def rate_limit_middleware(request: Request, call_next: Any) -> Response:
     is_routing_preview = request.method == "POST" and re.fullmatch(
         r"/api/v1/routes/[^/]+/preview", path
     )
-    is_newsletter_subscribe = (
-        request.method == "POST" and path == "/api/v1/newsletter/subscribe"
-    )
+    is_newsletter_subscribe = request.method == "POST" and path == "/api/v1/newsletter/subscribe"
 
     if is_routing_preview:
         limit = settings.DYNAMIC_ROUTING_RATE_LIMIT_PER_MINUTE
@@ -171,7 +169,6 @@ async def rate_limit_middleware(request: Request, call_next: Any) -> Response:
     is_limited, limit_val, remaining, reset_sec = limiter.check(
         f"{bucket}:{client_id}", limit=limit, window_seconds=60
     )
-
 
     if is_limited:
         req_id = getattr(request.state, "request_id", None) or request_id_ctx_var.get() or "unknown"

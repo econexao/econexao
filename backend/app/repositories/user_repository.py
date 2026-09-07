@@ -2,7 +2,7 @@
 
 import uuid
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, cast
 
 from geoalchemy2.functions import ST_X, ST_Y
 from sqlalchemy import and_, func, or_, select
@@ -266,8 +266,10 @@ class UserRepository:
         self, user_id: uuid.UUID, trip_id: uuid.UUID, target_status: str
     ) -> Trip | None:
         """Apply an idempotent, ownership-scoped trip transition."""
-        stmt = select(Trip).options(joinedload(Trip.route)).where(
-            Trip.id == trip_id, Trip.user_id == user_id
+        stmt = (
+            select(Trip)
+            .options(joinedload(Trip.route))
+            .where(Trip.id == trip_id, Trip.user_id == user_id)
         )
         trip = await self.db.scalar(stmt)
         if not trip:
@@ -284,7 +286,9 @@ class UserRepository:
         return trip
 
     async def get_trip(self, user_id: uuid.UUID, trip_id: uuid.UUID) -> Trip | None:
-        stmt = select(Trip).options(joinedload(Trip.route)).where(
-            Trip.id == trip_id, Trip.user_id == user_id
+        stmt = (
+            select(Trip)
+            .options(joinedload(Trip.route))
+            .where(Trip.id == trip_id, Trip.user_id == user_id)
         )
-        return await self.db.scalar(stmt)
+        return cast(Trip | None, await self.db.scalar(stmt))

@@ -63,10 +63,7 @@ async def verify() -> int:
             tables = set(
                 (
                     await connection.execute(
-                        text(
-                            "select tablename from pg_tables "
-                            "where schemaname = 'app_private'"
-                        )
+                        text("select tablename from pg_tables where schemaname = 'app_private'")
                     )
                 ).scalars()
             )

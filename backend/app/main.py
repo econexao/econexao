@@ -158,9 +158,7 @@ def create_app(app_settings: Settings | None = None) -> FastAPI:
             "commit_sha": commit_sha,
         }
 
-    @application.get(
-        "/.well-known/assetlinks.json", tags=["Well-Known"], include_in_schema=False
-    )
+    @application.get("/.well-known/assetlinks.json", tags=["Well-Known"], include_in_schema=False)
     async def get_android_assetlinks() -> list[dict[str, Any]]:
         """Digital Asset Links for Android App Links verification."""
         fingerprints = cfg.DEEP_LINK_ANDROID_SHA256_FINGERPRINTS or [
@@ -206,9 +204,7 @@ def create_app(app_settings: Settings | None = None) -> FastAPI:
         return {}
 
     @application.exception_handler(StarletteHTTPException)
-    async def http_exception_handler(
-        request: Request, exc: StarletteHTTPException
-    ) -> JSONResponse:
+    async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
         """Custom exception handler for Starlette/FastAPI HTTPExceptions."""
         req_id = _get_request_id(request)
         code = HTTP_STATUS_CODE_MAP.get(exc.status_code, f"HTTP_{exc.status_code}")
@@ -254,7 +250,6 @@ def create_app(app_settings: Settings | None = None) -> FastAPI:
                     safe_error[key] = value
             safe_errors.append(safe_error)
         content = {
-
             "error": {
                 "code": "VALIDATION_ERROR",
                 "message": "Dados de requisição inválidos",
