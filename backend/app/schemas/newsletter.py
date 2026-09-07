@@ -1,11 +1,14 @@
 """Schemas for newsletter subscription endpoints."""
 
+import re
 from typing import Any, Literal
 
-from email_validator import EmailNotValidError, validate_email
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 ALLOWED_SOURCES = frozenset({"landing_page", "landing_hero", "landing_footer", "landing_business"})
+EMAIL_REGEX = re.compile(
+    r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$"
+)
 
 
 class SchemaBase(BaseModel):
@@ -27,7 +30,7 @@ class NewsletterSubscribeRequest(BaseModel):
 
     email: str = Field(
         ...,
-        min_length=3,
+        min_length=5,
         max_length=255,
         description="Endereço de e-mail do interessado.",
         json_schema_extra={"example": "usuario@exemplo.com"},
@@ -41,17 +44,17 @@ class NewsletterSubscribeRequest(BaseModel):
     @field_validator("email", mode="before")
     @classmethod
     def validate_email_field(cls, v: Any) -> str:
-        """Sanitize and normalize email address using email-validator."""
+        """Sanitize and normalize email address using standard regex validation."""
         if not isinstance(v, str):
             raise ValueError("O endereço de e-mail deve ser um texto válido.")
         sanitized = v.strip()
         if not sanitized:
             raise ValueError("O endereço de e-mail é obrigatório.")
-        try:
-            valid = validate_email(sanitized, check_deliverability=False)
-            return str(valid.normalized.lower())
-        except EmailNotValidError as exc:
-            raise ValueError(f"Formato de e-mail inválido: {str(exc)}") from exc
+        if ".." in sanitized or sanitized.startswith("@") or sanitized.endswith("@"):
+            raise ValueError(f"Formato de e-mail inválido: {sanitized}")
+        if not EMAIL_REGEX.match(sanitized):
+            raise ValueError(f"Formato de e-mail inválido: {sanitized}")
+        return sanitized.lower()
 
     @field_validator("source", mode="before")
     @classmethod
