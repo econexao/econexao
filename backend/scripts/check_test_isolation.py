@@ -28,9 +28,7 @@ def validate_isolation(development: dict[str, str], test: dict[str, str]) -> lis
         if not value or any(marker in value.lower() for marker in ("replace_me", "your-test")):
             failures.append(f"{name}_MISSING_OR_PLACEHOLDER")
 
-    if test.get("SUPABASE_URL", "").rstrip("/") == development.get(
-        "SUPABASE_URL", ""
-    ).rstrip("/"):
+    if test.get("SUPABASE_URL", "").rstrip("/") == development.get("SUPABASE_URL", "").rstrip("/"):
         failures.append("SUPABASE_PROJECT_MATCHES_DEVELOPMENT")
     if test.get("DATABASE_URL") == development.get("DATABASE_URL"):
         failures.append("DATABASE_URL_MATCHES_DEVELOPMENT")
@@ -57,9 +55,7 @@ def validate_isolation(development: dict[str, str], test: dict[str, str]) -> lis
         elif project_ref:
             username = database.username or ""
             username_ref = (
-                username.removeprefix("postgres.")
-                if username.startswith("postgres.")
-                else ""
+                username.removeprefix("postgres.") if username.startswith("postgres.") else ""
             )
             direct_host = f"db.{project_ref}.supabase.co"
             pooler_matches = bool(username_ref) and username_ref == project_ref

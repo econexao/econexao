@@ -186,13 +186,11 @@ class RouteGeometryMetadataSchema(BaseModel):
 
         if not (-180.0 <= min_lon <= 180.0 and -180.0 <= max_lon <= 180.0):
             raise ValueError(
-                f"bounds longitude out of range [-180, 180]: "
-                f"min_lon={min_lon}, max_lon={max_lon}"
+                f"bounds longitude out of range [-180, 180]: min_lon={min_lon}, max_lon={max_lon}"
             )
         if not (-90.0 <= min_lat <= 90.0 and -90.0 <= max_lat <= 90.0):
             raise ValueError(
-                f"bounds latitude out of range [-90, 90]: "
-                f"min_lat={min_lat}, max_lat={max_lat}"
+                f"bounds latitude out of range [-90, 90]: min_lat={min_lat}, max_lat={max_lat}"
             )
         if min_lon >= max_lon:
             raise ValueError(

@@ -1041,6 +1041,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/trips/{trip_id}/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pause Trip */
+        post: operations["pause_trip_api_v1_me_trips__trip_id__pause_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/trips/{trip_id}/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resume Trip */
+        post: operations["resume_trip_api_v1_me_trips__trip_id__resume_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/trips/{trip_id}/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Finish Trip */
+        post: operations["finish_trip_api_v1_me_trips__trip_id__finish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/places/photos/{token}/metadata": {
         parameters: {
             query?: never;
@@ -1092,6 +1143,26 @@ export interface paths {
         get: operations["get_support_content_api_v1_content_support_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/newsletter/subscribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Inscrever e-mail no informativo
+         * @description Registra um endereço de e-mail na lista de informativos a partir da landing page.
+         */
+        post: operations["subscribe_newsletter_api_v1_newsletter_subscribe_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3392,6 +3463,56 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /**
+         * NewsletterSubscribeRequest
+         * @description Payload for newsletter/leads subscription from landing page.
+         * @example {
+         *       "email": "usuario@exemplo.com",
+         *       "source": "landing_page"
+         *     }
+         */
+        NewsletterSubscribeRequest: {
+            /**
+             * Email
+             * @description Endereço de e-mail do interessado.
+             * @example usuario@exemplo.com
+             */
+            email: string;
+            /**
+             * Source
+             * @description Origem ou contexto aprovado da inscrição.
+             * @default landing_page
+             * @example landing_page
+             * @enum {string}
+             */
+            source: "landing_page" | "landing_hero" | "landing_footer" | "landing_business";
+        };
+        /**
+         * NewsletterSubscribeData
+         * @description Result data for newsletter subscription.
+         */
+        NewsletterSubscribeData: {
+            /**
+             * Status
+             * @description Estado da inscrição: subscribed (nova) ou already_subscribed (já cadastrado).
+             * @example subscribed
+             * @enum {string}
+             */
+            status: "subscribed" | "already_subscribed";
+            /**
+             * Message
+             * @description Mensagem informativa em português para exibição segura na interface.
+             * @example Inscrição realizada com sucesso! Você receberá nossas novidades.
+             */
+            message: string;
+        };
+        /**
+         * NewsletterSubscribeEnvelope
+         * @description Standard envelope for newsletter subscription response.
+         */
+        NewsletterSubscribeEnvelope: {
+            data: components["schemas"]["NewsletterSubscribeData"];
         };
     };
     responses: never;
@@ -7022,6 +7143,72 @@ export interface operations {
             };
         };
     };
+    pause_trip_api_v1_me_trips__trip_id__pause_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripEnvelope"];
+                };
+            };
+        };
+    };
+    resume_trip_api_v1_me_trips__trip_id__resume_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripEnvelope"];
+                };
+            };
+        };
+    };
+    finish_trip_api_v1_me_trips__trip_id__finish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripEnvelope"];
+                };
+            };
+        };
+    };
     get_place_photo_metadata_api_v1_places_photos__token__metadata_get: {
         parameters: {
             query?: never;
@@ -7117,6 +7304,57 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SupportContentEnvelope"];
+                };
+            };
+        };
+    };
+    subscribe_newsletter_api_v1_newsletter_subscribe_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewsletterSubscribeRequest"];
+            };
+        };
+        responses: {
+            /** @description Inscrição processada com sucesso (nova ou idempotente). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NewsletterSubscribeEnvelope"];
+                };
+            };
+            /** @description Formato de e-mail inválido ou dados de entrada inconsistentes. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Limite de requisições excedido. Tente novamente mais tarde. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Erro interno do servidor. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };

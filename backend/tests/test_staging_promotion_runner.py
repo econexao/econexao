@@ -132,7 +132,9 @@ def test_extract_ref_from_database_url_direct_host_port_5432() -> None:
 
 def test_extract_ref_from_database_url_direct_host_default_port() -> None:
     """Direct host connection string without explicit port (default 5432) resolves ref."""
-    dsn = f"postgresql://postgres:secret_pass@db.{CANONICAL_STAGING_PROJECT_REF}.supabase.co/postgres"
+    dsn = (
+        f"postgresql://postgres:secret_pass@db.{CANONICAL_STAGING_PROJECT_REF}.supabase.co/postgres"
+    )
     assert extract_ref_from_database_url(dsn) == CANONICAL_STAGING_PROJECT_REF
 
 
@@ -867,9 +869,7 @@ def test_execute_phase1_preflight_offline_dry_run_pure() -> None:
     assert report["remote_write_performed"] is False
     assert report["target_project_ref"] is None
     assert report["remote_configuration"]["validated"] is False
-    assert (
-        report["remote_configuration"]["status"] == "offline_dry_run_no_remote_config_validated"
-    )
+    assert report["remote_configuration"]["status"] == "offline_dry_run_no_remote_config_validated"
     assert report["manifest"]["valid_files"] == 9
     assert report["canonical_counts"]["counts"]["read"] == 1714
 
@@ -1169,7 +1169,6 @@ async def test_execute_phase2_staging_promotion_success() -> None:
     assert report["persisted_counts"]["rejected"] == 0
     assert report["territorial_counts"]["regions_created"] == 1
     mock_persist.assert_awaited_once()
-
 
 
 @pytest.mark.asyncio
@@ -1908,9 +1907,7 @@ async def test_state_guard_rejects_any_updated_count() -> None:
             return_value=(fake_run_id, bad_stats),
         ),
     ):
-        with pytest.raises(
-            PromotionExecutionError, match="State Guard violação: updated != 0"
-        ):
+        with pytest.raises(PromotionExecutionError, match="State Guard violação: updated != 0"):
             await execute_phase2_staging_promotion(
                 session=session,
                 snapshot_dir=Path("dummy"),

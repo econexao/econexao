@@ -135,9 +135,7 @@ def main() -> int:
     ).encode()
     MANIFEST_PATH.write_bytes(encoded)
     checksum = hashlib.sha256(encoded).hexdigest()
-    CHECKSUM_PATH.write_text(
-        f"{checksum}  {MANIFEST_PATH.name}\n", encoding="ascii", newline="\n"
-    )
+    CHECKSUM_PATH.write_text(f"{checksum}  {MANIFEST_PATH.name}\n", encoding="ascii", newline="\n")
     print("PINDOBAL_PACKAGE_BUILD=OK")
     print(f"- package checksum: {checksum}")
     return 0

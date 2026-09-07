@@ -64,10 +64,7 @@ async def verify() -> int:
         origins = await client.get(f"/api/v1/routes/{route_id}/origins")
         actors = await client.get(f"/api/v1/routes/{route_id}/actors?limit=100")
         route_map = await client.get(f"/api/v1/routes/{route_id}/map")
-        if any(
-            response.status_code != 200
-            for response in (detail, origins, actors, route_map)
-        ):
+        if any(response.status_code != 200 for response in (detail, origins, actors, route_map)):
             print("PINDOBAL_GATE=ERROR")
             print("- categoria: PINDOBAL_API_PAYLOAD_INVALID")
             return 1

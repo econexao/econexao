@@ -52,10 +52,7 @@ async def backend_can_write_and_read(connection_url: str) -> bool:
                 ).scalar_one()
                 selected = (
                     await connection.execute(
-                        text(
-                            "select slug from app_private.regions "
-                            "where slug = 'eco-role-smoke'"
-                        )
+                        text("select slug from app_private.regions where slug = 'eco-role-smoke'")
                     )
                 ).scalar_one()
                 return str(inserted) == str(selected) == "eco-role-smoke"

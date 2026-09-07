@@ -65,9 +65,9 @@ class Route(Base):
     status: Mapped[str] = mapped_column(VARCHAR(50), default="active", nullable=False)
     is_verified: Mapped[bool] = mapped_column(BOOLEAN, default=False, nullable=False)
     verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    best_season: Mapped[str | None] = mapped_column(TEXT, nullable=True)
-    connectivity: Mapped[str | None] = mapped_column(TEXT, nullable=True)
-    road_access: Mapped[str | None] = mapped_column(TEXT, nullable=True)
+    best_season: Mapped[str | None] = mapped_column(VARCHAR(100), nullable=True)
+    connectivity: Mapped[str | None] = mapped_column(VARCHAR(100), nullable=True)
+    road_access: Mapped[str | None] = mapped_column(VARCHAR(100), nullable=True)
     payment_info: Mapped[str | None] = mapped_column(TEXT, nullable=True)
     cover_media_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("media_assets.id", ondelete="SET NULL"), nullable=True
@@ -857,3 +857,18 @@ class AuditLog(Base):
     changes: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
     reason: Mapped[str | None] = mapped_column(TEXT, nullable=True)
     request_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+
+
+class NewsletterSubscription(Base):
+    __tablename__ = "newsletter_subscriptions"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    email: Mapped[str] = mapped_column(VARCHAR(255), unique=True, nullable=False)
+    source: Mapped[str] = mapped_column(VARCHAR(50), default="landing_page", nullable=False)
+    status: Mapped[str] = mapped_column(VARCHAR(20), default="active", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.clock_timestamp(), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.clock_timestamp(), nullable=False
+    )
