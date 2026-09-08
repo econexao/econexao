@@ -11,7 +11,6 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ActorCategory, ActorSummary, MapLegendItem } from '../../api/types';
 import { theme } from '../../theme/theme';
 import { CANONICAL_CATEGORIES, getCategoryVisualMeta } from '../../theme/categoryTheme';
-import { makeAccessibleButton } from '../../utils/accessibility';
 import { CategoryCarouselSection } from './CategoryCarouselSection';
 import { EmptyStateView, ErrorStateView, LoadingView } from '../common/UIStateViews';
 
@@ -48,32 +47,10 @@ export const CategoryCarouselsCatalog: React.FC<CategoryCarouselsCatalogProps> =
 }) => {
   const [sortMode, setSortMode] = useState<SortMode>('default');
 
-  // Filter actors based on search and category
-  const filteredActors = useMemo(() => {
-    let result = actors;
-
-    if (searchQuery && searchQuery.trim().length > 0) {
-      const q = searchQuery.toLowerCase().trim();
-      result = result.filter(
-        (a) =>
-          a.name.toLowerCase().includes(q) ||
-          (a.address && a.address.toLowerCase().includes(q)) ||
-          (a.category_label && a.category_label.toLowerCase().includes(q)) ||
-          (a.category_slug && a.category_slug.toLowerCase().includes(q))
-      );
-    }
-
-    if (selectedCategory && selectedCategory.trim().length > 0) {
-      const cat = selectedCategory.toLowerCase().trim();
-      result = result.filter(
-        (a) =>
-          (a.category_slug && a.category_slug.toLowerCase() === cat) ||
-          (a.category_label && a.category_label.toLowerCase() === cat)
-      );
-    }
-
-    return result;
-  }, [actors, searchQuery, selectedCategory]);
+  // Search and category filters are applied by the API before results reach this component.
+  // Re-filtering here can discard valid server-ranked matches (for example, matches in
+  // fields that are not represented by this summary model).
+  const filteredActors = actors;
 
   // Group actors by category
   const groupedSections = useMemo(() => {
@@ -161,7 +138,10 @@ export const CategoryCarouselsCatalog: React.FC<CategoryCarouselsCatalogProps> =
           <TouchableOpacity
             style={[styles.sortButton, sortMode === 'default' && styles.sortButtonActive]}
             onPress={() => setSortMode('default')}
-            {...makeAccessibleButton('Ordenar por relevância padrão', undefined, sortMode === 'default')}
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel="Ordenar por relevância padrão"
+            accessibilityState={{ selected: sortMode === 'default' }}
           >
             <Text
               style={[styles.sortButtonText, sortMode === 'default' && styles.sortButtonTextActive]}
@@ -173,7 +153,10 @@ export const CategoryCarouselsCatalog: React.FC<CategoryCarouselsCatalogProps> =
           <TouchableOpacity
             style={[styles.sortButton, sortMode === 'alphabetical' && styles.sortButtonActive]}
             onPress={() => setSortMode('alphabetical')}
-            {...makeAccessibleButton('Ordenar de A a Z', undefined, sortMode === 'alphabetical')}
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel="Ordenar de A a Z"
+            accessibilityState={{ selected: sortMode === 'alphabetical' }}
           >
             <Text
               style={[

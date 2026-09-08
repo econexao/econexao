@@ -106,12 +106,12 @@ describe('CategoryCarouselsCatalog', () => {
     expect(sections[0].props.actors[1].name).toBe('Zulu Restaurante');
   });
 
-  it('filters actors by selected category', () => {
+  it('renders actors already filtered by the API category query', () => {
     let tree!: renderer.ReactTestRenderer;
     act(() => {
       tree = renderer.create(
         <CategoryCarouselsCatalog
-          actors={mockActors}
+          actors={[mockActors[2]]}
           categories={mockCategories}
           selectedCategory="hospedagem"
           onSelectActor={jest.fn()}
@@ -125,7 +125,7 @@ describe('CategoryCarouselsCatalog', () => {
     expect(sections[0].props.actors[0].name).toBe('Pousada Encanto');
   });
 
-  it('filters actors by search query', () => {
+  it('preserves API-filtered search results without refiltering them locally', () => {
     let tree!: renderer.ReactTestRenderer;
     act(() => {
       tree = renderer.create(
@@ -139,9 +139,36 @@ describe('CategoryCarouselsCatalog', () => {
     });
 
     const sections = tree.root.findAllByType(CategoryCarouselSection);
-    expect(sections).toHaveLength(1);
+    expect(sections).toHaveLength(2);
     expect(sections[0].props.categorySlug).toBe('alimentacao');
-    expect(sections[0].props.actors).toHaveLength(1);
-    expect(sections[0].props.actors[0].name).toBe('Alvorada Bar');
+    expect(sections[0].props.actors).toHaveLength(2);
+    expect(sections[1].props.categorySlug).toBe('hospedagem');
+  });
+
+  it('represents sort selection with accessibilityState.selected, not disabled', () => {
+    let tree!: renderer.ReactTestRenderer;
+    act(() => {
+      tree = renderer.create(
+        <CategoryCarouselsCatalog
+          actors={mockActors}
+          categories={mockCategories}
+          onSelectActor={jest.fn()}
+        />
+      );
+    });
+
+    let buttons = tree.root.findAllByType(TouchableOpacity);
+    let relevance = buttons.find((b) => b.props.accessibilityLabel === 'Ordenar por relevância padrão');
+    let alphabetical = buttons.find((b) => b.props.accessibilityLabel === 'Ordenar de A a Z');
+    expect(relevance?.props.accessibilityState).toEqual({ selected: true });
+    expect(relevance?.props.accessibilityState.disabled).not.toBe(true);
+    expect(alphabetical?.props.accessibilityState).toEqual({ selected: false });
+
+    act(() => alphabetical!.props.onPress());
+    buttons = tree.root.findAllByType(TouchableOpacity);
+    relevance = buttons.find((b) => b.props.accessibilityLabel === 'Ordenar por relevância padrão');
+    alphabetical = buttons.find((b) => b.props.accessibilityLabel === 'Ordenar de A a Z');
+    expect(relevance?.props.accessibilityState).toEqual({ selected: false });
+    expect(alphabetical?.props.accessibilityState).toEqual({ selected: true });
   });
 });
