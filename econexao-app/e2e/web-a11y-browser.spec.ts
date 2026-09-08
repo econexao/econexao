@@ -645,7 +645,7 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     expect(new URL(page.url()).searchParams.get('originId')).toBe('origin-porto');
     const captureMapState = async () => ({
       pins: await page.locator('.econexao-map-marker-wrapper').evaluateAll((nodes) => nodes.map((node) => ({
-        label: node.getAttribute('title') || node.getAttribute('aria-label'),
+        label: node.getAttribute('title') || node.getAttribute('aria-label') || node.parentElement?.getAttribute('title') || node.parentElement?.getAttribute('aria-label'),
         html: node.innerHTML,
       })).sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)))),
       geometry: await page.locator('.leaflet-overlay-pane svg path').evaluateAll((nodes) => nodes.map((node) => ({
@@ -653,7 +653,11 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
         transform: node.getAttribute('transform'),
       }))),
     });
-    const baselineState = await captureMapState();
+    let baselineState = await captureMapState();
+    expect(baselineState.pins.length).toBeGreaterThan(0);
+    expect(baselineState.pins.every((pin) => Boolean(pin.label))).toBeTruthy();
+    expect(baselineState.geometry.length).toBeGreaterThan(0);
+    expect(baselineState.geometry.every((path) => typeof path.d === 'string' && path.d.length > 0)).toBeTruthy();
     const run = async (mode: string) => {
       if (mode === 'denied') {
         await context.clearPermissions();
@@ -680,6 +684,8 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
       await locate.click();
       if (mode === 'denied') await expect(feedback).toContainText('Permissão de localização foi negada');
       if (mode === 'success') await expect(page.locator('.econexao-user-location-marker')).toBeVisible();
+      if (mode === 'timeout') await expect(feedback).toContainText('A rota e a origem permanecem inalteradas');
+      if (mode === 'outside') await expect(feedback).toContainText('fora da região desta rota');
       await page.waitForTimeout(500);
       expect(mapRequests).toBe(requestsBeforeLocation);
       expect(new URL(page.url()).searchParams.get('originId')).toBe('origin-porto');
@@ -688,13 +694,45 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
 
     await run('denied');
     await expect.poll(async () => await page.evaluate(() => navigator.permissions.query({ name: 'geolocation' as PermissionName }).then((permission) => permission.state))).toBe('denied');
-    await expect(feedback).toContainText('Erro ao obter localização');
+    await expect(feedback).toContainText('Permissão de localização foi negada');
     const instructions = feedback.getByRole('button', { name: 'Ver instruções para liberar localização no navegador' });
     await expect(instructions).toBeVisible();
     await instructions.click();
     await expect(feedback).toContainText('abra as permissões do site');
+    for (const width of [320, 360, 400]) {
+      await page.setViewportSize({ width, height: 720 });
+      await page.goto('/route/rota-santarem-pindobal/map?originId=origin-porto');
+      await page.waitForLoadState('networkidle');
+      await cdp.send('Browser.setPermission', {
+        permission: { name: 'geolocation' }, setting: 'denied', origin: new URL(page.url()).origin,
+        ...(browserContextId ? { browserContextId } : {}),
+      });
+      const responsiveLocate = page.getByRole('button', { name: 'Mostrar minha localização no mapa' });
+      await responsiveLocate.click();
+      await page.setViewportSize({ width, height: 720 });
+      const banner = page.getByRole('alert');
+      await expect(banner).toContainText('Permissão de localização foi negada');
+      await banner.getByRole('button', { name: 'Ver instruções para liberar localização no navegador' }).click();
+      await expect(banner).toContainText('abra as permissões do site');
+      const bannerBox = await banner.boundingBox();
+      expect(bannerBox).not.toBeNull();
+      expect(bannerBox!.x).toBeGreaterThanOrEqual(0);
+      expect(bannerBox!.x + bannerBox!.width).toBeLessThanOrEqual(width);
+      for (const control of [
+        banner.locator('div').filter({ hasText: 'abra as permissões do site' }).first(),
+        banner.getByRole('button', { name: 'Fechar aviso de localização' }),
+      ]) {
+        const box = await control.boundingBox();
+        expect(box).not.toBeNull();
+        expect(box!.x).toBeGreaterThanOrEqual(0);
+        expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+        expect(box!.y).toBeGreaterThanOrEqual(0);
+        expect(box!.y + box!.height).toBeLessThanOrEqual(720);
+      }
+    }
     await feedback.getByRole('button', { name: 'Fechar aviso de localização' }).click();
     await expect(feedback).toHaveCount(0);
+    baselineState = await captureMapState();
 
     await run('success');
     await expect(page.locator('.econexao-user-location-marker')).toBeVisible();
