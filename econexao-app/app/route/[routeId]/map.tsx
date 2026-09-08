@@ -1024,7 +1024,7 @@ const styles = StyleSheet.create({
   locationFeedback: {
     position: 'absolute',
     top: 12,
-    left: 12,
+    left: 230,
     right: 12,
     zIndex: 20,
     flexDirection: 'row',

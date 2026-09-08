@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, AccessibilityInfo } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, AccessibilityInfo, Platform } from 'react-native';
 import * as Linking from 'expo-linking';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme/theme';
@@ -143,6 +143,24 @@ export const OriginSelector: React.FC<OriginSelectorProps> = ({
       const msg = 'Ocorreu um erro ao acessar a localização. A rota e a origem fixa permanecem inalteradas. Tente novamente.';
       AccessibilityInfo.announceForAccessibility(msg);
       setFeedbackMessage(msg);
+    }
+  };
+
+  const handleOpenLocationSettings = async () => {
+    if (Platform.OS === 'web') {
+      setFeedbackMessage('Para liberar a localização, abra as permissões do site no ícone de cadeado ou ajustes do navegador, permita Localização para este endereço e tente novamente.');
+      setFeedbackAction(null);
+      AccessibilityInfo.announceForAccessibility('Instruções para liberar a localização no navegador exibidas.');
+      return;
+    }
+
+    try {
+      await Linking.openSettings();
+    } catch {
+      const msg = 'Não foi possível abrir as configurações automaticamente. Abra manualmente as configurações de localização do aplicativo e tente novamente.';
+      setFeedbackMessage(msg);
+      setFeedbackAction(null);
+      AccessibilityInfo.announceForAccessibility(msg);
     }
   };
 
@@ -362,7 +380,7 @@ export const OriginSelector: React.FC<OriginSelectorProps> = ({
           <Text style={styles.feedbackText}>{feedbackMessage}</Text>
           {feedbackAction === 'settings' && (
             <TouchableOpacity
-              onPress={() => void Linking.openSettings()}
+              onPress={() => void handleOpenLocationSettings()}
               {...makeAccessibleButton('Abrir configurações de localização')}
             >
               <Text style={styles.feedbackAction}>Abrir configurações</Text>

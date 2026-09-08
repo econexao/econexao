@@ -1,6 +1,6 @@
 import React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { TouchableOpacity, Text, Modal, Alert, AccessibilityInfo } from 'react-native';
+import { TouchableOpacity, Text, Modal, Alert, AccessibilityInfo, Platform } from 'react-native';
 import * as Linking from 'expo-linking';
 import * as Location from 'expo-location';
 import { OriginSelector, MY_LOCATION_ORIGIN_ID } from './OriginSelector';
@@ -388,8 +388,16 @@ describe('OriginSelector Component', () => {
       const settingsButton = root!.root.findAllByType(TouchableOpacity).find(
         (button) => button.props.accessibilityLabel === 'Abrir configurações de localização'
       );
-      settingsButton?.props.onPress();
-      expect(Linking.openSettings).toHaveBeenCalledTimes(1);
+      jest.replaceProperty(Platform, 'OS', 'web');
+      await act(async () => {
+        await settingsButton?.props.onPress();
+      });
+      expect(Linking.openSettings).not.toHaveBeenCalled();
+      expect(root!.root.findByProps({ accessibilityRole: 'alert' })
+        .findAllByType(Text)
+        .map((node) => node.props.children)
+        .join(' ')).toContain('permissões do site');
+      jest.restoreAllMocks();
     });
   });
 

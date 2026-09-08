@@ -591,4 +591,79 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     expect(ariaHiddenWarnings).toHaveLength(0);
     expect(consoleErrors).toHaveLength(0);
   });
+
+  test('ECO-2609: localização simulada exibe sucesso, recusa, timeout e fora da rota', async ({ page, context }) => {
+    await context.grantPermissions(['geolocation']);
+    await page.addInitScript(() => {
+      localStorage.setItem('econexao_location_consent_v1', JSON.stringify({
+        version: '2026-09-04',
+        consentedAt: new Date().toISOString(),
+        isAdult: true,
+        hasConsented: true,
+      }));
+      Object.defineProperty(navigator, 'geolocation', {
+        configurable: true,
+        value: {
+          getCurrentPosition(success: PositionCallback, error?: PositionErrorCallback) {
+            const mode = (window as any).__ecoGeoMode || 'success';
+            if (mode === 'denied') {
+              error?.({ code: 1, message: 'Permissão de localização foi negada.' } as any);
+            } else if (mode === 'timeout') {
+              error?.({ code: 3, message: 'Tempo limite esgotado para obter a localização.' } as any);
+            } else {
+              const outside = mode === 'outside';
+              success({
+                coords: {
+                  latitude: outside ? -15.78 : -2.6,
+                  longitude: outside ? -47.93 : -54.9,
+                  accuracy: 10,
+                  altitude: null,
+                  altitudeAccuracy: null,
+                  heading: null,
+                  speed: null,
+                },
+                timestamp: Date.now(),
+              } as GeolocationPosition);
+            }
+          },
+        },
+      });
+    });
+
+    const locate = page.getByRole('button', { name: 'Mostrar minha localização no mapa' });
+    const feedback = page.getByRole('alert');
+    const run = async (mode: string) => {
+      await page.goto('/route/rota-santarem-pindobal/map');
+      await page.waitForLoadState('networkidle');
+      await page.evaluate((value) => { (window as any).__ecoGeoMode = value; }, mode);
+      await expect(locate).toBeVisible({ timeout: 10000 });
+      await locate.click();
+    };
+
+    await run('success');
+    await expect(page.locator('.econexao-user-location-marker')).toBeVisible();
+
+    await run('denied');
+    await expect(feedback).toContainText('Erro ao obter localização');
+    await expect(page.getByText('A rota e a origem permanecem inalteradas')).toBeVisible();
+    await feedback.getByRole('button', { name: 'Fechar aviso de localização' }).click();
+    await expect(feedback).toHaveCount(0);
+
+    await run('timeout');
+    // Expo Web normalizes the browser timeout callback to its generic location error;
+    // the exact timeout copy is covered by useCurrentLocation/MapScreen tests.
+    await expect(feedback).toContainText('A rota e a origem permanecem inalteradas');
+    await expect(page.getByRole('button', { name: 'Mostrar minha localização no mapa' })).toBeVisible();
+
+    await run('outside');
+    await expect(feedback).toContainText('fora da região desta rota');
+    await expect(page.getByRole('button', { name: 'Mostrar minha localização no mapa' })).toBeVisible();
+    await expect(page.locator('.econexao-map-marker').first()).toBeVisible();
+
+    const locateBox = await page.getByRole('button', { name: 'Mostrar minha localização no mapa' }).boundingBox();
+    const feedbackBox = await feedback.boundingBox();
+    expect(locateBox).not.toBeNull();
+    expect(feedbackBox).not.toBeNull();
+    expect((feedbackBox!.x + feedbackBox!.width) <= locateBox!.x || (locateBox!.x + locateBox!.width) <= feedbackBox!.x).toBeTruthy();
+  });
 });
