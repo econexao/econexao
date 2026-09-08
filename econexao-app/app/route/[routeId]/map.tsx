@@ -118,6 +118,7 @@ export default function MapScreen() {
   const [showConsentModal, setShowConsentModal] = useState<boolean>(false);
   const [pendingConsentAction, setPendingConsentAction] = useState<'selection' | 'locate' | null>(null);
   const [locationFeedback, setLocationFeedback] = useState<string | null>(null);
+  const [showBrowserPermissionInstructions, setShowBrowserPermissionInstructions] = useState(false);
 
   const [userLocation, setUserLocation] = useState<MapCoordinate | null>(null);
   const { requestLocation, resetLocation, status: locationStatus } = useCurrentLocation();
@@ -221,6 +222,7 @@ export default function MapScreen() {
 
   const executeLocateUser = async () => {
     setLocationFeedback(null);
+    setShowBrowserPermissionInstructions(false);
     try {
       AccessibilityInfo.announceForAccessibility('Obtendo sua localização atual via GPS...');
       const result = await requestLocation();
@@ -244,12 +246,18 @@ export default function MapScreen() {
       } else {
         const msg = result.errorMessage || 'Não foi possível obter sua localização atual.';
         AccessibilityInfo.announceForAccessibility(msg);
-        setLocationFeedback(`${msg} A rota e a origem permanecem inalteradas. Tente novamente quando estiver pronto.`);
+        setLocationFeedback(
+          Platform.OS === 'web'
+            ? `${msg} Verifique a permissão de localização deste site e tente novamente. A rota e a origem permanecem inalteradas.`
+            : `${msg} A rota e a origem permanecem inalteradas. Tente novamente quando estiver pronto.`
+        );
+        setShowBrowserPermissionInstructions(Platform.OS === 'web');
       }
     } catch {
       const msg = 'Ocorreu um erro ao acessar a localização. A rota e a origem permanecem inalteradas. Tente novamente.';
       AccessibilityInfo.announceForAccessibility(msg);
       setLocationFeedback(msg);
+      setShowBrowserPermissionInstructions(false);
     }
   };
 
@@ -553,8 +561,20 @@ export default function MapScreen() {
           <View style={styles.locationFeedback} accessibilityRole="alert" accessibilityLiveRegion="assertive">
             <Ionicons name="warning-outline" size={18} color={theme.colors.error} />
             <Text style={styles.locationFeedbackText}>{locationFeedback}</Text>
+            {showBrowserPermissionInstructions && (
+              <TouchableOpacity
+                onPress={() => {
+                  setLocationFeedback('Para liberar a localização, abra as permissões do site no ícone de cadeado ou ajustes do navegador, permita Localização para este endereço e tente novamente.');
+                  setShowBrowserPermissionInstructions(false);
+                  AccessibilityInfo.announceForAccessibility('Instruções para liberar a localização no navegador exibidas.');
+                }}
+                {...makeAccessibleButton('Ver instruções para liberar localização no navegador')}
+              >
+                <Text style={styles.locationFeedbackAction}>Ver instruções do navegador</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
-              onPress={() => setLocationFeedback(null)}
+              onPress={() => { setLocationFeedback(null); setShowBrowserPermissionInstructions(false); }}
               {...makeAccessibleButton('Fechar aviso de localização')}
             >
               <Text style={styles.locationFeedbackAction}>Fechar</Text>

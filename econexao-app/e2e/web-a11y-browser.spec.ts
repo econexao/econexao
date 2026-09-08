@@ -637,6 +637,11 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     const locate = page.getByRole('button', { name: 'Mostrar minha localização no mapa' });
     const feedback = page.getByRole('alert');
     const run = async (mode: string) => {
+      if (mode === 'denied') {
+        await context.clearPermissions();
+      } else {
+        await context.grantPermissions(['geolocation']);
+      }
       await page.goto('/route/rota-santarem-pindobal/map?originId=origin-porto');
       await page.waitForLoadState('networkidle');
       await page.evaluate((value) => { (window as any).__ecoGeoMode = value; }, mode);
@@ -654,7 +659,7 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
 
     await run('denied');
     await expect(feedback).toContainText('Erro ao obter localização');
-    await expect(page.getByText('A rota e a origem permanecem inalteradas')).toBeVisible();
+    await expect(feedback.getByRole('button', { name: 'Ver instruções para liberar localização no navegador' })).toBeVisible();
     await feedback.getByRole('button', { name: 'Fechar aviso de localização' }).click();
     await expect(feedback).toHaveCount(0);
 
