@@ -78,7 +78,10 @@ const MOCK_ROUTE = {
 // Zona 2: Alter do Chão (65 pins) em torno de lat -2.505, lng -54.953
 // Zona 3: Praia de Pindobal (55 pins) em torno de lat -2.558, lng -54.978
 const MOCK_PINS = Array.from({ length: 175 }, (_, i) => {
-  const cat = CANONICAL_CATEGORIES[i % CANONICAL_CATEGORIES.length];
+  const isPousada = i === 125;
+  const cat = isPousada
+    ? CANONICAL_CATEGORIES.find((c) => c.slug === 'hospedagem')!
+    : CANONICAL_CATEGORIES[i % CANONICAL_CATEGORIES.length];
   let baseLat = -2.430;
   let baseLng = -54.710;
   let zoneName = 'Santarém';
@@ -100,7 +103,7 @@ const MOCK_PINS = Array.from({ length: 175 }, (_, i) => {
   return {
     id: `pin-${i + 1}`,
     actor_id: `actor-${i + 1}`,
-    name: i === 125 ? 'Pousada Pindobal Encanto' : `${cat.label} ${zoneName} ${i + 1}`,
+    name: isPousada ? 'Pousada Pindobal Encanto' : `${cat.label} ${zoneName} ${i + 1}`,
     category_slug: cat.slug,
     category_label: cat.label,
     color: cat.color,
@@ -588,6 +591,21 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     // Verify the actor card is rendered (extended timeout)
     const actorCard = page.getByText('Pousada Pindobal Encanto').first();
     await expect(actorCard).toBeVisible({ timeout: 30000 });
+
+    // Validar Carrosséis por Categoria (ECO-2610): Seções, Títulos e Controles Anterior/Próximo
+    const categoryHeaderHospedagem = page.getByRole('heading', { name: 'Hospedagem', exact: true }).first();
+    await expect(categoryHeaderHospedagem).toBeVisible({ timeout: 10000 });
+
+    const prevButton = page.locator('[aria-label*="Anterior em"]').first();
+    await expect(prevButton).toBeVisible();
+
+    const nextButton = page.locator('[aria-label*="Próximo em"]').first();
+    await expect(nextButton).toBeVisible();
+
+    // Salvar Screenshot 08: Catálogo em Carrosséis por Categoria
+    const screenshot08Path = testInfo.outputPath(`${testInfo.project.name}_08_catalog_carousels.png`);
+    await page.screenshot({ path: screenshot08Path });
+    await testInfo.attach('08_catalog_carousels', { path: screenshot08Path, contentType: 'image/png' });
 
     // 7. Retornar ao Mapa e Executar Auditoria Axe-core WCAG 2.1 AA SEM NENHUMA EXCLUSÃO (Incluindo todo o Leaflet)
     await page.goto('/route/rota-santarem-pindobal/map?originId=origin-porto');

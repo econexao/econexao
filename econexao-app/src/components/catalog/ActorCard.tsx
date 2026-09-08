@@ -13,6 +13,7 @@ import type { ActorSummary } from '../../api/types';
 import { Badge } from '../common/Badge';
 import { GooglePlacePhoto } from '../common/GooglePlacePhoto';
 import { makeAccessibleButton, setAccessibilityFocusSafely } from '../../utils/accessibility';
+import { getCategoryVisualMeta } from '../../theme/categoryTheme';
 
 export interface ActorCardProps {
   actor: ActorSummary;
@@ -45,6 +46,7 @@ export const ActorCard: React.FC<ActorCardProps> = ({
   const ratingValue = typeof actor.google_rating === 'number' && Number.isFinite(actor.google_rating) ? actor.google_rating : null;
   const imageUrl = actor.cover_media?.derivatives?.card ?? actor.cover_media?.url ?? actor.cover_image_url;
   const imageAlt = actor.cover_media?.alt_text || `Foto de ${actor.name || 'estabelecimento'}`;
+  const categoryMeta = getCategoryVisualMeta(actor.category_slug, actor.category_label);
   const isCompact = variant === 'compact';
 
   return (
@@ -88,7 +90,7 @@ export const ActorCard: React.FC<ActorCardProps> = ({
 
         <View style={[styles.content, isCompact && styles.compactContent]}>
           <View style={styles.headerRow}>
-            <Text style={styles.categoryTag}>{categoryName}</Text>
+            <Text style={[styles.categoryTag, { color: categoryMeta.badgeTextColor }]}>{categoryName}</Text>
             {ratingValue != null && (
               <View style={styles.ratingRow}>
                 <Ionicons name="star" size={14} color={theme.colors.brandSun} />
