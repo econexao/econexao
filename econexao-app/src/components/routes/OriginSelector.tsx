@@ -133,7 +133,12 @@ export const OriginSelector: React.FC<OriginSelectorProps> = ({
         } else {
           const msg = result.errorMessage || 'Não foi possível obter sua localização atual.';
           AccessibilityInfo.announceForAccessibility(msg);
-          setFeedbackMessage(`${msg} A rota e a origem fixa permanecem inalteradas. Tente novamente quando estiver pronto.`);
+          setFeedbackMessage(
+            Platform.OS === 'web'
+              ? `${msg} Verifique a permissão de localização deste site e tente novamente. A rota e a origem fixa permanecem inalteradas.`
+              : `${msg} A rota e a origem fixa permanecem inalteradas. Tente novamente quando estiver pronto.`
+          );
+          if (Platform.OS === 'web') setFeedbackAction('settings');
         }
       }
     } catch {
@@ -381,9 +386,11 @@ export const OriginSelector: React.FC<OriginSelectorProps> = ({
           {feedbackAction === 'settings' && (
             <TouchableOpacity
               onPress={() => void handleOpenLocationSettings()}
-              {...makeAccessibleButton('Abrir configurações de localização')}
+              {...makeAccessibleButton(
+                Platform.OS === 'web' ? 'Ver instruções para liberar localização no navegador' : 'Abrir configurações de localização'
+              )}
             >
-              <Text style={styles.feedbackAction}>Abrir configurações</Text>
+              <Text style={styles.feedbackAction}>{Platform.OS === 'web' ? 'Ver instruções do navegador' : 'Abrir configurações'}</Text>
             </TouchableOpacity>
           )}
           <TouchableOpacity

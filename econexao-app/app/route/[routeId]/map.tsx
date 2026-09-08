@@ -1024,7 +1024,7 @@ const styles = StyleSheet.create({
   locationFeedback: {
     position: 'absolute',
     top: 12,
-    left: 230,
+    left: 12,
     right: 12,
     zIndex: 20,
     flexDirection: 'row',
@@ -1036,6 +1036,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: theme.radii.md,
     padding: 10,
+    paddingLeft: 150,
   },
   locationFeedbackText: {
     ...theme.typography.bodySm,
