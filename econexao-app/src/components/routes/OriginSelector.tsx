@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, AccessibilityInfo } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, AccessibilityInfo } from 'react-native';
 import * as Linking from 'expo-linking';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme/theme';
@@ -55,6 +55,8 @@ export const OriginSelector: React.FC<OriginSelectorProps> = ({
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showConsentModal, setShowConsentModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<'my-location' | 'choose-on-map' | null>(null);
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [feedbackAction, setFeedbackAction] = useState<'settings' | null>(null);
 
   const myLocationButtonRef = useRef<any>(null);
   const chooseOnMapButtonRef = useRef<any>(null);
@@ -108,6 +110,8 @@ export const OriginSelector: React.FC<OriginSelectorProps> = ({
     : origins.find((o) => o.id === activeOriginId) || fallbackOrigin;
 
   const startGpsFlow = async () => {
+    setFeedbackMessage(null);
+    setFeedbackAction(null);
     try {
       AccessibilityInfo.announceForAccessibility('Obtendo sua localização atual via GPS...');
       const result = await requestLocation();
@@ -124,28 +128,21 @@ export const OriginSelector: React.FC<OriginSelectorProps> = ({
         if (result.status === 'permanently_denied') {
           const msg = result.errorMessage || 'Permissão de localização bloqueada. Por favor, habilite nas configurações do aparelho.';
           AccessibilityInfo.announceForAccessibility(msg);
-          Alert.alert(
-            'Permissão Necessária',
-            'O acesso à localização está desativado nas configurações do aplicativo. Deseja abrir as configurações?',
-            [
-              { text: 'Agora não', style: 'cancel' },
-              { text: 'Abrir Configurações', onPress: () => void Linking.openSettings() },
-            ]
-          );
+          setFeedbackMessage(`${msg} Você pode abrir as configurações ou continuar usando uma origem fixa.`);
+          setFeedbackAction('settings');
         } else {
           const msg = result.errorMessage || 'Não foi possível obter sua localização atual.';
           AccessibilityInfo.announceForAccessibility(msg);
-          Alert.alert('Aviso de Localização', msg, [
-            { text: 'OK', onPress: () => {} },
-          ]);
+          setFeedbackMessage(`${msg} A rota e a origem fixa permanecem inalteradas. Tente novamente quando estiver pronto.`);
         }
       }
     } catch {
       if (selectedOriginId === MY_LOCATION_ORIGIN_ID) {
         onSelectOrigin(fallbackOrigin.id);
       }
-      AccessibilityInfo.announceForAccessibility('Ocorreu um erro ao acessar a localização.');
-      Alert.alert('Erro', 'Ocorreu um erro ao acessar a localização.');
+      const msg = 'Ocorreu um erro ao acessar a localização. A rota e a origem fixa permanecem inalteradas. Tente novamente.';
+      AccessibilityInfo.announceForAccessibility(msg);
+      setFeedbackMessage(msg);
     }
   };
 
@@ -359,6 +356,27 @@ export const OriginSelector: React.FC<OriginSelectorProps> = ({
         })}
       </View>
 
+      {feedbackMessage && (
+        <View style={styles.feedbackBanner} accessibilityRole="alert" accessibilityLiveRegion="assertive">
+          <Ionicons name="warning-outline" size={18} color={theme.colors.error} />
+          <Text style={styles.feedbackText}>{feedbackMessage}</Text>
+          {feedbackAction === 'settings' && (
+            <TouchableOpacity
+              onPress={() => void Linking.openSettings()}
+              {...makeAccessibleButton('Abrir configurações de localização')}
+            >
+              <Text style={styles.feedbackAction}>Abrir configurações</Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            onPress={() => { setFeedbackMessage(null); setFeedbackAction(null); }}
+            {...makeAccessibleButton('Fechar aviso de localização')}
+          >
+            <Text style={styles.feedbackAction}>Fechar</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Selected Origin Active Detail Line */}
       {selectedOrigin && (
         <View style={styles.activeDetailCard} accessibilityLiveRegion="polite">
@@ -502,6 +520,30 @@ const styles = StyleSheet.create({
     borderLeftWidth: 3,
     borderLeftColor: theme.colors.brandForest,
     gap: 2,
+  },
+  feedbackBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
+    backgroundColor: theme.colors.errorContainer,
+    borderColor: theme.colors.error,
+    borderWidth: 1,
+    borderRadius: theme.radii.md,
+    padding: 10,
+    marginBottom: 10,
+  },
+  feedbackText: {
+    ...theme.typography.bodySm,
+    color: theme.colors.onSurface,
+    flex: 1,
+    minWidth: 180,
+  },
+  feedbackAction: {
+    ...theme.typography.labelSm,
+    color: theme.colors.brandDeep,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
   },
   activeName: {
     ...theme.typography.labelSm,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, TouchableOpacity, Alert, AccessibilityInfo } from 'react-native';
+import { Modal, TouchableOpacity, Alert, AccessibilityInfo, Text } from 'react-native';
 import TestRenderer, { act } from 'react-test-renderer';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -805,7 +805,6 @@ describe('MapScreen actor sheet (ECO-0905)', () => {
       (Location.getCurrentPositionAsync as jest.Mock).mockResolvedValue({
         coords: { latitude: -15.78, longitude: -47.93, accuracy: 10 }, // Brasilia (outside Santarém bounds)
       });
-      const alertSpy = jest.spyOn(Alert, 'alert');
       const announceSpy = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
 
       let renderer!: TestRenderer.ReactTestRenderer;
@@ -829,13 +828,11 @@ describe('MapScreen actor sheet (ECO-0905)', () => {
       // Bounds remain intact
       const boundsText = root.find((node) => node.props.accessibilityLabel === 'Bounds ativos do mapa');
       expect(boundsText.props.children).toContain('-2.7');
-      // Alert and announce were triggered
-      expect(alertSpy).toHaveBeenCalledWith(
-        'Fora da área da rota',
-        expect.stringContaining('Sua localização atual está fora da região desta rota')
-      );
+      // Visible feedback and announcement preserve route bounds and origin
+      const feedback = root.findByProps({ accessibilityRole: 'alert' });
+      expect(feedback.findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('fora da região desta rota');
       expect(announceSpy).toHaveBeenCalledWith(
-        'Você está fora da área da rota. Sua posição foi marcada sem alterar o trajeto ou a origem.'
+        'Sua localização atual está fora da região desta rota. A posição foi marcada sem alterar o trajeto ou a origem oficial.'
       );
     });
 
@@ -894,7 +891,6 @@ describe('MapScreen actor sheet (ECO-0905)', () => {
         status: Location.PermissionStatus.DENIED,
         canAskAgain: false,
       });
-      const alertSpy = jest.spyOn(Alert, 'alert');
 
       let renderer!: TestRenderer.ReactTestRenderer;
       await act(async () => {
@@ -908,7 +904,8 @@ describe('MapScreen actor sheet (ECO-0905)', () => {
 
       await act(async () => locateBtn.props.onPress());
 
-      expect(alertSpy).toHaveBeenCalledWith('Aviso de Localização', expect.any(String));
+      const feedback = root.findByProps({ accessibilityRole: 'alert' });
+      expect(feedback.findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('A rota e a origem permanecem inalteradas');
       // No user location rendered
       expect(root.findAllByProps({ accessibilityLabel: 'Localização do usuário renderizada no mapa' })).toHaveLength(0);
       // Route bounds still present

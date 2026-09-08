@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, AccessibilityInfo, Image, Modal, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, AccessibilityInfo, Image, Modal, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
@@ -117,6 +117,7 @@ export default function MapScreen() {
   const [isConfirmingSelection, setIsConfirmingSelection] = useState<boolean>(false);
   const [showConsentModal, setShowConsentModal] = useState<boolean>(false);
   const [pendingConsentAction, setPendingConsentAction] = useState<'selection' | 'locate' | null>(null);
+  const [locationFeedback, setLocationFeedback] = useState<string | null>(null);
 
   const [userLocation, setUserLocation] = useState<MapCoordinate | null>(null);
   const { requestLocation, resetLocation, status: locationStatus } = useCurrentLocation();
@@ -195,6 +196,7 @@ export default function MapScreen() {
 
   const executeRoutePreview = async (coord: MapCoordinate) => {
     setIsConfirmingSelection(true);
+    setLocationFeedback(null);
     try {
       const response = await apiClient.previewRoute(routeId, {
         latitude: coord.latitude,
@@ -211,16 +213,14 @@ export default function MapScreen() {
       // Navigate back to detail screen
       router.back();
     } catch {
-      Alert.alert(
-        'Erro ao calcular rota',
-        'Não foi possível calcular o trajeto a partir destas coordenadas. Tente outro ponto no mapa.'
-      );
+      setLocationFeedback('Não foi possível calcular o trajeto a partir deste ponto. A rota e a origem permanecem inalteradas. Tente outro ponto no mapa.');
     } finally {
       setIsConfirmingSelection(false);
     }
   };
 
   const executeLocateUser = async () => {
+    setLocationFeedback(null);
     try {
       AccessibilityInfo.announceForAccessibility('Obtendo sua localização atual via GPS...');
       const result = await requestLocation();
@@ -237,22 +237,19 @@ export default function MapScreen() {
         if (isInside) {
           AccessibilityInfo.announceForAccessibility('Sua localização foi exibida no mapa da rota.');
         } else {
-          AccessibilityInfo.announceForAccessibility(
-            'Você está fora da área da rota. Sua posição foi marcada sem alterar o trajeto ou a origem.'
-          );
-          Alert.alert(
-            'Fora da área da rota',
-            'Sua localização atual está fora da região desta rota. A rota e a origem oficial permanecem inalteradas.'
-          );
+          const msg = 'Sua localização atual está fora da região desta rota. A posição foi marcada sem alterar o trajeto ou a origem oficial.';
+          AccessibilityInfo.announceForAccessibility(msg);
+          setLocationFeedback(msg);
         }
       } else {
         const msg = result.errorMessage || 'Não foi possível obter sua localização atual.';
         AccessibilityInfo.announceForAccessibility(msg);
-        Alert.alert('Aviso de Localização', msg);
+        setLocationFeedback(`${msg} A rota e a origem permanecem inalteradas. Tente novamente quando estiver pronto.`);
       }
     } catch {
-      AccessibilityInfo.announceForAccessibility('Ocorreu um erro ao acessar a localização.');
-      Alert.alert('Erro', 'Ocorreu um erro ao acessar a localização.');
+      const msg = 'Ocorreu um erro ao acessar a localização. A rota e a origem permanecem inalteradas. Tente novamente.';
+      AccessibilityInfo.announceForAccessibility(msg);
+      setLocationFeedback(msg);
     }
   };
 
@@ -552,6 +549,18 @@ export default function MapScreen() {
         accessibilityRole="summary"
         accessibilityLabel={isSelectionMode ? 'Mapa interativo de seleção de origem' : 'Mapa interativo da rota'}
       >
+        {locationFeedback && (
+          <View style={styles.locationFeedback} accessibilityRole="alert" accessibilityLiveRegion="assertive">
+            <Ionicons name="warning-outline" size={18} color={theme.colors.error} />
+            <Text style={styles.locationFeedbackText}>{locationFeedback}</Text>
+            <TouchableOpacity
+              onPress={() => setLocationFeedback(null)}
+              {...makeAccessibleButton('Fechar aviso de localização')}
+            >
+              <Text style={styles.locationFeedbackAction}>Fechar</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         {isGoogleRoutesPreview && ephemeralData?.previewData ? (
           <GoogleRoutesMapNotice
             distanceMeters={ephemeralData.previewData.distance_m}
@@ -1011,6 +1020,34 @@ const styles = StyleSheet.create({
   mapWrapper: {
     flex: 1,
     position: 'relative',
+  },
+  locationFeedback: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    right: 12,
+    zIndex: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
+    backgroundColor: theme.colors.errorContainer,
+    borderColor: theme.colors.error,
+    borderWidth: 1,
+    borderRadius: theme.radii.md,
+    padding: 10,
+  },
+  locationFeedbackText: {
+    ...theme.typography.bodySm,
+    color: theme.colors.onSurface,
+    flex: 1,
+    minWidth: 180,
+  },
+  locationFeedbackAction: {
+    ...theme.typography.labelSm,
+    color: theme.colors.brandDeep,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
   },
   filteredEmpty: {
     position: 'absolute',

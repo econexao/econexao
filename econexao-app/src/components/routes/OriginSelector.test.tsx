@@ -383,19 +383,12 @@ describe('OriginSelector Component', () => {
         await gpsButton?.props.onPress();
       });
 
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Permissão Necessária',
-        expect.stringContaining('configurações do aplicativo'),
-        expect.arrayContaining([
-          expect.objectContaining({ text: 'Agora não' }),
-          expect.objectContaining({ text: 'Abrir Configurações' }),
-        ])
+      const feedback = root!.root.findByProps({ accessibilityRole: 'alert' });
+      expect(feedback.findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('configurações');
+      const settingsButton = root!.root.findAllByType(TouchableOpacity).find(
+        (button) => button.props.accessibilityLabel === 'Abrir configurações de localização'
       );
-
-      // Trigger settings button
-      const alertCalls = (Alert.alert as jest.Mock).mock.calls;
-      const settingsButton = alertCalls[0][2].find((btn: any) => btn.text === 'Abrir Configurações');
-      settingsButton.onPress();
+      settingsButton?.props.onPress();
       expect(Linking.openSettings).toHaveBeenCalledTimes(1);
     });
   });
@@ -539,12 +532,10 @@ describe('OriginSelector Component', () => {
         await gpsButton?.props.onPress();
       });
 
-      // Em falha, alerta exibido e origem mantida na fixa (Porto Fluvial)
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Aviso de Localização',
-        expect.stringContaining('Permissão de localização foi negada'),
-        expect.anything()
-      );
+      // Feedback visível e origem mantida na fixa (Porto Fluvial)
+      const feedback = root!.root.findByProps({ accessibilityRole: 'alert' });
+      expect(feedback.findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('Permissão de localização foi negada');
+      expect(onSelectOrigin).not.toHaveBeenCalled();
       expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledWith(
         expect.stringContaining('Permissão de localização foi negada')
       );
@@ -582,11 +573,9 @@ describe('OriginSelector Component', () => {
         await gpsButton?.props.onPress();
       });
 
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Aviso de Localização',
-        expect.stringContaining('Tempo limite esgotado'),
-        expect.anything()
-      );
+      const feedback = root!.root.findByProps({ accessibilityRole: 'alert' });
+      expect(feedback.findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('Tempo limite esgotado');
+      expect(onSelectOrigin).not.toHaveBeenCalled();
     });
   });
 });
