@@ -1062,7 +1062,8 @@ const styles = StyleSheet.create({
     ...theme.typography.bodySm,
     color: theme.colors.onSurface,
     flex: 1,
-    minWidth: 180,
+    minWidth: 0,
+    flexShrink: 1,
   },
   locationFeedbackAction: {
     ...theme.typography.labelSm,
