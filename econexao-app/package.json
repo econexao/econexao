@@ -50,7 +50,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest --runInBand",
+    "test": "jest --runInBand src",
     "e2e:web": "jest --testPathPattern=src/e2e/webCriticalJourneys.e2e.test.tsx --runInBand",
     "e2e:android": "jest --testPathPattern=src/e2e/androidCriticalJourneys.e2e.test.tsx --runInBand",
     "e2e:ios": "jest --testPathPattern=src/e2e/iosCriticalJourneys.e2e.test.tsx --runInBand",

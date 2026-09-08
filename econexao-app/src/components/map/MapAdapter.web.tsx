@@ -8,9 +8,8 @@ import { theme } from '../../theme/theme';
 import { MapControls } from './MapControls';
 import {
   SELECTION_PIN_COLOR,
-  clusterPins,
+  filterPinsByDensity,
   formatCoordinateDisplay,
-  getClusterAccessibilityLabel,
   getFitCoordinates,
   getGeometryCoordinates,
   getInitialRegion,
@@ -21,9 +20,8 @@ import {
   getItemPinColor,
   getItemPinIcon,
   getSelectionPinAccessibilityLabel,
-  isClusterItem,
 } from './MapAdapter.helpers';
-import type { FlexiblePinItem, MapAdapterProps, MapClusterItem, MapCoordinate } from './MapAdapter.types';
+import type { FlexiblePinItem, MapAdapterProps, MapCoordinate } from './MapAdapter.types';
 
 const MIN_ZOOM = 3;
 const MAX_ZOOM = 19;
@@ -104,26 +102,6 @@ const createPinIcon = (item: FlexiblePinItem, selected: boolean) => {
   });
 };
 
-const createClusterIcon = (cluster: MapClusterItem) => {
-  const size = Math.min(58, Math.max(44, 40 + Math.log10(cluster.count) * 10));
-  const color = escapeHtml(cluster.primaryColor || '#1B4D3E');
-  const count = escapeHtml(String(cluster.count));
-  const ringStyle =
-    'box-shadow:0 0 0 3px #FFFFFF, 0 0 0 5px rgba(27,77,62,0.6), 0 4px 10px rgba(0,0,0,0.35);';
-
-  const html = `
-    <div class="econexao-cluster-marker" style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2.5px solid #FFFFFF;color:#FFFFFF;font-weight:700;font-size:15px;font-family:sans-serif;transition:transform 0.15s ease,box-shadow 0.15s ease;cursor:pointer;${ringStyle}" aria-hidden="true">
-      <span>${count}</span>
-    </div>
-  `;
-
-  return L.divIcon({
-    className: 'econexao-cluster-icon-wrapper',
-    html,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-  });
-};
 
 const createSelectionPinIcon = () => {
   const size = 42;
@@ -215,7 +193,6 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   bounds,
   selectedActorId,
   onSelectActor,
-  onSelectCluster,
   height = 360,
   showControls = true,
   selectionMode = false,
@@ -245,9 +222,9 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
     setZoomLevel(calculatedInitialZoom);
   }, [calculatedInitialZoom]);
 
-  // Deterministic clustering and coincident offsets based on current zoomLevel
+  // Controle determinístico de densidade e colisão por nível de zoom
   const renderableItems = useMemo(
-    () => clusterPins(items, zoomLevel, selectedActorId),
+    () => filterPinsByDensity(items, zoomLevel, selectedActorId),
     [items, zoomLevel, selectedActorId]
   );
 
@@ -274,31 +251,6 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
       setZoomLevel(nextZoom);
     } catch {}
   }, []);
-
-  const handleClusterClick = useCallback(
-    (cluster: MapClusterItem) => {
-      onSelectCluster?.(cluster);
-      const map = mapRef.current;
-      if (map) {
-        try {
-          const padding = 0.005;
-          const targetBounds: LatLngBoundsExpression = [
-            [cluster.bounds.min_lat - padding, cluster.bounds.min_lng - padding],
-            [cluster.bounds.max_lat + padding, cluster.bounds.max_lng + padding],
-          ];
-          map.fitBounds(targetBounds, { padding: [52, 52], animate: true });
-          setZoomLevel(map.getZoom());
-        } catch {
-          try {
-            const nextZoom = Math.min(map.getZoom() + 2, MAX_ZOOM);
-            map.setView([cluster.latitude, cluster.longitude], nextZoom, { animate: true });
-            setZoomLevel(nextZoom);
-          } catch {}
-        }
-      }
-    },
-    [onSelectCluster]
-  );
 
   const selectionPinA11y = useMemo(
     () => getSelectionPinAccessibilityLabel(selectedCoordinate, selectionPinLabel),
@@ -339,39 +291,7 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
         )}
 
         {renderableItems.map((item) => {
-          if (isClusterItem(item)) {
-            const clusterIcon = createClusterIcon(item);
-            const a11yLabel = getClusterAccessibilityLabel(item);
-            return (
-              <Marker
-                key={item.id}
-                position={[item.latitude, item.longitude]}
-                icon={clusterIcon}
-                title={a11yLabel}
-                alt={a11yLabel}
-                keyboard={true}
-                eventHandlers={{
-                  click: (e) => {
-                    L.DomEvent.stopPropagation(e as any);
-                    handleClusterClick(item);
-                  },
-                  keypress: (e: any) => {
-                    if (e.originalEvent?.key === 'Enter' || e.originalEvent?.key === ' ') {
-                      e.originalEvent?.preventDefault?.();
-                      L.DomEvent.stopPropagation(e as any);
-                      handleClusterClick(item);
-                    }
-                  },
-                }}
-                zIndexOffset={400}
-              />
-            );
-          }
-
-          const coordinate =
-            ('offsetCoordinate' in item && item.offsetCoordinate)
-              ? item.offsetCoordinate
-              : getItemCoordinate(item);
+          const coordinate = getItemCoordinate(item);
           if (!coordinate) return null;
           const itemId = getItemId(item);
           const isSelected = itemId === selectedActorId;
