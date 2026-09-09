@@ -592,7 +592,8 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     expect(consoleErrors).toHaveLength(0);
   });
 
-  test('ECO-2609: localização simulada exibe sucesso, recusa, timeout e fora da rota', async ({ page, context }) => {
+  for (const viewportWidth of [null, 320, 360, 400] as const) {
+  test(`ECO-2609: localização simulada exibe sucesso, recusa, timeout e fora da rota (${viewportWidth ?? 'default'})`, async ({ page, context }, testInfo) => {
     let mapRequests = 0;
     page.on('request', (request) => {
       if (request.url().includes('/api/v1/routes/') && /\/map(?:\?|$)/.test(request.url())) mapRequests += 1;
@@ -640,6 +641,27 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
 
     const locate = page.getByRole('button', { name: 'Mostrar minha localização no mapa' });
     const feedback = page.getByRole('alert');
+    const checkBanner = async (text: string) => {
+      const locateBox = await locate.boundingBox();
+      expect(locateBox).not.toBeNull();
+      const boxes = (await Promise.all([
+        feedback.getByText(text, { exact: false }).last().boundingBox(),
+        ...(await feedback.getByRole('button').all()).map((button) => button.boundingBox()),
+      ]));
+      const viewport = await page.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }));
+      for (const box of boxes) {
+        expect(box).not.toBeNull();
+        expect(box!.x).toBeGreaterThanOrEqual(0);
+        expect(box!.y).toBeGreaterThanOrEqual(0);
+        expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width);
+        expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height);
+        expect(box!.x + box!.width <= locateBox!.x || locateBox!.x + locateBox!.width <= box!.x || box!.y + box!.height <= locateBox!.y || locateBox!.y + locateBox!.height <= box!.y).toBeTruthy();
+      }
+      const style = await feedback.evaluate((node) => ({ top: getComputedStyle(node).top, zIndex: getComputedStyle(node).zIndex }));
+      expect(Number.parseFloat(style.top)).toBe(12);
+      expect(Number.parseInt(style.zIndex, 10)).toBe(20);
+    };
+    if (viewportWidth) await page.setViewportSize({ width: viewportWidth, height: 720 });
     await page.goto('/route/rota-santarem-pindobal/map?originId=origin-porto');
     await page.waitForLoadState('networkidle');
     expect(new URL(page.url()).searchParams.get('originId')).toBe('origin-porto');
@@ -653,7 +675,7 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
         transform: node.getAttribute('transform'),
       }))),
     });
-    let baselineState = await captureMapState();
+    const baselineState = await captureMapState();
     expect(baselineState.pins.length).toBeGreaterThan(0);
     expect(baselineState.pins.every((pin) => Boolean(pin.label))).toBeTruthy();
     expect(baselineState.geometry.length).toBeGreaterThan(0);
@@ -697,42 +719,14 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     await expect(feedback).toContainText('Permissão de localização foi negada');
     const instructions = feedback.getByRole('button', { name: 'Ver instruções para liberar localização no navegador' });
     await expect(instructions).toBeVisible();
+    await checkBanner('Permissão de localização foi negada');
+    await page.screenshot({ path: testInfo.outputPath('denied-before-instructions.png'), fullPage: false });
     await instructions.click();
     await expect(feedback).toContainText('abra as permissões do site');
-    for (const width of [320, 360, 400]) {
-      await page.setViewportSize({ width, height: 720 });
-      await page.goto('/route/rota-santarem-pindobal/map?originId=origin-porto');
-      await page.waitForLoadState('networkidle');
-      await cdp.send('Browser.setPermission', {
-        permission: { name: 'geolocation' }, setting: 'denied', origin: new URL(page.url()).origin,
-        ...(browserContextId ? { browserContextId } : {}),
-      });
-      const responsiveLocate = page.getByRole('button', { name: 'Mostrar minha localização no mapa' });
-      await responsiveLocate.click();
-      await page.setViewportSize({ width, height: 720 });
-      const banner = page.getByRole('alert');
-      await expect(banner).toContainText('Permissão de localização foi negada');
-      await banner.getByRole('button', { name: 'Ver instruções para liberar localização no navegador' }).click();
-      await expect(banner).toContainText('abra as permissões do site');
-      const bannerBox = await banner.boundingBox();
-      expect(bannerBox).not.toBeNull();
-      expect(bannerBox!.x).toBeGreaterThanOrEqual(0);
-      expect(bannerBox!.x + bannerBox!.width).toBeLessThanOrEqual(width);
-      for (const control of [
-        banner.locator('div').filter({ hasText: 'abra as permissões do site' }).first(),
-        banner.getByRole('button', { name: 'Fechar aviso de localização' }),
-      ]) {
-        const box = await control.boundingBox();
-        expect(box).not.toBeNull();
-        expect(box!.x).toBeGreaterThanOrEqual(0);
-        expect(box!.x + box!.width).toBeLessThanOrEqual(width);
-        expect(box!.y).toBeGreaterThanOrEqual(0);
-        expect(box!.y + box!.height).toBeLessThanOrEqual(720);
-      }
-    }
+    await checkBanner('abra as permissões do site');
+    await page.screenshot({ path: testInfo.outputPath('instructions.png'), fullPage: false });
     await feedback.getByRole('button', { name: 'Fechar aviso de localização' }).click();
     await expect(feedback).toHaveCount(0);
-    baselineState = await captureMapState();
 
     await run('success');
     await expect(page.locator('.econexao-user-location-marker')).toBeVisible();
@@ -762,25 +756,8 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     expect(doesNotOverlap(feedbackTextBox!)).toBeTruthy();
     expect(doesNotOverlap(closeBox!)).toBeTruthy();
 
-    for (const width of [320, 360, 400]) {
-      await page.setViewportSize({ width, height: 720 });
-      const banner = page.getByRole('alert');
-      const bannerBox = await banner.boundingBox();
-      expect(bannerBox).not.toBeNull();
-      expect(bannerBox!.x).toBeGreaterThanOrEqual(0);
-      expect(bannerBox!.x + bannerBox!.width).toBeLessThanOrEqual(width);
-      for (const control of [
-        banner.locator('div').filter({ hasText: 'fora da região desta rota' }).first(),
-        banner.getByRole('button', { name: 'Fechar aviso de localização' }),
-      ]) {
-        const box = await control.boundingBox();
-        expect(box).not.toBeNull();
-        expect(box!.x).toBeGreaterThanOrEqual(0);
-        expect(box!.x + box!.width).toBeLessThanOrEqual(width);
-      }
-    }
-
     await page.waitForTimeout(1000);
     expect(mapRequests).toBeGreaterThanOrEqual(1);
   });
+  }
 });

@@ -563,6 +563,7 @@ export default function MapScreen() {
             <Text style={styles.locationFeedbackText}>{locationFeedback}</Text>
             {showBrowserPermissionInstructions && (
               <TouchableOpacity
+                style={styles.locationFeedbackButton}
                 onPress={() => {
                   setLocationFeedback('Para liberar a localização, abra as permissões do site no ícone de cadeado ou ajustes do navegador, permita Localização para este endereço e tente novamente.');
                   setShowBrowserPermissionInstructions(false);
@@ -574,6 +575,7 @@ export default function MapScreen() {
               </TouchableOpacity>
             )}
             <TouchableOpacity
+              style={styles.locationFeedbackButton}
               onPress={() => { setLocationFeedback(null); setShowBrowserPermissionInstructions(false); }}
               {...makeAccessibleButton('Fechar aviso de localização')}
             >
@@ -1047,16 +1049,16 @@ const styles = StyleSheet.create({
     left: 12,
     right: 12,
     zIndex: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
+    flexDirection: 'column',
+    alignItems: 'stretch',
     gap: 8,
     backgroundColor: theme.colors.errorContainer,
     borderColor: theme.colors.error,
     borderWidth: 1,
     borderRadius: theme.radii.md,
     padding: 10,
-    paddingLeft: 150,
+    paddingTop: 54,
+    paddingLeft: 10,
   },
   locationFeedbackText: {
     ...theme.typography.bodySm,
@@ -1064,12 +1066,22 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
     flexShrink: 1,
+    width: '100%',
   },
   locationFeedbackAction: {
     ...theme.typography.labelSm,
     color: theme.colors.brandDeep,
     fontWeight: '700',
     textDecorationLine: 'underline',
+    maxWidth: '100%',
+    width: '100%',
+    flexShrink: 1,
+    alignSelf: 'stretch',
+  },
+  locationFeedbackButton: {
+    width: '100%',
+    maxWidth: '100%',
+    flexShrink: 1,
   },
   filteredEmpty: {
     position: 'absolute',
