@@ -13,6 +13,7 @@ describe('auth identity classification for favorites scope', () => {
 
   it('distinguishes an authenticated anonymous Supabase guest', () => {
     expect(getAuthIdentity('authenticated', session({ is_anonymous: true, email: undefined }))).toBe('guest');
+    expect(getAuthIdentity('authenticated', session({ is_anonymous: true, email: 'transient@example.com' }))).toBe('guest');
   });
 
   it('treats linked/email users as accounts', () => {

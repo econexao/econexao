@@ -30,8 +30,8 @@ export function createQueryClient(): QueryClient {
   });
 }
 
-export function removeAuthenticatedQueries(client: QueryClient): void {
-  void client.cancelQueries({ predicate: (query) => query.meta?.authenticated === true });
+export async function removeAuthenticatedQueries(client: QueryClient): Promise<void> {
+  await client.cancelQueries({ predicate: (query) => query.meta?.authenticated === true });
   client.removeQueries({ predicate: (query) => query.meta?.authenticated === true });
 }
 

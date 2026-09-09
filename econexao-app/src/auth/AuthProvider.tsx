@@ -32,7 +32,7 @@ export interface AuthContextValue {
 
 export function getAuthIdentity(status: AuthStatus, session: Session | null): AuthIdentity {
   if (status !== 'authenticated' || !session?.user) return 'visitor';
-  return session.user.is_anonymous === true && !session.user.email ? 'guest' : 'account';
+  return session.user.is_anonymous === true ? 'guest' : 'account';
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -57,7 +57,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
         if (nextSession) {
           setStatus('authenticated');
           // Se o usuario se tornou autenticado (nao-anonimo), reconcilia eventuais favoritos guest preservados
-          const isAnon = nextSession.user ? (nextSession.user.is_anonymous === true && !nextSession.user.email) : true;
+          const isAnon = nextSession.user ? nextSession.user.is_anonymous === true : true;
           if (!isAnon) {
             void manager.reconcileGuestFavorites(apiClient);
           }

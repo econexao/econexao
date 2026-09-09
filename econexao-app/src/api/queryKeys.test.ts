@@ -45,7 +45,7 @@ describe('server cache', () => {
     expect(shouldRetry(0, new ApiClientError('network', 0))).toBe(true);
   });
 
-  it('remove dados autenticados sem apagar conteúdo público', () => {
+  it('remove dados autenticados sem apagar conteúdo público', async () => {
     const client = createQueryClient();
     client.getQueryCache().build(client, {
       queryKey: queryKeys.bootstrap('user-a'),
@@ -53,8 +53,33 @@ describe('server cache', () => {
       meta: { authenticated: true },
     }).setData('private');
     client.setQueryData(queryKeys.regions(), ['public']);
-    removeAuthenticatedQueries(client);
+    await removeAuthenticatedQueries(client);
     expect(client.getQueryData(queryKeys.bootstrap('user-a'))).toBeUndefined();
+    expect(client.getQueryData(queryKeys.regions())).toEqual(['public']);
+    client.clear();
+  });
+
+  it('cancela a consulta privada antiga, remove seu cache e preserva o público', async () => {
+    const client = createQueryClient();
+    const controller = new AbortController();
+    const privateKey = queryKeys.myFavoriteRoutes('user-a');
+    const query = client.getQueryCache().build(client, {
+      queryKey: privateKey,
+      queryFn: async ({ signal }) => {
+        signal.addEventListener('abort', () => controller.abort(), { once: true });
+        return 'private';
+      },
+      meta: { authenticated: true },
+    });
+    query.setData('private');
+    client.setQueryData(queryKeys.regions(), ['public']);
+
+    const pending = query.fetch().catch(() => undefined);
+    await removeAuthenticatedQueries(client);
+    await pending;
+
+    expect(controller.signal.aborted).toBe(true);
+    expect(client.getQueryData(privateKey)).toBeUndefined();
     expect(client.getQueryData(queryKeys.regions())).toEqual(['public']);
     client.clear();
   });

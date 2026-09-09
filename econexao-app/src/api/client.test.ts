@@ -178,6 +178,29 @@ describe('ApiClient auth', () => {
     );
   });
 
+  it('propaga AbortSignal nas leituras paginadas de favoritos', async () => {
+    global.fetch = jest.fn().mockResolvedValue(
+      new Response(JSON.stringify({ data: [], meta: { total: 0, limit: 20 } }), { status: 200 })
+    );
+    const client = new ApiClient('https://api.example/api/v1');
+    const routesController = new AbortController();
+    const actorsController = new AbortController();
+
+    await client.getMyFavoriteRoutes({ signal: routesController.signal });
+    await client.getMyFavoriteActors({ signal: actorsController.signal });
+
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      1,
+      'https://api.example/api/v1/me/favorite-routes',
+      expect.objectContaining({ signal: routesController.signal })
+    );
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      2,
+      'https://api.example/api/v1/me/favorite-actors',
+      expect.objectContaining({ signal: actorsController.signal })
+    );
+  });
+
   it('serializa origem, camada e categoria do payload de mapa', async () => {
     global.fetch = jest.fn().mockResolvedValue(
       new Response(JSON.stringify({ data: { pins: [], legend: [] } }), { status: 200 })
