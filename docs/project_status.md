@@ -1,6 +1,6 @@
 # ECOnexão — documento único de tarefas
 
-Atualizado em: 06/09/2026. Auditoria local de planejamento; alterações desta revisão ainda não commitadas.
+Atualizado em: 09/09/2026. ECO-2613 implementada localmente; revisão técnica pendente, sem push/PR/deploy.
 Este é o único cadastro de tasks: concluídas, parciais, novas, adiadas e substituídas.
 Os documentos de iniciativas preservam aceites/evidências históricos, mas não definem
 prioridade ou estado atual. A sequência abaixo orienta a próxima execução; decisões
@@ -8,12 +8,11 @@ ainda abertas permanecem em ECO-2603 e não são aprovadas pelo commit documenta
 
 ## Como acompanhar
 
-- **Agora:** corrigir o gate P1 da ECO-2002 antes de qualquer operação remota do pipeline.
-  A ECO-2617 foi concluída localmente: este checkout está em `befc503`; a ref local
-  `origin/staging` está em `94245d9` e contém entregas ECO-2603–2606. Não reimplementar
-  essas tasks por ler a raiz antiga. A ref não foi atualizada pela rede nem o ambiente
-  servido foi verificado nesta auditoria. Ver [auditoria da V1](audit_v1_2026-09-06.md)
-  para evidências e limites.
+- **Agora:** ECO-2613 aguarda revisão técnica independente; depois ECO-1901 (favoritos persistentes com guest autenticado, conforme ADR 0007). Uma task por vez, revisão independente e GO por operação remota.
+  A ECO-2617 foi concluída localmente; `origin/staging` está em `a638233` e já contém as
+  integrações publicadas de ECO-2606 a ECO-2610. Não reimplementar essas tasks por ler
+  a raiz antiga. O checkout principal contém alterações do owner e foi preservado.
+  Ver [auditoria da V1](audit_v1_2026-09-06.md) para evidências e limites.
 - **Objetivo:** Web com dez rotas, mapa fluido, pins sem clusters, catálogo por categorias
   e experiências, login Google, favoritos e histórico de viagens.
 - **Dados:** owner entrega dez rotas até sexta; data absoluta ainda a confirmar
@@ -277,6 +276,8 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
 - **Correção obrigatória antes da qualificação:** `ActorCard` já monta foto Google quando falta capa e o componente consulta ao montar. Desabilitar esse consumo por padrão nos cards, com mídia editorial/placeholder e teste de zero solicitações nesse modo. Ativação somente em ECO-2616, após medição e gate; manter detalhe sob demanda funcional.
+
+- **Implementação local 09/09/2026:** `ActorCard` não importa nem monta `GooglePlacePhoto`; sem mídia editorial usa placeholder acessível. O detalhe permanece com fotos Google sob demanda via proxy ECO-2510, incluindo atribuição, link ao Maps, loading/vazio/erro/retry e sem bloquear o conteúdo principal. `npm ci`, Jest (43 suítes/277 testes), typecheck, `openapi:check` e `git diff --check` passaram. Export Web e Playwright proporcional ainda pendentes nesta revisão; não houve chamada Google real, escrita remota ou deploy.
 
 
 #### ECO-2614 — Aplicar identidade e cards das rotas na Web
@@ -676,6 +677,8 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Referência:** [finalization/tasks.md](finalization/tasks.md). **Commit:** Não vinculado.
 
 #### ECO-1901 — Dados reais, paginação e favoritos consistentes
+
+- **Próxima task após ECO-2613:** validar visitante, guest Supabase autenticado e conta separadamente, com salvar/remover, persistência/reload, rollback, isolamento A/B e linking conforme ADR 0007. O erro observado anteriormente não identifica a sessão e 401 sem token não prova falha de guest; favoritos permanecem fora do escopo desta entrega.
 
 - **Estado / horizonte / alteração:** PARCIAL / Base da versão Web / PRESERVADA.
 - **Dependências ou sucessoras:** ECO-1504, ECO-1703..

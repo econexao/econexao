@@ -11,7 +11,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme/theme';
 import type { ActorSummary } from '../../api/types';
 import { Badge } from '../common/Badge';
-import { GooglePlacePhoto } from '../common/GooglePlacePhoto';
 import { makeAccessibleButton, setAccessibilityFocusSafely } from '../../utils/accessibility';
 import { getCategoryVisualMeta } from '../../theme/categoryTheme';
 
@@ -69,15 +68,13 @@ export const ActorCard: React.FC<ActorCardProps> = ({
               accessible
               accessibilityLabel={imageAlt}
             />
-          ) : actor.id ? (
-            <GooglePlacePhoto
-              actorId={actor.id}
-              alt={imageAlt}
-              compact
-              style={styles.googlePhoto}
-            />
           ) : (
-            <View style={styles.placeholderImage}>
+            <View
+              style={styles.placeholderImage}
+              accessible
+              accessibilityRole="image"
+              accessibilityLabel={`Imagem não disponível para ${actor.name || 'estabelecimento'}`}
+            >
               <Ionicons name="storefront-outline" size={40} color={theme.colors.brandSage} />
             </View>
           )}
