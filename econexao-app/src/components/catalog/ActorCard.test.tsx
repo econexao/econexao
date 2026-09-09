@@ -107,4 +107,16 @@ describe('ActorCard (ECO-2512)', () => {
     });
     expect(onToggle).toHaveBeenCalledTimes(1);
   });
+
+  it('uses an accessible editorial placeholder without mounting Google photo loading', () => {
+    const actorWithoutMedia: ActorSummary = { ...baseActor, cover_image_url: null, cover_media: null };
+
+    let renderer!: TestRenderer.ReactTestRenderer;
+    act(() => {
+      renderer = TestRenderer.create(<ActorCard actor={actorWithoutMedia} />);
+    });
+
+    expect(renderer.root.findByProps({ accessibilityLabel: 'Imagem não disponível para Pousada Pindobal' })).toBeDefined();
+    expect(renderer.root.findAllByType(Image)).toHaveLength(0);
+  });
 });
