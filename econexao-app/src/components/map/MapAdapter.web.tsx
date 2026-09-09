@@ -8,6 +8,7 @@ import { theme } from '../../theme/theme';
 import { MapControls } from './MapControls';
 import {
   SELECTION_PIN_COLOR,
+  USER_LOCATION_PIN_COLOR,
   filterPinsByDensity,
   formatCoordinateDisplay,
   getFitCoordinates,
@@ -20,6 +21,7 @@ import {
   getItemPinColor,
   getItemPinIcon,
   getSelectionPinAccessibilityLabel,
+  getUserLocationAccessibilityLabel,
 } from './MapAdapter.helpers';
 import type { FlexiblePinItem, MapAdapterProps, MapCoordinate } from './MapAdapter.types';
 
@@ -35,6 +37,8 @@ const getPinIconSvg = (iconName: string): string | null => {
   switch (iconName) {
     case 'flag':
       return '<path d="M5 22V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M5 4h11l-2 4 2 4H5" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/>';
+    case 'user-location':
+      return '<circle cx="12" cy="12" r="4" fill="currentColor"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/>';
     case 'pin':
     case 'selection-pin':
       return '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="currentColor"/><line x1="4" y1="22" x2="4" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
@@ -127,6 +131,30 @@ const createSelectionPinIcon = () => {
   });
 };
 
+const createUserLocationPinIcon = () => {
+  const size = 38;
+  const iconSize = 18;
+  const color = USER_LOCATION_PIN_COLOR;
+  const svgContent = getPinIconSvg('user-location');
+  const ringStyle =
+    'box-shadow:0 0 0 3px #FFFFFF, 0 0 0 6px rgba(2,132,199,0.75), 0 4px 12px rgba(0,0,0,0.35); transform:scale(1.05);';
+
+  const html = `
+    <div class="econexao-user-location-marker" style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2.5px solid #FFFFFF;color:#FFFFFF;transition:transform 0.15s ease,box-shadow 0.15s ease;${ringStyle}" aria-label="Sua localização atual">
+      <svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" style="display:block;" aria-hidden="true">
+        ${svgContent}
+      </svg>
+    </div>
+  `;
+
+  return L.divIcon({
+    className: 'econexao-user-location-marker-wrapper',
+    html,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+  });
+};
+
 const MapEventsHandler: React.FC<{
   selectionMode?: boolean;
   onSelectCoordinate?: (coord: MapCoordinate) => void;
@@ -199,6 +227,8 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   selectedCoordinate,
   onSelectCoordinate,
   selectionPinLabel,
+  userLocation,
+  userLocationLabel,
 }) => {
   const mapRef = useRef<LeafletMap | null>(null);
   const items = pins ?? actors ?? [];
@@ -255,6 +285,11 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   const selectionPinA11y = useMemo(
     () => getSelectionPinAccessibilityLabel(selectedCoordinate, selectionPinLabel),
     [selectedCoordinate, selectionPinLabel]
+  );
+
+  const userLocationA11y = useMemo(
+    () => getUserLocationAccessibilityLabel(userLocation, userLocationLabel),
+    [userLocation, userLocationLabel]
   );
 
   return (
@@ -324,6 +359,23 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
             />
           );
         })}
+
+        {/* Marcador da Posição do Usuário em Primeiro Plano */}
+        {userLocation && (
+          <Marker
+            position={[userLocation.latitude, userLocation.longitude]}
+            icon={createUserLocationPinIcon()}
+            title={userLocationA11y}
+            alt={userLocationA11y}
+            keyboard={true}
+            zIndexOffset={1500}
+            eventHandlers={{
+              click: (e) => {
+                L.DomEvent.stopPropagation(e as any);
+              },
+            }}
+          />
+        )}
 
         {selectedCoordinate && (
           <Marker

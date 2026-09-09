@@ -239,11 +239,11 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 
 #### ECO-2609 — Simplificar origens e acompanhar posição no mapa
 
-- **Estado / horizonte / alteração:** PENDENTE / Versão do evento / NOVA.
-- **Dependências ou sucessoras:** ECO-2603, ECO-2608.
-- **Conclusão / aceite:** Seletor compacto, pontos de saída por rota e posição em primeiro plano com consentimento; região distante não produz corredor intermunicipal; falha/negação GPS permite origem fixa; rota não se recalcula só por exibir posição; sem voz/curva a curva.
-- **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
-- **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
+- **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Versão do evento / NOVA.
+- **Dependências ou sucessoras:** ECO-2603 (CONCLUÍDA DOCUMENTAL), ECO-2608 (CONCLUÍDA LOCAL). Desbloqueia ECO-2615.
+- **Conclusão / aceite:** Seletor compacto, responsivo e acessível por toque, teclado e leitor de tela (WCAG 2.1 AA) com pontos de saída pertencentes à rota ativa; consentimento explícito prévio exigido antes de qualquer acesso à localização; acompanhamento da posição do usuário em primeiro plano com marcador azul e anel de destaque sem recalcular desnecessariamente a geometria da rota fixa; verificação de limites territoriais (`isCoordinateWithinBounds`) impedindo a geração de corredores intermunicipais artificiais quando a posição GPS estiver em região distante; fallback gracioso para origens fixas sob negação, permissão ausente, serviços desativados ou timeout; sem navegação curva-a-curva ou instruções por voz.
+- **Evidência e limite:** Em 09/09/2026, na base original `77b9916` com a entrega local `4217f2f`: `npm run typecheck`, `npm run openapi:check`, Jest ECO-2609 (2 suítes, 30 testes), `npm run export:web` e `git diff --check` passaram. A suíte Playwright ECO-2609 passou em Chromium Desktop e Mobile (8/8), comprovando permissão real `denied` por `Browser.setPermission` com `browserContextId` do alvo, `permissions.query === denied`, instruções abertas em 320/360/400 px, ações e texto dentro da viewport, erro→sucesso sem reload/remontagem, preservação de origem, identidade dos pins, geometria efetiva e ausência de novas requisições após cada conclusão. Nenhuma alteração de schema, migration, escrita remota ou deploy foi realizada. A suíte Playwright usa fixtures locais; homologação de staging permanece fora deste gate.
+- **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commits:** `537ad13`, `22082a8`, `704abee`.
 
 #### ECO-2610 — Organizar catálogo em carrosséis por categoria
 

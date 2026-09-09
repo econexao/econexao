@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, TouchableOpacity } from 'react-native';
+import { Modal, TouchableOpacity, Alert, AccessibilityInfo, Text } from 'react-native';
 import TestRenderer, { act } from 'react-test-renderer';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -9,7 +9,9 @@ import {
   useRouteActorsQuery,
   useRouteMapQuery,
 } from '../../hooks/queries';
-import { hasValidLocationConsent } from '../../auth/locationConsent';
+import { hasValidLocationConsent, saveLocationConsent } from '../../auth/locationConsent';
+
+import * as Location from 'expo-location';
 
 jest.mock('@expo/vector-icons', () => ({
   Ionicons: () => null,
@@ -112,15 +114,22 @@ jest.mock('./MapAdapter', () => {
       selectionMode,
       onSelectCoordinate,
       selectedCoordinate,
+      userLocation,
     }: {
       onSelectActor: (actorId: string) => void;
       bounds?: unknown;
       selectionMode?: boolean;
       onSelectCoordinate?: (coord: any) => void;
       selectedCoordinate?: any;
+      userLocation?: any;
     }) => (
       <View>
         <Text accessibilityLabel="Bounds ativos do mapa">{JSON.stringify(bounds)}</Text>
+        {userLocation && (
+          <Text accessibilityLabel="Localização do usuário renderizada no mapa">
+            {JSON.stringify(userLocation)}
+          </Text>
+        )}
         <TouchableOpacity
           accessibilityRole="button"
           accessibilityLabel="Selecionar pin Pousada Pindobal"
@@ -225,6 +234,20 @@ describe('MapScreen actor sheet (ECO-0905)', () => {
           },
         ],
       },
+    });
+    const { useAppContext } = require('../../state/useAppContext');
+    const { initialAppState } = require('../../state/appReducer');
+    (useAppContext as jest.Mock).mockReturnValue({
+      state: {
+        ...initialAppState,
+        featureFlags: { ...initialAppState.featureFlags, dynamicRouting: true },
+      },
+      dispatch: jest.fn(),
+    });
+    const { useQueryClient } = require('@tanstack/react-query');
+    (useQueryClient as jest.Mock).mockReturnValue({
+      getQueryData: jest.fn().mockReturnValue(null),
+      setQueryData: jest.fn(),
     });
   });
 
@@ -733,5 +756,160 @@ describe('MapScreen actor sheet (ECO-0905)', () => {
       accessibilityLabel: 'Trajeto calculado pelo Google Maps sem exibição sobre o mapa OpenStreetMap',
     })).toBeDefined();
     expect(root.findAllByProps({ accessibilityLabel: 'Bounds ativos do mapa' })).toHaveLength(0);
+  });
+
+  describe('User Location Tracking and Containment (ECO-2609)', () => {
+    beforeEach(() => {
+      (Location.hasServicesEnabledAsync as jest.Mock).mockResolvedValue(true);
+      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+        status: Location.PermissionStatus.GRANTED,
+        canAskAgain: true,
+      });
+      (Location.requestForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+        status: Location.PermissionStatus.GRANTED,
+        canAskAgain: true,
+      });
+    });
+
+    it('shows user location on map when user is within route bounds and consent is valid', async () => {
+      (hasValidLocationConsent as jest.Mock).mockResolvedValue(true);
+      (Location.getCurrentPositionAsync as jest.Mock).mockResolvedValue({
+        coords: { latitude: -2.6, longitude: -54.9, accuracy: 10 },
+      });
+      const announceSpy = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
+
+      let renderer!: TestRenderer.ReactTestRenderer;
+      await act(async () => {
+        currentRenderer = renderer = TestRenderer.create(<MapScreen />);
+      });
+
+      const root = renderer.root;
+      const locateBtn = root.find(
+        (node) => node.props.accessibilityLabel === 'Mostrar minha localização no mapa'
+      );
+      expect(locateBtn).toBeDefined();
+
+      await act(async () => locateBtn.props.onPress());
+
+      expect(Location.getCurrentPositionAsync).toHaveBeenCalled();
+      const userLocNode = root.find(
+        (node) => node.props.accessibilityLabel === 'Localização do usuário renderizada no mapa'
+      );
+      expect(userLocNode).toBeDefined();
+      expect(userLocNode.props.children).toContain('-2.6');
+      expect(announceSpy).toHaveBeenCalledWith('Sua localização foi exibida no mapa da rota.');
+    });
+
+    it('warns without altering route or bounds when user location is outside route bounds', async () => {
+      (hasValidLocationConsent as jest.Mock).mockResolvedValue(true);
+      (Location.getCurrentPositionAsync as jest.Mock).mockResolvedValue({
+        coords: { latitude: -15.78, longitude: -47.93, accuracy: 10 }, // Brasilia (outside Santarém bounds)
+      });
+      const announceSpy = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
+
+      let renderer!: TestRenderer.ReactTestRenderer;
+      await act(async () => {
+        currentRenderer = renderer = TestRenderer.create(<MapScreen />);
+      });
+
+      const root = renderer.root;
+      const locateBtn = root.find(
+        (node) => node.props.accessibilityLabel === 'Mostrar minha localização no mapa'
+      );
+
+      await act(async () => locateBtn.props.onPress());
+
+      expect(Location.getCurrentPositionAsync).toHaveBeenCalled();
+      // Rendered user location visual marker is present
+      const userLocNode = root.find(
+        (node) => node.props.accessibilityLabel === 'Localização do usuário renderizada no mapa'
+      );
+      expect(userLocNode).toBeDefined();
+      // Bounds remain intact
+      const boundsText = root.find((node) => node.props.accessibilityLabel === 'Bounds ativos do mapa');
+      expect(boundsText.props.children).toContain('-2.7');
+      // Visible feedback and announcement preserve route bounds and origin
+      const feedback = root.findByProps({ accessibilityRole: 'alert' });
+      expect(feedback.findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('fora da região desta rota');
+      expect(announceSpy).toHaveBeenCalledWith(
+        'Sua localização atual está fora da região desta rota. A posição foi marcada sem alterar o trajeto ou a origem oficial.'
+      );
+    });
+
+    it('requests consent before obtaining location if consent is missing', async () => {
+      (hasValidLocationConsent as jest.Mock).mockResolvedValue(false);
+      (saveLocationConsent as jest.Mock).mockResolvedValue(true);
+      (Location.getCurrentPositionAsync as jest.Mock).mockResolvedValue({
+        coords: { latitude: -2.6, longitude: -54.9, accuracy: 10 },
+      });
+
+      let renderer!: TestRenderer.ReactTestRenderer;
+      await act(async () => {
+        currentRenderer = renderer = TestRenderer.create(<MapScreen />);
+      });
+
+      const root = renderer.root;
+      const locateBtn = root.find(
+        (node) => node.props.accessibilityLabel === 'Mostrar minha localização no mapa'
+      );
+
+      await act(async () => locateBtn.props.onPress());
+
+      // Consent modal should be visible
+      const consentModal = root.find(
+        (node) => node.props.accessibilityLabel === 'Consentimento de localização dinâmica'
+      );
+      expect(consentModal).toBeDefined();
+      expect(Location.getCurrentPositionAsync).not.toHaveBeenCalled();
+
+      // Check both required checkboxes
+      const adultCheckbox = root.find(
+        (node) => node.props.accessibilityLabel === 'Declaro que tenho 18 anos ou mais.'
+      );
+      const lgpdCheckbox = root.find(
+        (node) => node.props.accessibilityLabel === 'Li e concordo com o tratamento temporário da minha localização para calcular este trajeto.'
+      );
+      await act(async () => adultCheckbox.props.onPress());
+      await act(async () => lgpdCheckbox.props.onPress());
+
+      // Accepting consent proceeds with location request
+      const acceptBtn = root.find(
+        (node) => node.props.accessibilityLabel === 'Concordar e continuar'
+      );
+      await act(async () => acceptBtn.props.onPress());
+
+      expect(Location.getCurrentPositionAsync).toHaveBeenCalled();
+    });
+
+    it('handles location error gracefully keeping route and origin intact', async () => {
+      (hasValidLocationConsent as jest.Mock).mockResolvedValue(true);
+      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+        status: Location.PermissionStatus.DENIED,
+        canAskAgain: false,
+      });
+      (Location.requestForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+        status: Location.PermissionStatus.DENIED,
+        canAskAgain: false,
+      });
+
+      let renderer!: TestRenderer.ReactTestRenderer;
+      await act(async () => {
+        currentRenderer = renderer = TestRenderer.create(<MapScreen />);
+      });
+
+      const root = renderer.root;
+      const locateBtn = root.find(
+        (node) => node.props.accessibilityLabel === 'Mostrar minha localização no mapa'
+      );
+
+      await act(async () => locateBtn.props.onPress());
+
+      const feedback = root.findByProps({ accessibilityRole: 'alert' });
+      expect(feedback.findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('A rota e a origem permanecem inalteradas');
+      // No user location rendered
+      expect(root.findAllByProps({ accessibilityLabel: 'Localização do usuário renderizada no mapa' })).toHaveLength(0);
+      // Route bounds still present
+      expect(root.findAllByProps({ accessibilityLabel: 'Bounds ativos do mapa' })).toHaveLength(2);
+    });
   });
 });

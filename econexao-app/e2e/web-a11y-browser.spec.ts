@@ -591,4 +591,173 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     expect(ariaHiddenWarnings).toHaveLength(0);
     expect(consoleErrors).toHaveLength(0);
   });
+
+  for (const viewportWidth of [null, 320, 360, 400] as const) {
+  test(`ECO-2609: localização simulada exibe sucesso, recusa, timeout e fora da rota (${viewportWidth ?? 'default'})`, async ({ page, context }, testInfo) => {
+    let mapRequests = 0;
+    page.on('request', (request) => {
+      if (request.url().includes('/api/v1/routes/') && /\/map(?:\?|$)/.test(request.url())) mapRequests += 1;
+    });
+    await context.grantPermissions(['geolocation']);
+    const cdp = await context.newCDPSession(page);
+    const targetInfo = await cdp.send('Target.getTargetInfo');
+    const browserContextId = targetInfo.targetInfo?.browserContextId;
+    await page.addInitScript(() => {
+      localStorage.setItem('econexao_location_consent_v1', JSON.stringify({
+        version: '2026-09-04',
+        consentedAt: new Date().toISOString(),
+        isAdult: true,
+        hasConsented: true,
+      }));
+      const nativeGeolocation = navigator.geolocation;
+      Object.defineProperty(navigator, 'geolocation', {
+        configurable: true,
+        value: {
+          getCurrentPosition(success: PositionCallback, error?: PositionErrorCallback) {
+            const mode = (window as any).__ecoGeoMode || 'success';
+            if (mode === 'denied') {
+              nativeGeolocation.getCurrentPosition(success, error);
+            } else if (mode === 'timeout') {
+              error?.({ code: 3, message: 'Tempo limite esgotado para obter a localização.' } as any);
+            } else {
+              const outside = mode === 'outside';
+              success({
+                coords: {
+                  latitude: outside ? -15.78 : -2.6,
+                  longitude: outside ? -47.93 : -54.9,
+                  accuracy: 10,
+                  altitude: null,
+                  altitudeAccuracy: null,
+                  heading: null,
+                  speed: null,
+                },
+                timestamp: Date.now(),
+              } as GeolocationPosition);
+            }
+          },
+        },
+      });
+    });
+
+    const locate = page.getByRole('button', { name: 'Mostrar minha localização no mapa' });
+    const feedback = page.getByRole('alert');
+    const checkBanner = async (text: string) => {
+      const locateBox = await locate.boundingBox();
+      expect(locateBox).not.toBeNull();
+      const boxes = (await Promise.all([
+        feedback.getByText(text, { exact: false }).last().boundingBox(),
+        ...(await feedback.getByRole('button').all()).map((button) => button.boundingBox()),
+      ]));
+      const viewport = await page.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }));
+      for (const box of boxes) {
+        expect(box).not.toBeNull();
+        expect(box!.x).toBeGreaterThanOrEqual(0);
+        expect(box!.y).toBeGreaterThanOrEqual(0);
+        expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width);
+        expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height);
+        expect(box!.x + box!.width <= locateBox!.x || locateBox!.x + locateBox!.width <= box!.x || box!.y + box!.height <= locateBox!.y || locateBox!.y + locateBox!.height <= box!.y).toBeTruthy();
+      }
+      const style = await feedback.evaluate((node) => ({ top: getComputedStyle(node).top, zIndex: getComputedStyle(node).zIndex }));
+      expect(Number.parseFloat(style.top)).toBe(12);
+      expect(Number.parseInt(style.zIndex, 10)).toBe(20);
+    };
+    if (viewportWidth) await page.setViewportSize({ width: viewportWidth, height: 720 });
+    await page.goto('/route/rota-santarem-pindobal/map?originId=origin-porto');
+    await page.waitForLoadState('networkidle');
+    expect(new URL(page.url()).searchParams.get('originId')).toBe('origin-porto');
+    const captureMapState = async () => ({
+      pins: await page.locator('.econexao-map-marker-wrapper').evaluateAll((nodes) => nodes.map((node) => ({
+        label: node.getAttribute('title') || node.getAttribute('aria-label') || node.parentElement?.getAttribute('title') || node.parentElement?.getAttribute('aria-label'),
+        html: node.innerHTML,
+      })).sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)))),
+      geometry: await page.locator('.leaflet-overlay-pane svg path').evaluateAll((nodes) => nodes.map((node) => ({
+        d: node.getAttribute('d'),
+        transform: node.getAttribute('transform'),
+      }))),
+    });
+    const baselineState = await captureMapState();
+    expect(baselineState.pins.length).toBeGreaterThan(0);
+    expect(baselineState.pins.every((pin) => Boolean(pin.label))).toBeTruthy();
+    expect(baselineState.geometry.length).toBeGreaterThan(0);
+    expect(baselineState.geometry.every((path) => typeof path.d === 'string' && path.d.length > 0)).toBeTruthy();
+    const run = async (mode: string) => {
+      if (mode === 'denied') {
+        await context.clearPermissions();
+        await cdp.send('Browser.setPermission', {
+          permission: { name: 'geolocation' },
+          setting: 'denied',
+          origin: new URL(page.url()).origin,
+          ...(browserContextId ? { browserContextId } : {}),
+        });
+      } else {
+        await cdp.send('Browser.setPermission', {
+          permission: { name: 'geolocation' },
+          setting: 'granted',
+          origin: new URL(page.url()).origin,
+          ...(browserContextId ? { browserContextId } : {}),
+        });
+      }
+      await page.evaluate((value) => { (window as any).__ecoGeoMode = value; }, mode);
+      if (mode === 'denied') {
+        await expect.poll(async () => await page.evaluate(() => navigator.permissions.query({ name: 'geolocation' as PermissionName }).then((permission) => permission.state))).toBe('denied');
+      }
+      await expect(locate).toBeVisible({ timeout: 10000 });
+      const requestsBeforeLocation = mapRequests;
+      await locate.click();
+      if (mode === 'denied') await expect(feedback).toContainText('Permissão de localização foi negada');
+      if (mode === 'success') await expect(page.locator('.econexao-user-location-marker')).toBeVisible();
+      if (mode === 'timeout') await expect(feedback).toContainText('A rota e a origem permanecem inalteradas');
+      if (mode === 'outside') await expect(feedback).toContainText('fora da região desta rota');
+      await page.waitForTimeout(500);
+      expect(mapRequests).toBe(requestsBeforeLocation);
+      expect(new URL(page.url()).searchParams.get('originId')).toBe('origin-porto');
+      expect(await captureMapState()).toEqual(baselineState);
+    };
+
+    await run('denied');
+    await expect.poll(async () => await page.evaluate(() => navigator.permissions.query({ name: 'geolocation' as PermissionName }).then((permission) => permission.state))).toBe('denied');
+    await expect(feedback).toContainText('Permissão de localização foi negada');
+    const instructions = feedback.getByRole('button', { name: 'Ver instruções para liberar localização no navegador' });
+    await expect(instructions).toBeVisible();
+    await checkBanner('Permissão de localização foi negada');
+    await page.screenshot({ path: testInfo.outputPath('denied-before-instructions.png'), fullPage: false });
+    await instructions.click();
+    await expect(feedback).toContainText('abra as permissões do site');
+    await checkBanner('abra as permissões do site');
+    await page.screenshot({ path: testInfo.outputPath('instructions.png'), fullPage: false });
+    await feedback.getByRole('button', { name: 'Fechar aviso de localização' }).click();
+    await expect(feedback).toHaveCount(0);
+
+    await run('success');
+    await expect(page.locator('.econexao-user-location-marker')).toBeVisible();
+    await expect(feedback).toHaveCount(0);
+
+    await run('timeout');
+    // Expo Web normalizes the browser timeout callback to its generic location error;
+    // the exact timeout copy is covered by useCurrentLocation/MapScreen tests.
+    await expect(feedback).toContainText('A rota e a origem permanecem inalteradas');
+    await expect(page.getByRole('button', { name: 'Mostrar minha localização no mapa' })).toBeVisible();
+
+    await run('outside');
+    await expect(feedback).toContainText('fora da região desta rota');
+    await expect(page.getByRole('button', { name: 'Mostrar minha localização no mapa' })).toBeVisible();
+    await expect(page.locator('.econexao-map-marker').first()).toBeVisible();
+    expect(await captureMapState()).toEqual(baselineState);
+
+    const locateBox = await page.getByRole('button', { name: 'Mostrar minha localização no mapa' }).boundingBox();
+    const feedbackTextBox = await feedback.locator('div').filter({ hasText: 'fora da região desta rota' }).first().boundingBox();
+    const closeBox = await feedback.getByRole('button', { name: 'Fechar aviso de localização' }).boundingBox();
+    expect(locateBox).not.toBeNull();
+    expect(feedbackTextBox).not.toBeNull();
+    expect(closeBox).not.toBeNull();
+    const doesNotOverlap = (box: { x: number; y: number; width: number; height: number }) =>
+      box.x + box.width <= locateBox!.x || locateBox!.x + locateBox!.width <= box.x ||
+      box.y + box.height <= locateBox!.y || locateBox!.y + locateBox!.height <= box.y;
+    expect(doesNotOverlap(feedbackTextBox!)).toBeTruthy();
+    expect(doesNotOverlap(closeBox!)).toBeTruthy();
+
+    await page.waitForTimeout(1000);
+    expect(mapRequests).toBeGreaterThanOrEqual(1);
+  });
+  }
 });

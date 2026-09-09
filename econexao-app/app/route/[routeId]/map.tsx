@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Modal, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, AccessibilityInfo, Image, Modal, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
@@ -14,13 +14,21 @@ import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/compon
 import { useRouteActorsQuery, useRouteMapQuery } from '../../../src/hooks/queries';
 import { theme } from '../../../src/theme/theme';
 import { makeAccessibleButton, setAccessibilityFocusSafely } from '../../../src/utils/accessibility';
-import { filterPinsByModeAndCategory, formatCoordinateDisplay, getBoundsCoordinates, isContractPinColor, isContractPinIcon } from '../../../src/components/map/MapAdapter.helpers';
+import {
+  filterPinsByModeAndCategory,
+  formatCoordinateDisplay,
+  getBoundsCoordinates,
+  isContractPinColor,
+  isContractPinIcon,
+  isCoordinateWithinBounds,
+} from '../../../src/components/map/MapAdapter.helpers';
 import { apiClient } from '../../../src/api/client';
 import { queryKeys } from '../../../src/api/queryKeys';
 import { CHOOSE_ON_MAP_ORIGIN_ID } from '../../../src/components/routes/OriginSelector';
 import { DynamicLocationConsentModal } from '../../../src/components/routes/DynamicLocationConsentModal';
 import { GoogleRoutesMapNotice } from '../../../src/components/routes/GoogleRoutesMapNotice';
 import { hasValidLocationConsent } from '../../../src/auth/locationConsent';
+import { useCurrentLocation } from '../../../src/hooks/useCurrentLocation';
 import { useAppContext } from '../../../src/state/useAppContext';
 import type { MapPin, MapLegendItem } from '../../../src/api/types';
 import type { MapCoordinate, MapViewMode } from '../../../src/components/map/MapAdapter.types';
@@ -108,6 +116,13 @@ export default function MapScreen() {
   const [selectedCoordinate, setSelectedCoordinate] = useState<MapCoordinate | null>(null);
   const [isConfirmingSelection, setIsConfirmingSelection] = useState<boolean>(false);
   const [showConsentModal, setShowConsentModal] = useState<boolean>(false);
+  const [pendingConsentAction, setPendingConsentAction] = useState<'selection' | 'locate' | null>(null);
+  const [locationFeedback, setLocationFeedback] = useState<string | null>(null);
+  const [showBrowserPermissionInstructions, setShowBrowserPermissionInstructions] = useState(false);
+
+  const [userLocation, setUserLocation] = useState<MapCoordinate | null>(null);
+  const { requestLocation, resetLocation, status: locationStatus } = useCurrentLocation();
+  const isLocatingUser = locationStatus === 'requesting';
 
   const [viewMode, setViewMode] = useState<MapViewMode>(initialViewMode === 'city' ? 'city' : 'route');
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory?.trim() || '');
@@ -182,6 +197,7 @@ export default function MapScreen() {
 
   const executeRoutePreview = async (coord: MapCoordinate) => {
     setIsConfirmingSelection(true);
+    setLocationFeedback(null);
     try {
       const response = await apiClient.previewRoute(routeId, {
         latitude: coord.latitude,
@@ -198,19 +214,69 @@ export default function MapScreen() {
       // Navigate back to detail screen
       router.back();
     } catch {
-      Alert.alert(
-        'Erro ao calcular rota',
-        'Não foi possível calcular o trajeto a partir destas coordenadas. Tente outro ponto no mapa.'
-      );
+      setLocationFeedback('Não foi possível calcular o trajeto a partir deste ponto. A rota e a origem permanecem inalteradas. Tente outro ponto no mapa.');
     } finally {
       setIsConfirmingSelection(false);
     }
+  };
+
+  const executeLocateUser = async () => {
+    setLocationFeedback(null);
+    setShowBrowserPermissionInstructions(false);
+    try {
+      AccessibilityInfo.announceForAccessibility('Obtendo sua localização atual via GPS...');
+      const result = await requestLocation();
+      if (result.success && result.coords) {
+        const coords: MapCoordinate = {
+          latitude: result.coords.latitude,
+          longitude: result.coords.longitude,
+        };
+        setUserLocation(coords);
+
+        const routeBounds = ephemeralData?.previewData?.bounds ?? mapQuery.data?.bounds;
+        const isInside = isCoordinateWithinBounds(coords, routeBounds);
+
+        if (isInside) {
+          AccessibilityInfo.announceForAccessibility('Sua localização foi exibida no mapa da rota.');
+        } else {
+          const msg = 'Sua localização atual está fora da região desta rota. A posição foi marcada sem alterar o trajeto ou a origem oficial.';
+          AccessibilityInfo.announceForAccessibility(msg);
+          setLocationFeedback(msg);
+        }
+      } else {
+        const msg = result.errorMessage || 'Não foi possível obter sua localização atual.';
+        AccessibilityInfo.announceForAccessibility(msg);
+        setLocationFeedback(
+          Platform.OS === 'web'
+            ? `${msg} Verifique a permissão de localização deste site e tente novamente. A rota e a origem permanecem inalteradas.`
+            : `${msg} A rota e a origem permanecem inalteradas. Tente novamente quando estiver pronto.`
+        );
+        setShowBrowserPermissionInstructions(Platform.OS === 'web');
+      }
+    } catch {
+      const msg = 'Ocorreu um erro ao acessar a localização. A rota e a origem permanecem inalteradas. Tente novamente.';
+      AccessibilityInfo.announceForAccessibility(msg);
+      setLocationFeedback(msg);
+      setShowBrowserPermissionInstructions(false);
+    }
+  };
+
+  const handleLocateUser = async () => {
+    if (isLocatingUser) return;
+    const hasConsent = await hasValidLocationConsent();
+    if (!hasConsent) {
+      setPendingConsentAction('locate');
+      setShowConsentModal(true);
+      return;
+    }
+    await executeLocateUser();
   };
 
   const handleConfirmSelection = async () => {
     if (!isDynamicRoutingEnabled || !selectedCoordinate || isConfirmingSelection) return;
     const hasConsent = await hasValidLocationConsent();
     if (!hasConsent) {
+      setPendingConsentAction('selection');
       setShowConsentModal(true);
       return;
     }
@@ -219,14 +285,22 @@ export default function MapScreen() {
 
   const handleConsentSuccess = async () => {
     setShowConsentModal(false);
-    if (selectedCoordinate) {
+    const action = pendingConsentAction;
+    setPendingConsentAction(null);
+    if (action === 'selection' && selectedCoordinate) {
       await executeRoutePreview(selectedCoordinate);
+    } else if (action === 'locate') {
+      await executeLocateUser();
     }
   };
 
   const handleConsentCancel = () => {
     setShowConsentModal(false);
-    handleCancelSelection();
+    const action = pendingConsentAction;
+    setPendingConsentAction(null);
+    if (action === 'selection') {
+      handleCancelSelection();
+    }
   };
 
   const [isProlongedLoading, setIsProlongedLoading] = useState<boolean>(false);
@@ -483,6 +557,32 @@ export default function MapScreen() {
         accessibilityRole="summary"
         accessibilityLabel={isSelectionMode ? 'Mapa interativo de seleção de origem' : 'Mapa interativo da rota'}
       >
+        {locationFeedback && (
+          <View style={styles.locationFeedback} accessibilityRole="alert" accessibilityLiveRegion="assertive">
+            <Ionicons name="warning-outline" size={18} color={theme.colors.error} />
+            <Text style={styles.locationFeedbackText}>{locationFeedback}</Text>
+            {showBrowserPermissionInstructions && (
+              <TouchableOpacity
+                style={styles.locationFeedbackButton}
+                onPress={() => {
+                  setLocationFeedback('Para liberar a localização, abra as permissões do site no ícone de cadeado ou ajustes do navegador, permita Localização para este endereço e tente novamente.');
+                  setShowBrowserPermissionInstructions(false);
+                  AccessibilityInfo.announceForAccessibility('Instruções para liberar a localização no navegador exibidas.');
+                }}
+                {...makeAccessibleButton('Ver instruções para liberar localização no navegador')}
+              >
+                <Text style={styles.locationFeedbackAction}>Ver instruções do navegador</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              style={styles.locationFeedbackButton}
+              onPress={() => { setLocationFeedback(null); setShowBrowserPermissionInstructions(false); }}
+              {...makeAccessibleButton('Fechar aviso de localização')}
+            >
+              <Text style={styles.locationFeedbackAction}>Fechar</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         {isGoogleRoutesPreview && ephemeralData?.previewData ? (
           <GoogleRoutesMapNotice
             distanceMeters={ephemeralData.previewData.distance_m}
@@ -503,6 +603,8 @@ export default function MapScreen() {
             selectedCoordinate={selectedCoordinate}
             onSelectCoordinate={handleSelectMapCoordinate}
             selectionPinLabel="Ponto de partida escolhido"
+            userLocation={userLocation}
+            userLocationLabel="Sua localização atual"
             height="100%"
           />
         )}
@@ -518,6 +620,30 @@ export default function MapScreen() {
               <Text style={styles.filteredEmptyButtonText}>Limpar filtro</Text>
             </TouchableOpacity>
           </View>
+        )}
+
+        {/* Floating action button to locate user on map */}
+        {!isSelectionMode && (
+          <AccessibleMapControl
+            style={[styles.locateUserButton, isLocatingUser && styles.locateUserButtonDisabled]}
+            onPress={handleLocateUser}
+            disabled={isLocatingUser}
+            label="Mostrar minha localização no mapa"
+            hint="Obtém a sua posição GPS e destaca no mapa sem alterar a rota"
+          >
+            {isLocatingUser ? (
+              <ActivityIndicator size="small" color={theme.colors.brandForest} />
+            ) : (
+              <Ionicons
+                name={userLocation ? 'navigate' : 'navigate-outline'}
+                size={18}
+                color={userLocation ? '#0284C7' : theme.colors.brandForest}
+              />
+            )}
+            <Text style={[styles.locateUserText, Boolean(userLocation) && styles.locateUserTextActive]}>
+              {userLocation ? 'Minha localização' : 'Onde estou?'}
+            </Text>
+          </AccessibleMapControl>
         )}
 
         {/* Selection bottom confirm / cancel action bar */}
@@ -816,6 +942,34 @@ const styles = StyleSheet.create({
     color: theme.colors.brandForest,
     fontWeight: '700',
   },
+  locateUserButton: {
+    position: 'absolute',
+    top: 12,
+    left: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: theme.colors.surfaceWhite,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: theme.radii.full,
+    ...theme.shadows.card,
+    borderWidth: 1,
+    borderColor: 'rgba(117, 155, 113, 0.3)',
+    zIndex: 20,
+    minHeight: 44,
+  },
+  locateUserButtonDisabled: {
+    opacity: 0.7,
+  },
+  locateUserText: {
+    ...theme.typography.labelSm,
+    color: theme.colors.brandForest,
+    fontWeight: '700',
+  },
+  locateUserTextActive: {
+    color: '#0284C7',
+  },
   selectionModeHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -888,6 +1042,46 @@ const styles = StyleSheet.create({
   mapWrapper: {
     flex: 1,
     position: 'relative',
+  },
+  locationFeedback: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    right: 12,
+    zIndex: 20,
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    gap: 8,
+    backgroundColor: theme.colors.errorContainer,
+    borderColor: theme.colors.error,
+    borderWidth: 1,
+    borderRadius: theme.radii.md,
+    padding: 10,
+    paddingTop: 54,
+    paddingLeft: 10,
+  },
+  locationFeedbackText: {
+    ...theme.typography.bodySm,
+    color: theme.colors.onSurface,
+    flex: 1,
+    minWidth: 0,
+    flexShrink: 1,
+    width: '100%',
+  },
+  locationFeedbackAction: {
+    ...theme.typography.labelSm,
+    color: theme.colors.brandDeep,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
+    maxWidth: '100%',
+    width: '100%',
+    flexShrink: 1,
+    alignSelf: 'stretch',
+  },
+  locationFeedbackButton: {
+    width: '100%',
+    maxWidth: '100%',
+    flexShrink: 1,
   },
   filteredEmpty: {
     position: 'absolute',

@@ -1,6 +1,6 @@
 import React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { TouchableOpacity, Text, Modal, Alert, AccessibilityInfo } from 'react-native';
+import { TouchableOpacity, Text, Modal, Alert, AccessibilityInfo, Platform } from 'react-native';
 import * as Linking from 'expo-linking';
 import * as Location from 'expo-location';
 import { OriginSelector, MY_LOCATION_ORIGIN_ID } from './OriginSelector';
@@ -383,20 +383,93 @@ describe('OriginSelector Component', () => {
         await gpsButton?.props.onPress();
       });
 
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Permissão Necessária',
-        expect.stringContaining('configurações do aplicativo'),
-        expect.arrayContaining([
-          expect.objectContaining({ text: 'Agora não' }),
-          expect.objectContaining({ text: 'Abrir Configurações' }),
-        ])
+      const feedback = root!.root.findByProps({ accessibilityRole: 'alert' });
+      expect(feedback.findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('configurações');
+      const settingsButton = root!.root.findAllByType(TouchableOpacity).find(
+        (button) => button.props.accessibilityLabel === 'Abrir configurações de localização'
       );
+      jest.replaceProperty(Platform, 'OS', 'web');
+      await act(async () => {
+        await settingsButton?.props.onPress();
+      });
+      expect(Linking.openSettings).not.toHaveBeenCalled();
+      expect(root!.root.findByProps({ accessibilityRole: 'alert' })
+        .findAllByType(Text)
+        .map((node) => node.props.children)
+        .join(' ')).toContain('permissões do site');
+      jest.restoreAllMocks();
+    });
 
-      // Trigger settings button
-      const alertCalls = (Alert.alert as jest.Mock).mock.calls;
-      const settingsButton = alertCalls[0][2].find((btn: any) => btn.text === 'Abrir Configurações');
-      settingsButton.onPress();
-      expect(Linking.openSettings).toHaveBeenCalledTimes(1);
+    it('makes browser permission instructions reachable for denied permission that can be requested again', async () => {
+      jest.replaceProperty(Platform, 'OS', 'web');
+      (Location.hasServicesEnabledAsync as jest.Mock).mockResolvedValue(true);
+      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+        status: Location.PermissionStatus.DENIED,
+        canAskAgain: true,
+      });
+      (Location.requestForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+        status: Location.PermissionStatus.DENIED,
+        canAskAgain: true,
+      });
+
+      let root: renderer.ReactTestRenderer;
+      act(() => {
+        root = renderer.create(
+          <OriginSelector
+            origins={mockOrigins}
+            selectedOriginId="origin-porto"
+            onSelectOrigin={jest.fn()}
+            enableDynamicRouting={true}
+          />
+        );
+      });
+      const gpsButton = root!.root.findAllByType(TouchableOpacity).find(
+        (button) => button.props.accessibilityLabel === 'Usar minha localização atual como origem'
+      );
+      await act(async () => { await gpsButton?.props.onPress(); });
+
+      const instructionsButton = root!.root.findAllByType(TouchableOpacity).find(
+        (button) => button.props.accessibilityLabel === 'Ver instruções para liberar localização no navegador'
+      );
+      expect(instructionsButton).toBeDefined();
+      await act(async () => { await instructionsButton?.props.onPress(); });
+      expect(root!.root.findByProps({ accessibilityRole: 'alert' })
+        .findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('permissões do site');
+      expect(Linking.openSettings).not.toHaveBeenCalled();
+      jest.restoreAllMocks();
+    });
+
+    it('renders recoverable feedback when native openSettings rejects', async () => {
+      jest.replaceProperty(Platform, 'OS', 'ios');
+      (Linking.openSettings as jest.Mock).mockRejectedValueOnce(new Error('settings unavailable'));
+      (Location.hasServicesEnabledAsync as jest.Mock).mockResolvedValue(true);
+      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+        status: Location.PermissionStatus.DENIED,
+        canAskAgain: false,
+      });
+
+      let root: renderer.ReactTestRenderer;
+      act(() => {
+        root = renderer.create(
+          <OriginSelector
+            origins={mockOrigins}
+            selectedOriginId="origin-porto"
+            onSelectOrigin={jest.fn()}
+            enableDynamicRouting={true}
+          />
+        );
+      });
+      const gpsButton = root!.root.findAllByType(TouchableOpacity).find(
+        (button) => button.props.accessibilityLabel === 'Usar minha localização atual como origem'
+      );
+      await act(async () => { await gpsButton?.props.onPress(); });
+      const settingsButton = root!.root.findAllByType(TouchableOpacity).find(
+        (button) => button.props.accessibilityLabel === 'Abrir configurações de localização'
+      );
+      await act(async () => { await settingsButton?.props.onPress(); });
+      expect(root!.root.findByProps({ accessibilityRole: 'alert' })
+        .findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('Não foi possível abrir');
+      jest.restoreAllMocks();
     });
   });
 
@@ -503,25 +576,86 @@ describe('OriginSelector Component', () => {
 
       expect(onStartSelectOnMap).toHaveBeenCalled();
     });
+  });
 
-    it('unmounts cleanly without errors or dangling timers', () => {
+  describe('ECO-2609 — Validação de resiliência e origens fixas sob falha de GPS', () => {
+    it('retorna à origem fixa sem quebrar o fluxo quando a permissão de GPS é negada pelo usuário', async () => {
+      (Location.hasServicesEnabledAsync as jest.Mock).mockResolvedValue(true);
+      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+        status: Location.PermissionStatus.DENIED,
+        canAskAgain: true,
+      });
+      (Location.requestForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+        status: Location.PermissionStatus.DENIED,
+        canAskAgain: true,
+      });
+
+      const onSelectOrigin = jest.fn();
       let root: renderer.ReactTestRenderer;
+
       act(() => {
         root = renderer.create(
           <OriginSelector
             origins={mockOrigins}
             selectedOriginId="origin-porto"
-            onSelectOrigin={jest.fn()}
+            onSelectOrigin={onSelectOrigin}
             enableDynamicRouting={true}
           />
         );
       });
 
-      expect(() => {
-        act(() => {
-          root.unmount();
-        });
-      }).not.toThrow();
+      const gpsButton = root!.root.findAllByType(TouchableOpacity).find(
+        (b) => b.props.accessibilityLabel === 'Usar minha localização atual como origem'
+      );
+
+      await act(async () => {
+        await gpsButton?.props.onPress();
+      });
+
+      // Feedback visível e origem mantida na fixa (Porto Fluvial)
+      const feedback = root!.root.findByProps({ accessibilityRole: 'alert' });
+      expect(feedback.findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('Permissão de localização foi negada');
+      expect(onSelectOrigin).not.toHaveBeenCalled();
+      expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledWith(
+        expect.stringContaining('Permissão de localização foi negada')
+      );
+    });
+
+    it('trata erro de GPS com fallback gracioso sem travar a interface', async () => {
+      (Location.hasServicesEnabledAsync as jest.Mock).mockResolvedValue(true);
+      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
+        status: Location.PermissionStatus.GRANTED,
+        canAskAgain: true,
+      });
+      (Location.getCurrentPositionAsync as jest.Mock).mockRejectedValue(
+        new Error('LOCATION_TIMEOUT')
+      );
+
+      const onSelectOrigin = jest.fn();
+      let root: renderer.ReactTestRenderer;
+
+      act(() => {
+        root = renderer.create(
+          <OriginSelector
+            origins={mockOrigins}
+            selectedOriginId="origin-porto"
+            onSelectOrigin={onSelectOrigin}
+            enableDynamicRouting={true}
+          />
+        );
+      });
+
+      const gpsButton = root!.root.findAllByType(TouchableOpacity).find(
+        (b) => b.props.accessibilityLabel === 'Usar minha localização atual como origem'
+      );
+
+      await act(async () => {
+        await gpsButton?.props.onPress();
+      });
+
+      const feedback = root!.root.findByProps({ accessibilityRole: 'alert' });
+      expect(feedback.findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('Tempo limite esgotado');
+      expect(onSelectOrigin).not.toHaveBeenCalled();
     });
   });
 });
