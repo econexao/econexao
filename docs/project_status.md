@@ -9,7 +9,8 @@ ainda abertas permanecem em ECO-2603 e não são aprovadas pelo commit documenta
 ## Como acompanhar
 
 - **Agora:** ECO-2613 publicada via PR #28/squash `2098e75c5c8fed532f0f2f28ea5e985dfb49b`; ECO-1901 está em revisão local (favoritos persistentes com guest autenticado, conforme ADR 0007). Uma task por vez, revisão independente e GO por operação remota.
-  A ECO-2617 foi concluída localmente; `origin/staging` está em `a638233` e já contém as
+  A ECO-2617 foi concluída localmente; a base publicada conhecida de `origin/staging` é
+  `2098e75c5c8fed532f0f2f28ea5e985dfb49b26b` e já contém as
   integrações publicadas de ECO-2606 a ECO-2610. Não reimplementar essas tasks por ler
   a raiz antiga. O checkout principal contém alterações do owner e foi preservado.
   Ver [auditoria da V1](audit_v1_2026-09-06.md) para evidências e limites.
@@ -220,11 +221,11 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 
 #### ECO-2607 — Completar ciclo e histórico de viagens
 
-- **Estado / horizonte / alteração:** CONCLUÍDA / Versão do evento / PUBLICADA.
+- **Estado / horizonte / alteração:** PARCIAL / Versão do evento / PUBLICADA.
 - **Dependências ou sucessoras:** ECO-2606, ECO-1904.
 - **Conclusão / aceite:** Iniciar, pausar, retomar e finalizar com transições válidas, persistência após recarregar, isolamento e retry sem duplicação; histórico distingue estados; nenhuma dependência de comentários ou rastreamento contínuo armazenado.
-- **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
-- **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
+- **Evidência e limite:** O aceite completo de ciclo, histórico, persistência e isolamento não foi reproduzido nesta revisão; não promover além do estado sustentado. A referência publicada informada é o squash `1d8a7c8`.
+- **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** `1d8a7c8`.
 
 #### ECO-2608 — Exibir pins sem clusters com densidade controlada
 
@@ -686,7 +687,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Estado / horizonte / alteração:** PARCIAL / Base da versão Web / EDITADA.
 - **Dependências ou sucessoras:** ECO-1504, ECO-1703..
 - **Conclusão / aceite:** >1 página sem duplicação; stale request cancelada; favorites persist/reload/failure; OpenAPI/TS/Jest and staging E2E.
-- **Evidência local reproduzida nesta branch:** `getAuthIdentity` classifica visitante, guest anônimo inclusive com e-mail transitório e conta; leituras de favoritos propagam `AbortSignal`; a troca A→B aborta consulta privada, remove seu cache e preserva regiões públicas. O foco Jest passou 4 suítes/31 testes; typecheck e OpenAPI passaram; export Web passou. O Playwright foi reescrito para abrir o ECOnexão real em `baseURL` e interceptar somente API/Auth com fixtures contratuais, mas ficou desabilitado por padrão porque o export estático local falha sem `EXPO_PUBLIC_API_URL`; não há evidência E2E local de favoritos. Paginação/cancelamento estão cobertos pelos testes Jest; visitante/guest/conta completos, isolamento A/B com identidades reais e persistência real continuam pendentes para staging.
+- **Evidência local reproduzida nesta branch:** `getAuthIdentity` classifica visitante, guest anônimo inclusive com e-mail transitório e conta; leituras de favoritos propagam `AbortSignal`; a troca A→B aborta consulta privada, remove seu cache e preserva regiões públicas. O foco Jest passou 4 suítes/31 testes; typecheck e OpenAPI passaram. `npm run export:web:fixture` executou `expo export -p web --clear` com URL/API, URL Supabase e publishable key públicas de fixture; o Playwright abriu o bundle real em baseURL e passou 6/6 em Chromium desktop/mobile, cobrindo detalhe de ator, catálogo de rota, rollback, reload, tab de rotas, paginação de atores sem duplicação e favoritos de rota. As fixtures não são Supabase/API reais; visitante/guest/conta reais, isolamento A/B real, renovação de sessão e persistência no staging continuam pendentes.
 - **Referência:** [finalization/tasks.md](finalization/tasks.md). **Commit:** Não vinculado.
 
 #### ECO-1902 — Cadastro, login, linking e ciclo de sessão
