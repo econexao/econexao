@@ -21,7 +21,7 @@ const mimeTypes = {
 
 const server = http.createServer((req, res) => {
   let reqPath = req.url ? req.url.split('?')[0] : '/';
-  let filePath = path.join(distDir, reqPath === '/' ? 'index.html' : reqPath);
+  let filePath = path.join(distDir, reqPath === '/' ? 'index.html' : reqPath.replace(/^[/\\]+/, ''));
 
   if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
     filePath = path.join(distDir, 'index.html');

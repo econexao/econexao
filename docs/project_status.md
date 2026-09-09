@@ -1,6 +1,6 @@
 # ECOnexão — documento único de tarefas
 
-Atualizado em: 09/09/2026. ECO-2613 implementada localmente; revisão técnica pendente, sem push/PR/deploy.
+Atualizado em: 09/09/2026. ECO-2613 publicada via PR #28; ECO-1901 em revisão local, sem novas ações remotas.
 Este é o único cadastro de tasks: concluídas, parciais, novas, adiadas e substituídas.
 Os documentos de iniciativas preservam aceites/evidências históricos, mas não definem
 prioridade ou estado atual. A sequência abaixo orienta a próxima execução; decisões
@@ -8,7 +8,7 @@ ainda abertas permanecem em ECO-2603 e não são aprovadas pelo commit documenta
 
 ## Como acompanhar
 
-- **Agora:** ECO-2613 aguarda revisão técnica independente; depois ECO-1901 (favoritos persistentes com guest autenticado, conforme ADR 0007). Uma task por vez, revisão independente e GO por operação remota.
+- **Agora:** ECO-2613 publicada via PR #28/squash `2098e75c5c8fed532f0f2f28ea5e985dfb49b`; ECO-1901 está em revisão local (favoritos persistentes com guest autenticado, conforme ADR 0007). Uma task por vez, revisão independente e GO por operação remota.
   A ECO-2617 foi concluída localmente; `origin/staging` está em `a638233` e já contém as
   integrações publicadas de ECO-2606 a ECO-2610. Não reimplementar essas tasks por ler
   a raiz antiga. O checkout principal contém alterações do owner e foi preservado.
@@ -220,7 +220,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 
 #### ECO-2607 — Completar ciclo e histórico de viagens
 
-- **Estado / horizonte / alteração:** PENDENTE / Versão do evento / NOVA.
+- **Estado / horizonte / alteração:** CONCLUÍDA / Versão do evento / PUBLICADA.
 - **Dependências ou sucessoras:** ECO-2606, ECO-1904.
 - **Conclusão / aceite:** Iniciar, pausar, retomar e finalizar com transições válidas, persistência após recarregar, isolamento e retry sem duplicação; histórico distingue estados; nenhuma dependência de comentários ou rastreamento contínuo armazenado.
 - **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
@@ -270,15 +270,15 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 
 #### ECO-2613 — Completar perfil do ator e fotos Google sob demanda
 
-- **Estado / horizonte / alteração:** PENDENTE / Versão do evento / NOVA.
+- **Estado / horizonte / alteração:** CONCLUÍDA / Versão do evento / PUBLICADA.
 - **Dependências ou sucessoras:** ECO-2603, ECO-2510.
 - **Conclusão / aceite:** Ficha com contatos/localização/serviços/redes verificáveis, ausências honestas; Google consultado ao abrir detalhe, atribuição/link à fonte, timeout/fallback; sem espelhar fotos em Storage; conteúdo principal não espera galeria.
-- **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
+- **Evidência e limite:** PR #28, squash `2098e75c5c8fed532f0f2f28ea5e985dfb49b`, workflow `34363928114`; cards usam mídia editorial/placeholder e não consultam Google por padrão. Google real, mídia editorial real completa e homologação remota permanecem limites desta entrega.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
 - **Correção obrigatória antes da qualificação:** `ActorCard` já monta foto Google quando falta capa e o componente consulta ao montar. Desabilitar esse consumo por padrão nos cards, com mídia editorial/placeholder e teste de zero solicitações nesse modo. Ativação somente em ECO-2616, após medição e gate; manter detalhe sob demanda funcional.
 
 - **Publicação registrada:** PR #28, squash `2098e75c5c8fed532f0f2f28ea5e985dfb49b26b`, workflow `34363928114`; placeholder confirmado no canônico. Mídia editorial local e Google real ainda não foram homologados.
-- **Limitações:** a ficha ainda não está qualificada para staging/publicação; não foram homologados conteúdo editorial real de todos os atores, provedor Google real, dispositivos nativos, timeout de rede real ou custos. A validação confirma apenas o contrato e os fluxos locais; ECO-2616 continua desabilitada e ECO-1901 permanece próxima task.
+- **Limitações:** conteúdo editorial real de todos os atores, provedor Google real, dispositivos nativos, timeout de rede real e custos ainda não foram homologados; ECO-2616 continua desabilitada e ECO-1901 permanece em revisão local.
 - **Validação Playwright final 09/09/2026:** partindo de `092ddc2`, suíte `e2e/eco2613-photos.spec.ts` passou 10/10 (Chromium desktop/mobile). Fixtures bloquearam rede externa não atendida, incluindo Google; metadata e imagem do proxy foram contadas separadamente e permaneceram em zero nos cards. Foram comprovados retry com primeira falha e sucesso posterior para metadata, recuperação após erro da imagem com `complete && naturalWidth > 0`, carregamento da imagem editorial interceptada, clique card→detalhe, retorno pelo controle `Voltar`, metadata pendente sem bloquear nome/descrição/contatos, atribuições e destino Maps sem navegação externa. `git diff --check` passou; não foram alterados arquivos de aplicação nem repetidos typecheck/OpenAPI/export/Jest.
 
 
@@ -296,8 +296,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Dependências ou sucessoras:** ECO-2607, ECO-2608, ECO-2609, ECO-2610, ECO-2611, ECO-2612, ECO-2613, ECO-2614, ECO-2621, ECO-2622, ECO-2623, ECO-2624, ECO-2625, ECO-2626, ECO-2627, ECO-2628, ECO-2629, ECO-2630.
 - **Conclusão / aceite:** Acordar e medir metas em rede/aparelho definidos (proposta: feedback 200 ms, conteúdo 3 s, mapa 5 s); abertura fria/cache/rede degradada; medir pico separado de 300 visitantes; custos fixos+variáveis+reserva dentro de R$ 500; limites e fallback testados, inclusive tráfego de compartilhamentos.
 - **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
-- **Registro ECO-2615 (09/09/2026):** a primeira execução local de `npm ci` excedeu 40s e foi interrompida após timeout operacional; a instalação seguinte iniciou recuperação, mas o diretório de dependências do worktree apresentou `ENOTEMPTY` e os gates JS não puderam ser reproduzidos neste ambiente. Nenhuma causa foi atribuída.
-- **Evidência adicional:** primeira chamada ao health canônico excedeu 40s; segunda tentativa de health/regiões/preflight ficou aproximadamente entre 0,3–0,4s e a UI recuperou. A causa não foi determinada.
+- **Registro ECO-2615 (09/09/2026):** primeira chamada ao health canônico excedeu 40s; segunda tentativa de health/regiões/preflight ficou aproximadamente entre 0,3–0,4s e a UI recuperou. A causa não foi determinada.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
 - **Preparação antecipada e reutilização:** definir cenário de pico, rede/aparelho e critérios antes de investir em integrações; medir amostra no primeiro incremento. Já existe `DatabaseMonthlyUsageGuard` no conector Google Routes: verificar sua aplicação real e os demais serviços, sem duplicar esse guard. Qualificação final exige todas as dez rotas acima.
 
@@ -687,7 +686,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Estado / horizonte / alteração:** PARCIAL / Base da versão Web / EDITADA.
 - **Dependências ou sucessoras:** ECO-1504, ECO-1703..
 - **Conclusão / aceite:** >1 página sem duplicação; stale request cancelada; favorites persist/reload/failure; OpenAPI/TS/Jest and staging E2E.
-- **Evidência local reproduzida nesta branch:** `getAuthIdentity` classifica visitante, guest anônimo inclusive com e-mail transitório e conta; leituras de favoritos propagam `AbortSignal`; a troca A→B aborta consulta privada, remove seu cache e preserva regiões públicas; Jest passou 44 suítes/282 testes; typecheck e OpenAPI passaram; Playwright fixture passou 6/6 em Chromium desktop/mobile para salvar/remover rota e ator, rollback acessível, restauração, isolamento A/B, paginação sem duplicação e descarte de resposta obsoleta; export Web passou. A fixture Playwright é local e não usa Supabase/Google reais. Homologação autenticada no canônico não foi executada; não há evidência remota de favoritos funcionais.
+- **Evidência local reproduzida nesta branch:** `getAuthIdentity` classifica visitante, guest anônimo inclusive com e-mail transitório e conta; leituras de favoritos propagam `AbortSignal`; a troca A→B aborta consulta privada, remove seu cache e preserva regiões públicas. O foco Jest passou 4 suítes/31 testes; typecheck e OpenAPI passaram; export Web passou. O Playwright foi reescrito para abrir o ECOnexão real em `baseURL` e interceptar somente API/Auth com fixtures contratuais, mas ficou desabilitado por padrão porque o export estático local falha sem `EXPO_PUBLIC_API_URL`; não há evidência E2E local de favoritos. Paginação/cancelamento estão cobertos pelos testes Jest; visitante/guest/conta completos, isolamento A/B com identidades reais e persistência real continuam pendentes para staging.
 - **Referência:** [finalization/tasks.md](finalization/tasks.md). **Commit:** Não vinculado.
 
 #### ECO-1902 — Cadastro, login, linking e ciclo de sessão
