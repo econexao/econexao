@@ -296,6 +296,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Dependências ou sucessoras:** ECO-2607, ECO-2608, ECO-2609, ECO-2610, ECO-2611, ECO-2612, ECO-2613, ECO-2614, ECO-2621, ECO-2622, ECO-2623, ECO-2624, ECO-2625, ECO-2626, ECO-2627, ECO-2628, ECO-2629, ECO-2630.
 - **Conclusão / aceite:** Acordar e medir metas em rede/aparelho definidos (proposta: feedback 200 ms, conteúdo 3 s, mapa 5 s); abertura fria/cache/rede degradada; medir pico separado de 300 visitantes; custos fixos+variáveis+reserva dentro de R$ 500; limites e fallback testados, inclusive tráfego de compartilhamentos.
 - **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
+- **Registro ECO-2615 (09/09/2026):** a primeira execução local de `npm ci` excedeu 40s e foi interrompida após timeout operacional; a instalação seguinte iniciou recuperação, mas o diretório de dependências do worktree apresentou `ENOTEMPTY` e os gates JS não puderam ser reproduzidos neste ambiente. Nenhuma causa foi atribuída.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
 - **Preparação antecipada e reutilização:** definir cenário de pico, rede/aparelho e critérios antes de investir em integrações; medir amostra no primeiro incremento. Já existe `DatabaseMonthlyUsageGuard` no conector Google Routes: verificar sua aplicação real e os demais serviços, sem duplicar esse guard. Qualificação final exige todas as dez rotas acima.
 
@@ -682,10 +683,10 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 
 - **Próxima task após ECO-2613:** validar visitante, guest Supabase autenticado e conta separadamente, com salvar/remover, persistência/reload, rollback, isolamento A/B e linking conforme ADR 0007. O erro observado anteriormente não identifica a sessão e 401 sem token não prova falha de guest; favoritos permanecem fora do escopo desta entrega.
 
-- **Estado / horizonte / alteração:** PARCIAL / Base da versão Web / PRESERVADA.
+- **Estado / horizonte / alteração:** PARCIAL / Base da versão Web / EDITADA.
 - **Dependências ou sucessoras:** ECO-1504, ECO-1703..
 - **Conclusão / aceite:** >1 página sem duplicação; stale request cancelada; favorites persist/reload/failure; OpenAPI/TS/Jest and staging E2E.
-- **Evidência e limite:** Reconciliação RQ-01 registrada em nível local; execução remota completa não demonstrada nesta consolidação.
+- **Evidência e limite:** Implementação local nesta branch adiciona classificação explícita `visitor`/`guest`/`account`, propaga `AbortSignal` às leituras privadas de favoritos e cancela consultas autenticadas antes da limpeza ao trocar de usuário. Testes de foco existentes cobrem rollback acessível e cancelamento de busca; novo teste cobre as três identidades. Os gates JS ficaram bloqueados por instalação incompleta do `node_modules` no worktree (`tsc`/Jest/Expo ausentes após `npm ci`), e a homologação autenticada no canônico não foi executada. Não há evidência remota de favoritos funcionais ainda.
 - **Referência:** [finalization/tasks.md](finalization/tasks.md). **Commit:** Não vinculado.
 
 #### ECO-1902 — Cadastro, login, linking e ciclo de sessão

@@ -195,7 +195,7 @@ export const userQueries = {
   favoriteRoutes: (userId?: string) =>
     queryOptions({
       queryKey: queryKeys.myFavoriteRoutes(userId),
-      queryFn: () => apiClient.getMyFavoriteRoutes(),
+      queryFn: ({ signal }) => apiClient.getMyFavoriteRoutes({ signal }),
       select: (e) => e.data,
       enabled: Boolean(userId),
       meta: { authenticated: true },
@@ -203,7 +203,7 @@ export const userQueries = {
   favoriteActors: (userId?: string) =>
     queryOptions({
       queryKey: queryKeys.favoriteActors(userId),
-      queryFn: () => apiClient.getMyFavoriteActors(),
+      queryFn: ({ signal }) => apiClient.getMyFavoriteActors({ signal }),
       select: (e) => e.data,
       enabled: Boolean(userId),
       meta: { authenticated: true },

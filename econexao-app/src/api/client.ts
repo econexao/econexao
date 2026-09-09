@@ -424,8 +424,8 @@ export class ApiClient {
     );
   }
 
-  public async getMyFavoriteRoutes(): Promise<RouteListEnvelope> {
-    return this.request<RouteListEnvelope>("/me/favorite-routes", {}, false, true);
+  public async getMyFavoriteRoutes(options?: { signal?: AbortSignal }): Promise<RouteListEnvelope> {
+    return this.request<RouteListEnvelope>("/me/favorite-routes", { signal: options?.signal }, false, true);
   }
 
   public async addFavoriteActor(
@@ -450,8 +450,8 @@ export class ApiClient {
     );
   }
 
-  public async getMyFavoriteActors(): Promise<ActorListEnvelope> {
-    return this.request<ActorListEnvelope>("/me/favorite-actors", {}, false, true);
+  public async getMyFavoriteActors(options?: { signal?: AbortSignal }): Promise<ActorListEnvelope> {
+    return this.request<ActorListEnvelope>("/me/favorite-actors", { signal: options?.signal }, false, true);
   }
 
   public async getMyProfile(): Promise<UserProfileEnvelope> {
