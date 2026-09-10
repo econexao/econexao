@@ -31,10 +31,14 @@ Padronizam-se as seguintes categorias canônicas para atores (`actors`):
 | `alimentacao` | Alimentação | `#D97706` | Amber / Warm Orange | `utensils` | 1 | Visível |
 | `atrativos` | Atrativos | `#059669` | Emerald Green | `compass` | 2 | Visível |
 | `hospedagem` | Hospedagem | `#2563EB` | Royal Blue | `bed` | 3 | Visível |
-| `artesanato` | Artesanato | `#7C3AED` | Violet / Purple | `palette` | 4 | Visível |
-| `transporte` | Transporte | `#0891B2` | Cyan / Teal | `bus` | 5 | Visível |
-| `saude` | Saúde | `#DC2626` | Crimson Red | `heart-pulse` / `cross` | 6 | Visível |
-| `seguranca` | Segurança | `#1E3A8A` | Navy Blue | `shield` | 7 | Visível |
+| `experiencias` | Experiências & Passeios | `#0D9488` | Teal / Deep Aqua | `boat` / `compass` | 4 | Visível |
+| `artesanato` | Artesanato | `#7C3AED` | Violet / Purple | `palette` | 5 | Visível |
+| `vida_noturna` | Vida Noturna & Eventos | `#9333EA` | Purple / Neon Violet | `beer` / `music` | 6 | Visível |
+| `comercio` | Comércio Local & Lojas | `#EA580C` | Deep Orange | `store` / `shopping-bag` | 7 | Visível |
+| `servicos_turisticos` | Serviços Turísticos & Guias | `#4F46E5` | Indigo | `briefcase` / `user-check` | 8 | Visível |
+| `transporte` | Transporte | `#0891B2` | Cyan / Teal | `bus` | 9 | Visível |
+| `saude` | Saúde | `#DC2626` | Crimson Red | `heart-pulse` / `cross` | 10 | Visível |
+| `seguranca` | Segurança | `#1E3A8A` | Navy Blue | `shield` | 11 | Visível |
 | `outros` | Outros | `#6B7280` | Neutral Gray | `help-circle` | 99 | Visível (pin cinza `#6B7280` e chip de filtro público) |
 
 ---
@@ -84,7 +88,11 @@ A especificação cromática e tipográfica foi desenhada para garantir acessibi
 | `alimentacao` | `#D97706` | **3.01:1** (UI Component) / Texto: usar `#B45309` | **3.01:1** (Com borda contrastante `#78350F`) | Diferenciação garantida pelo ícone `utensils` |
 | `atrativos` | `#059669` | **4.56:1** (Passa AA Texto Normal) | **4.56:1** | Distinto de amber e violet; ícone `compass` |
 | `hospedagem` | `#2563EB` | **4.58:1** (Passa AA Texto Normal) | **4.58:1** | Distinto de violet e emerald; ícone `bed` |
+| `experiencias` | `#0D9488` | **4.62:1** (Passa AA Texto Normal) | **4.62:1** | Tom teal escuro; ícone `boat` |
 | `artesanato` | `#7C3AED` | **5.74:1** (Passa AA Texto Normal) | **5.74:1** | Distinto de azul e vermelho; ícone `palette` |
+| `vida_noturna` | `#9333EA` | **5.20:1** (Passa AA Texto Normal) | **5.20:1** | Tom púrpura vibrante; ícone `beer` / `music` |
+| `comercio` | `#EA580C` | **3.50:1** (UI Component) / Texto: usar `#C2410C` | **3.50:1** | Tom laranja queimado; ícone `store` |
+| `servicos_turisticos` | `#4F46E5` | **5.90:1** (Passa AA Texto Normal) | **5.90:1** | Tom índigo; ícone `briefcase` |
 | `transporte` | `#0891B2` | **4.52:1** (Passa AA Texto Normal) | **4.52:1** | Tom ciano escuro; ícone `bus` |
 | `saude` | `#DC2626` | **4.51:1** (Passa AA Texto Normal) | **4.51:1** | Tom vermelho vivo; ícone `heart-pulse` |
 | `seguranca` | `#1E3A8A` | **10.87:1** (Passa AAA Texto Normal) | **10.87:1** | Tom marinho profundo; ícone `shield` |

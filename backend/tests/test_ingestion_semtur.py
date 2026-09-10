@@ -1,5 +1,6 @@
 """Unit tests for SEMTUR Inventory Importer (ECO-2505 / ADR 0014 / ADR 0015)."""
 
+from app.core.taxonomy import CANONICAL_CATEGORY_SLUGS
 from app.ingestion.semtur_importer import (
     DEFAULT_SNAPSHOT_DIR,
     compute_payload_hash,
@@ -218,14 +219,5 @@ def test_process_semtur_inventory_real_snapshot() -> None:
     for rec in records:
         assert rec.external_id.startswith("semtur_p")
         assert len(rec.payload_hash_sha256) == 64
-        assert rec.categoria_slug in [
-            "alimentacao",
-            "atrativos",
-            "hospedagem",
-            "artesanato",
-            "transporte",
-            "saude",
-            "seguranca",
-            "outros",
-        ]
+        assert rec.categoria_slug in CANONICAL_CATEGORY_SLUGS
         assert rec.tipo_slug is not None

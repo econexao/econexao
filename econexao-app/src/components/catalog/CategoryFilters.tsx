@@ -26,8 +26,10 @@ export const getCategoryIonicons = (
     case 'coffee':
       return 'cafe-outline';
     case 'shopping-cart':
+    case 'cart':
       return 'cart-outline';
     case 'store':
+    case 'storefront':
       return 'storefront-outline';
     case 'trees':
       return 'leaf-outline';
@@ -36,6 +38,7 @@ export const getCategoryIonicons = (
     case 'waves':
       return 'water-outline';
     case 'mountain':
+    case 'trail-sign':
       return 'trail-sign-outline';
     case 'landmark':
       return 'business-outline';
@@ -53,7 +56,14 @@ export const getCategoryIonicons = (
       return 'airplane-outline';
     case 'anchor':
     case 'ship':
+    case 'boat':
       return 'boat-outline';
+    case 'music':
+    case 'musical-notes':
+      return 'musical-notes-outline';
+    case 'bicycle':
+    case 'bike':
+      return 'bicycle-outline';
     case 'fuel':
       return 'car-outline';
     case 'car':
