@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "total_migrations": 29,
-  "generated_at": "2026-09-10T23:26:49.845357+00:00",
+  "total_migrations": 30,
+  "generated_at": "2026-09-10T23:36:07.441900+00:00",
   "migrations": [
     {
       "version": "20260811000000",
@@ -205,6 +205,13 @@
       "path": "supabase/migrations/20260910203000_reclassify_actors_specialized_taxonomy.sql",
       "bytes": 1787,
       "sha256": "cef087c8d1b3c173632276a12fa2db0a2e57fbac3690572df708dd4359e3d31e"
+    },
+    {
+      "version": "20260910204000",
+      "filename": "20260910204000_apply_all_canonical_categories_and_types.sql",
+      "path": "supabase/migrations/20260910204000_apply_all_canonical_categories_and_types.sql",
+      "bytes": 20016,
+      "sha256": "e4d867b2855d9df184e1de1d7fc1e26f92020839926789115ff636d1d8055f09"
     }
   ]
 }
