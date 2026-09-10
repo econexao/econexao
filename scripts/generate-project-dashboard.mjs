@@ -157,8 +157,8 @@ function buildDashboard({ updated, tasks }) {
     <article class="panel next">
       <div class="eyebrow" style="color:var(--warn)">FAZER AGORA · UMA COISA</div>
       <h2><span class="task-id">${nextId}</span> — Dados reais, paginação e favoritos consistentes</h2>
-      <p class="plain">Revisar o PR #29 e manter a tarefa parcial até a homologação com identidades e Supabase reais.</p>
-      <p class="action">Próximo gate: merge autorizado pelo owner e, depois, homologação real separadamente autorizada.</p>
+      <p class="plain">Revisar e publicar a correção local da leitura de favoritos de ator, mantendo a tarefa parcial até a revalidação no Supabase real.</p>
+      <p class="action">Próximo gate: push e deploy da correção sob autorização própria; depois, repetir somente os cenários remotos afetados.</p>
     </article>
     <aside class="panel">
       <h2>Leitura honesta</h2>

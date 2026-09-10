@@ -1,6 +1,6 @@
 # ECOnexão — documento único de tarefas
 
-Atualizado em: 10/09/2026. ECO-1901 revisada localmente após incorporar staging; PR #29 ainda sem merge.
+Atualizado em: 10/09/2026. PR #29 integrada em staging; homologação real da ECO-1901 encontrou defeito na leitura de favoritos de ator.
 Este é o único cadastro de tasks: concluídas, parciais, novas, adiadas e substituídas.
 Os documentos de iniciativas preservam aceites/evidências históricos, mas não definem
 prioridade ou estado atual. A sequência abaixo orienta a próxima execução; decisões
@@ -8,9 +8,9 @@ ainda abertas permanecem em ECO-2603 e não são aprovadas pelo commit documenta
 
 ## Como acompanhar
 
-- **Agora:** ECO-2613 publicada via PR #28/squash `2098e75c5c8fed532f0f2f28ea5e985dfb49b26b`; ECO-1901 está em revisão local (favoritos persistentes com guest autenticado, conforme ADR 0007). Uma task por vez, revisão independente e GO por operação remota.
-  A ECO-2617 foi concluída localmente; `origin/staging` foi confirmado em
-  `ad07f6f4c5c23e5fb5dfc705f63001d79b57657e`, incluindo a identidade visual do PR #30 e as
+- **Agora:** ECO-1901 permanece PARCIAL após a PR #29 ser integrada em `staging` pelo squash `0a717b6d0d09ddac829f7b2dce9f9d2e44036c51`. O deploy canônico desse SHA ficou saudável, e a homologação real autorizada confirmou visitante, guest, refresh, paginação, favoritos de rota e isolamento A/B, mas encontrou `GET /me/favorite-actors` com HTTP 500 após `PUT` bem-sucedido. A correção mínima está em revisão local antes de novo push/deploy. Uma task por vez, revisão independente e GO por operação remota.
+  A ECO-2617 foi concluída localmente; o baseline incorporado inclui
+  `0a717b6d0d09ddac829f7b2dce9f9d2e44036c51`, a identidade visual do PR #30 e as
   integrações publicadas de ECO-2606 a ECO-2610. Não reimplementar essas tasks por ler
   a raiz antiga. O checkout principal contém alterações do owner e foi preservado.
   Ver [auditoria da V1](audit_v1_2026-09-06.md) para evidências e limites.
@@ -682,12 +682,12 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 
 #### ECO-1901 — Dados reais, paginação e favoritos consistentes
 
-- **Próxima task após ECO-2613:** validar visitante, guest Supabase autenticado e conta separadamente, com salvar/remover, persistência/reload, rollback, isolamento A/B e linking conforme ADR 0007. O erro observado anteriormente não identifica a sessão e 401 sem token não prova falha de guest; favoritos permanecem fora do escopo desta entrega.
+- **Próximo gate:** revisar e publicar a correção da leitura de favoritos de ator; depois repetir somente os cenários remotos afetados no staging canônico.
 
 - **Estado / horizonte / alteração:** PARCIAL / Base da versão Web / EDITADA.
 - **Dependências ou sucessoras:** ECO-1504, ECO-1703..
 - **Conclusão / aceite:** >1 página sem duplicação; stale request cancelada; favorites persist/reload/failure; OpenAPI/TS/Jest and staging E2E.
-- **Evidência local reproduzida nesta branch:** `getAuthIdentity` classifica visitante, guest anônimo inclusive com e-mail transitório e conta; leituras de favoritos propagam `AbortSignal`; a troca A→B aborta consulta privada, remove seu cache e preserva regiões públicas. O foco Jest passou 4 suítes/31 testes; typecheck e OpenAPI passaram. `npm run export:web:fixture` executou `expo export -p web --clear` com URL/API, URL Supabase e publishable key públicas de fixture; o Playwright abriu o bundle real em baseURL e passou 8/8 em Chromium desktop/mobile, cobrindo detalhe de ator, catálogo de rota, rollback, reload, tab de rotas, paginação de atores sem duplicação e favoritos de rota. Em 10/09/2026, a configuração local (`.env.local`) e a documentação operacional foram reconciliadas com o staging canônico do owner (`econexao-staging`, project ref `kchzucvrnzwzehfdwzwi`, URL `https://kchzucvrnzwzehfdwzwi.supabase.co`, Render `https://econexao-backend-staging-30dt.onrender.com`), sem rotacionar senha do banco e com risco residual aceito pelo owner. A task permanece rigorosamente PARCIAL: as fixtures não são Supabase/API reais; visitante/guest/conta reais, isolamento A/B real, renovação de sessão e persistência no staging dependem de deploy real e autorização GO prévia.
+- **Evidência:** a PR #29 foi integrada em `staging` pelo squash `0a717b6d0d09ddac829f7b2dce9f9d2e44036c51`; CI, Vercel e Render ficaram verdes, e o backend canônico reportou esse SHA. Na homologação real autorizada de 10/09/2026, somente em `kchzucvrnzwzehfdwzwi`, visitante recebeu 401; três identidades anônimas sintéticas e distintas foram criadas; o guest preservou um favorito de rota após leitura e refresh da sessão; dois `PUT` consecutivos de rota permaneceram idempotentes; B iniciou sem enxergar favoritos de A; a paginação pública retornou duas páginas de dois atores sem duplicação; e a limpeza dos favoritos rastreados retornou 200 com listas finais zeradas. O cenário de ator revelou defeito real: `PUT /me/favorite-actors/{id}` retornou 200, mas `GET /me/favorite-actors` retornou HTTP 500. A causa local identificada foi `ST_X/ST_Y` aplicado diretamente à coluna PostGIS `geography`, divergindo da consulta pública que faz cast para `geometry`; a correção mínima e seu teste de regressão ainda precisam de publicação e revalidação remota. Uma tentativa diagnóstica adicional perdeu a sessão efêmera antes do `DELETE`, podendo ter deixado um favorito de ator órfão vinculado a uma identidade sintética sem PII; os seis usuários anteriores e production não foram tocados. A task permanece PARCIAL e não há evidência para linking de conta identificada nem rollback remoto controlado.
 - **Referência:** [finalization/tasks.md](finalization/tasks.md). **Commit:** Não vinculado.
 
 #### ECO-1902 — Cadastro, login, linking e ciclo de sessão
