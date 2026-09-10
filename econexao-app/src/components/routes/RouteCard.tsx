@@ -9,7 +9,7 @@ import { getRouteCoverImage } from './routeCoverImage';
 
 interface RouteCardProps {
   route: RouteSummary;
-  onPress: () => void;
+  onPress?: () => void;
   onToggleFavorite?: () => void;
   isFavorite?: boolean;
 }
@@ -27,10 +27,17 @@ export const RouteCard: React.FC<RouteCardProps> = ({
       <Pressable
         style={styles.cardPressable}
         onPress={onPress}
-        {...makeAccessibleButton(
-          `Rota ${route.title}`,
-          `${route.city}, ${route.state_code}. Toque para ver os detalhes.`
-        )}
+        disabled={!onPress}
+        accessibilityRole={onPress ? 'button' : 'none'}
+        {...(onPress
+          ? makeAccessibleButton(
+              `Rota ${route.title}`,
+              `${route.city}, ${route.state_code}. Toque para ver os detalhes.`
+            )
+          : {
+              accessible: true,
+              accessibilityLabel: `Rota ${route.title}, ${route.city}, ${route.state_code}`,
+            })}
       >
         <View style={styles.imageContainer}>
           {coverImage ? (

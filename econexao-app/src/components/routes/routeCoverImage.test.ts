@@ -16,7 +16,18 @@ describe('getRouteCoverImage', () => {
       .toEqual({ uri: 'https://example.test/route.jpg' });
   });
 
+  it('uses bundled images for Alter do Chao, Ponta de Pedras, and Aramanai', () => {
+    expect(getRouteCoverImage({ slug: 'rota-alter-do-chao' })).toBeDefined();
+    expect(getRouteCoverImage({ slug: 'rota-ponta-de-pedras' })).toBeDefined();
+    expect(getRouteCoverImage({ slug: 'rota-aramanai' })).toBeDefined();
+  });
+
+  it('returns undefined (placeholder) for Vila Socorro without cover_image_url', () => {
+    expect(getRouteCoverImage({ slug: 'rota-vila-socorro' })).toBeUndefined();
+  });
+
   it('keeps the unavailable-image state for other routes without a cover', () => {
     expect(getRouteCoverImage({ slug: 'outra-rota' })).toBeUndefined();
   });
 });
+
