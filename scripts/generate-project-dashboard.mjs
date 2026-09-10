@@ -72,7 +72,7 @@ function buildDashboard({ updated, tasks }) {
   const eventTasks = tasks.filter((task) => task.event);
   const completedTasks = tasks.filter((task) => task.status.startsWith("CONCLUÍDA"));
   const partialTasks = tasks.filter((task) => ["PARCIAL", "EM REVISÃO", "A RECONCILIAR"].includes(task.status));
-  const nextId = "ECO-2617";
+  const nextId = "ECO-1901";
   const data = JSON.stringify({ updated, tasks, stateMeta }).replace(/</g, "\\u003c");
   const stateButtons = Object.entries(counts)
     .sort((a, b) => b[1] - a[1])
@@ -147,7 +147,7 @@ function buildDashboard({ updated, tasks }) {
     <div class="progress-head"><h2 id="diagnosis-title">Diagnóstico por dimensão</h2><span class="plain">Situação, evidência e próximo gate</span></div>
     <div class="diagnosis">
       <div class="diagnosis-row"><b>Direção técnica</b><span class="level good">COERENTE</span><span>Expo 54, FastAPI e Supabase seguem as decisões arquiteturais.</span></div>
-      <div class="diagnosis-row"><b>Base integrada</b><span class="level attention">A RECONCILIAR</span><span>ECO-2603–2606 existem em refs/commits diferentes; ECO-2617 precisa consolidar a evidência.</span></div>
+      <div class="diagnosis-row"><b>Base integrada</b><span class="level good">RECONCILIADA</span><span>ECO-2617 consolidou a base; origin/staging inclui a identidade visual do PR #30.</span></div>
       <div class="diagnosis-row"><b>Experiência Web</b><span class="level attention">EM CONSTRUÇÃO</span><span>Mapa, catálogo, conta e viagens têm bases existentes, mas novos aceites continuam abertos.</span></div>
       <div class="diagnosis-row"><b>Conteúdo das rotas</b><span class="level blocked">BLOQUEADO</span><span>Nove rotas aguardam dados/revisão; Pindobal continua parcial no pacote novo.</span></div>
       <div class="diagnosis-row"><b>Release</b><span class="level blocked">NÃO HOMOLOGADO</span><span>Faltam ambiente real, Safari/iPhone, desempenho, custo, dez rotas e gates de publicação.</span></div>
@@ -156,9 +156,9 @@ function buildDashboard({ updated, tasks }) {
   <section class="now" aria-label="Prioridade atual">
     <article class="panel next">
       <div class="eyebrow" style="color:var(--warn)">FAZER AGORA · UMA COISA</div>
-      <h2><span class="task-id">${nextId}</span> — Reconciliar base integrada e evidências</h2>
-      <p class="plain">Confirmar qual versão reúne as entregas ECO-2603 a ECO-2606, quais provas são locais e o que ainda depende de ambiente real.</p>
-      <p class="action">Depois disso: escolher uma única próxima tarefa desbloqueada.</p>
+      <h2><span class="task-id">${nextId}</span> — Dados reais, paginação e favoritos consistentes</h2>
+      <p class="plain">Revisar o PR #29 e manter a tarefa parcial até a homologação com identidades e Supabase reais.</p>
+      <p class="action">Próximo gate: merge autorizado pelo owner e, depois, homologação real separadamente autorizada.</p>
     </article>
     <aside class="panel">
       <h2>Leitura honesta</h2>
@@ -200,7 +200,7 @@ function buildDashboard({ updated, tasks }) {
     <section class="panel intro">
       <div class="eyebrow" style="color:var(--brand)">DIMENSÃO DO QUE JÁ FOI FEITO</div>
       <h2><span class="big-number">${completedTasks.length}</span> registros têm algum nível de conclusão comprovado</h2>
-      <p class="plain">São ${completedTasks.filter(t=>t.status==="CONCLUÍDA DOCUMENTAL").length} decisões/documentos, ${completedTasks.filter(t=>t.status==="CONCLUÍDA LOCAL").length} implementações locais e ${completedTasks.filter(t=>t.status==="CONCLUÍDA STAGING LIMITADA").length} validação limitada em staging. Cada nível tem um significado diferente.</p>
+      <p class="plain">A distribuição abaixo separa decisões documentais, implementações locais, validações limitadas em staging e outros estados de conclusão registrados. Cada nível tem um significado diferente.</p>
     </section>
     <div class="history-note"><b>Importante:</b> histórico mostra trabalho e evidência acumulados. Não significa que a versão inteira esteja publicada ou homologada.</div>
     ${historyGroups}
@@ -216,7 +216,7 @@ function buildDashboard({ updated, tasks }) {
 
   <section class="toolbar" aria-label="Filtros">
     <div class="toolbar-row">
-      <input id="search" class="search" type="search" placeholder="Buscar ECO-2617, login, mapa..." aria-label="Buscar tarefa">
+      <input id="search" class="search" type="search" placeholder="Buscar ECO-1901, login, mapa..." aria-label="Buscar tarefa">
       <select id="scope" class="scope" aria-label="Escopo"><option value="event" selected>Só versão do evento</option><option value="active">Todas, sem substituídas</option><option value="all">Todas as 206</option></select>
       <button id="toggleFilters" class="filter-toggle" type="button" aria-expanded="false">Estados</button>
       <label class="file-load">Atualizar do .md <input id="mdFile" type="file" accept=".md,text/markdown"></label>

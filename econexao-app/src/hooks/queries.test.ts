@@ -1,5 +1,5 @@
 import { apiClient } from '../api/client';
-import { territorialQueries, userQueries } from './queries';
+import { adminQueries, territorialQueries, userQueries } from './queries';
 
 describe('territorial query options', () => {
   afterEach(() => jest.restoreAllMocks());
@@ -12,17 +12,23 @@ describe('territorial query options', () => {
       { q: ' praia ', saved: true },
       'user-id'
     );
-    const result = await options.queryFn!({} as never);
-    expect(call).toHaveBeenCalledWith({
-      region_id: 'region-id',
-      q: 'praia',
-      saved: true,
-    });
+    const signal = new AbortController().signal;
+    const result = await options.queryFn!({ signal } as never);
+    expect(call).toHaveBeenCalledWith(
+      {
+        region_id: 'region-id',
+        q: 'praia',
+        saved: true,
+      },
+      { signal }
+    );
     expect(result).toEqual(envelope);
-    expect(options.meta).toEqual({ authenticated: true });
+    expect(options.meta).toEqual({ authenticated: true, authUserId: 'user-id' });
   });
 
   it('desabilita consultas sem identificadores obrigatórios', () => {
+    expect(adminQueries.context().enabled).toBe(false);
+    expect(adminQueries.context('user-id').enabled).toBe(true);
     expect(territorialQueries.routeDetail('').enabled).toBe(false);
     expect(territorialQueries.routeGeometry('route', '').enabled).toBe(false);
     expect(territorialQueries.routes(undefined).enabled).toBe(false);
@@ -41,5 +47,15 @@ describe('territorial query options', () => {
     expect(userQueries.favoriteActors('user-id').enabled).toBe(true);
     expect(userQueries.preferences().enabled).toBe(false);
     expect(userQueries.preferences('user-id').enabled).toBe(true);
+  });
+
+  it('isola o contexto administrativo por identidade', () => {
+    expect(adminQueries.context('user-a').queryKey).not.toEqual(
+      adminQueries.context('user-b').queryKey
+    );
+    expect(adminQueries.context('user-a').meta).toEqual({
+      authenticated: true,
+      authUserId: 'user-a',
+    });
   });
 });

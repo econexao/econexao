@@ -7,11 +7,13 @@ import { AuthSessionManager } from './sessionManager';
 import { supabase } from './supabase';
 
 export type AuthStatus = 'initializing' | 'authenticated' | 'signed_out' | 'error';
+export type AuthIdentity = 'visitor' | 'guest' | 'account';
 
 export interface AuthContextValue {
   status: AuthStatus;
   session: Session | null;
   user: User | null;
+  identity: AuthIdentity;
   error: Error | null;
   retry: () => void;
   signOut: () => Promise<void>;
@@ -26,6 +28,11 @@ export interface AuthContextValue {
   saveGuestFavoritesSnapshot: (routeIds: string[], actorIds: string[]) => Promise<void>;
   reconcileGuestFavorites: () => Promise<{ routesPreserved: number; actorsPreserved: number }>;
   clearGuestFavoritesSnapshot: () => Promise<void>;
+}
+
+export function getAuthIdentity(status: AuthStatus, session: Session | null): AuthIdentity {
+  if (status !== 'authenticated' || !session?.user) return 'visitor';
+  return session.user.is_anonymous === true ? 'guest' : 'account';
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -50,7 +57,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
         if (nextSession) {
           setStatus('authenticated');
           // Se o usuario se tornou autenticado (nao-anonimo), reconcilia eventuais favoritos guest preservados
-          const isAnon = nextSession.user ? (nextSession.user.is_anonymous === true && !nextSession.user.email) : true;
+          const isAnon = nextSession.user ? nextSession.user.is_anonymous === true : true;
           if (!isAnon) {
             void manager.reconcileGuestFavorites(apiClient);
           }
@@ -101,6 +108,7 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
       status,
       session,
       user: session?.user ?? null,
+      identity: getAuthIdentity(status, session),
       error,
       retry,
       signOut: () => manager.signOut(),

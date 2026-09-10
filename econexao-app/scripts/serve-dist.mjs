@@ -20,8 +20,23 @@ const mimeTypes = {
 };
 
 const server = http.createServer((req, res) => {
-  let reqPath = req.url ? req.url.split('?')[0] : '/';
-  let filePath = path.join(distDir, reqPath === '/' ? 'index.html' : reqPath);
+  let reqPath;
+  try {
+    reqPath = decodeURIComponent(new URL(req.url ?? '/', `http://127.0.0.1:${port}`).pathname);
+  } catch {
+    res.writeHead(400);
+    res.end('Bad Request');
+    return;
+  }
+  const relativePath = reqPath === '/' ? 'index.html' : reqPath.replace(/^[/\\]+/, '');
+  let filePath = path.resolve(distDir, relativePath);
+  const relativeToDist = path.relative(distDir, filePath);
+
+  if (relativeToDist.startsWith('..') || path.isAbsolute(relativeToDist)) {
+    res.writeHead(403);
+    res.end('Forbidden');
+    return;
+  }
 
   if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
     filePath = path.join(distDir, 'index.html');
