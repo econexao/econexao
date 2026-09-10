@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "total_migrations": 29,
-  "generated_at": "2026-09-10T23:24:40.174522+00:00",
+  "generated_at": "2026-09-10T23:26:49.845357+00:00",
   "migrations": [
     {
       "version": "20260811000000",
