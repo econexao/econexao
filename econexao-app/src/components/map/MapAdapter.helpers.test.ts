@@ -96,6 +96,25 @@ describe('MapAdapter shared geospatial helpers', () => {
       expect(getItemCategoryLabel(pin)).toBe('Hospedagem');
     });
 
+    it('uses specialized type metadata for map icons and screen-reader labels', () => {
+      const pharmacyPin: MapPin = {
+        ...pin,
+        category_slug: 'saude',
+        category_label: 'Saúde',
+        type_slug: 'farmacia',
+        type_label: 'Farmácia & Drogaria',
+        color: '#DC2626',
+        icon: 'pill',
+      };
+
+      expect(getItemPinColor(pharmacyPin)).toBe('#DC2626');
+      expect(getItemPinIcon(pharmacyPin)).toBe('pill');
+      expect(getItemCategoryLabel(pharmacyPin)).toBe('Farmácia & Drogaria');
+      expect(getItemAccessibilityLabel(pharmacyPin)).toBe(
+        'Ponto no mapa: Ponto Pindobal. Categoria: Farmácia & Drogaria'
+      );
+    });
+
     it('rejects missing visual metadata instead of inventing production fallbacks', () => {
       const minimalItem = {
         id: '999',

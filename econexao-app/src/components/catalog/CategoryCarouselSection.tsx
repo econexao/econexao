@@ -22,6 +22,8 @@ import { ErrorStateView, LoadingView } from '../common/UIStateViews';
 export interface CategoryCarouselSectionProps {
   categorySlug: string;
   categoryLabel: string;
+  typeLabel?: string;
+  typeIcon?: keyof typeof Ionicons.glyphMap;
   actors: ActorSummary[];
   totalCount?: number;
   focusedActorId?: string;
@@ -40,6 +42,8 @@ const SCROLL_AMOUNT = CARD_WIDTH + CARD_GAP;
 export const CategoryCarouselSection: React.FC<CategoryCarouselSectionProps> = ({
   categorySlug,
   categoryLabel,
+  typeLabel,
+  typeIcon,
   actors,
   totalCount,
   focusedActorId,
@@ -57,6 +61,8 @@ export const CategoryCarouselSection: React.FC<CategoryCarouselSectionProps> = (
 
   const categoryMeta = getCategoryVisualMeta(categorySlug, categoryLabel);
   const countDisplay = totalCount ?? actors.length;
+  const displayLabel = typeLabel || categoryMeta.label;
+  const displayIcon = typeIcon || categoryMeta.icon;
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const x = event.nativeEvent.contentOffset.x;
@@ -83,12 +89,12 @@ export const CategoryCarouselSection: React.FC<CategoryCarouselSectionProps> = (
     <View
       style={styles.sectionContainer}
       accessibilityRole="none"
-      aria-label={`Carrossel da categoria ${categoryMeta.label}`}
+      aria-label={`Carrossel de ${displayLabel}, categoria ${categoryMeta.label}`}
     >
       <View style={styles.headerRow}>
         <View style={styles.titleGroup}>
           <View style={[styles.iconContainer, { backgroundColor: categoryMeta.color }]}>
-            <Ionicons name={categoryMeta.icon} size={18} color="#FFFFFF" />
+            <Ionicons name={displayIcon} size={18} color="#FFFFFF" />
           </View>
           <View>
             <Text
@@ -96,7 +102,7 @@ export const CategoryCarouselSection: React.FC<CategoryCarouselSectionProps> = (
               accessibilityRole="header"
               aria-level={3}
             >
-              {categoryMeta.label}
+              {displayLabel}
             </Text>
             <Text style={styles.countSubtitle}>
               {countDisplay} {countDisplay === 1 ? 'estabelecimento' : 'estabelecimentos'}
@@ -111,7 +117,7 @@ export const CategoryCarouselSection: React.FC<CategoryCarouselSectionProps> = (
               onPress={scrollPrev}
               disabled={!canScrollLeft}
               {...makeAccessibleButton(
-                `Anterior em ${categoryMeta.label}`,
+                `Anterior em ${displayLabel}`,
                 'Rola os estabelecimentos anteriores da categoria',
                 !canScrollLeft
               )}
@@ -128,7 +134,7 @@ export const CategoryCarouselSection: React.FC<CategoryCarouselSectionProps> = (
               onPress={scrollNext}
               disabled={!canScrollRight}
               {...makeAccessibleButton(
-                `Próximo em ${categoryMeta.label}`,
+                `Próximo em ${displayLabel}`,
                 'Rola os próximos estabelecimentos da categoria',
                 !canScrollRight
               )}

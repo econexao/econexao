@@ -175,7 +175,19 @@ async def test_list_actor_categories_and_actors():
     # Mock list_route_actors execute
     actor = Actor(id=uuid.uuid4(), name="Restaurante Pindobal", category_id=cat.id)
     mock_exec = MagicMock()
-    mock_exec.all.return_value = [(actor, "culinaria", "Culinária", -2.5, -48.0, 0)]
+    mock_exec.all.return_value = [
+        (
+            actor,
+            "culinaria",
+            "Culinária",
+            "restaurante",
+            "Restaurante & Gastronomia",
+            "utensils",
+            -2.5,
+            -48.0,
+            0,
+        )
+    ]
     mock_db.execute.return_value = mock_exec
     mock_db.scalar.return_value = 1
 
@@ -190,6 +202,7 @@ async def test_list_actor_categories_and_actors():
     assert len(actors) == 1
     act, slug, lat, lon = actors[0]
     assert act.name == "Restaurante Pindobal"
+    assert act._transient_type_slug == "restaurante"
     assert slug == "culinaria"
     assert lat == -2.5
     assert lon == -48.0
@@ -364,6 +377,12 @@ async def test_route_map_payload_pins_and_legend_visual_metadata_and_ordering():
     actor_alim = Actor(
         id=uuid.uuid4(), slug="restaurante-mar", name="Restaurante Mar", category_id=uuid.uuid4()
     )
+    actor_alim._transient_type_slug = "restaurante"
+    actor_alim._transient_type_label = "Restaurante & Gastronomia"
+    actor_alim._transient_type_icon = "utensils"
+    actor_hosp1._transient_type_slug = "pousada_hotel"
+    actor_hosp1._transient_type_label = "Hotel & Pousada"
+    actor_hosp1._transient_type_icon = "bed"
     actor_unknown = Actor(
         id=uuid.uuid4(), slug="outro-local", name="Outro Local", category_id=uuid.uuid4()
     )
@@ -398,6 +417,8 @@ async def test_route_map_payload_pins_and_legend_visual_metadata_and_ordering():
     assert pin_alim.category_label == "Alimentação"
     assert pin_alim.color == "#D97706"
     assert pin_alim.icon == "utensils"
+    assert pin_alim.type_slug == "restaurante"
+    assert pin_alim.type_label == "Restaurante & Gastronomia"
 
     pin_hosp = next(p for p in payload.pins if p.actor_id == actor_hosp1.id)
     assert pin_hosp.category_slug == "hospedagem"

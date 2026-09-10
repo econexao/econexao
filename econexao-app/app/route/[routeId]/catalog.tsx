@@ -51,6 +51,12 @@ export default function CatalogScreen() {
     origin_id: originId,
   });
 
+  useEffect(() => {
+    if (actorsQuery.hasNextPage && !actorsQuery.isFetchingNextPage) {
+      void actorsQuery.fetchNextPage();
+    }
+  }, [actorsQuery.hasNextPage, actorsQuery.isFetchingNextPage, actorsQuery.fetchNextPage]);
+
   const allActors: ActorSummary[] = flattenUniquePages(actorsQuery.data?.pages);
   const favoriteItems = Array.isArray(favoriteActorsQuery.data)
     ? favoriteActorsQuery.data

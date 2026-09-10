@@ -18,6 +18,7 @@ from app.models.domain import (
     ActorAccessibilityFeature,
     ActorCategory,
     ActorExternalRef,
+    ActorType,
     ExternalSource,
     FavoriteActor,
     FavoriteRoute,
@@ -227,12 +228,16 @@ class TerritorialRepository:
                 Actor,
                 ActorCategory.slug.label("category_slug"),
                 ActorCategory.label.label("category_label"),
+                ActorType.slug.label("type_slug"),
+                ActorType.label.label("type_label"),
+                ActorType.icon.label("type_icon"),
                 ST_Y(cast(Actor.location, Geometry)).label("latitude"),
                 ST_X(cast(Actor.location, Geometry)).label("longitude"),
                 RouteActor.sort_order.label("route_sort_order"),
             )
             .join(RouteActor, Actor.id == RouteActor.actor_id)
             .join(ActorCategory, Actor.category_id == ActorCategory.id)
+            .outerjoin(ActorType, Actor.type_id == ActorType.id)
             .where(
                 RouteActor.route_id == route_id,
                 RouteActor.archived_at.is_(None),
@@ -289,13 +294,16 @@ class TerritorialRepository:
             actor = row[0]
             cat_slug = row[1]
             cat_label = row[2]
-            lat = row[3]
-            lon = row[4]
+            actor._transient_type_slug = row[3]
+            actor._transient_type_label = row[4]
+            actor._transient_type_icon = row[5]
+            lat = row[6]
+            lon = row[7]
             actor._transient_cat_slug = cat_slug
             actor._transient_cat_label = cat_label
             actor._transient_lat = lat
             actor._transient_lon = lon
-            actor._transient_route_sort_order = int(row[5])
+            actor._transient_route_sort_order = int(row[8])
             formatted_actors.append((actor, cat_slug, lat, lon))
         return formatted_actors, total, has_more
 
@@ -331,6 +339,9 @@ class TerritorialRepository:
             select(
                 Actor,
                 ActorCategory.slug.label("category_slug"),
+                ActorType.slug.label("type_slug"),
+                ActorType.label.label("type_label"),
+                ActorType.icon.label("type_icon"),
                 ST_Y(cast(Actor.location, Geometry)).label("latitude"),
                 ST_X(cast(Actor.location, Geometry)).label("longitude"),
                 RouteActor.is_featured,
@@ -338,6 +349,7 @@ class TerritorialRepository:
             )
             .join(RouteActor, Actor.id == RouteActor.actor_id)
             .join(ActorCategory, Actor.category_id == ActorCategory.id)
+            .outerjoin(ActorType, Actor.type_id == ActorType.id)
             .where(
                 RouteActor.route_id == route_id,
                 RouteActor.archived_at.is_(None),
@@ -376,10 +388,13 @@ class TerritorialRepository:
         for row in results:
             actor = row[0]
             cat_slug = row[1]
-            lat = row[2]
-            lon = row[3]
-            is_featured = row[4]
-            sort_order = row[5]
+            actor._transient_type_slug = row[2]
+            actor._transient_type_label = row[3]
+            actor._transient_type_icon = row[4]
+            lat = row[5]
+            lon = row[6]
+            is_featured = row[7]
+            sort_order = row[8]
             actor._transient_cat_slug = cat_slug
             actor._transient_lat = lat
             actor._transient_lon = lon
@@ -433,10 +448,14 @@ class TerritorialRepository:
                 Actor,
                 ActorCategory.slug.label("category_slug"),
                 ActorCategory.label.label("category_label"),
+                ActorType.slug.label("type_slug"),
+                ActorType.label.label("type_label"),
+                ActorType.icon.label("type_icon"),
                 ST_Y(cast(Actor.location, Geometry)).label("latitude"),
                 ST_X(cast(Actor.location, Geometry)).label("longitude"),
             )
             .join(ActorCategory, Actor.category_id == ActorCategory.id)
+            .outerjoin(ActorType, Actor.type_id == ActorType.id)
             .where(
                 Actor.region_id == region_id,
                 Actor.deleted_at.is_(None),
@@ -459,8 +478,11 @@ class TerritorialRepository:
             actor = row[0]
             cat_slug = row[1]
             cat_label = row[2]
-            lat = row[3]
-            lon = row[4]
+            actor._transient_type_slug = row[3]
+            actor._transient_type_label = row[4]
+            actor._transient_type_icon = row[5]
+            lat = row[6]
+            lon = row[7]
             actor._transient_cat_slug = cat_slug
             actor._transient_cat_label = cat_label
             actor._transient_lat = lat

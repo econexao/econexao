@@ -10,6 +10,8 @@ export type FlexiblePinItem =
       segment?: string;
       category_slug?: string;
       category_label?: string;
+      type_slug?: string;
+      type_label?: string;
       color?: string;
       icon?: string;
       actor_id?: string;

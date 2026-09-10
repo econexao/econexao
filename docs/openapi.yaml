@@ -4132,6 +4132,21 @@ components:
         category_label:
           type: string
           title: Category Label
+        type_slug:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type Slug
+        type_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type Label
+        type_icon:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type Icon
         address:
           anyOf:
           - type: string
@@ -6624,6 +6639,16 @@ components:
         category_label:
           type: string
           title: Category Label
+        type_slug:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type Slug
+        type_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type Label
         color:
           type: string
           title: Color

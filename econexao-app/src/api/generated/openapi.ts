@@ -1295,6 +1295,12 @@ export interface components {
             category_slug: string;
             /** Category Label */
             category_label: string;
+            /** Type Slug */
+            type_slug?: string | null;
+            /** Type Label */
+            type_label?: string | null;
+            /** Type Icon */
+            type_icon?: string | null;
             /** Address */
             address?: string | null;
             /** Latitude */
@@ -2673,6 +2679,10 @@ export interface components {
             category_slug: string;
             /** Category Label */
             category_label: string;
+            /** Type Slug */
+            type_slug?: string | null;
+            /** Type Label */
+            type_label?: string | null;
             /** Color */
             color: string;
             /** Icon */

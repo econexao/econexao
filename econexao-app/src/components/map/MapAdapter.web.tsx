@@ -45,6 +45,10 @@ const getPinIconSvg = (iconName: string): string | null => {
     case 'utensils':
     case 'restaurant':
       return '<path d="M18 2v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V2M15 2v20M5 2v7a3 3 0 0 0 3 3v10M8 2v4M2 2v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+    case 'beer':
+      return '<path d="M5 8h10v12H5zM15 10h2a3 3 0 0 1 0 6h-2M7 4h6M8 4v4M12 4v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+    case 'coffee':
+      return '<path d="M4 9h14v5a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6V9zM18 11h1a3 3 0 0 1 0 6h-2M8 2v3M12 2v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>';
     case 'compass':
       return '<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor"/>';
     case 'bed':
@@ -53,14 +57,39 @@ const getPinIconSvg = (iconName: string): string | null => {
       return '<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z" stroke="currentColor" stroke-width="2" fill="none"/>';
     case 'bus':
       return '<rect x="3" y="3" width="18" height="15" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M3 9h18M3 14h18M6 18v2M18 18v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+    case 'fuel':
+      return '<path d="M4 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18M2 22h16M7 6h6v5H7zM16 7h2l2 2v8a2 2 0 0 0 2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+    case 'car':
+      return '<path d="M5 17h14l1-5-3-5H7l-3 5 1 5zM7 17v3M17 17v3M7 13h.01M17 13h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+    case 'plane':
+      return '<path d="M22 2 9 15M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/>';
+    case 'anchor':
+    case 'ship':
+      return '<path d="M12 2v18M5 9h14M5 14a7 7 0 0 0 14 0M9 5a3 3 0 1 0 6 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>';
     case 'heart-pulse':
     case 'cross':
     case 'medkit':
       return '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M3.22 12H9.5l1.5-3 2 6 1.5-3h4.28" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+    case 'pill':
+      return '<path d="m10.5 20.5-7-7a5 5 0 0 1 7-7l7 7a5 5 0 0 1-7 7zM7 17l10-10" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>';
     case 'shield':
+    case 'shield-check':
       return '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
     case 'help-circle':
       return '<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+    case 'briefcase':
+    case 'church':
+    case 'home':
+    case 'landmark':
+    case 'mountain':
+    case 'scale':
+    case 'shopping-cart':
+    case 'store':
+    case 'sun':
+    case 'trees':
+    case 'umbrella':
+    case 'waves':
+      return '<path d="M4 10h16v10H4zM2 10l10-7 10 7M8 20v-6h8v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
     default:
       return null;
   }
