@@ -242,8 +242,8 @@ export class ApiClient {
   // API Endpoints
   // ---------------------------------------------------------------------------
 
-  public async getBootstrap(): Promise<BootstrapResponseEnvelope> {
-    return this.request<BootstrapResponseEnvelope>("/bootstrap", {}, false, true);
+  public async getBootstrap(options?: { signal?: AbortSignal }): Promise<BootstrapResponseEnvelope> {
+    return this.request<BootstrapResponseEnvelope>("/bootstrap", { signal: options?.signal }, false, true);
   }
 
   public async getRegions(): Promise<RegionListEnvelope> {
@@ -454,8 +454,8 @@ export class ApiClient {
     return this.request<ActorListEnvelope>("/me/favorite-actors", { signal: options?.signal }, false, true);
   }
 
-  public async getMyProfile(): Promise<UserProfileEnvelope> {
-    return this.request<UserProfileEnvelope>("/me", {}, false, true);
+  public async getMyProfile(options?: { signal?: AbortSignal }): Promise<UserProfileEnvelope> {
+    return this.request<UserProfileEnvelope>("/me", { signal: options?.signal }, false, true);
   }
 
   public async updateMyProfile(
@@ -504,12 +504,12 @@ export class ApiClient {
     return this.request<StandardSuccessResponse>("/me/account", { method: "DELETE" }, false, true);
   }
 
-  public async getMyPreferences(): Promise<UserPreferencesEnvelope> {
-    return this.request<UserPreferencesEnvelope>("/me/preferences", {}, false, true);
+  public async getMyPreferences(options?: { signal?: AbortSignal }): Promise<UserPreferencesEnvelope> {
+    return this.request<UserPreferencesEnvelope>("/me/preferences", { signal: options?.signal }, false, true);
   }
 
-  public async getMyTrips(): Promise<TripListEnvelope> {
-    return this.request<TripListEnvelope>("/me/trips", {}, false, true);
+  public async getMyTrips(options?: { signal?: AbortSignal }): Promise<TripListEnvelope> {
+    return this.request<TripListEnvelope>("/me/trips", { signal: options?.signal }, false, true);
   }
 
   public async createTrip(routeId: string): Promise<TripEnvelope> {

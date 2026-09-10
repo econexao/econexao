@@ -109,7 +109,7 @@ test.describe('ECO-1901 — ECOnexão real com fixtures contratuais', () => {
     expect(fixture.getFavoriteRoute()).toBe(false);
   });
 
-  test('mantém visitante/guest/conta e não afirma homologação sem Supabase real', async ({ page }) => {
+  test('representa guest local sem afirmar homologação de identidades reais', async ({ page }) => {
     const guest = await mockApi(page, { anonymous: true });
     await page.goto('/actor/actor-no-cover');
     await expect(page.getByRole('button', { name: 'Salvar nos favoritos' })).toBeVisible({ timeout: 15000 });

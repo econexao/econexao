@@ -50,7 +50,7 @@ describe('server cache', () => {
     client.getQueryCache().build(client, {
       queryKey: queryKeys.bootstrap('user-a'),
       queryFn: async () => 'private',
-      meta: { authenticated: true },
+      meta: { authenticated: true, authUserId: 'user-a' },
     }).setData('private');
     client.setQueryData(queryKeys.regions(), ['public']);
     await removeAuthenticatedQueries(client);
@@ -69,18 +69,46 @@ describe('server cache', () => {
         signal.addEventListener('abort', () => controller.abort(), { once: true });
         return 'private';
       },
-      meta: { authenticated: true },
+      meta: { authenticated: true, authUserId: 'user-a' },
     });
     query.setData('private');
     client.setQueryData(queryKeys.regions(), ['public']);
 
     const pending = query.fetch().catch(() => undefined);
-    await removeAuthenticatedQueries(client);
+    await removeAuthenticatedQueries(client, 'user-a');
     await pending;
 
     expect(controller.signal.aborted).toBe(true);
     expect(client.getQueryData(privateKey)).toBeUndefined();
     expect(client.getQueryData(queryKeys.regions())).toEqual(['public']);
+    client.clear();
+  });
+
+  it('preserva consultas privadas da identidade nova durante limpezas consecutivas', async () => {
+    const client = createQueryClient();
+    const userAKey = queryKeys.myFavoriteRoutes('user-a');
+    const userBKey = queryKeys.myFavoriteRoutes('user-b');
+    const userCKey = queryKeys.myFavoriteRoutes('user-c');
+    for (const [queryKey, authUserId] of [
+      [userAKey, 'user-a'],
+      [userBKey, 'user-b'],
+      [userCKey, 'user-c'],
+    ] as const) {
+      client.getQueryCache().build(client, {
+        queryKey,
+        queryFn: async () => authUserId,
+        meta: { authenticated: true, authUserId },
+      }).setData(authUserId);
+    }
+
+    await Promise.all([
+      removeAuthenticatedQueries(client, 'user-a'),
+      removeAuthenticatedQueries(client, 'user-b'),
+    ]);
+
+    expect(client.getQueryData(userAKey)).toBeUndefined();
+    expect(client.getQueryData(userBKey)).toBeUndefined();
+    expect(client.getQueryData(userCKey)).toBe('user-c');
     client.clear();
   });
 });

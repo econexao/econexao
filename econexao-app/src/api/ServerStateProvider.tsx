@@ -14,7 +14,7 @@ function SessionCacheBoundary({ children }: React.PropsWithChildren) {
 
   useEffect(() => {
     if (previousUserId.current && previousUserId.current !== userId) {
-      void removeAuthenticatedQueries(client);
+      void removeAuthenticatedQueries(client, previousUserId.current);
     }
     previousUserId.current = userId;
   }, [client, userId]);

@@ -3,6 +3,7 @@ import { infiniteQueryOptions, queryOptions, useInfiniteQuery, useQuery } from '
 import { apiClient } from '../api/client';
 import { normalizeQueryValue, queryKeys } from '../api/queryKeys';
 import type { GetRouteActorsQuery, GetRouteMapQuery, ListRoutesQuery } from '../api/types';
+import { useAuth } from './useAuth';
 
 export function flattenUniquePages<T extends { id: string }>(
   pages: Array<{ data: T[] }> | undefined
@@ -15,14 +16,14 @@ export function flattenUniquePages<T extends { id: string }>(
 }
 
 export const adminQueries = {
-  context: (isAuthenticated = true) =>
+  context: (userId?: string) =>
     queryOptions({
-      queryKey: ['admin', 'context'],
+      queryKey: ['admin', 'context', userId],
       queryFn: ({ signal }) => apiClient.getAdminContext({ signal }),
       select: (envelope) => envelope.data,
-      enabled: Boolean(isAuthenticated),
+      enabled: Boolean(userId),
       retry: false,
-      meta: { authenticated: true },
+      meta: { authenticated: true, authUserId: userId },
     }),
 };
 
@@ -30,10 +31,10 @@ export const territorialQueries = {
   bootstrap: (userId: string) =>
     queryOptions({
       queryKey: queryKeys.bootstrap(userId),
-      queryFn: () => apiClient.getBootstrap(),
+      queryFn: ({ signal }) => apiClient.getBootstrap({ signal }),
       select: (envelope) => envelope.data,
       enabled: Boolean(userId),
-      meta: { authenticated: true },
+      meta: { authenticated: true, authUserId: userId },
     }),
   regions: () =>
     queryOptions({
@@ -54,7 +55,7 @@ export const territorialQueries = {
       queryKey: queryKeys.routes.list(regionId, request, userId),
       queryFn: ({ signal }) => (signal ? apiClient.getRoutes(request, { signal }) : apiClient.getRoutes(request)),
       enabled: Boolean(regionId) && (!params.saved || Boolean(userId)),
-      meta: { authenticated: params.saved === true },
+      meta: { authenticated: params.saved === true, authUserId: params.saved ? userId : undefined },
       staleTime: 1000 * 60 * 2, // 2 minutes
     });
   },
@@ -119,7 +120,10 @@ export const territorialQueries = {
     queryOptions({ queryKey: queryKeys.actorDetail(actorId), queryFn: () => apiClient.getActorDetail(actorId), select: (e) => e.data, enabled: Boolean(actorId) }),
 };
 
-export const useAdminContextQuery = (isAuthenticated = true) => useQuery(adminQueries.context(isAuthenticated));
+export const useAdminContextQuery = (isAuthenticated = true) => {
+  const { user } = useAuth();
+  return useQuery(adminQueries.context(isAuthenticated ? user?.id : undefined));
+};
 
 export const useRegionsQuery = () => useQuery(territorialQueries.regions());
 export const useRoutesQuery = (regionId: string | undefined, params?: ListRoutesQuery, userId?: string) => useQuery(territorialQueries.routes(regionId, params, userId));
@@ -153,6 +157,7 @@ export const useInfiniteRoutesQuery = (
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.meta.next_cursor ?? undefined,
     enabled: Boolean(regionId) && (!params.saved || Boolean(userId)),
+    meta: { authenticated: params.saved === true, authUserId: params.saved ? userId : undefined },
   });
 
 export const useInfiniteRouteActorsQuery = (
@@ -179,18 +184,18 @@ export const userQueries = {
   profile: (userId?: string) =>
     queryOptions({
       queryKey: queryKeys.myProfile(userId),
-      queryFn: () => apiClient.getMyProfile(),
+      queryFn: ({ signal }) => apiClient.getMyProfile({ signal }),
       select: (e) => e.data,
       enabled: Boolean(userId),
-      meta: { authenticated: true },
+      meta: { authenticated: true, authUserId: userId },
     }),
   trips: (userId?: string) =>
     queryOptions({
       queryKey: queryKeys.myTrips(userId),
-      queryFn: () => apiClient.getMyTrips(),
+      queryFn: ({ signal }) => apiClient.getMyTrips({ signal }),
       select: (e) => e.data,
       enabled: Boolean(userId),
-      meta: { authenticated: true },
+      meta: { authenticated: true, authUserId: userId },
     }),
   favoriteRoutes: (userId?: string) =>
     queryOptions({
@@ -198,7 +203,7 @@ export const userQueries = {
       queryFn: ({ signal }) => apiClient.getMyFavoriteRoutes({ signal }),
       select: (e) => e.data,
       enabled: Boolean(userId),
-      meta: { authenticated: true },
+      meta: { authenticated: true, authUserId: userId },
     }),
   favoriteActors: (userId?: string) =>
     queryOptions({
@@ -206,15 +211,15 @@ export const userQueries = {
       queryFn: ({ signal }) => apiClient.getMyFavoriteActors({ signal }),
       select: (e) => e.data,
       enabled: Boolean(userId),
-      meta: { authenticated: true },
+      meta: { authenticated: true, authUserId: userId },
     }),
   preferences: (userId?: string) =>
     queryOptions({
       queryKey: queryKeys.myPreferences(userId),
-      queryFn: () => apiClient.getMyPreferences(),
+      queryFn: ({ signal }) => apiClient.getMyPreferences({ signal }),
       select: (e) => e.data,
       enabled: Boolean(userId),
-      meta: { authenticated: true },
+      meta: { authenticated: true, authUserId: userId },
     }),
   supportContent: () =>
     queryOptions({

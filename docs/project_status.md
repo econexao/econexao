@@ -1,6 +1,6 @@
 # ECOnexão — documento único de tarefas
 
-Atualizado em: 09/09/2026. ECO-2613 publicada via PR #28; ECO-1901 em revisão local, sem novas ações remotas.
+Atualizado em: 10/09/2026. ECO-1901 revisada localmente após incorporar staging; PR #29 ainda sem merge.
 Este é o único cadastro de tasks: concluídas, parciais, novas, adiadas e substituídas.
 Os documentos de iniciativas preservam aceites/evidências históricos, mas não definem
 prioridade ou estado atual. A sequência abaixo orienta a próxima execução; decisões
@@ -8,9 +8,9 @@ ainda abertas permanecem em ECO-2603 e não são aprovadas pelo commit documenta
 
 ## Como acompanhar
 
-- **Agora:** ECO-2613 publicada via PR #28/squash `2098e75c5c8fed532f0f2f28ea5e985dfb49b`; ECO-1901 está em revisão local (favoritos persistentes com guest autenticado, conforme ADR 0007). Uma task por vez, revisão independente e GO por operação remota.
-  A ECO-2617 foi concluída localmente; a base publicada conhecida de `origin/staging` é
-  `2098e75c5c8fed532f0f2f28ea5e985dfb49b26b` e já contém as
+- **Agora:** ECO-2613 publicada via PR #28/squash `2098e75c5c8fed532f0f2f28ea5e985dfb49b26b`; ECO-1901 está em revisão local (favoritos persistentes com guest autenticado, conforme ADR 0007). Uma task por vez, revisão independente e GO por operação remota.
+  A ECO-2617 foi concluída localmente; `origin/staging` foi confirmado em
+  `ad07f6f4c5c23e5fb5dfc705f63001d79b57657e`, incluindo a identidade visual do PR #30 e as
   integrações publicadas de ECO-2606 a ECO-2610. Não reimplementar essas tasks por ler
   a raiz antiga. O checkout principal contém alterações do owner e foi preservado.
   Ver [auditoria da V1](audit_v1_2026-09-06.md) para evidências e limites.
@@ -274,7 +274,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Estado / horizonte / alteração:** CONCLUÍDA / Versão do evento / PUBLICADA.
 - **Dependências ou sucessoras:** ECO-2603, ECO-2510.
 - **Conclusão / aceite:** Ficha com contatos/localização/serviços/redes verificáveis, ausências honestas; Google consultado ao abrir detalhe, atribuição/link à fonte, timeout/fallback; sem espelhar fotos em Storage; conteúdo principal não espera galeria.
-- **Evidência e limite:** PR #28, squash `2098e75c5c8fed532f0f2f28ea5e985dfb49b`, workflow `34363928114`; cards usam mídia editorial/placeholder e não consultam Google por padrão. Google real, mídia editorial real completa e homologação remota permanecem limites desta entrega.
+- **Evidência e limite:** PR #28, squash `2098e75c5c8fed532f0f2f28ea5e985dfb49b26b`, workflow `34363928114`; cards usam mídia editorial/placeholder e não consultam Google por padrão. Google real, mídia editorial real completa e homologação remota permanecem limites desta entrega.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
 - **Correção obrigatória antes da qualificação:** `ActorCard` já monta foto Google quando falta capa e o componente consulta ao montar. Desabilitar esse consumo por padrão nos cards, com mídia editorial/placeholder e teste de zero solicitações nesse modo. Ativação somente em ECO-2616, após medição e gate; manter detalhe sob demanda funcional.
 

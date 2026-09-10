@@ -30,9 +30,26 @@ export function createQueryClient(): QueryClient {
   });
 }
 
-export async function removeAuthenticatedQueries(client: QueryClient): Promise<void> {
-  await client.cancelQueries({ predicate: (query) => query.meta?.authenticated === true });
-  client.removeQueries({ predicate: (query) => query.meta?.authenticated === true });
+export async function removeAuthenticatedQueries(
+  client: QueryClient,
+  previousUserId?: string
+): Promise<void> {
+  const targets = new Set(
+    client
+      .getQueryCache()
+      .findAll({
+        predicate: (query) =>
+          query.meta?.authenticated === true &&
+          (previousUserId === undefined ||
+            query.meta?.authUserId === undefined ||
+            query.meta?.authUserId === previousUserId),
+      })
+      .map((query) => query.queryHash)
+  );
+  const isTarget = (query: { queryHash: string }) => targets.has(query.queryHash);
+
+  await client.cancelQueries({ predicate: isTarget });
+  client.removeQueries({ predicate: isTarget });
 }
 
 export const queryClient = createQueryClient();
