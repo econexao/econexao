@@ -11,6 +11,7 @@ import { flattenUniquePages, useInfiniteRoutesQuery, useRegionsQuery, useRoutesQ
 import { useOptimisticFavoriteRoute } from '../../../src/hooks/useOptimisticFavoriteRoute';
 import { theme } from '../../../src/theme/theme';
 import type { RouteSummary } from '../../../src/api/types';
+import { isPreviewRoute, mergeRoutesWithPreviews } from '../../../src/constants/previewRoutes';
 
 export default function RoutesScreen() {
   const router = useRouter();
@@ -32,6 +33,7 @@ export default function RoutesScreen() {
 
   const savedRouteIds = new Set(savedRoutesQuery.data?.data?.map((r) => r.id));
   const allRoutes: RouteSummary[] = flattenUniquePages(routesQuery.data?.pages);
+  const displayRoutes: RouteSummary[] = mergeRoutesWithPreviews(allRoutes);
 
   return (
     <View style={styles.container}>
@@ -49,16 +51,17 @@ export default function RoutesScreen() {
             title="Nenhuma região disponível"
             message="O ambiente ainda não possui regiões cadastradas."
           />
-        ) : routesQuery.isPending ? (
+        ) : routesQuery.isPending && displayRoutes.length === 0 ? (
           <LoadingView message="Carregando rotas..." />
-        ) : routesQuery.isError && allRoutes.length === 0 ? (
+        ) : routesQuery.isError && displayRoutes.length === 0 ? (
           <ErrorStateView
             message="Não foi possível carregar a lista de rotas."
             onRetry={() => void routesQuery.refetch()}
           />
-        ) : allRoutes.length > 0 ? (
+        ) : displayRoutes.length > 0 ? (
           <>
-            {allRoutes.map((route) => {
+            {displayRoutes.map((route) => {
+              const isPreview = isPreviewRoute(route);
               const isFav =
                 (route as RouteSummary & { is_favorite?: boolean }).is_favorite ??
                 savedRouteIds.has(route.id);
@@ -67,8 +70,8 @@ export default function RoutesScreen() {
                   key={route.id}
                   route={route}
                   isFavorite={isFav}
-                  onPress={() => router.push(`/route/${route.id}`)}
-                  onToggleFavorite={() => toggleFavorite(route, isFav)}
+                  onPress={isPreview ? undefined : () => router.push(`/route/${route.id}`)}
+                  onToggleFavorite={isPreview ? undefined : () => toggleFavorite(route, isFav)}
                 />
               );
             })}

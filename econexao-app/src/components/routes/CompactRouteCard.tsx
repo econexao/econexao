@@ -9,7 +9,7 @@ import { getRouteCoverImage } from './routeCoverImage';
 
 interface CompactRouteCardProps {
   route: RouteSummary;
-  onPress: () => void;
+  onPress?: () => void;
   onToggleFavorite?: () => void;
   isFavorite?: boolean;
 }
@@ -27,10 +27,17 @@ export const CompactRouteCard: React.FC<CompactRouteCardProps> = ({
       <Pressable
         style={styles.cardPressable}
         onPress={onPress}
-        {...makeAccessibleButton(
-          `Rota ${route.title}`,
-          `${route.city}, ${route.state_code}. Toque para ver os detalhes.`
-        )}
+        disabled={!onPress}
+        accessibilityRole={onPress ? 'button' : 'none'}
+        {...(onPress
+          ? makeAccessibleButton(
+              `Rota ${route.title}`,
+              `${route.city}, ${route.state_code}. Toque para ver os detalhes.`
+            )
+          : {
+              accessible: true,
+              accessibilityLabel: `Rota ${route.title}, ${route.city}, ${route.state_code}`,
+            })}
       >
         <View style={styles.imageContainer}>
           {coverImage ? <Image source={coverImage} style={styles.image} resizeMode="cover" accessibilityLabel={`Imagem da rota ${route.title}`} /> : <View style={styles.imagePlaceholder}><Ionicons name="map-outline" size={36} color={theme.colors.brandSage} /></View>}
