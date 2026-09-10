@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 
 import { AppHeader } from '../../../src/components/common/AppHeader';
 import { RegionSelectorModal } from '../../../src/components/common/RegionSelectorModal';
@@ -45,8 +44,6 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.screenContainer}>
-      <AppHeader />
-
       <ImageBackground
         source={require('../../../assets/images/florestaencantada.png')}
         style={styles.fullScreenBackground}
@@ -55,6 +52,8 @@ export default function HomeScreen() {
       >
         {/* Scrim Overlay contínuo com escurecimento progressivo para legibilidade AAA */}
         <View style={styles.scrimOverlay} />
+
+        <AppHeader overlayOnImage />
 
         <ScrollView
           contentContainerStyle={styles.scrollContent}
@@ -66,11 +65,6 @@ export default function HomeScreen() {
           {/* Bloco do Hero */}
           <View style={styles.heroBlock}>
             <View style={styles.heroLogoContainer}>
-              <LinearGradient
-                colors={['rgba(0, 0, 0, 0.5)', 'rgba(0, 0, 0, 0)']}
-                style={styles.heroLogoGradient}
-                pointerEvents="none"
-              />
               <Image
                 source={require('../../../assets/images/logo-horizontal.png')}
                 style={styles.heroLogo}
@@ -293,9 +287,6 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 340,
     position: 'relative',
-  },
-  heroLogoGradient: {
-    ...StyleSheet.absoluteFillObject,
   },
   heroLogo: {
     width: '100%',
