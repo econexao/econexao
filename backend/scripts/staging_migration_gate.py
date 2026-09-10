@@ -275,6 +275,7 @@ def apply_staging_migrations(
         "--linked",
         "--password",
         db_password,
+        "--include-all",
         "--yes",
     ]
 
