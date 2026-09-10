@@ -11,12 +11,14 @@ interface AppHeaderProps {
   showBack?: boolean;
   onBackPress?: () => void;
   title?: string;
+  overlayOnImage?: boolean;
 }
 
 export const AppHeader: React.FC<AppHeaderProps> = ({
   showBack = false,
   onBackPress,
   title = 'ECOnexão',
+  overlayOnImage = false,
 }) => {
   const { state } = useApp();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,7 +28,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 
   return (
     <>
-      <View style={styles.headerContainer}>
+      <View style={[styles.headerContainer, overlayOnImage && styles.headerOnImage]}>
         <View style={styles.leftRow}>
           {showBack ? (
             <>
@@ -37,31 +39,38 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
               >
                 <Ionicons name="arrow-back" size={24} color={theme.colors.brandForest} />
               </TouchableOpacity>
-              <Text style={styles.brandTitle} numberOfLines={1}>
+              <Text
+                style={[styles.brandTitle, overlayOnImage && styles.brandTitleOnImage]}
+                numberOfLines={1}
+              >
                 {title}
               </Text>
             </>
           ) : (
-            <View style={styles.logoRow}>
-              <View style={styles.logoBadge}>
-                <Ionicons name="leaf" size={20} color={theme.colors.brandForest} />
-              </View>
-              <Text style={styles.brandTitle}>{title}</Text>
-            </View>
+            <Text style={[styles.brandTitle, overlayOnImage && styles.brandTitleOnImage]}>
+              {title}
+            </Text>
           )}
         </View>
 
         <TouchableOpacity
           ref={regionButtonRef}
-          style={styles.regionChip}
+          style={[styles.regionChip, overlayOnImage && styles.regionChipOnImage]}
           onPress={() => setIsModalOpen(true)}
           {...makeAccessibleButton(
             `Região atual: ${activeRegion?.name ?? 'não selecionada'}`,
             'Toque para abrir o seletor de região'
           )}
         >
-          <Ionicons name="location" size={16} color={theme.colors.brandSage} />
-          <Text style={styles.regionText} numberOfLines={1}>
+          <Ionicons
+            name="location"
+            size={16}
+            color={overlayOnImage ? theme.colors.surfaceWhite : theme.colors.brandSage}
+          />
+          <Text
+            style={[styles.regionText, overlayOnImage && styles.regionTextOnImage]}
+            numberOfLines={1}
+          >
             {activeRegion?.name ?? 'Selecionar região'}
           </Text>
         </TouchableOpacity>
@@ -88,6 +97,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.marginMobile,
     zIndex: 50,
   },
+  headerOnImage: {
+    backgroundColor: 'transparent',
+    borderBottomColor: 'transparent',
+  },
   leftRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -101,22 +114,12 @@ const styles = StyleSheet.create({
     borderRadius: theme.radii.full,
     marginRight: theme.spacing.stackSm,
   },
-  logoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.stackSm,
-  },
-  logoBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: theme.radii.full,
-    backgroundColor: theme.colors.secondaryContainer,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   brandTitle: {
     ...theme.typography.headlineMd,
     color: theme.colors.brandForest,
+  },
+  brandTitleOnImage: {
+    color: theme.colors.surfaceWhite,
   },
   regionChip: {
     flexDirection: 'row',
@@ -134,5 +137,12 @@ const styles = StyleSheet.create({
     ...theme.typography.labelSm,
     color: theme.colors.brandDeep,
     fontWeight: '600',
+  },
+  regionChipOnImage: {
+    backgroundColor: 'rgba(18, 43, 28, 0.72)',
+    borderColor: 'rgba(255, 255, 255, 0.32)',
+  },
+  regionTextOnImage: {
+    color: theme.colors.surfaceWhite,
   },
 });
