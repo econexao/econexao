@@ -38,6 +38,10 @@ def test_canonical_taxonomy_matches_accepted_metadata_and_spatial_scope() -> Non
         "atrativos",
         "hospedagem",
         "artesanato",
+        "comercio",
+        "experiencias",
+        "vida_noturna",
+        "servicos_turisticos",
         "transporte",
         "saude",
         "seguranca",
@@ -51,6 +55,10 @@ def test_canonical_taxonomy_matches_accepted_metadata_and_spatial_scope() -> Non
         5,
         6,
         7,
+        8,
+        9,
+        10,
+        11,
         99,
     }
     assert all(item["label"] for item in CANONICAL_CATEGORIES.values())
@@ -76,6 +84,10 @@ def test_canonical_taxonomy_matches_accepted_metadata_and_spatial_scope() -> Non
         ("Igreja Histórica", "atrativos"),
         ("Casas de temporada", "hospedagem"),
         ("Comunidade Tradicional (Vendas)", "artesanato"),
+        ("Mercado e Mercearia", "comercio"),
+        ("Passeios de Barco e Vivência", "experiencias"),
+        ("Bar e Vida Noturna", "vida_noturna"),
+        ("Agência de Turismo e Guias", "servicos_turisticos"),
         ("Porto / Catraia", "transporte"),
         ("Ponto de Ônibus", "transporte"),
         ("Farmácias", "saude"),
@@ -191,9 +203,9 @@ def test_canonical_actor_types_count_and_invariants() -> None:
         is_canonical_actor_type,
     )
 
-    # 32 specialized subtypes defined in ADR 0015
-    assert len(CANONICAL_ACTOR_TYPES) == 32
-    assert len(CANONICAL_TYPE_SLUGS) == 32
+    # 38 specialized subtypes defined in ADR 0015 / Expanded Taxonomy
+    assert len(CANONICAL_ACTOR_TYPES) == 38
+    assert len(CANONICAL_TYPE_SLUGS) == 38
 
     for slug, type_def in CANONICAL_ACTOR_TYPES.items():
         assert is_canonical_actor_type(slug) is True
@@ -241,7 +253,12 @@ def test_canonical_actor_types_count_and_invariants() -> None:
         ("Delegacia da Polícia Civil e Bombeiros", "seguranca_publica"),
         ("Conselho Tutelar e CRAS", "conselho_tutelar_protecao"),
         ("Cartório e Prefeitura", "servicos_publicos_cartorios"),
-        ("Shopping e Decoração de Eventos", "comercio_eventos"),
+        ("Serviços de Som e Iluminação para Eventos", "comercio_eventos"),
+        ("Loja de Vestuário e Produtos Regionais", "comercio_local"),
+        ("Passeio de Barco e Turismo Comunitário", "passeio_experiencia"),
+        ("Guia de Turismo Credenciado Cadastur", "guia_turismo"),
+        ("Aluguel de Caiaque e Stand Up Paddle", "locacao_equipamentos"),
+        ("Espaço Cultural e Shows Musicais", "evento_cultural"),
         ("Totalmente desconhecido", "nao_classificado"),
         (None, "nao_classificado"),
     ],

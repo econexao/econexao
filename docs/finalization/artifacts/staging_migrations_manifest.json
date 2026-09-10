@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "baseline_ref": "origin/staging",
-  "total_migrations": 27,
+  "total_migrations": 28,
   "migrations": [
     {
       "version": "20260811000000",
@@ -191,6 +191,13 @@
       "path": "supabase/migrations/20260907120000_create_newsletter_subscriptions.sql",
       "bytes": 1342,
       "sha256": "16c3f9f6a970435178c6209ed208f77a5b60c88e4f00ac566fad6ddf9145e460"
+    },
+    {
+      "version": "20260910200000",
+      "filename": "20260910200000_expand_canonical_categories.sql",
+      "path": "supabase/migrations/20260910200000_expand_canonical_categories.sql",
+      "bytes": 18552,
+      "sha256": "120d5e3118b7678208916b1c6ce69652f0f392ac8efb8ac1b629725f521965af"
     }
   ]
 }

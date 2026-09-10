@@ -1,12 +1,16 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-// 8 Categorias Canônicas (ADR 0010)
+// 12 Categorias Canônicas
 const CANONICAL_CATEGORIES = [
   { slug: 'alimentacao', label: 'Alimentação', color: '#D97706', icon: 'utensils' },
   { slug: 'atrativos', label: 'Atrativos', color: '#059669', icon: 'compass' },
   { slug: 'hospedagem', label: 'Hospedagem', color: '#2563EB', icon: 'bed' },
   { slug: 'artesanato', label: 'Artesanato', color: '#7C3AED', icon: 'palette' },
+  { slug: 'comercio', label: 'Comércio Local & Lojas', color: '#EA580C', icon: 'store' },
+  { slug: 'experiencias', label: 'Experiências & Passeios', color: '#0D9488', icon: 'boat' },
+  { slug: 'vida_noturna', label: 'Vida Noturna & Eventos', color: '#9333EA', icon: 'beer' },
+  { slug: 'servicos_turisticos', label: 'Serviços Turísticos & Guias', color: '#4F46E5', icon: 'briefcase' },
   { slug: 'transporte', label: 'Transporte', color: '#0891B2', icon: 'bus' },
   { slug: 'saude', label: 'Saúde', color: '#DC2626', icon: 'heart-pulse' },
   { slug: 'seguranca', label: 'Segurança', color: '#1E3A8A', icon: 'shield' },

@@ -1,8 +1,25 @@
--- Minimal local/test fixture hook.
--- Pindobal is imported by the reproducible Python command from backend/app/ingestion;
--- production APIs never read the source CSV/JSON files at runtime.
+-- ECO-Expanded Taxonomy: Expand canonical categories and actor types hierarchy
+BEGIN;
 
--- 1. Canonical taxonomy categories (ADR 0010 / ECO-2302 / Expanded Taxonomy)
+-- 1. Update check constraint to allow 12 canonical categories
+ALTER TABLE app_private.actor_categories
+    DROP CONSTRAINT IF EXISTS chk_actor_categories_canonical_metadata,
+    ADD CONSTRAINT chk_actor_categories_canonical_metadata CHECK (
+        (slug = 'alimentacao' AND label = 'Alimentação' AND color = '#D97706' AND icon = 'utensils' AND sort_order = 1 AND is_public AND spatial_scope = 'route_corridor') OR
+        (slug = 'atrativos' AND label = 'Atrativos' AND color = '#059669' AND icon = 'compass' AND sort_order = 2 AND is_public AND spatial_scope = 'route_corridor') OR
+        (slug = 'hospedagem' AND label = 'Hospedagem' AND color = '#2563EB' AND icon = 'bed' AND sort_order = 3 AND is_public AND spatial_scope = 'route_corridor') OR
+        (slug = 'artesanato' AND label = 'Artesanato' AND color = '#7C3AED' AND icon = 'palette' AND sort_order = 4 AND is_public AND spatial_scope = 'route_corridor') OR
+        (slug = 'comercio' AND label = 'Comércio Local & Lojas' AND color = '#EA580C' AND icon = 'store' AND sort_order = 5 AND is_public AND spatial_scope = 'both') OR
+        (slug = 'experiencias' AND label = 'Experiências & Passeios' AND color = '#0D9488' AND icon = 'boat' AND sort_order = 6 AND is_public AND spatial_scope = 'route_corridor') OR
+        (slug = 'vida_noturna' AND label = 'Vida Noturna & Eventos' AND color = '#9333EA' AND icon = 'beer' AND sort_order = 7 AND is_public AND spatial_scope = 'route_corridor') OR
+        (slug = 'servicos_turisticos' AND label = 'Serviços Turísticos & Guias' AND color = '#4F46E5' AND icon = 'briefcase' AND sort_order = 8 AND is_public AND spatial_scope = 'both') OR
+        (slug = 'transporte' AND label = 'Transporte' AND color = '#0891B2' AND icon = 'bus' AND sort_order = 9 AND is_public AND spatial_scope = 'both') OR
+        (slug = 'saude' AND label = 'Saúde' AND color = '#DC2626' AND icon = 'heart-pulse' AND sort_order = 10 AND is_public AND spatial_scope = 'citywide_essential') OR
+        (slug = 'seguranca' AND label = 'Segurança' AND color = '#1E3A8A' AND icon = 'shield' AND sort_order = 11 AND is_public AND spatial_scope = 'citywide_essential') OR
+        (slug = 'outros' AND label = 'Outros' AND color = '#6B7280' AND icon = 'help-circle' AND sort_order = 99 AND is_public AND spatial_scope = 'route_corridor')
+    );
+
+-- 2. Insert or update all 12 categories
 INSERT INTO app_private.actor_categories (
     id, slug, label, color, icon, sort_order, is_public, spatial_scope
 )
@@ -43,18 +60,7 @@ WHERE (
     EXCLUDED.spatial_scope
 );
 
--- 2. Canonical external sources (ADR 0014)
-INSERT INTO app_private.external_sources (id, slug, name, description)
-VALUES
-    (gen_random_uuid(), 'semtur_inventory', 'Inventário Turístico SEMTUR Santarém', 'Inventário oficial da Secretaria Municipal de Turismo de Santarém.'),
-    (gen_random_uuid(), 'google_places', 'Google Places API', 'Dados comerciais e de descoberta geográfica da plataforma Google Maps / Places.'),
-    (gen_random_uuid(), 'editorial_curation', 'Curadoria Editorial ECOnexão', 'Dados verificados e cadastrados pela equipe editorial ECOnexão.')
-ON CONFLICT (slug) DO UPDATE SET
-    name = EXCLUDED.name,
-    description = EXCLUDED.description,
-    updated_at = clock_timestamp();
-
--- 3. Canonical actor types (ADR 0015 / ECO-2503 / Expanded Taxonomy)
+-- 3. Remap actor types and actors to the new specialized categories
 DO $$
 DECLARE
     v_alimentacao_id UUID;
@@ -83,6 +89,7 @@ BEGIN
     SELECT id INTO v_seguranca_id FROM app_private.actor_categories WHERE slug = 'seguranca';
     SELECT id INTO v_outros_id FROM app_private.actor_categories WHERE slug = 'outros';
 
+    -- Insert or update all specialized actor types
     INSERT INTO app_private.actor_types (category_id, slug, label, icon, sort_order, aliases, spatial_scope, publication_rule)
     VALUES
         (v_alimentacao_id, 'restaurante', 'Restaurante & Gastronomia', 'utensils', 10, ARRAY['restaurante', 'restaurantes e bares', 'alimentacao', 'culinaria', 'gastronomia', 'comida regional', 'peixaria', 'self-service', 'churrascaria', 'pizzaria', 'bistrô', 'buffet'], 'route_corridor', 'Público se published. Selo SEMTUR se originário do inventário oficial.'),
@@ -132,5 +139,14 @@ BEGIN
         spatial_scope = EXCLUDED.spatial_scope,
         publication_rule = EXCLUDED.publication_rule,
         updated_at = clock_timestamp();
+
+    -- Reclassify existing actors based on their updated actor type's category_id
+    UPDATE app_private.actors
+    SET category_id = app_private.actor_types.category_id,
+        updated_at = clock_timestamp()
+    FROM app_private.actor_types
+    WHERE actors.type_id = actor_types.id
+      AND actors.category_id != actor_types.category_id;
 END $$;
 
+COMMIT;

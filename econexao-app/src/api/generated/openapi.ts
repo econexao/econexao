@@ -1631,7 +1631,7 @@ export interface components {
              * Slug
              * @enum {string}
              */
-            slug: "alimentacao" | "atrativos" | "hospedagem" | "artesanato" | "transporte" | "saude" | "seguranca" | "outros";
+            slug: "alimentacao" | "atrativos" | "hospedagem" | "experiencias" | "artesanato" | "vida_noturna" | "comercio" | "servicos_turisticos" | "transporte" | "saude" | "seguranca" | "outros";
             /** Label */
             label: string;
             /** Icon */

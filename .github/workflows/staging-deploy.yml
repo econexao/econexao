@@ -129,7 +129,7 @@ jobs:
           node-version: "22"
 
       - name: Verify No Production Secrets in Codebase
-        run: python backend/scripts/scan_secrets.py --root .
+        run: uv run --directory backend python scripts/scan_secrets.py --root ..
 
       - name: Execute Staging Migration Drift & Advisors Gate
         env:
@@ -182,7 +182,7 @@ jobs:
 
       - name: Run Staging Smoke Verification
         env:
-          STAGING_API_URL: ${{ secrets.STAGING_API_BASE_URL || 'https://econexao-backend-staging.onrender.com' }}
+          STAGING_API_URL: ${{ secrets.STAGING_API_BASE_URL || 'https://econexao-backend-staging-30dt.onrender.com' }}
           EXPECTED_COMMIT_SHA: ${{ github.sha }}
         run: |
           python backend/scripts/staging_smoke.py --base-url "$STAGING_API_URL" --expected-commit "$EXPECTED_COMMIT_SHA" --max-retries 20 --delay 10

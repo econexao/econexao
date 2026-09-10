@@ -267,10 +267,14 @@ const CATEGORY_VISUAL_PRIORITY: Record<string, number> = {
   atrativos: 10,
   alimentacao: 9,
   hospedagem: 8,
+  experiencias: 8,
   artesanato: 7,
-  transporte: 6,
-  saude: 5,
-  seguranca: 4,
+  vida_noturna: 7,
+  comercio: 6,
+  servicos_turisticos: 6,
+  transporte: 5,
+  saude: 4,
+  seguranca: 3,
   outros: 1,
 };
 

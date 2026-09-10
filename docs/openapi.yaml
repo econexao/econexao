@@ -4816,7 +4816,11 @@ components:
           - alimentacao
           - atrativos
           - hospedagem
+          - experiencias
           - artesanato
+          - vida_noturna
+          - comercio
+          - servicos_turisticos
           - transporte
           - saude
           - seguranca

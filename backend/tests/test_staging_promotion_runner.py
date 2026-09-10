@@ -534,10 +534,10 @@ async def test_integration_lock_transaction_with_real_repository_operation() -> 
 
 
 def test_load_canonical_migrations_manifest() -> None:
-    """Baseline manifest must load successfully with 27 migrations."""
+    """Baseline manifest must load successfully with 28 migrations."""
     manifest = load_canonical_migrations_manifest()
-    assert manifest["total_migrations"] == 27
-    assert len(manifest["migrations"]) == 27
+    assert manifest["total_migrations"] == 28
+    assert len(manifest["migrations"]) == 28
     assert manifest["baseline_ref"] == "origin/staging"
 
 
@@ -546,7 +546,7 @@ def test_validate_manifest_structure_canonical() -> None:
     manifest = load_canonical_migrations_manifest()
     validate_manifest_structure(manifest)
     assert manifest["schema_version"] == 1
-    assert manifest["total_migrations"] == 27
+    assert manifest["total_migrations"] == 28
 
 
 def test_validate_manifest_structure_unsupported_schema_version() -> None:
@@ -640,7 +640,7 @@ def test_verify_migrations_alignment_success() -> None:
     info = verify_migrations_alignment(migrations_dir)
     assert info["status"] == "aligned_locally"
     assert info["scope"] == "local_directory_only"
-    assert info["count"] == 27
+    assert info["count"] == 28
     assert info["manifest_verified"] is True
 
 
@@ -650,7 +650,7 @@ def test_migrations_identical_to_baseline_manifest() -> None:
     manifest = load_canonical_migrations_manifest()
     sql_files = sorted(migrations_dir.glob("*.sql"), key=lambda f: f.name)
 
-    assert len(sql_files) == 27
+    assert len(sql_files) == 28
     for sql_file, entry in zip(sql_files, manifest["migrations"], strict=True):
         assert sql_file.name == entry["filename"]
         file_bytes = sql_file.read_bytes()
@@ -717,8 +717,8 @@ def test_verify_migrations_fails_on_duplicate_timestamp(tmp_path: Path) -> None:
     """Duplicate 14-digit timestamps must fail closed."""
     (tmp_path / "20260811000000_migration_a.sql").write_bytes(b"SELECT 1;")
     (tmp_path / "20260811000000_migration_b.sql").write_bytes(b"SELECT 1;")
-    # Pad to 27 files
-    for i in range(2, 27):
+    # Pad to 28 files
+    for i in range(2, 28):
         (tmp_path / f"202608120000{i:02d}_migration.sql").write_bytes(b"SELECT 1;")
 
     with pytest.raises(PreflightVerificationError, match="Duplicidade de versão"):
