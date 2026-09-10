@@ -282,10 +282,12 @@ const styles = StyleSheet.create({
   heroLogoContainer: {
     alignItems: 'flex-start',
     marginBottom: 8,
+    width: '100%',
   },
   heroLogo: {
-    width: 220,
-    height: 86,
+    width: '100%',
+    maxWidth: 340,
+    height: 110,
   },
   heroTextContainer: {
     gap: 10,
