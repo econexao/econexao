@@ -27,15 +27,40 @@ FORBIDDEN_TEST_ORIGIN = "https://evil.com"
 
 ALLOWED_PIN_ICONS = frozenset(
     {
+        # Canonical 12 categories
         "utensils",
         "compass",
         "bed",
         "palette",
+        "store",
+        "boat",
+        "beer",
+        "briefcase",
         "bus",
         "heart-pulse",
-        "cross",
         "shield",
         "help-circle",
+        # Specialized actor types
+        "umbrella",
+        "coffee",
+        "trees",
+        "sun",
+        "waves",
+        "mountain",
+        "shield-check",
+        "landmark",
+        "church",
+        "home",
+        "shopping-cart",
+        "ship",
+        "music",
+        "plane",
+        "anchor",
+        "fuel",
+        "car",
+        "cross",
+        "pill",
+        "scale",
     }
 )
 
