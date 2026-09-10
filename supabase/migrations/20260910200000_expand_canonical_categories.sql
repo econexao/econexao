@@ -1,23 +1,9 @@
 -- ECO-Expanded Taxonomy: Expand canonical categories and actor types hierarchy
 BEGIN;
 
--- 1. Update check constraint to allow 12 canonical categories
+-- 1. Drop existing check constraint before updating rows to allow sort_order / metadata changes
 ALTER TABLE app_private.actor_categories
-    DROP CONSTRAINT IF EXISTS chk_actor_categories_canonical_metadata,
-    ADD CONSTRAINT chk_actor_categories_canonical_metadata CHECK (
-        (slug = 'alimentacao' AND label = 'Alimentação' AND color = '#D97706' AND icon = 'utensils' AND sort_order = 1 AND is_public AND spatial_scope = 'route_corridor') OR
-        (slug = 'atrativos' AND label = 'Atrativos' AND color = '#059669' AND icon = 'compass' AND sort_order = 2 AND is_public AND spatial_scope = 'route_corridor') OR
-        (slug = 'hospedagem' AND label = 'Hospedagem' AND color = '#2563EB' AND icon = 'bed' AND sort_order = 3 AND is_public AND spatial_scope = 'route_corridor') OR
-        (slug = 'artesanato' AND label = 'Artesanato' AND color = '#7C3AED' AND icon = 'palette' AND sort_order = 4 AND is_public AND spatial_scope = 'route_corridor') OR
-        (slug = 'comercio' AND label = 'Comércio Local & Lojas' AND color = '#EA580C' AND icon = 'store' AND sort_order = 5 AND is_public AND spatial_scope = 'both') OR
-        (slug = 'experiencias' AND label = 'Experiências & Passeios' AND color = '#0D9488' AND icon = 'boat' AND sort_order = 6 AND is_public AND spatial_scope = 'route_corridor') OR
-        (slug = 'vida_noturna' AND label = 'Vida Noturna & Eventos' AND color = '#9333EA' AND icon = 'beer' AND sort_order = 7 AND is_public AND spatial_scope = 'route_corridor') OR
-        (slug = 'servicos_turisticos' AND label = 'Serviços Turísticos & Guias' AND color = '#4F46E5' AND icon = 'briefcase' AND sort_order = 8 AND is_public AND spatial_scope = 'both') OR
-        (slug = 'transporte' AND label = 'Transporte' AND color = '#0891B2' AND icon = 'bus' AND sort_order = 9 AND is_public AND spatial_scope = 'both') OR
-        (slug = 'saude' AND label = 'Saúde' AND color = '#DC2626' AND icon = 'heart-pulse' AND sort_order = 10 AND is_public AND spatial_scope = 'citywide_essential') OR
-        (slug = 'seguranca' AND label = 'Segurança' AND color = '#1E3A8A' AND icon = 'shield' AND sort_order = 11 AND is_public AND spatial_scope = 'citywide_essential') OR
-        (slug = 'outros' AND label = 'Outros' AND color = '#6B7280' AND icon = 'help-circle' AND sort_order = 99 AND is_public AND spatial_scope = 'route_corridor')
-    );
+    DROP CONSTRAINT IF EXISTS chk_actor_categories_canonical_metadata;
 
 -- 2. Insert or update all 12 categories
 INSERT INTO app_private.actor_categories (
@@ -59,6 +45,23 @@ WHERE (
     EXCLUDED.is_public,
     EXCLUDED.spatial_scope
 );
+
+-- 3. Re-add check constraint now that rows conform to the 12 canonical categories
+ALTER TABLE app_private.actor_categories
+    ADD CONSTRAINT chk_actor_categories_canonical_metadata CHECK (
+        (slug = 'alimentacao' AND label = 'Alimentação' AND color = '#D97706' AND icon = 'utensils' AND sort_order = 1 AND is_public AND spatial_scope = 'route_corridor') OR
+        (slug = 'atrativos' AND label = 'Atrativos' AND color = '#059669' AND icon = 'compass' AND sort_order = 2 AND is_public AND spatial_scope = 'route_corridor') OR
+        (slug = 'hospedagem' AND label = 'Hospedagem' AND color = '#2563EB' AND icon = 'bed' AND sort_order = 3 AND is_public AND spatial_scope = 'route_corridor') OR
+        (slug = 'artesanato' AND label = 'Artesanato' AND color = '#7C3AED' AND icon = 'palette' AND sort_order = 4 AND is_public AND spatial_scope = 'route_corridor') OR
+        (slug = 'comercio' AND label = 'Comércio Local & Lojas' AND color = '#EA580C' AND icon = 'store' AND sort_order = 5 AND is_public AND spatial_scope = 'both') OR
+        (slug = 'experiencias' AND label = 'Experiências & Passeios' AND color = '#0D9488' AND icon = 'boat' AND sort_order = 6 AND is_public AND spatial_scope = 'route_corridor') OR
+        (slug = 'vida_noturna' AND label = 'Vida Noturna & Eventos' AND color = '#9333EA' AND icon = 'beer' AND sort_order = 7 AND is_public AND spatial_scope = 'route_corridor') OR
+        (slug = 'servicos_turisticos' AND label = 'Serviços Turísticos & Guias' AND color = '#4F46E5' AND icon = 'briefcase' AND sort_order = 8 AND is_public AND spatial_scope = 'both') OR
+        (slug = 'transporte' AND label = 'Transporte' AND color = '#0891B2' AND icon = 'bus' AND sort_order = 9 AND is_public AND spatial_scope = 'both') OR
+        (slug = 'saude' AND label = 'Saúde' AND color = '#DC2626' AND icon = 'heart-pulse' AND sort_order = 10 AND is_public AND spatial_scope = 'citywide_essential') OR
+        (slug = 'seguranca' AND label = 'Segurança' AND color = '#1E3A8A' AND icon = 'shield' AND sort_order = 11 AND is_public AND spatial_scope = 'citywide_essential') OR
+        (slug = 'outros' AND label = 'Outros' AND color = '#6B7280' AND icon = 'help-circle' AND sort_order = 99 AND is_public AND spatial_scope = 'route_corridor')
+    );
 
 -- 3. Remap actor types and actors to the new specialized categories
 DO $$

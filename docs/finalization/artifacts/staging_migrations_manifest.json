@@ -196,8 +196,8 @@
       "version": "20260910200000",
       "filename": "20260910200000_expand_canonical_categories.sql",
       "path": "supabase/migrations/20260910200000_expand_canonical_categories.sql",
-      "bytes": 18551,
-      "sha256": "210f25d6fffa6794cc857387a3ecb5f990a56610474026a5bdb60bdeb2248659"
+      "bytes": 18710,
+      "sha256": "d35065b01beac8768cbcce80d178144b721190bb9e50a961c18e97ef353793c5"
     }
   ]
 }
