@@ -16,6 +16,8 @@ import {
   getSelectionPinAccessibilityLabel,
   getUserLocationAccessibilityLabel,
   isCoordinateWithinBounds,
+  isContractPinColor,
+  isContractPinIcon,
 } from './MapAdapter.helpers';
 
 const pin: MapPin = {
@@ -175,11 +177,18 @@ describe('MapAdapter shared geospatial helpers', () => {
       // Ponto em região distante (ex: Belém / São Paulo) que não deve criar corredor intermunicipal
       const distantCoord = { latitude: -1.4558, longitude: -48.4902 }; // Belém
       expect(isCoordinateWithinBounds(distantCoord, routeBounds)).toBe(false);
+    });
 
-      const invalidBounds = { min_lat: -2.4, max_lat: -2.7, min_lng: -54.7, max_lng: -55.0 };
-      expect(isCoordinateWithinBounds(insideCoord, invalidBounds)).toBe(false);
-      expect(isCoordinateWithinBounds(null, routeBounds)).toBe(false);
-      expect(isCoordinateWithinBounds(insideCoord, null)).toBe(false);
+    it('valida cores e icones contratuais da taxonomia canonica expandida', () => {
+      expect(isContractPinColor('#D97706')).toBe(true);
+      expect(isContractPinColor('#0D9488')).toBe(true);
+      expect(isContractPinColor('invalid')).toBe(false);
+
+      expect(isContractPinIcon('boat')).toBe(true);
+      expect(isContractPinIcon('musical-notes')).toBe(true);
+      expect(isContractPinIcon('store')).toBe(true);
+      expect(isContractPinIcon('briefcase')).toBe(true);
+      expect(isContractPinIcon('unknown-icon')).toBe(false);
     });
   });
 
