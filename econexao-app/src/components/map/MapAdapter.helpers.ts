@@ -56,7 +56,10 @@ export const SELECTION_PIN_COLOR = '#EA580C';
 export const USER_LOCATION_PIN_COLOR = '#0284C7';
 
 export const CONTRACT_PIN_ICONS = [
-  'utensils', 'compass', 'bed', 'palette', 'bus', 'heart-pulse', 'cross', 'shield', 'help-circle',
+  'anchor', 'bed', 'beer', 'briefcase', 'bus', 'car', 'church', 'coffee', 'compass',
+  'cross', 'fuel', 'heart-pulse', 'help-circle', 'home', 'landmark', 'mountain',
+  'palette', 'pill', 'plane', 'scale', 'shield', 'shield-check', 'ship',
+  'shopping-cart', 'store', 'sun', 'trees', 'umbrella', 'utensils', 'waves',
 ] as const;
 
 export const isContractPinColor = (value: unknown): value is string =>
@@ -122,6 +125,13 @@ export const getItemPinIcon = (item: FlexiblePinItem): string | null =>
   'icon' in item && isContractPinIcon(item.icon) ? item.icon : null;
 
 export const getItemCategoryLabel = (item: FlexiblePinItem): string => {
+  if (
+    'type_label' in item &&
+    typeof item.type_label === 'string' &&
+    item.type_label.trim().length > 0
+  ) {
+    return item.type_label;
+  }
   if (
     'category_label' in item &&
     typeof item.category_label === 'string' &&

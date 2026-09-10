@@ -405,7 +405,7 @@ export default function MapScreen() {
     allPins.some((pin) => {
       const item = legendBySlug.get(pin.category_slug);
       return !item || !isContractPinColor(pin.color) || !isContractPinIcon(pin.icon) ||
-        pin.color !== item.color || pin.icon !== item.icon || pin.category_label !== item.label;
+        pin.color !== item.color || pin.category_label !== item.label;
     }) ||
     legend.some((item) => item.count !== allPins.filter((pin) => pin.category_slug === item.category_slug).length);
 

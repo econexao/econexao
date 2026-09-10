@@ -21,16 +21,56 @@ export const getCategoryIonicons = (
       return 'compass-outline';
     case 'bed':
       return 'bed-outline';
+    case 'beer':
+      return 'beer-outline';
+    case 'coffee':
+      return 'cafe-outline';
+    case 'shopping-cart':
+      return 'cart-outline';
+    case 'store':
+      return 'storefront-outline';
+    case 'trees':
+      return 'leaf-outline';
+    case 'sun':
+      return 'sunny-outline';
+    case 'waves':
+      return 'water-outline';
+    case 'mountain':
+      return 'trail-sign-outline';
+    case 'landmark':
+      return 'business-outline';
+    case 'church':
+      return 'home-outline';
+    case 'umbrella':
+      return 'umbrella-outline';
+    case 'home':
+      return 'home-outline';
     case 'palette':
       return 'color-palette-outline';
     case 'bus':
       return 'bus-outline';
+    case 'plane':
+      return 'airplane-outline';
+    case 'anchor':
+    case 'ship':
+      return 'boat-outline';
+    case 'fuel':
+      return 'car-outline';
+    case 'car':
+      return 'car-outline';
+    case 'briefcase':
+      return 'briefcase-outline';
     case 'heart-pulse':
     case 'cross':
     case 'medkit':
       return 'heart-outline';
+    case 'pill':
+      return 'medical-outline';
     case 'shield':
+    case 'shield-check':
       return 'shield-checkmark-outline';
+    case 'scale':
+      return 'scale-outline';
     case 'help-circle':
       return 'help-circle-outline';
     default:

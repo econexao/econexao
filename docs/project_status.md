@@ -250,7 +250,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Estado / horizonte / alteração:** PARCIAL / Versão do evento / NOVA.
 - **Dependências ou sucessoras:** ECO-2603, ECO-2512.
 - **Conclusão / aceite:** Seções e cards horizontais, cor coerente com pin, alternativa por teclado, preservar ator/origem/filtros; relevância padrão e opção alfabética; loading/vazio/erro/retry e detalhes reais.
-- **Evidência e limite:** Carrosséis por categoria implementados localmente; correção de 10/09/2026 passa a carregar todas as páginas e separar tipos específicos (restaurante, bar, hospedagem, farmácia, combustível etc.) preservando a cor do grupo pai. Testes direcionados, typecheck e drift OpenAPI verdes; navegador real e staging ainda pendentes.
+- **Evidência e limite:** Carrosséis por categoria implementados localmente; correção de 10/09/2026 passa a carregar todas as páginas, separar tipos específicos (restaurante, bar, hospedagem, farmácia, combustível etc.) e usar o ícone do subtipo nos pins preservando a cor/legenda do grupo pai. Testes direcionados, typecheck, export Web e drift OpenAPI verdes; o artefato de produção foi gerado, mas a inspeção visual local ficou limitada por uma falha preexistente do bootstrap/roteamento de testes no servidor Expo. Preview e smoke de staging ainda pendentes.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
 
 #### ECO-2611 — Criar filtros de experiências com regras editoriais

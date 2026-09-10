@@ -222,6 +222,8 @@ class MapPinSchema(SchemaBase):
     name: str
     category_slug: str
     category_label: str
+    type_slug: str | None = None
+    type_label: str | None = None
     color: str
     icon: str
     latitude: float

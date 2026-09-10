@@ -394,8 +394,10 @@ class TerritorialService:
                         name=actor.name,
                         category_slug=canonical_slug,
                         category_label=canonical_cat["label"],
+                        type_slug=getattr(actor, "_transient_type_slug", None),
+                        type_label=getattr(actor, "_transient_type_label", None),
                         color=canonical_cat["color"],
-                        icon=canonical_cat["icon"],
+                        icon=getattr(actor, "_transient_type_icon", None) or canonical_cat["icon"],
                         latitude=lat,
                         longitude=lon,
                         layer=actor_layer,  # type: ignore[arg-type]
