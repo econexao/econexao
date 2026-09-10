@@ -122,6 +122,10 @@ async def test_favorite_actors_management():
     mock_db.execute.return_value = mock_exec
 
     fav_actors, total, has_more = await repo.get_favorite_actors(user_id)
+    statement = mock_db.execute.call_args.args[0]
+    compiled = str(statement.compile()).lower()
+    assert "st_y(cast(app_private.actors.location as geometry" in compiled
+    assert "st_x(cast(app_private.actors.location as geometry" in compiled
     assert total == 1
     assert len(fav_actors) == 1
     act, slug, lat, lon = fav_actors[0]

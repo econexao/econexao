@@ -4,8 +4,10 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any, cast
 
+from geoalchemy2 import Geometry
 from geoalchemy2.functions import ST_X, ST_Y
 from sqlalchemy import and_, func, or_, select
+from sqlalchemy import cast as sql_cast
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
@@ -163,8 +165,8 @@ class UserRepository:
             select(
                 Actor,
                 ActorCategory.slug,
-                ST_Y(Actor.location).label("lat"),
-                ST_X(Actor.location).label("lon"),
+                ST_Y(sql_cast(Actor.location, Geometry)).label("lat"),
+                ST_X(sql_cast(Actor.location, Geometry)).label("lon"),
                 FavoriteActor.created_at,
             )
             .join(
