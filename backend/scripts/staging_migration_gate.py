@@ -145,11 +145,10 @@ def check_migration_drift(
     args = [
         "npx",
         "--yes",
-        "supabase",
+        "supabase@2.113.0",
         "migration",
         "list",
-        "--project-ref",
-        project_ref,
+        "--linked",
         "--password",
         db_password,
     ]
@@ -237,12 +236,10 @@ def check_supabase_advisors(
     args = [
         "npx",
         "--yes",
-        "supabase",
+        "supabase@2.113.0",
         "db",
         "advisors",
         "--linked",
-        "--project-ref",
-        project_ref,
         "--type",
         "all",
         "--fail-on",
@@ -272,13 +269,13 @@ def apply_staging_migrations(
     args = [
         "npx",
         "--yes",
-        "supabase",
+        "supabase@2.113.0",
         "db",
         "push",
-        "--project-ref",
-        project_ref,
+        "--linked",
         "--password",
         db_password,
+        "--yes",
     ]
 
     code, output = run_cli_command(
@@ -361,6 +358,18 @@ def run_gate(
         print(f"[GATE][ERROR] Staging project link failed:\n{link_output}")
         return 1
 
+    if apply_migrations:
+        print("[GATE] Applying pending migrations to staging (authorized)...")
+        apply_ok, apply_output = apply_staging_migrations(
+            project_ref=valid_ref,
+            db_password=db_password,
+            access_token=access_token,
+        )
+        if not apply_ok:
+            print(f"[GATE][ERROR] Staging migration apply failed:\n{apply_output}")
+            return 1
+        print("[GATE] Migrations successfully applied to staging.")
+
     # 4. Migration Drift Inspection
     print("[GATE] Checking remote migration list and drift status...")
     ok, list_output, unapplied = check_migration_drift(
@@ -378,17 +387,6 @@ def run_gate(
             print("[GATE][ERROR] Migration apply is not authorized for this run.")
             print("[GATE][ERROR] Re-run with explicit authorization to promote migrations.")
             return 1
-
-        print("[GATE] Applying migrations to staging (authorized)...")
-        apply_ok, apply_output = apply_staging_migrations(
-            project_ref=valid_ref,
-            db_password=db_password,
-            access_token=access_token,
-        )
-        if not apply_ok:
-            print(f"[GATE][ERROR] Staging migration apply failed:\n{apply_output}")
-            return 1
-        print("[GATE] Migrations successfully applied to staging.")
     else:
         print("[GATE] Staging database schema is in sync (zero unapplied migrations).")
 
