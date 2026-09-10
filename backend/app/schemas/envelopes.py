@@ -381,6 +381,9 @@ class ActorSummarySchema(SchemaBase):
     name: str
     category_slug: str
     category_label: str
+    type_slug: str | None = None
+    type_label: str | None = None
+    type_icon: str | None = None
     address: str | None = None
     latitude: float | None = None
     longitude: float | None = None

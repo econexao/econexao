@@ -39,7 +39,7 @@ export const ActorCard: React.FC<ActorCardProps> = ({
   }, [focusOnMount]);
 
   const effectiveIsFavorite = isFavorite ?? false;
-  const categoryName = (actor.category_label || actor.category_slug || 'Geral').toUpperCase();
+  const categoryName = (actor.type_label || actor.category_label || actor.category_slug || 'Geral').toUpperCase();
   const hasGreenSeal = actor.green_badge_status === 'verified';
   const isSemtur = actor.verification_status === 'verified';
   const ratingValue = typeof actor.google_rating === 'number' && Number.isFinite(actor.google_rating) ? actor.google_rating : null;

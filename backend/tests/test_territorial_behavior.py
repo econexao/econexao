@@ -175,7 +175,19 @@ async def test_list_actor_categories_and_actors():
     # Mock list_route_actors execute
     actor = Actor(id=uuid.uuid4(), name="Restaurante Pindobal", category_id=cat.id)
     mock_exec = MagicMock()
-    mock_exec.all.return_value = [(actor, "culinaria", "Culinária", -2.5, -48.0, 0)]
+    mock_exec.all.return_value = [
+        (
+            actor,
+            "culinaria",
+            "Culinária",
+            "restaurante",
+            "Restaurante & Gastronomia",
+            "utensils",
+            -2.5,
+            -48.0,
+            0,
+        )
+    ]
     mock_db.execute.return_value = mock_exec
     mock_db.scalar.return_value = 1
 
@@ -190,6 +202,7 @@ async def test_list_actor_categories_and_actors():
     assert len(actors) == 1
     act, slug, lat, lon = actors[0]
     assert act.name == "Restaurante Pindobal"
+    assert act._transient_type_slug == "restaurante"
     assert slug == "culinaria"
     assert lat == -2.5
     assert lon == -48.0

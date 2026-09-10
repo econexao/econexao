@@ -14,6 +14,20 @@ import { CANONICAL_CATEGORIES, getCategoryVisualMeta } from '../../theme/categor
 import { CategoryCarouselSection } from './CategoryCarouselSection';
 import { EmptyStateView, ErrorStateView, LoadingView } from '../common/UIStateViews';
 
+const TYPE_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
+  restaurante: 'restaurant-outline',
+  bar_vida_noturna: 'beer-outline',
+  cafe_lanchonete: 'cafe-outline',
+  mercado_conveniencia: 'cart-outline',
+  pousada_hotel: 'bed-outline',
+  casa_temporada: 'home-outline',
+  posto_combustivel: 'car-outline',
+  farmacia: 'medkit-outline',
+  hospital_upa: 'medical-outline',
+  posto_saude_ubs: 'fitness-outline',
+  nao_classificado: 'help-circle-outline',
+};
+
 export type SortMode = 'default' | 'alphabetical';
 
 export interface CategoryCarouselsCatalogProps {
@@ -54,7 +68,13 @@ export const CategoryCarouselsCatalog: React.FC<CategoryCarouselsCatalogProps> =
 
   // Group actors by category
   const groupedSections = useMemo(() => {
-    const groups: Record<string, { meta: ReturnType<typeof getCategoryVisualMeta>; items: ActorSummary[] }> = {};
+    const groups: Record<string, {
+      meta: ReturnType<typeof getCategoryVisualMeta>;
+      typeSlug?: string;
+      typeLabel?: string;
+      typeIcon?: keyof typeof Ionicons.glyphMap;
+      items: ActorSummary[];
+    }> = {};
 
     // Initialize all canonical categories or categories present in props
     const categorySlugs = new Set<string>();
@@ -68,14 +88,19 @@ export const CategoryCarouselsCatalog: React.FC<CategoryCarouselsCatalogProps> =
 
     // Place actors into their category
     for (const actor of filteredActors) {
-      const slug = (actor.category_slug || 'outros').toLowerCase();
-      if (!groups[slug]) {
-        groups[slug] = {
-          meta: getCategoryVisualMeta(slug, actor.category_label),
+      const categorySlug = (actor.category_slug || 'outros').toLowerCase();
+      const typeSlug = actor.type_slug?.toLowerCase();
+      const groupKey = typeSlug ? `${categorySlug}:${typeSlug}` : categorySlug;
+      if (!groups[groupKey]) {
+        groups[groupKey] = {
+          meta: getCategoryVisualMeta(categorySlug, actor.category_label),
+          typeSlug,
+          typeLabel: actor.type_label || undefined,
+          typeIcon: (typeSlug && TYPE_ICONS[typeSlug]) || undefined,
           items: [],
         };
       }
-      groups[slug].items.push(actor);
+      groups[groupKey].items.push(actor);
     }
 
     // Sort items within each group according to sortMode
@@ -89,14 +114,18 @@ export const CategoryCarouselsCatalog: React.FC<CategoryCarouselsCatalogProps> =
     // Convert to sorted array of sections
     const sections = Object.entries(groups)
       .filter(([_, group]) => group.items.length > 0)
-      .map(([slug, group]) => ({
-        slug,
+      .map(([key, group]) => ({
+        key,
+        slug: group.meta.slug,
         meta: group.meta,
+        typeSlug: group.typeSlug,
+        typeLabel: group.typeLabel,
+        typeIcon: group.typeIcon,
         items: group.items,
       }));
 
     // Sort sections by canonical order
-    sections.sort((a, b) => a.meta.order - b.meta.order);
+    sections.sort((a, b) => a.meta.order - b.meta.order || (a.typeLabel || '').localeCompare(b.typeLabel || '', 'pt-BR'));
 
     return sections;
   }, [filteredActors, categories, sortMode]);
@@ -173,9 +202,11 @@ export const CategoryCarouselsCatalog: React.FC<CategoryCarouselsCatalogProps> =
       <View style={styles.sectionsList}>
         {groupedSections.map((section) => (
           <CategoryCarouselSection
-            key={section.slug}
+            key={section.key}
             categorySlug={section.slug}
             categoryLabel={section.meta.label}
+            typeLabel={section.typeLabel}
+            typeIcon={section.typeIcon}
             actors={section.items}
             focusedActorId={focusedActorId}
             favoriteActorIds={favoriteActorIds}

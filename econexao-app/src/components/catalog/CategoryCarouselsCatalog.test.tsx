@@ -171,4 +171,30 @@ describe('CategoryCarouselsCatalog', () => {
     expect(relevance?.props.accessibilityState).toEqual({ selected: false });
     expect(alphabetical?.props.accessibilityState).toEqual({ selected: true });
   });
+
+  it('separates specialized actor types while preserving the parent category color', () => {
+    const typedActors: ActorSummary[] = [
+      { ...mockActors[0], type_slug: 'restaurante', type_label: 'Restaurante & Gastronomia', type_icon: 'utensils' },
+      { ...mockActors[1], type_slug: 'bar_vida_noturna', type_label: 'Bar & Vida Noturna', type_icon: 'beer' },
+    ];
+
+    let tree!: renderer.ReactTestRenderer;
+    act(() => {
+      tree = renderer.create(
+        <CategoryCarouselsCatalog
+          actors={typedActors}
+          categories={mockCategories}
+          onSelectActor={jest.fn()}
+        />
+      );
+    });
+
+    const sections = tree.root.findAllByType(CategoryCarouselSection);
+    expect(sections).toHaveLength(2);
+    expect(sections.map((section) => section.props.typeLabel)).toEqual([
+      'Bar & Vida Noturna',
+      'Restaurante & Gastronomia',
+    ]);
+    expect(sections.every((section) => section.props.categorySlug === 'alimentacao')).toBe(true);
+  });
 });

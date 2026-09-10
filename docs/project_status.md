@@ -159,7 +159,7 @@ autorizada simplesmente por estar nesta lista.
 
 Total: **206 registros**, incluindo histórico substituído; são 203 headings `ECO-*` e 3 registros `RQ-*`; não usar como percentual de progresso.
 
-A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELADA NO ESCOPO: 1 | CONCLUÍDA DOCUMENTAL: 13 | CONCLUÍDA LOCAL: 15 | CONCLUÍDA STAGING LIMITADA: 1 | CONDICIONAL: 1 | DECISÃO PENDENTE: 1 | EM REVISÃO: 4 | PARCIAL: 47 | PENDENTE: 9 | SUBSTITUÍDA: 86
+A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELADA NO ESCOPO: 1 | CONCLUÍDA DOCUMENTAL: 13 | CONCLUÍDA LOCAL: 15 | CONCLUÍDA STAGING LIMITADA: 1 | CONDICIONAL: 1 | DECISÃO PENDENTE: 1 | EM REVISÃO: 4 | PARCIAL: 48 | PENDENTE: 8 | SUBSTITUÍDA: 86
 
 ### Novas tasks para concluir a versão e conteúdo
 
@@ -247,10 +247,10 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 
 #### ECO-2610 — Organizar catálogo em carrosséis por categoria
 
-- **Estado / horizonte / alteração:** PENDENTE / Versão do evento / NOVA.
+- **Estado / horizonte / alteração:** PARCIAL / Versão do evento / NOVA.
 - **Dependências ou sucessoras:** ECO-2603, ECO-2512.
 - **Conclusão / aceite:** Seções e cards horizontais, cor coerente com pin, alternativa por teclado, preservar ator/origem/filtros; relevância padrão e opção alfabética; loading/vazio/erro/retry e detalhes reais.
-- **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
+- **Evidência e limite:** Carrosséis por categoria implementados localmente; correção de 10/09/2026 passa a carregar todas as páginas e separar tipos específicos (restaurante, bar, hospedagem, farmácia, combustível etc.) preservando a cor do grupo pai. Testes direcionados, typecheck e drift OpenAPI verdes; navegador real e staging ainda pendentes.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
 
 #### ECO-2611 — Criar filtros de experiências com regras editoriais
