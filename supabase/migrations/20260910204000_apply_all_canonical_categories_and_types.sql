@@ -64,7 +64,7 @@ ALTER TABLE app_private.actor_categories
     );
 
 -- 4. Remap actor types and actors to the new specialized categories
-DO 
+DO $$
 DECLARE
     v_alimentacao_id UUID;
     v_atrativos_id UUID;
@@ -169,6 +169,6 @@ BEGIN
     FROM app_private.actor_types
     WHERE actors.type_id = actor_types.id
       AND actors.category_id != actor_types.category_id;
-END ;
+END $$;
 
 COMMIT;
