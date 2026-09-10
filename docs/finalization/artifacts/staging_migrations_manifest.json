@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "total_migrations": 30,
-  "generated_at": "2026-09-10T23:37:34.792050+00:00",
+  "generated_at": "2026-09-10T23:43:57.208832+00:00",
   "migrations": [
     {
       "version": "20260811000000",
@@ -210,8 +210,8 @@
       "version": "20260910204000",
       "filename": "20260910204000_apply_all_canonical_categories_and_types.sql",
       "path": "supabase/migrations/20260910204000_apply_all_canonical_categories_and_types.sql",
-      "bytes": 20016,
-      "sha256": "e4d867b2855d9df184e1de1d7fc1e26f92020839926789115ff636d1d8055f09"
+      "bytes": 20020,
+      "sha256": "c3e82a5b5503787da470e19064fcb4d743c66216cbf46d4190b27a3ffcdc6005"
     }
   ]
 }
