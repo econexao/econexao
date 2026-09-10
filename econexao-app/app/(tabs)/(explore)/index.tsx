@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   ImageBackground,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -57,11 +58,21 @@ export default function HomeScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Espaçamento aéreo do céu da Amazônia (conforme referência visual) */}
+          {/* Espaçamento superior ajustado para acomodar a logo */}
           <View style={styles.heroTopSpacer} />
 
           {/* Bloco do Hero */}
           <View style={styles.heroBlock}>
+            <View style={styles.heroLogoContainer}>
+              <Image
+                source={require('../../../assets/images/logo-horizontal.png')}
+                style={styles.heroLogo}
+                resizeMode="contain"
+                accessibilityLabel="ECOnexão Turismo de Experiência"
+                accessible={true}
+              />
+            </View>
+
             <View style={styles.heroTextContainer}>
               <Text style={styles.heroTitle}>
                 Descubra destinos,{'\n'}viva experiências
@@ -261,12 +272,20 @@ const styles = StyleSheet.create({
     paddingBottom: 72,
   },
   heroTopSpacer: {
-    height: 110,
+    height: 48,
   },
   heroBlock: {
     paddingHorizontal: theme.spacing.marginMobile,
-    gap: 20,
+    gap: 16,
     marginBottom: 36,
+  },
+  heroLogoContainer: {
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  heroLogo: {
+    width: 220,
+    height: 86,
   },
   heroTextContainer: {
     gap: 10,
