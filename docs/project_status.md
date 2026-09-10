@@ -285,11 +285,11 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 
 #### ECO-2614 — Aplicar identidade e cards das rotas na Web
 
-- **Estado / horizonte / alteração:** PENDENTE / Versão do evento / NOVA.
+- **Estado / horizonte / alteração:** PARCIAL / Versão do evento / NOVA.
 - **Dependências ou sucessoras:** ECO-2604, ECO-2610.
 - **Conclusão / aceite:** Logo oficial e layout responsivo; todas as rotas publicadas aparecem na inicial/aba, região correta, título legível, capa autorizada ou placeholder honesto; card leva à rota certa; dados não publicados não parecem prontos.
-- **Evidência e limite:** Solicitação/decisões do owner nesta conversa; implementação nova não verificada.
-- **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
+- **Evidência e limite:** A logo horizontal oficial da ECOnexão foi integrada ao hero com acessibilidade e ampliada a pedido do owner para ocupar a largura útil da referência, responsiva até 340x110 px. Typecheck, 44 suítes/284 testes Jest e export Web passaram localmente; os gates de frontend, backend, migrations, secret scan, deploy e smoke de staging também passaram. Em 10/09/2026, verificação Playwright no viewport 390x844 confirmou uma única logo visível em 340x110 px na URL canônica `https://econexao-app-staging.vercel.app/`. O status permanece PARCIAL porque os aceites de cards para todas as rotas ainda não foram concluídos.
+- **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commits:** `ad07f6f` (PR #30) e `d610919` (PR #32), ambos em `staging`.
 
 #### ECO-2615 — Medir fluidez, orçamento e recuperação de integrações
 
