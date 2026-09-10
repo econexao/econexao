@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "baseline_ref": "origin/staging",
-  "total_migrations": 28,
+  "total_migrations": 29,
+  "generated_at": "2026-09-10T23:26:49.845357+00:00",
   "migrations": [
     {
       "version": "20260811000000",
@@ -198,6 +198,13 @@
       "path": "supabase/migrations/20260910200000_expand_canonical_categories.sql",
       "bytes": 18710,
       "sha256": "d35065b01beac8768cbcce80d178144b721190bb9e50a961c18e97ef353793c5"
+    },
+    {
+      "version": "20260910203000",
+      "filename": "20260910203000_reclassify_actors_specialized_taxonomy.sql",
+      "path": "supabase/migrations/20260910203000_reclassify_actors_specialized_taxonomy.sql",
+      "bytes": 1787,
+      "sha256": "cef087c8d1b3c173632276a12fa2db0a2e57fbac3690572df708dd4359e3d31e"
     }
   ]
 }
