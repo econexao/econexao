@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { AppHeader } from '../../../src/components/common/AppHeader';
 import { RegionSelectorModal } from '../../../src/components/common/RegionSelectorModal';
@@ -65,6 +66,11 @@ export default function HomeScreen() {
           {/* Bloco do Hero */}
           <View style={styles.heroBlock}>
             <View style={styles.heroLogoContainer}>
+              <LinearGradient
+                colors={['rgba(0, 0, 0, 0.5)', 'rgba(0, 0, 0, 0)']}
+                style={styles.heroLogoGradient}
+                pointerEvents="none"
+              />
               <Image
                 source={require('../../../assets/images/logo-horizontal.png')}
                 style={styles.heroLogo}
@@ -285,10 +291,14 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 8,
     width: '100%',
+    maxWidth: 340,
+    position: 'relative',
+  },
+  heroLogoGradient: {
+    ...StyleSheet.absoluteFillObject,
   },
   heroLogo: {
     width: '100%',
-    maxWidth: 340,
     height: 110,
   },
   heroTextContainer: {
