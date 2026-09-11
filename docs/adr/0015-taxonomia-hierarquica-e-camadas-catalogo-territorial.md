@@ -1,12 +1,12 @@
 # ADR 0015 — Taxonomia Hierárquica, Tipos Específicos, Aliases e Comportamento Espacial do Catálogo Territorial (SEMTUR, Google e ECOnexão)
 
-- **Status:** proposto (Aguardando homologação do Owner no Gate H25.2 — `BLOCKED`)
-- **Data:** 27/08/2026
+- **Status:** aceito
+- **Data:** 27/08/2026 (Atualizado em 10/09/2026)
 - **Autores:** Equipe de Arquitetura ECOnexão / Antigravity
 - **Decisor:** Bruno Darwich, Proprietário do Produto (Owner)
 - **Task Relacionada:** ECO-2503 (Taxonomia Hierárquica do Catálogo Territorial)
 - **Dependências:** ECO-2501 (Auditoria dos Datasets — `VERIFIED`), ADR 0010 (Taxonomia Visual do Mapa — `aceito`), ADR 0011 (Camadas Espaciais do Mapa — `aceito`), ADR 0014 (Governança de Fontes, Retenção e Publicação — `aceito`)
-- **Gate de Conclusão:** Gate Humano H25.2 — Grupos visuais, tipos específicos, aliases, ícones, escopos e regras de publicação aceitos pelo Owner.
+- **Gate de Conclusão:** Gate Humano H25.2 — Homologado e Aceito pelo Owner.
 
 ---
 

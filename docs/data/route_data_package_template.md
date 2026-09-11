@@ -58,16 +58,20 @@ Para cada origem cadastrada na Seção 2, deve haver a definição do trajeto at
 
 ## 4. Taxonomia Canônica e Escopos Espaciais
 
-Todos os estabelecimentos e pontos de interesse (atores) associados à rota devem obrigatoriamente pertencer a um dos 8 grupos canônicos protegidos (ADR 0010) e a um subtipo específico homologado (ADR 0015):
+Todos os estabelecimentos e pontos de interesse (atores) associados à rota devem obrigatoriamente pertencer a um dos 12 grupos canônicos protegidos (ADR 0010) e a um subtipo específico homologado (ADR 0015):
 
-1. **`alimentacao`** (cor `#D97706`, ícone `utensils`, escopo `route_corridor`): `restaurante`, `bar_vida_noturna`, `barraca_praia`, `cafe_lanchonete`, `mercado_conveniencia` (escopo `both`), `feira_livre` (escopo `both`).
+1. **`alimentacao`** (cor `#D97706`, ícone `utensils`, escopo `route_corridor`): `restaurante`, `barraca_praia`, `cafe_lanchonete`.
 2. **`atrativos`** (cor `#059669`, ícone `compass`, escopo `route_corridor`): `atrativo_natural`, `praia_fluvial`, `ilha`, `serra_mirante`, `unidade_conservacao` (escopo `both`), `patrimonio_cultural` (escopo `both`), `templo_religioso` (escopo `both`), `lazer_balneario`.
 3. **`hospedagem`** (cor `#2563EB`, ícone `bed`, escopo `route_corridor`): `pousada_hotel`, `casa_temporada`.
 4. **`artesanato`** (cor `#7C3AED`, ícone `palette`, escopo `route_corridor`): `artesanato_local`.
-5. **`transporte`** (cor `#0891B2`, ícone `bus`, escopo `both`): `terminal_aeroporto`, `terminal_porto`, `terminal_rodoviario`, `catraia_travessia` (escopo `route_corridor`), `posto_combustivel`, `locadora_mobilidade`, `agencia_turismo`.
-6. **`saude`** (cor `#DC2626`, ícone `heart-pulse`, escopo `citywide_essential`): `hospital_upa`, `posto_saude_ubs`, `farmacia` (escopo `both`).
-7. **`seguranca`** (cor `#1E3A8A`, ícone `shield`, escopo `citywide_essential`): `seguranca_publica`, `conselho_tutelar_protecao`.
-8. **`outros`** (cor `#6B7280`, ícone `help-circle`, escopo `route_corridor`): `servicos_publicos_cartorios` (escopo `citywide_essential`), `comercio_eventos` (escopo `both`), `nao_classificado`.
+5. **`comercio`** (cor `#EA580C`, ícone `store`, escopo `both`): `mercado_conveniencia`, `feira_livre`, `comercio_local`.
+6. **`experiencias`** (cor `#0D9488`, ícone `boat`, escopo `route_corridor`): `passeio_experiencia`, `trilha_ecoturismo`.
+7. **`vida_noturna`** (cor `#9333EA`, ícone `beer`, escopo `route_corridor`): `bar_vida_noturna`, `evento_cultural`.
+8. **`servicos_turisticos`** (cor `#4F46E5`, ícone `briefcase`, escopo `both`): `agencia_turismo`, `guia_turismo`, `locacao_equipamentos` (escopo `route_corridor`).
+9. **`transporte`** (cor `#0891B2`, ícone `bus`, escopo `both`): `terminal_aeroporto`, `terminal_porto`, `terminal_rodoviario`, `catraia_travessia` (escopo `route_corridor`), `posto_combustivel`, `locadora_mobilidade`.
+10. **`saude`** (cor `#DC2626`, ícone `heart-pulse`, escopo `citywide_essential`): `hospital_upa`, `posto_saude_ubs`, `farmacia` (escopo `both`).
+11. **`seguranca`** (cor `#1E3A8A`, ícone `shield`, escopo `citywide_essential`): `seguranca_publica`, `conselho_tutelar_protecao`.
+12. **`outros`** (cor `#6B7280`, ícone `help-circle`, escopo `route_corridor`): `servicos_publicos_cartorios` (escopo `citywide_essential`), `comercio_eventos` (escopo `both`), `nao_classificado`.
 
 *Regra de Integridade:* Não inventar novos grupos principais. Se o ator tiver tipo não previsto, classificá-lo no grupo mais afim ou em `outros` com o subtipo correspondente documentado e submetido à revisão.
 

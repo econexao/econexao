@@ -66,14 +66,18 @@ Padronizam-se as seguintes categorias canônicas para atores (`actors`):
 
 | Categoria / Tipo no Snapshot SEMTUR | Slug Proposto | Justificativa |
 | :--- | :--- | :--- |
-| `Restaurante`, `Bar`, `Barraca de Praia`, `Café`, `Lanchonete`, `Alimentação` | `alimentacao` | Unificação de gastronomia e serviços de alimentação. |
-| `Atrativo Natural`, `Praia`, `Trilha`, `Ponto Turístico`, `Igreja Histórica`, `Mirante` | `atrativos` | Pontos turísticos e atrativos naturais/culturais. |
-| `Pousada`, `Hotel`, `Hostel`, `Área de Camping`, `Hospedagem` | `hospedagem` | Meios de hospedagem cadastrados. |
+| `Restaurante`, `Barraca de Praia`, `Café`, `Lanchonete`, `Alimentação` | `alimentacao` | Gastronomia e alimentação. |
+| `Atrativo Natural`, `Praia`, `Trilha`, `Ponto Turístico`, `Igreja Histórica`, `Mirante`, `Balneário` | `atrativos` | Pontos turísticos, patrimônio e atrativos naturais/culturais. |
+| `Pousada`, `Hotel`, `Hostel`, `Área de Camping`, `Casa de Temporada`, `Hospedagem` | `hospedagem` | Meios de hospedagem cadastrados. |
 | `Artesanato`, `Loja de Souvenirs`, `Comunidade Tradicional (Vendas)` | `artesanato` | Produção associada e artesanato local. |
-| `Ponto de Táxi / Mototaxi`, `Porto / Catraia`, `Ponto de Ônibus`, `Transfer` | `transporte` | Infraestrutura e modais de mobilidade. |
+| `Mercado`, `Mercadinho`, `Feira Livre`, `Comércio Local`, `Lojas` | `comercio` | Comércio local, feiras e abastecimento. |
+| `Passeios de Barco`, `Lanchas`, `Vivências`, `Ecoturismo`, `Turismo Comunitário` | `experiencias` | Experiências turísticas, náuticas e vivências no Tapajós. |
+| `Bar`, `Casa de Shows`, `Vida Noturna`, `Pub`, `Eventos Culturais` | `vida_noturna` | Vida noturna, entretenimento e eventos culturais. |
+| `Agências de Turismo`, `Guias Credenciados`, `Locação de Caiaque / Bike` | `servicos_turisticos` | Serviços de apoio ao turista, receptivo e condutores. |
+| `Aeroporto`, `Porto / Catraia`, `Rodoviária`, `Táxi`, `Posto de Gasolina`, `Locadora` | `transporte` | Infraestrutura viária, abastecimento e mobilidade. |
 | `Hospital`, `UBS`, `Farmácia`, `Pronto Atendimento`, `Posto de Saúde` | `saude` | Serviços de atenção e socorro à saúde. |
-| `Delegacia de Polícia`, `Posto Policial`, `Bombeiros`, `Guarda Municipal` | `seguranca` | Serviços de segurança pública e defesa civil. |
-| `Serviços Gerais`, `Comércio Local não classificado`, `Indefinido`, `Outros` | `outros` | Categoria neutra visível e fila administrativa de triagem editorial. |
+| `Delegacia de Polícia`, `Posto Policial`, `Bombeiros`, `Guarda Municipal`, `Conselho Tutelar` | `seguranca` | Serviços de segurança pública, proteção social e defesa civil. |
+| `Cartórios`, `Serviços Públicos`, `Serviços para Eventos`, `Indefinido`, `Outros` | `outros` | Categoria neutra visível e fila administrativa de triagem editorial. |
 
 ---
 
@@ -88,10 +92,10 @@ A especificação cromática e tipográfica foi desenhada para garantir acessibi
 | `alimentacao` | `#D97706` | **3.01:1** (UI Component) / Texto: usar `#B45309` | **3.01:1** (Com borda contrastante `#78350F`) | Diferenciação garantida pelo ícone `utensils` |
 | `atrativos` | `#059669` | **4.56:1** (Passa AA Texto Normal) | **4.56:1** | Distinto de amber e violet; ícone `compass` |
 | `hospedagem` | `#2563EB` | **4.58:1** (Passa AA Texto Normal) | **4.58:1** | Distinto de violet e emerald; ícone `bed` |
-| `experiencias` | `#0D9488` | **4.62:1** (Passa AA Texto Normal) | **4.62:1** | Tom teal escuro; ícone `boat` |
 | `artesanato` | `#7C3AED` | **5.74:1** (Passa AA Texto Normal) | **5.74:1** | Distinto de azul e vermelho; ícone `palette` |
-| `vida_noturna` | `#9333EA` | **5.20:1** (Passa AA Texto Normal) | **5.20:1** | Tom púrpura vibrante; ícone `beer` / `music` |
 | `comercio` | `#EA580C` | **3.50:1** (UI Component) / Texto: usar `#C2410C` | **3.50:1** | Tom laranja queimado; ícone `store` |
+| `experiencias` | `#0D9488` | **4.62:1** (Passa AA Texto Normal) | **4.62:1** | Tom teal escuro; ícone `boat` |
+| `vida_noturna` | `#9333EA` | **5.20:1** (Passa AA Texto Normal) | **5.20:1** | Tom púrpura vibrante; ícone `beer` |
 | `servicos_turisticos` | `#4F46E5` | **5.90:1** (Passa AA Texto Normal) | **5.90:1** | Tom índigo; ícone `briefcase` |
 | `transporte` | `#0891B2` | **4.52:1** (Passa AA Texto Normal) | **4.52:1** | Tom ciano escuro; ícone `bus` |
 | `saude` | `#DC2626` | **4.51:1** (Passa AA Texto Normal) | **4.51:1** | Tom vermelho vivo; ícone `heart-pulse` |
@@ -109,29 +113,27 @@ A especificação cromática e tipográfica foi desenhada para garantir acessibi
 
 ## 4. Decisão Formal do Owner
 
-Decisões homologadas pelo Owner do Projeto em 2026-08-24:
+Decisões homologadas pelo Owner do Projeto:
 
 1. **Separação de Emergência — Opção B1 (Aprovada)**:
    - Separar formalmente em duas categorias canônicas: `saude` (vermelho `#DC2626` / ícone `heart-pulse`) e `seguranca` (azul marinho `#1E3A8A` / ícone `shield`).
 2. **Visibilidade de Outros — Opção C2 (Aprovada)**:
    - Exibir registros `outros` no mapa público com pin cinza (`#6B7280`) e ícone `help-circle`, disponibilizando também o chip de filtro "Outros" na barra de filtros da interface pública.
    - Manter visíveis no painel administrativo `/admin/actors` para enriquecimento cadastral e triagem editorial.
-3. **Paleta Visual e Ícones (Aprovados integralmente)**:
-   - Homologado o conjunto canônico de 8 categorias, cores e ícones Lucide da Tabela 2.1, em estrita conformidade com as diretrizes de acessibilidade WCAG 2.1 AA.
+3. **Expansão para 12 Categorias Canônicas (Aprovada)**:
+   - Homologado o conjunto canônico expandido de 12 categorias, cores e ícones Lucide/Ionicons da Tabela 2.1, em estrita conformidade com as diretrizes de acessibilidade WCAG 2.1 AA.
 
 ---
 
 ## 5. Consequências Técnicas
 
-A partir da aprovação deste ADR, o planejamento técnico das tarefas subsequentes será:
-
-- **ECO-2302 (Database, Migration & Seed/Importer)**:
-  - Criação de enum / tabela canônica `actor_categories` com os 8 slugs canônicos (`alimentacao`, `atrativos`, `hospedagem`, `artesanato`, `transporte`, `saude`, `seguranca`, `outros`), labels, cores, ícones e flag `is_public = true`.
-  - Migration de dados para mapear categorias legadas/SEMTUR para a nova taxonomia.
-  - Atualização do script de importação/snapshot para validar estritamente as categorias canônicas.
-- **ECO-2303 (Backend & OpenAPI Contracts)**:
-  - Atualização dos schemas Pydantic e documentação OpenAPI com os novos enums de categoria.
-  - Ajuste nas rotas de busca de atores (`GET /api/v1/actors`, `GET /api/v1/map/layers`).
-- **ECO-2304 (Frontend React Native / Expo)**:
-  - Criação do módulo de configuração de categorias (`categoryTheme.ts`) contendo mapeamento de slugs, cores, ícones Lucide correspondentes e rótulos acessíveis.
-  - Atualização dos componentes `CategoryFilterBar`, `ActorMapPin`, `ActorCard` e `ActorDetailModal`.
+- **Database, Migration & Seed/Importer**:
+  - Tabela canônica `actor_categories` com os 12 slugs canônicos (`alimentacao`, `atrativos`, `hospedagem`, `artesanato`, `comercio`, `experiencias`, `vida_noturna`, `servicos_turisticos`, `transporte`, `saude`, `seguranca`, `outros`), labels, cores, ícones e flag `is_public = true`.
+  - Tabela `actor_types` com 38 subtipos especializados vinculados por chave estrangeira às categorias correspondentes.
+  - Migrations versionadas e verificadas no Supabase de Staging.
+- **Backend & OpenAPI Contracts**:
+  - Schemas Pydantic, OpenAPI versionado e sincronizado com os 12 grupos.
+  - Rotas de atores e mapa (`GET /api/v1/actors`, `GET /api/v1/actor-categories`, `GET /api/v1/routes/{id}/map`).
+- **Frontend React Native / Expo**:
+  - Módulo `categoryTheme.ts` contendo mapeamento de slugs, cores WCAG AA, ícones Lucide/Ionicons e rótulos acessíveis.
+  - Componentes `CategoryFilters`, `CategoryCarouselsCatalog`, `MapAdapter` e `LocalCatalogPreview` sincronizados.
