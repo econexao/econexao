@@ -49,4 +49,19 @@ export interface MapAdapterProps {
   selectionPinLabel?: string;
   userLocation?: MapCoordinate | null;
   userLocationLabel?: string;
+  pinCardVariant?: 'full' | 'simple';
+  actorSummaries?: Array<{
+    id: string;
+    name?: string;
+    google_rating?: number | null;
+    rating_count?: number | null;
+    verification_status?: string | null;
+    address?: string | null;
+    cover_image_url?: string | null;
+    cover_media?: {
+      url?: string | null;
+      derivatives?: { card?: string | null; thumbnail?: string | null } | null;
+      alt_text?: string | null;
+    } | null;
+  }>;
 }

@@ -182,12 +182,15 @@ describe('MapAdapter shared geospatial helpers', () => {
     it('valida cores e icones contratuais da taxonomia canonica expandida', () => {
       expect(isContractPinColor('#D97706')).toBe(true);
       expect(isContractPinColor('#0D9488')).toBe(true);
+      expect(isContractPinColor('#C026D3')).toBe(true); // Vida Noturna WCAG AA
       expect(isContractPinColor('invalid')).toBe(false);
 
       expect(isContractPinIcon('boat')).toBe(true);
       expect(isContractPinIcon('musical-notes')).toBe(true);
       expect(isContractPinIcon('store')).toBe(true);
       expect(isContractPinIcon('briefcase')).toBe(true);
+      expect(isContractPinIcon('beer')).toBe(true);
+      expect(isContractPinIcon('palette')).toBe(true);
       expect(isContractPinIcon('unknown-icon')).toBe(false);
     });
   });
