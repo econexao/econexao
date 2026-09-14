@@ -1,24 +1,10 @@
 import React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { TouchableOpacity, Text, Modal, Alert, AccessibilityInfo, Platform } from 'react-native';
-import * as Linking from 'expo-linking';
-import * as Location from 'expo-location';
-import { OriginSelector, MY_LOCATION_ORIGIN_ID } from './OriginSelector';
-import * as LocationConsent from '../../auth/locationConsent';
+import { TouchableOpacity, Text, Modal, AccessibilityInfo } from 'react-native';
+import { OriginSelector, findDefaultOrigin, getOriginIconAndLabel } from './OriginSelector';
 
 jest.mock('@expo/vector-icons', () => ({
   Ionicons: 'Ionicons',
-}));
-
-jest.mock('../../auth/locationConsent', () => ({
-  hasValidLocationConsent: jest.fn(),
-  saveLocationConsent: jest.fn(),
-  revokeLocationConsent: jest.fn(),
-  CURRENT_LOCATION_POLICY_VERSION: '2026-09-04',
-}));
-
-jest.mock('expo-linking', () => ({
-  openSettings: jest.fn(),
 }));
 
 const mockOrigins = [
@@ -54,608 +40,253 @@ const mockOrigins = [
   },
 ];
 
-describe('OriginSelector Component', () => {
+describe('OriginSelector Component (Simplified Dropdown)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
-    jest.spyOn(Alert, 'alert');
     jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
-    (LocationConsent.hasValidLocationConsent as jest.Mock).mockResolvedValue(true);
   });
 
-  afterEach(() => {
+  it('renders null when origins array is empty or undefined', () => {
+    const onSelectOrigin = jest.fn();
+    let rootEmpty: renderer.ReactTestRenderer;
     act(() => {
-      jest.runOnlyPendingTimers();
+      rootEmpty = renderer.create(
+        <OriginSelector origins={[]} onSelectOrigin={onSelectOrigin} />
+      );
     });
-    jest.useRealTimers();
+    expect(rootEmpty!.toJSON()).toBeNull();
+
+    let rootUndefined: renderer.ReactTestRenderer;
+    act(() => {
+      rootUndefined = renderer.create(
+        <OriginSelector origins={undefined as any} onSelectOrigin={onSelectOrigin} />
+      );
+    });
+    expect(rootUndefined!.toJSON()).toBeNull();
   });
 
-  describe('Feature Flag Fail-Closed and Dynamic Routing Control', () => {
-    it('fails closed when enableDynamicRouting is undefined (omitted): hides both "Minha localização" and "Escolher no mapa" and renders only fixed origins', () => {
-      const onSelectOrigin = jest.fn();
-      const onStartSelectOnMap = jest.fn();
-      let root: renderer.ReactTestRenderer;
+  it('renders the compact "saindo de:" label and defaults to Rodoviária when selectedOriginId is not specified', () => {
+    const onSelectOrigin = jest.fn();
+    let root: renderer.ReactTestRenderer;
 
-      act(() => {
-        root = renderer.create(
-          <OriginSelector
-            origins={mockOrigins}
-            selectedOriginId="origin-porto"
-            onSelectOrigin={onSelectOrigin}
-            onStartSelectOnMap={onStartSelectOnMap}
-          />
-        );
-      });
-
-      const buttons = root!.root.findAllByType(TouchableOpacity);
-      // Only 3 fixed origins should be rendered (neither GPS nor Map selection pill)
-      expect(buttons.length).toBe(3);
-
-      const gpsButton = buttons.find(
-        (b) => b.props.accessibilityLabel === 'Usar minha localização atual como origem'
+    act(() => {
+      root = renderer.create(
+        <OriginSelector origins={mockOrigins} onSelectOrigin={onSelectOrigin} />
       );
-      expect(gpsButton).toBeUndefined();
-
-      const mapButton = buttons.find(
-        (b) => b.props.accessibilityLabel === 'Escolher ponto de partida no mapa'
-      );
-      expect(mapButton).toBeUndefined();
-
-      const portoButton = buttons.find(
-        (b) => b.props.accessibilityLabel === 'Selecionar origem Porto Fluvial'
-      );
-      expect(portoButton).toBeDefined();
-      expect(portoButton?.props.accessibilityState).toEqual({ selected: true });
-
-      const aeroportoButton = buttons.find(
-        (b) => b.props.accessibilityLabel === 'Selecionar origem Aeroporto'
-      );
-      expect(aeroportoButton).toBeDefined();
-
-      const rodoviariaButton = buttons.find(
-        (b) => b.props.accessibilityLabel === 'Selecionar origem Rodoviária'
-      );
-      expect(rodoviariaButton).toBeDefined();
     });
 
-    it('hides both "Minha localização" and "Escolher no mapa" when enableDynamicRouting is explicitly false', () => {
-      const onSelectOrigin = jest.fn();
-      const onStartSelectOnMap = jest.fn();
-      let root: renderer.ReactTestRenderer;
+    // Check label
+    const allTexts = root!.root.findAllByType(Text);
+    const labelText = allTexts.find((t) => t.props.children === 'saindo de:');
+    expect(labelText).toBeDefined();
 
-      act(() => {
-        root = renderer.create(
-          <OriginSelector
-            origins={mockOrigins}
-            selectedOriginId="origin-porto"
-            onSelectOrigin={onSelectOrigin}
-            onStartSelectOnMap={onStartSelectOnMap}
-            enableDynamicRouting={false}
-          />
-        );
-      });
+    // Check selected text defaults to Rodoviária
+    const selectedText = allTexts.find((t) => t.props.children === 'Rodoviária');
+    expect(selectedText).toBeDefined();
 
-      const buttons = root!.root.findAllByType(TouchableOpacity);
-      expect(buttons.length).toBe(3);
-
-      const gpsButton = buttons.find(
-        (b) => b.props.accessibilityLabel === 'Usar minha localização atual como origem'
-      );
-      expect(gpsButton).toBeUndefined();
-
-      const mapButton = buttons.find(
-        (b) => b.props.accessibilityLabel === 'Escolher ponto de partida no mapa'
-      );
-      expect(mapButton).toBeUndefined();
-    });
-
-    it('renders all three fixed origins, "Minha localização" pill, and "Escolher no mapa" pill when enableDynamicRouting is true', () => {
-      const onSelectOrigin = jest.fn();
-      const onStartSelectOnMap = jest.fn();
-      let root: renderer.ReactTestRenderer;
-
-      act(() => {
-        root = renderer.create(
-          <OriginSelector
-            origins={mockOrigins}
-            selectedOriginId="origin-porto"
-            onSelectOrigin={onSelectOrigin}
-            onStartSelectOnMap={onStartSelectOnMap}
-            enableDynamicRouting={true}
-          />
-        );
-      });
-
-      const buttons = root!.root.findAllByType(TouchableOpacity);
-      // 1 for GPS pill + 1 for map selection pill + 3 for fixed origins = 5 pills
-      expect(buttons.length).toBe(5);
-
-      const gpsButton = buttons.find(
-        (b) => b.props.accessibilityLabel === 'Usar minha localização atual como origem'
-      );
-      expect(gpsButton).toBeDefined();
-
-      const mapButton = buttons.find(
-        (b) => b.props.accessibilityLabel === 'Escolher ponto de partida no mapa'
-      );
-      expect(mapButton).toBeDefined();
-
-      const portoButton = buttons.find(
-        (b) => b.props.accessibilityLabel === 'Selecionar origem Porto Fluvial'
-      );
-      expect(portoButton).toBeDefined();
-      expect(portoButton?.props.accessibilityState).toEqual({ selected: true });
-    });
+    // Check trigger button accessibility
+    const trigger = root!.root.findAllByType(TouchableOpacity).find(
+      (b) => b.props.accessibilityRole === 'combobox'
+    );
+    expect(trigger).toBeDefined();
+    expect(trigger?.props.accessibilityLabel).toBe('Saindo de: Rodoviária');
+    expect(trigger?.props.accessibilityState).toEqual({ expanded: false });
   });
 
-  describe('Fixed Origins Selection', () => {
-    it('clicking a fixed origin triggers onSelectOrigin callback for all 3 fixed origins', () => {
-      const onSelectOrigin = jest.fn();
-      let root: renderer.ReactTestRenderer;
+  it('renders the specified selectedOriginId when provided', () => {
+    const onSelectOrigin = jest.fn();
+    let root: renderer.ReactTestRenderer;
 
-      act(() => {
-        root = renderer.create(
-          <OriginSelector
-            origins={mockOrigins}
-            selectedOriginId="origin-porto"
-            onSelectOrigin={onSelectOrigin}
-            enableDynamicRouting={true}
-          />
-        );
-      });
-
-      const aeroportoButton = root!.root.findAllByType(TouchableOpacity).find(
-        (b) => b.props.accessibilityLabel === 'Selecionar origem Aeroporto'
+    act(() => {
+      root = renderer.create(
+        <OriginSelector
+          origins={mockOrigins}
+          selectedOriginId="origin-porto"
+          onSelectOrigin={onSelectOrigin}
+        />
       );
-      act(() => {
-        aeroportoButton?.props.onPress();
-      });
-      expect(onSelectOrigin).toHaveBeenCalledWith('origin-aeroporto');
-
-      const rodoviariaButton = root!.root.findAllByType(TouchableOpacity).find(
-        (b) => b.props.accessibilityLabel === 'Selecionar origem Rodoviária'
-      );
-      act(() => {
-        rodoviariaButton?.props.onPress();
-      });
-      expect(onSelectOrigin).toHaveBeenCalledWith('origin-rodoviaria');
     });
+
+    const trigger = root!.root.findAllByType(TouchableOpacity).find(
+      (b) => b.props.accessibilityRole === 'combobox'
+    );
+    expect(trigger?.props.accessibilityLabel).toBe('Saindo de: Porto');
   });
 
-  describe('GPS / Minha Localização Flow (when enabled)', () => {
-    it('clicking "Minha localização" requests GPS and opens confirmation modal with accessible dialog properties', async () => {
-      (Location.hasServicesEnabledAsync as jest.Mock).mockResolvedValue(true);
-      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
-        status: Location.PermissionStatus.GRANTED,
-        canAskAgain: true,
-      });
-      (Location.getCurrentPositionAsync as jest.Mock).mockResolvedValue({
-        coords: {
-          latitude: -2.4431,
-          longitude: -54.7083,
-          accuracy: 10,
-        },
-      });
+  it('does NOT render "Minha localização", "Escolher no mapa" or big distance detail card', () => {
+    const onSelectOrigin = jest.fn();
+    let root: renderer.ReactTestRenderer;
 
-      const onSelectOrigin = jest.fn();
-      const onSelectCurrentLocation = jest.fn();
-      let root: renderer.ReactTestRenderer;
-
-      act(() => {
-        root = renderer.create(
-          <OriginSelector
-            origins={mockOrigins}
-            selectedOriginId="origin-porto"
-            onSelectOrigin={onSelectOrigin}
-            onSelectCurrentLocation={onSelectCurrentLocation}
-            enableDynamicRouting={true}
-          />
-        );
-      });
-
-      const gpsButton = root!.root.findAllByType(TouchableOpacity).find(
-        (b) => b.props.accessibilityLabel === 'Usar minha localização atual como origem'
-      );
-
-      await act(async () => {
-        await gpsButton?.props.onPress();
-      });
-
-      // Screen reader announcement on fetch and success
-      expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledWith(
-        expect.stringContaining('Obtendo sua localização')
-      );
-      expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledWith(
-        expect.stringContaining('Localização obtida com sucesso')
-      );
-
-      // Confirmation modal should be visible and accessible
-      const modals = root!.root.findAllByType(Modal);
-      const confirmModal = modals.find((m) => m.props.accessibilityLabel === 'Confirmar cálculo de trajeto') || modals[0];
-      expect(confirmModal.props.visible).toBe(true);
-
-      const dialogContainer = root!.root.findAllByProps({ accessibilityRole: 'alert' });
-      expect(dialogContainer.length).toBeGreaterThan(0);
-
-      const modalOverlay = root!.root.findAllByProps({ accessibilityViewIsModal: true });
-      expect(modalOverlay.length).toBeGreaterThan(0);
-
-      // Confirm button click
-      const confirmButton = root!.root.findAllByType(TouchableOpacity).find(
-        (b) => b.props.accessibilityLabel === 'Confirmar cálculo do trajeto sugerido'
-      );
-      expect(confirmButton).toBeDefined();
-
-      act(() => {
-        confirmButton?.props.onPress();
-      });
-
-      expect(onSelectCurrentLocation).toHaveBeenCalledWith({
-        latitude: -2.4431,
-        longitude: -54.7083,
-        accuracy: 10,
-      });
-      expect(onSelectOrigin).toHaveBeenCalledWith(MY_LOCATION_ORIGIN_ID);
-      expect(confirmModal.props.visible).toBe(false);
-    });
-
-    it('cancelling the confirmation modal closes dialog, clears pending coords, and announces cancellation', async () => {
-      (Location.hasServicesEnabledAsync as jest.Mock).mockResolvedValue(true);
-      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
-        status: Location.PermissionStatus.GRANTED,
-        canAskAgain: true,
-      });
-      (Location.getCurrentPositionAsync as jest.Mock).mockResolvedValue({
-        coords: {
-          latitude: -2.4431,
-          longitude: -54.7083,
-          accuracy: 10,
-        },
-      });
-
-      const onSelectOrigin = jest.fn();
-      const onSelectCurrentLocation = jest.fn();
-      let root: renderer.ReactTestRenderer;
-
-      act(() => {
-        root = renderer.create(
-          <OriginSelector
-            origins={mockOrigins}
-            selectedOriginId="origin-porto"
-            onSelectOrigin={onSelectOrigin}
-            onSelectCurrentLocation={onSelectCurrentLocation}
-            enableDynamicRouting={true}
-          />
-        );
-      });
-
-      const gpsButton = root!.root.findAllByType(TouchableOpacity).find(
-        (b) => b.props.accessibilityLabel === 'Usar minha localização atual como origem'
-      );
-
-      await act(async () => {
-        await gpsButton?.props.onPress();
-      });
-
-      const cancelButton = root!.root.findAllByType(TouchableOpacity).find(
-        (b) => b.props.accessibilityLabel === 'Cancelar cálculo a partir da minha localização'
-      );
-
-      act(() => {
-        cancelButton?.props.onPress();
-      });
-
-      expect(onSelectCurrentLocation).not.toHaveBeenCalled();
-      const modals = root!.root.findAllByType(Modal);
-      const confirmModal = modals.find((m) => m.props.accessibilityLabel === 'Confirmar cálculo de trajeto') || modals[0];
-      expect(confirmModal.props.visible).toBe(false);
-      expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledWith(
-        expect.stringContaining('cancelado')
+    act(() => {
+      root = renderer.create(
+        <OriginSelector
+          origins={mockOrigins}
+          selectedOriginId="origin-porto"
+          onSelectOrigin={onSelectOrigin}
+          enableDynamicRouting={true}
+        />
       );
     });
 
-    it('handles permanently denied permission by presenting Settings action and screen reader message', async () => {
-      (Location.hasServicesEnabledAsync as jest.Mock).mockResolvedValue(true);
-      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
-        status: Location.PermissionStatus.DENIED,
-        canAskAgain: false,
-      });
+    const buttons = root!.root.findAllByType(TouchableOpacity);
+    const gpsButton = buttons.find(
+      (b) => b.props.accessibilityLabel === 'Usar minha localização atual como origem'
+    );
+    expect(gpsButton).toBeUndefined();
 
-      const onSelectOrigin = jest.fn();
-      let root: renderer.ReactTestRenderer;
+    const mapButton = buttons.find(
+      (b) => b.props.accessibilityLabel === 'Escolher ponto de partida no mapa'
+    );
+    expect(mapButton).toBeUndefined();
 
-      act(() => {
-        root = renderer.create(
-          <OriginSelector
-            origins={mockOrigins}
-            selectedOriginId="origin-porto"
-            onSelectOrigin={onSelectOrigin}
-            enableDynamicRouting={true}
-          />
-        );
-      });
+    // No distance card text
+    const allTexts = root!.root.findAllByType(Text);
+    const distanceText = allTexts.find(
+      (t) => typeof t.props.children === 'string' && t.props.children.includes('Distância total:')
+    );
+    expect(distanceText).toBeUndefined();
+  });
 
-      const gpsButton = root!.root.findAllByType(TouchableOpacity).find(
-        (b) => b.props.accessibilityLabel === 'Usar minha localização atual como origem'
+  it('opens modal on trigger click and displays all origins', () => {
+    const onSelectOrigin = jest.fn();
+    let root: renderer.ReactTestRenderer;
+
+    act(() => {
+      root = renderer.create(
+        <OriginSelector origins={mockOrigins} onSelectOrigin={onSelectOrigin} />
       );
-
-      await act(async () => {
-        await gpsButton?.props.onPress();
-      });
-
-      const feedback = root!.root.findByProps({ accessibilityRole: 'alert' });
-      expect(feedback.findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('configurações');
-      const settingsButton = root!.root.findAllByType(TouchableOpacity).find(
-        (button) => button.props.accessibilityLabel === 'Abrir configurações de localização'
-      );
-      jest.replaceProperty(Platform, 'OS', 'web');
-      await act(async () => {
-        await settingsButton?.props.onPress();
-      });
-      expect(Linking.openSettings).not.toHaveBeenCalled();
-      expect(root!.root.findByProps({ accessibilityRole: 'alert' })
-        .findAllByType(Text)
-        .map((node) => node.props.children)
-        .join(' ')).toContain('permissões do site');
-      jest.restoreAllMocks();
     });
 
-    it('makes browser permission instructions reachable for denied permission that can be requested again', async () => {
-      jest.replaceProperty(Platform, 'OS', 'web');
-      (Location.hasServicesEnabledAsync as jest.Mock).mockResolvedValue(true);
-      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
-        status: Location.PermissionStatus.DENIED,
-        canAskAgain: true,
-      });
-      (Location.requestForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
-        status: Location.PermissionStatus.DENIED,
-        canAskAgain: true,
-      });
+    const modalBefore = root!.root.findByType(Modal);
+    expect(modalBefore.props.visible).toBe(false);
 
-      let root: renderer.ReactTestRenderer;
-      act(() => {
-        root = renderer.create(
-          <OriginSelector
-            origins={mockOrigins}
-            selectedOriginId="origin-porto"
-            onSelectOrigin={jest.fn()}
-            enableDynamicRouting={true}
-          />
-        );
-      });
-      const gpsButton = root!.root.findAllByType(TouchableOpacity).find(
-        (button) => button.props.accessibilityLabel === 'Usar minha localização atual como origem'
-      );
-      await act(async () => { await gpsButton?.props.onPress(); });
+    const trigger = root!.root.findAllByType(TouchableOpacity).find(
+      (b) => b.props.accessibilityRole === 'combobox'
+    );
 
-      const instructionsButton = root!.root.findAllByType(TouchableOpacity).find(
-        (button) => button.props.accessibilityLabel === 'Ver instruções para liberar localização no navegador'
-      );
-      expect(instructionsButton).toBeDefined();
-      await act(async () => { await instructionsButton?.props.onPress(); });
-      expect(root!.root.findByProps({ accessibilityRole: 'alert' })
-        .findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('permissões do site');
-      expect(Linking.openSettings).not.toHaveBeenCalled();
-      jest.restoreAllMocks();
+    act(() => {
+      trigger?.props.onPress();
     });
 
-    it('renders recoverable feedback when native openSettings rejects', async () => {
-      jest.replaceProperty(Platform, 'OS', 'ios');
-      (Linking.openSettings as jest.Mock).mockRejectedValueOnce(new Error('settings unavailable'));
-      (Location.hasServicesEnabledAsync as jest.Mock).mockResolvedValue(true);
-      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
-        status: Location.PermissionStatus.DENIED,
-        canAskAgain: false,
-      });
+    const modalAfter = root!.root.findByType(Modal);
+    expect(modalAfter.props.visible).toBe(true);
 
-      let root: renderer.ReactTestRenderer;
-      act(() => {
-        root = renderer.create(
-          <OriginSelector
-            origins={mockOrigins}
-            selectedOriginId="origin-porto"
-            onSelectOrigin={jest.fn()}
-            enableDynamicRouting={true}
-          />
-        );
-      });
-      const gpsButton = root!.root.findAllByType(TouchableOpacity).find(
-        (button) => button.props.accessibilityLabel === 'Usar minha localização atual como origem'
+    // Check menu items
+    const menuItems = root!.root.findAllByType(TouchableOpacity).filter(
+      (b) => b.props.accessibilityRole === 'menuitem'
+    );
+    expect(menuItems.length).toBe(3);
+    expect(menuItems[0].props.accessibilityLabel).toBe('Selecionar Porto');
+    expect(menuItems[1].props.accessibilityLabel).toBe('Selecionar Aeroporto');
+    expect(menuItems[2].props.accessibilityLabel).toBe('Selecionar Rodoviária');
+  });
+
+  it('selecting an origin invokes onSelectOrigin, announces to accessibility and closes modal', () => {
+    const onSelectOrigin = jest.fn();
+    let root: renderer.ReactTestRenderer;
+
+    act(() => {
+      root = renderer.create(
+        <OriginSelector origins={mockOrigins} onSelectOrigin={onSelectOrigin} />
       );
-      await act(async () => { await gpsButton?.props.onPress(); });
-      const settingsButton = root!.root.findAllByType(TouchableOpacity).find(
-        (button) => button.props.accessibilityLabel === 'Abrir configurações de localização'
+    });
+
+    const trigger = root!.root.findAllByType(TouchableOpacity).find(
+      (b) => b.props.accessibilityRole === 'combobox'
+    );
+
+    act(() => {
+      trigger?.props.onPress();
+    });
+
+    const portoOption = root!.root.findAllByType(TouchableOpacity).find(
+      (b) => b.props.accessibilityLabel === 'Selecionar Porto'
+    );
+
+    act(() => {
+      portoOption?.props.onPress();
+    });
+
+    expect(onSelectOrigin).toHaveBeenCalledWith('origin-porto');
+    expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledWith(
+      'Origem selecionada: Porto'
+    );
+
+    const modalAfter = root!.root.findByType(Modal);
+    expect(modalAfter.props.visible).toBe(false);
+  });
+
+  it('closes modal when touching backdrop', () => {
+    const onSelectOrigin = jest.fn();
+    let root: renderer.ReactTestRenderer;
+
+    act(() => {
+      root = renderer.create(
+        <OriginSelector origins={mockOrigins} onSelectOrigin={onSelectOrigin} />
       );
-      await act(async () => { await settingsButton?.props.onPress(); });
-      expect(root!.root.findByProps({ accessibilityRole: 'alert' })
-        .findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('Não foi possível abrir');
-      jest.restoreAllMocks();
+    });
+
+    const trigger = root!.root.findAllByType(TouchableOpacity).find(
+      (b) => b.props.accessibilityRole === 'combobox'
+    );
+
+    act(() => {
+      trigger?.props.onPress();
+    });
+
+    expect(root!.root.findByType(Modal).props.visible).toBe(true);
+
+    const backdrop = root!.root.findAllByType(TouchableOpacity).find(
+      (b) => b.props.accessibilityLabel === 'Fechar opções de ponto de partida'
+    );
+
+    act(() => {
+      backdrop?.props.onPress();
+    });
+
+    expect(root!.root.findByType(Modal).props.visible).toBe(false);
+  });
+
+  describe('findDefaultOrigin helper', () => {
+    it('returns Rodoviária if present', () => {
+      const def = findDefaultOrigin(mockOrigins);
+      expect(def?.id).toBe('origin-rodoviaria');
+    });
+
+    it('falls back to origins[0] if Rodoviária is not present', () => {
+      const originsWithoutRodoviaria = [mockOrigins[0], mockOrigins[1]];
+      const def = findDefaultOrigin(originsWithoutRodoviaria);
+      expect(def?.id).toBe('origin-porto');
+    });
+
+    it('returns undefined if origins array is empty', () => {
+      expect(findDefaultOrigin([])).toBeUndefined();
     });
   });
 
-  describe('LGPD Location Consent Gate in OriginSelector', () => {
-    it('intercepts GPS press and shows consent modal when consent is not present, without calling Location API', async () => {
-      (LocationConsent.hasValidLocationConsent as jest.Mock).mockResolvedValue(false);
-      const onSelectOrigin = jest.fn();
-      let root: renderer.ReactTestRenderer;
-
-      act(() => {
-        root = renderer.create(
-          <OriginSelector
-            origins={mockOrigins}
-            selectedOriginId="origin-porto"
-            onSelectOrigin={onSelectOrigin}
-            enableDynamicRouting={true}
-          />
-        );
-      });
-
-      const gpsButton = root!.root.findAllByType(TouchableOpacity).find(
-        (b) => b.props.accessibilityLabel === 'Usar minha localização atual como origem'
-      );
-
-      await act(async () => {
-        await gpsButton?.props.onPress();
-      });
-
-      // Crucial LGPD compliance: Location API must NOT have been called before consent!
-      expect(Location.requestForegroundPermissionsAsync).not.toHaveBeenCalled();
-      expect(Location.getCurrentPositionAsync).not.toHaveBeenCalled();
-
-      // Consent modal should be visible
-      const consentDialog = root!.root.findByProps({
-        accessibilityLabel: 'Consentimento de localização dinâmica',
-      });
-      expect(consentDialog).toBeDefined();
+  describe('getOriginIconAndLabel helper', () => {
+    it('assigns bus icon for rodoviária', () => {
+      const res = getOriginIconAndLabel({ id: '1', name: 'Rodoviária Central' });
+      expect(res.iconName).toBe('bus-outline');
+      expect(res.shortName).toBe('Rodoviária');
     });
 
-    it('intercepts Choose on Map press and shows consent modal when consent is missing', async () => {
-      (LocationConsent.hasValidLocationConsent as jest.Mock).mockResolvedValue(false);
-      const onStartSelectOnMap = jest.fn();
-      let root: renderer.ReactTestRenderer;
-
-      act(() => {
-        root = renderer.create(
-          <OriginSelector
-            origins={mockOrigins}
-            selectedOriginId="origin-porto"
-            onSelectOrigin={jest.fn()}
-            onStartSelectOnMap={onStartSelectOnMap}
-            enableDynamicRouting={true}
-          />
-        );
-      });
-
-      const mapButton = root!.root.findAllByType(TouchableOpacity).find(
-        (b) => b.props.accessibilityLabel === 'Escolher ponto de partida no mapa'
-      );
-
-      await act(async () => {
-        await mapButton?.props.onPress();
-      });
-
-      expect(onStartSelectOnMap).not.toHaveBeenCalled();
-
-      const consentDialog = root!.root.findByProps({
-        accessibilityLabel: 'Consentimento de localização dinâmica',
-      });
-      expect(consentDialog).toBeDefined();
-    });
-  });
-
-  describe('Component Preparation for ECO-2311 and Lifecycle', () => {
-    it('renders "Escolher no mapa" pill and triggers onStartSelectOnMap (ECO-2311)', async () => {
-      (LocationConsent.hasValidLocationConsent as jest.Mock).mockResolvedValue(true);
-      const onSelectOrigin = jest.fn();
-      const onStartSelectOnMap = jest.fn();
-      let root: renderer.ReactTestRenderer;
-
-      act(() => {
-        root = renderer.create(
-          <OriginSelector
-            origins={mockOrigins}
-            selectedOriginId="origin-porto"
-            onSelectOrigin={onSelectOrigin}
-            onStartSelectOnMap={onStartSelectOnMap}
-            enableDynamicRouting={true}
-          />
-        );
-      });
-
-      const buttons = root!.root.findAllByType(TouchableOpacity);
-      expect(buttons.length).toBe(5);
-
-      const mapButton = buttons.find(
-        (b) => b.props.accessibilityLabel === 'Escolher ponto de partida no mapa'
-      );
-      expect(mapButton).toBeDefined();
-
-      await act(async () => {
-        await mapButton?.props.onPress();
-      });
-
-      expect(onStartSelectOnMap).toHaveBeenCalled();
-    });
-  });
-
-  describe('ECO-2609 — Validação de resiliência e origens fixas sob falha de GPS', () => {
-    it('retorna à origem fixa sem quebrar o fluxo quando a permissão de GPS é negada pelo usuário', async () => {
-      (Location.hasServicesEnabledAsync as jest.Mock).mockResolvedValue(true);
-      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
-        status: Location.PermissionStatus.DENIED,
-        canAskAgain: true,
-      });
-      (Location.requestForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
-        status: Location.PermissionStatus.DENIED,
-        canAskAgain: true,
-      });
-
-      const onSelectOrigin = jest.fn();
-      let root: renderer.ReactTestRenderer;
-
-      act(() => {
-        root = renderer.create(
-          <OriginSelector
-            origins={mockOrigins}
-            selectedOriginId="origin-porto"
-            onSelectOrigin={onSelectOrigin}
-            enableDynamicRouting={true}
-          />
-        );
-      });
-
-      const gpsButton = root!.root.findAllByType(TouchableOpacity).find(
-        (b) => b.props.accessibilityLabel === 'Usar minha localização atual como origem'
-      );
-
-      await act(async () => {
-        await gpsButton?.props.onPress();
-      });
-
-      // Feedback visível e origem mantida na fixa (Porto Fluvial)
-      const feedback = root!.root.findByProps({ accessibilityRole: 'alert' });
-      expect(feedback.findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('Permissão de localização foi negada');
-      expect(onSelectOrigin).not.toHaveBeenCalled();
-      expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledWith(
-        expect.stringContaining('Permissão de localização foi negada')
-      );
+    it('assigns boat icon for porto', () => {
+      const res = getOriginIconAndLabel({ id: '2', name: 'Porto Hidroviário' });
+      expect(res.iconName).toBe('boat-outline');
+      expect(res.shortName).toBe('Porto');
     });
 
-    it('trata erro de GPS com fallback gracioso sem travar a interface', async () => {
-      (Location.hasServicesEnabledAsync as jest.Mock).mockResolvedValue(true);
-      (Location.getForegroundPermissionsAsync as jest.Mock).mockResolvedValue({
-        status: Location.PermissionStatus.GRANTED,
-        canAskAgain: true,
-      });
-      (Location.getCurrentPositionAsync as jest.Mock).mockRejectedValue(
-        new Error('LOCATION_TIMEOUT')
-      );
+    it('assigns airplane icon for aeroporto', () => {
+      const res = getOriginIconAndLabel({ id: '3', name: 'Aeroporto Internacional' });
+      expect(res.iconName).toBe('airplane-outline');
+      expect(res.shortName).toBe('Aeroporto');
+    });
 
-      const onSelectOrigin = jest.fn();
-      let root: renderer.ReactTestRenderer;
-
-      act(() => {
-        root = renderer.create(
-          <OriginSelector
-            origins={mockOrigins}
-            selectedOriginId="origin-porto"
-            onSelectOrigin={onSelectOrigin}
-            enableDynamicRouting={true}
-          />
-        );
-      });
-
-      const gpsButton = root!.root.findAllByType(TouchableOpacity).find(
-        (b) => b.props.accessibilityLabel === 'Usar minha localização atual como origem'
-      );
-
-      await act(async () => {
-        await gpsButton?.props.onPress();
-      });
-
-      const feedback = root!.root.findByProps({ accessibilityRole: 'alert' });
-      expect(feedback.findAllByType(Text).map((node) => node.props.children).join(' ')).toContain('Tempo limite esgotado');
-      expect(onSelectOrigin).not.toHaveBeenCalled();
+    it('assigns default location icon for other names', () => {
+      const res = getOriginIconAndLabel({ id: '4', name: 'Praça Central' });
+      expect(res.iconName).toBe('location-outline');
+      expect(res.shortName).toBe('Praça Central');
     });
   });
 });

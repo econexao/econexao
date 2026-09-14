@@ -276,9 +276,8 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     const textElements = root.findAllByType(Text);
     const textContents = textElements.map((el) => el.props.children);
 
-    expect(textContents).toContain('Rota Pindobal');
-    expect(textContents).toContain('Porto de Santarém');
-    expect(textElements.map((node) => textValue(node.props.children)).join(' ')).toContain('45.2 km');
+    expect(textContents).toContain('saindo de:');
+    expect(textContents).toContain('Rodoviária');
     expect(textContents).toContain('Trecho em Obras');
     expect(textContents).toContain('Pousada Canto da Floresta');
     expect(textContents).toContain('Restaurante Moqueca do Tapajós');
@@ -292,32 +291,30 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
 
     const root = tree.root;
 
-    // Verify initial actors query call with default origin ('origin-porto')
+    // Verify initial actors query call with default origin ('origin-rodoviaria')
     expect(useRouteActorsQuery).toHaveBeenCalledWith('route-pindobal', {
-      origin_id: 'origin-porto',
-      category: undefined,
-      limit: 3,
-    });
-
-    // Find all three contractual origins and select Rodoviária.
-    const originButtons = root.findAll((node) => node.type === TouchableOpacity && node.props.accessibilityLabel?.includes('Selecionar origem'));
-    expect(originButtons.length).toBe(3);
-    expect(originButtons[0].props.accessibilityState).toEqual({ selected: true });
-
-    await act(async () => {
-      originButtons[2].props.onPress();
-    });
-
-    // Verify updated actors query call and selected-state semantics.
-    expect(useRouteActorsQuery).toHaveBeenLastCalledWith('route-pindobal', {
       origin_id: 'origin-rodoviaria',
       category: undefined,
       limit: 3,
     });
-    expect(originButtons[2].props.accessibilityState).toEqual({ selected: true });
-    expect(
-      root.findAllByType(Text).map((node) => textValue(node.props.children)).join(' ')
-    ).toContain('42.3 km');
+
+    // Open dropdown combobox and select Porto
+    const combobox = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityRole === 'combobox');
+    await act(async () => {
+      combobox.props.onPress();
+    });
+
+    const portoOption = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityLabel === 'Selecionar Porto');
+    await act(async () => {
+      portoOption.props.onPress();
+    });
+
+    // Verify updated actors query call and selected-state semantics.
+    expect(useRouteActorsQuery).toHaveBeenLastCalledWith('route-pindobal', {
+      origin_id: 'origin-porto',
+      category: undefined,
+      limit: 3,
+    });
   });
 
   it('navigates to map and catalog preserving originId in URL query params', async () => {
@@ -334,12 +331,12 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     await act(async () => {
       mapBtn.props.onPress();
     });
-    expect(mockPush).toHaveBeenCalledWith('/route/route-pindobal/map?originId=origin-porto');
+    expect(mockPush).toHaveBeenCalledWith('/route/route-pindobal/map?originId=origin-rodoviaria');
 
     await act(async () => {
       catalogBtn.props.onPress();
     });
-    expect(mockPush).toHaveBeenCalledWith('/route/route-pindobal/catalog?originId=origin-porto');
+    expect(mockPush).toHaveBeenCalledWith('/route/route-pindobal/catalog?originId=origin-rodoviaria');
   });
 
   it('honors a deep-linked origin and actor in map and catalog navigation', async () => {
@@ -390,7 +387,7 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     await act(async () => actorPreview.props.onPress());
 
     expect(mockPush).toHaveBeenCalledWith(
-      '/route/route-pindobal/map?originId=origin-porto&actorId=actor-1'
+      '/route/route-pindobal/map?originId=origin-rodoviaria&actorId=actor-1'
     );
   });
 
@@ -438,7 +435,7 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     await act(async () => lodgingFilter.props.onPress());
 
     expect(useRouteActorsQuery).toHaveBeenLastCalledWith('route-pindobal', {
-      origin_id: 'origin-porto',
+      origin_id: 'origin-rodoviaria',
       category: 'hospedagem',
       limit: 3,
     });
@@ -647,15 +644,19 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     });
 
     // Selecting a fixed origin restores official origin and clears ephemeral preview
-    const originButtons = root.findAll((node) => node.type === TouchableOpacity && node.props.accessibilityLabel?.includes('Selecionar origem'));
+    const combobox = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityRole === 'combobox');
     await act(async () => {
-      originButtons[0].props.onPress();
+      combobox.props.onPress();
+    });
+    const portoOption = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityLabel === 'Selecionar Porto');
+    await act(async () => {
+      portoOption.props.onPress();
     });
 
     expect(removeQueriesMock).toHaveBeenCalledTimes(2);
   }, 60000);
 
-  it('clicking "Escolher no mapa" opens map screen with mode=select-origin and without coordinates in URL (ECO-2311)', async () => {
+  it('does not render "Escolher no mapa" or "Minha localização" in OriginSelector even with dynamic routing enabled', async () => {
     const { useAppContext } = require('../../state/useAppContext');
     const { initialAppState } = require('../../state/appReducer');
     (useAppContext as jest.Mock).mockReturnValue({
@@ -672,18 +673,15 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     });
 
     const root = tree.root;
-    const mapButton = root.find(
+    const mapButton = root.findAll(
       (b) => b.type === TouchableOpacity && b.props.accessibilityLabel === 'Escolher ponto de partida no mapa'
     );
-    expect(mapButton).toBeDefined();
+    expect(mapButton.length).toBe(0);
 
-    await act(async () => {
-      mapButton.props.onPress();
-    });
-
-    expect(mockPush).toHaveBeenCalledWith(
-      '/route/route-pindobal/map?originId=origin-porto&mode=select-origin'
+    const gpsButton = root.findAll(
+      (b) => b.type === TouchableOpacity && b.props.accessibilityLabel === 'Usar minha localização atual como origem'
     );
+    expect(gpsButton.length).toBe(0);
   });
 
   it('does not render Google Routes geometry over the OpenStreetMap preview', async () => {
@@ -828,9 +826,13 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     const root = tree.root;
 
     // Select Aeroporto first as previous valid origin
-    const originButtons = root.findAll((node) => node.type === TouchableOpacity && node.props.accessibilityLabel?.includes('Selecionar origem'));
+    const combobox = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityRole === 'combobox');
     await act(async () => {
-      originButtons[1].props.onPress();
+      combobox.props.onPress();
+    });
+    const aeroportoOption = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityLabel === 'Selecionar Aeroporto');
+    await act(async () => {
+      aeroportoOption.props.onPress();
     });
 
     // Simulate calling handleSelectCurrentLocation / coordinate selection failure
@@ -852,7 +854,7 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     );
 
     // Selector preserves the last valid origin (Aeroporto)
-    const updatedButtons = root.findAll((node) => node.type === TouchableOpacity && node.props.accessibilityLabel?.includes('Selecionar origem'));
-    expect(updatedButtons[1].props.accessibilityState).toEqual({ selected: true });
+    const comboboxUpdated = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityRole === 'combobox');
+    expect(comboboxUpdated.props.accessibilityLabel).toBe('Saindo de: Aeroporto');
   });
 });
