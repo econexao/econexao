@@ -121,36 +121,53 @@ Data da Catalogação: 11/08/2026
      - Cards detalhados com imagem de capa, cidade/estado, título da rota, extensão em km, contagem de atores comunitários.
 
 -------------------------------------------------------------------------------
-4. TELA 3: PERFIL DO USUÁRIO & ACESSIBILIDADE ((tabs)/profile.tsx)
+4. TELA 3: PERFIL DO USUÁRIO & ACESSIBILIDADE ((tabs)/(profile)/index.tsx)
 -------------------------------------------------------------------------------
 
-[4.1] CARTÃO DE IDENTIFICAÇÃO DO USUÁRIO
+[4.1] BANNER DE CONVIDADO / SALVAR FAVORITOS COM GOOGLE (Exibido para sessão anônima)
    * Elementos Interativos:
-     - Foto de Perfil / Avatar: Abre o seletor e envia a nova imagem do usuário.
-     - Ícone de lápis: Abre a edição das informações do perfil.
+     - Botão "Salvar" (com logo do Google):
+       • Ação: Abre o modal de autenticação/vinculação (`AuthModal`), permitindo salvar a conta e dados favoritados permanentemente.
+   * Indicadores de Status & Badges:
+     - Badge "100% Grátis": Destaque de gratuidade e incentivo à permanência.
+     - Ícone de Brilho / Sparkles: Destaque visual temático.
    * Conteúdos Exibidos:
-     - Nome do perfil remoto; na sessão anônima sem nome, exibe "Visitante".
-     - Tipo de sessão ou e-mail e localização quando cadastrada.
-     - Foto de Perfil com borda verde temática.
+     - Título: "Salvar Favoritos".
+     - Subtítulo: "Vincule com Google e não perca dados".
+     - Fundo em gradiente verde floresta profundo (#1C3B0F a #33601E).
 
-[4.2] IMPACTO E SELOS PESSOAIS
+[4.2] CARTÃO DE IDENTIFICAÇÃO DO USUÁRIO
+   * Elementos Interativos:
+     - Foto de Perfil / Avatar (com badge de câmera):
+       • Ação: Abre o seletor de imagens da galeria e realiza o upload seguro do avatar para o Supabase Storage.
+     - Botão de Lápis / Editar:
+       • Ação: Abre o modal de edição de nome e localização (`EditProfileModal`).
+   * Conteúdos Exibidos:
+     - Nome do perfil ou do Google; na sessão anônima sem nome, exibe "Visitante".
+     - Indicador com ponto verde de status da sessão ("Sessão Convidado • Modo Anônimo" ou e-mail autenticado).
+     - Localização cadastrada quando existente (com ícone de pin).
+     - Foto de Perfil com borda verde temática e indicador de câmera.
+
+[4.3] IMPACTO E SELOS PESSOAIS
    * Não exibidos nem registrados, conforme ADR 0009.
    * Viagens e visitas permanecem disponíveis como histórico factual no menu do perfil.
 
-[4.3] MENU DE PREFERÊNCIAS & ACESSIBILIDADE
-   * Elementos com Aparência Interativa:
-     - Itens de Menu renderizados como áreas tocáveis, porém ainda sem ação de toque implementada:
-       • "Rotas Salvas": Exibe a contagem de rotas favoritadas.
-       • "Atores & Empreendimentos Favoritos": Exibe a contagem de atores favoritados.
-       • "Histórico de Viagens Sustentáveis": Exibe o total de rotas concluídas.
-       • "Modo Leitor de Tela & Alto Contraste": Exibe o status "Ativo".
-       • "Configurações Regionais": Exibe a região atual.
-       • "Suporte & Operação Editorial": Exibe o status "Ajuda".
-     - Observação: Os itens possuem semântica visual e rótulo de botão, mas não navegam nem alteram configurações na implementação atual.
-   * Indicadores de Status:
-     - Badges com Contadores Numéricos (ex: número de rotas e atores salvos).
-     - Textos de Status ("Ativo", "Santarém & Belterra", "Ajuda").
-     - Ícones Chevron (setas para a direita) sugerindo navegação visualmente, embora as ações ainda não estejam implementadas.
+[4.4] MENU DE PREFERÊNCIAS & MINHA CONTA (GRID 2 COLUNAS)
+   * Estrutura & Layout: Grade moderna com 2 colunas e 6 cartões interativos compactos com ícones temáticos coloridos e setas de direcionamento:
+     1. "Rotas Salvas" (Ícone Marcador verde esmeralda): Navega para `/(tabs)/(profile)/favorite-routes` (trilhas offline).
+     2. "Atores Favoritos" (Ícone Coração rosa): Navega para `/(tabs)/(profile)/favorite-actors` (guias e pontos salvos).
+     3. "Histórico" (Ícone Bússola âmbar): Navega para `/(tabs)/(profile)/trips` (passeios feitos).
+     4. "Acessibilidade" (Ícone Pessoa teal): Navega para `/(tabs)/(profile)/accessibility` (áudio e contraste).
+     5. "Ajuda & Suporte" (Ícone Ajuda azul céu): Navega para `/(tabs)/(profile)/support` (dúvidas e SAC).
+     6. "Termos & Dados" (Ícone Escudo verde folha): Navega para `/(tabs)/(profile)/legal` (políticas LGPD).
+
+[4.5] AÇÕES DE CONTA & RODAPÉ INSTITUCIONAL
+   * Elementos Interativos:
+     - Botão "Encerrar Sessão" (Logout): Limpa o cache da sessão e desloga o usuário.
+     - Botão "Excluir Conta" (LGPD): Fundo vermelho suave, abre o modal de exclusão permanente de conta (`AccountDeletionModal`).
+   * Conteúdos Exibidos:
+     - Texto institucional: "ECOnexão Sustentável v2.4 • Amazônia Viva".
+
 
 -------------------------------------------------------------------------------
 5. TELA 4: DETALHES DA ROTA (/route/[routeId]/index.tsx)
