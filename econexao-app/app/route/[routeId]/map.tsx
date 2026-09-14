@@ -629,6 +629,8 @@ export default function MapScreen() {
             geometry={mapPayload.geometry}
             bounds={activeBounds}
             selectedActorId={selectedActorId}
+            pinCardVariant="full"
+            actorSummaries={actorsList}
             onSelectActor={(id) => {
               if (!isSelectionMode) {
                 setSelectedActorId(id);
