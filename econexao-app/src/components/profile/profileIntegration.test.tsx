@@ -320,7 +320,7 @@ describe('Marco 11 — Integration Tests', () => {
     // E-mail da conta autenticada é exibido no papel
     expect(rendered).toContain('turista.google@exemplo.com');
     // Banner de visitante é ocultado para usuário autenticado
-    expect(rendered).not.toContain('Salvar Conta e Favoritos');
+    expect(rendered).not.toContain('Salvar Favoritos');
   });
 
   it('SupportScreen renders contacts and FAQ from query', async () => {

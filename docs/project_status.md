@@ -1,6 +1,6 @@
 # ECOnexão — documento único de tarefas
 
-Atualizado em: 14/09/2026. Barra de abas inferior ajustada para safe area dinâmica (ECO-2618 / UI).
+Atualizado em: 14/09/2026. Redesenho editorial da tela de perfil aplicado (ProfileScreen / UI).
 Este é o único cadastro de tasks: concluídas, parciais, novas, adiadas e substituídas.
 Os documentos de iniciativas preservam aceites/evidências históricos, mas não definem
 prioridade ou estado atual. A sequência abaixo orienta a próxima execução; decisões
@@ -8,7 +8,7 @@ ainda abertas permanecem em ECO-2603 e não são aprovadas pelo commit documenta
 
 ## Como acompanhar
 
-- **Agora:** Barra de abas inferior (`app/(tabs)/_layout.tsx`) atualizada com suporte dinâmico a safe area via `useSafeAreaInsets` (`height: 76 + insets.bottom`, `paddingTop: 6`, `paddingBottom: Math.max(insets.bottom, 10)`), eliminando o corte de ícones e rótulos ("Inicial", "Rotas", "Perfil") em dispositivos Android com gesture navigation, iOS e navegadores móveis. Suíte com 47 arquivos e 300 testes Jest passando 100%, typecheck e export Web verificados localmente. Publicação organizada em staging (`https://econexao-app-staging.vercel.app/`).
+- **Agora:** Tela de Perfil (`app/(tabs)/(profile)/index.tsx`) atualizada com o novo design editorial contemporâneo: banner escuro de convidado em gradiente com botão estilizado do Google, card de identificação compacto do usuário, menu de preferências em grade de 2 colunas com cartões interativos temáticos e ações de encerramento/exclusão com nota de rodapé institucional. Suíte com 47 arquivos e 300 testes Jest passando 100%, typecheck e export Web verificados localmente. Publicação organizada em staging (`https://econexao-app-staging.vercel.app/`).
   ECO-1901 permanece PARCIAL após a PR #29 ser integrada em `staging` pelo squash `0a717b6d0d09ddac829f7b2dce9f9d2e44036c51`. O deploy canônico desse SHA ficou saudável, e a homologação real autorizada confirmou visitante, guest, refresh, paginação, favoritos de rota e isolamento A/B, mas encontrou `GET /me/favorite-actors` com HTTP 500 após `PUT` bem-sucedido. A correção mínima está em revisão local antes de novo push/deploy. Uma task por vez, revisão independente e GO por operação remota.
   A ECO-2617 foi concluída localmente; o baseline incorporado inclui
   `0a717b6d0d09ddac829f7b2dce9f9d2e44036c51`, a identidade visual do PR #30 e as
