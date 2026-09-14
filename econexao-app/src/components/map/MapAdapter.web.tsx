@@ -106,32 +106,104 @@ function escapeHtml(value: unknown): string {
     .replace(/'/g, '&#39;');
 }
 
-const createPinIcon = (item: FlexiblePinItem, selected: boolean) => {
+const createPinIcon = (
+  item: FlexiblePinItem,
+  selected: boolean,
+  variant: 'full' | 'simple' = 'full',
+  actorSummary?: {
+    google_rating?: number | null;
+    rating_count?: number | null;
+    cover_image_url?: string | null;
+    cover_media?: { url?: string | null; derivatives?: { card?: string | null; thumbnail?: string | null } | null } | null;
+  }
+) => {
   const rawColor = getItemPinColor(item);
   const icon = getItemPinIcon(item);
   if (!rawColor || !icon) return null;
   const color = escapeHtml(rawColor);
-  const size = selected ? 50 : 44;
-  const iconSize = selected ? 22 : 18;
-  const svgContent = getPinIconSvg(icon);
-  if (!svgContent) return null;
-  const ringStyle = selected
-    ? 'box-shadow:0 0 0 3px #FFFFFF, 0 0 0 6px rgba(17,24,39,0.85), 0 4px 12px rgba(0,0,0,0.5); transform:scale(1.15);'
-    : 'box-shadow:0 2px 6px rgba(0,0,0,0.35);';
+  const iconSvg = getPinIconSvg(icon);
+  if (!iconSvg) return null;
 
-  const html = `
-    <div class="econexao-map-marker" style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2.5px solid #FFFFFF;color:#FFFFFF;transition:transform 0.15s ease,box-shadow 0.15s ease;${ringStyle}">
-      <svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" style="display:block;" aria-hidden="true">
-        ${svgContent}
+  if (selected) {
+    const isSimple = variant === 'simple';
+    const cardWidth = isSimple ? 220 : 260;
+    const name = escapeHtml(item.name || 'Ponto');
+    const categoryLabel = escapeHtml(getItemCategoryLabel(item));
+    const photoUrl = actorSummary?.cover_media?.derivatives?.card ||
+      actorSummary?.cover_media?.url ||
+      actorSummary?.cover_image_url;
+    const rating = actorSummary?.google_rating;
+    const ratingCount = actorSummary?.rating_count;
+
+    const photoHtml = !isSimple
+      ? photoUrl
+        ? `<div style="width:72px;height:72px;border-radius:8px;overflow:hidden;background:#f3f4f6;flex-shrink:0;">
+             <img src="${escapeHtml(photoUrl)}" alt="${name}" style="width:100%;height:100%;object-fit:cover;" />
+           </div>`
+        : `<div style="width:72px;height:72px;border-radius:8px;background:${color}18;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${color};">
+             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${iconSvg}</svg>
+           </div>`
+      : '';
+
+    const ratingHtml = !isSimple && typeof rating === 'number' && Number.isFinite(rating)
+      ? `<div style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#1e293b;">
+           <span style="color:#F59E0B;">★</span> ${rating.toFixed(1)}${ratingCount ? ` <span style="font-weight:400;color:#64748b;">(${ratingCount})</span>` : ''}
+         </div>`
+      : '';
+
+    const actionText = isSimple ? 'Ver no mapa' : 'Ver detalhes';
+
+    const cardHtml = `
+      <div class="econexao-selected-pin-card" style="position:relative;width:${cardWidth}px;background:#ffffff;border-radius:12px;padding:${isSimple ? '10px 12px' : '10px'};box-shadow:0 8px 24px rgba(0,0,0,0.22);border:1px solid rgba(0,0,0,0.08);cursor:pointer;user-select:none;font-family:system-ui,-apple-system,sans-serif;">
+        <div style="display:flex;flex-direction:${isSimple ? 'column' : 'row'};align-items:${isSimple ? 'stretch' : 'center'};gap:${isSimple ? '6px' : '10px'};">
+          ${photoHtml}
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;">
+            <div style="display:flex;align-items:center;gap:4px;">
+              <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${color};"></span>
+              <span style="font-size:10px;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:0.5px;">${categoryLabel}</span>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:#0f172a;line-height:16px;overflow:hidden;text-overflow:ellipsis;white-space:${isSimple ? 'normal' : 'nowrap'};">${name}</div>
+            ${ratingHtml}
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#1e3a8a;margin-top:2px;">
+              ${actionText} →
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:10px solid #ffffff;filter:drop-shadow(0 2px 2px rgba(0,0,0,0.15));"></div>
+      </div>
+    `;
+
+    return L.divIcon({
+      className: 'econexao-selected-card-wrapper',
+      html: cardHtml,
+      iconSize: [cardWidth, isSimple ? 90 : 105],
+      iconAnchor: [cardWidth / 2, isSimple ? 100 : 115],
+    });
+  }
+
+  // Teardrop Marker (38px x 46px) com ancoragem exata na ponta inferior (19, 46)
+  const width = 38;
+  const height = 46;
+  const iconSize = 18;
+
+  const teardropHtml = `
+    <div class="econexao-teardrop-marker" style="width:${width}px;height:${height}px;position:relative;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3));cursor:pointer;transition:transform 0.15s ease;">
+      <svg width="${width}" height="${height}" viewBox="0 0 38 46" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+        <path d="M19 45C19 45 36 27.5 36 18C36 8.61116 28.3888 1 19 1C9.61116 1 2 8.61116 2 18C2 27.5 19 45 19 45Z" fill="${color}" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
+        <g transform="translate(10, 9)" stroke="#FFFFFF" color="#FFFFFF">
+          <svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            ${iconSvg}
+          </svg>
+        </g>
       </svg>
     </div>
   `;
 
   return L.divIcon({
-    className: 'econexao-map-marker-wrapper',
-    html,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
+    className: 'econexao-teardrop-wrapper',
+    html: teardropHtml,
+    iconSize: [width, height],
+    iconAnchor: [width / 2, height],
   });
 };
 
@@ -258,6 +330,8 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   selectionPinLabel,
   userLocation,
   userLocationLabel,
+  pinCardVariant = 'full',
+  actorSummaries,
 }) => {
   const mapRef = useRef<LeafletMap | null>(null);
   const items = pins ?? actors ?? [];
@@ -280,6 +354,17 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   useEffect(() => {
     setZoomLevel(calculatedInitialZoom);
   }, [calculatedInitialZoom]);
+
+  // Map of actor summaries for quick lookup by ID
+  const actorSummariesById = useMemo(() => {
+    const map = new Map<string, NonNullable<MapAdapterProps['actorSummaries']>[0]>();
+    if (actorSummaries) {
+      for (const summary of actorSummaries) {
+        if (summary.id) map.set(summary.id, summary);
+      }
+    }
+    return map;
+  }, [actorSummaries]);
 
   // Controle determinístico de densidade e colisão por nível de zoom
   const renderableItems = useMemo(
@@ -360,7 +445,8 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
           const itemId = getItemId(item);
           const isSelected = itemId === selectedActorId;
           const a11yLabel = getItemAccessibilityLabel(item, isSelected);
-          const pinIcon = createPinIcon(item, isSelected);
+          const actorSummary = actorSummariesById.get(itemId);
+          const pinIcon = createPinIcon(item, isSelected, pinCardVariant, actorSummary);
           if (!pinIcon) return null;
 
           return (
