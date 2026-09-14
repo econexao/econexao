@@ -80,6 +80,7 @@ export const RouteMapPreview: React.FC<RouteMapPreviewProps> = ({
                 pins={effectivePins}
                 geometry={effectiveGeometry}
                 bounds={effectiveBounds}
+                pinCardVariant="simple"
                 onSelectActor={(actorId) => onExpand(actorId)}
                 height={236}
                 showControls={false}

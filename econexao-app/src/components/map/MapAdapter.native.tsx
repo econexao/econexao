@@ -5,6 +5,7 @@ import MapView, { Marker, Polyline, type LatLng, type Region } from 'react-nativ
 
 import { theme } from '../../theme/theme';
 import { MapControls } from './MapControls';
+import { SelectedPinCard } from './SelectedPinCard';
 import {
   SELECTION_PIN_COLOR,
   USER_LOCATION_PIN_COLOR,
@@ -46,6 +47,8 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   selectionPinLabel,
   userLocation,
   userLocationLabel,
+  pinCardVariant = 'full',
+  actorSummaries,
 }) => {
   const mapRef = useRef<MapView>(null);
   const [zoomLevel, setZoomLevel] = useState(12);
@@ -56,6 +59,17 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
     [bounds, geometry, items]
   );
   const initialRegion = useMemo(() => getInitialRegion(fitCoordinates), [fitCoordinates]);
+
+  // Map of actor summaries for quick lookup by ID
+  const actorSummariesById = useMemo(() => {
+    const map = new Map<string, NonNullable<MapAdapterProps['actorSummaries']>[0]>();
+    if (actorSummaries) {
+      for (const summary of actorSummaries) {
+        if (summary.id) map.set(summary.id, summary);
+      }
+    }
+    return map;
+  }, [actorSummaries]);
 
   // Controle de densidade de pins por zoom level sem clusters
   const renderableItems = useMemo(
@@ -132,7 +146,39 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
           const color = getItemPinColor(item);
           const icon = getCategoryIonicons(getItemPinIcon(item));
           const a11yLabel = getItemAccessibilityLabel(item, selected);
+          const actorSummary = actorSummariesById.get(itemId);
           if (!color || !icon) return null;
+
+          if (selected) {
+            const photoUrl = actorSummary?.cover_media?.derivatives?.card ||
+              actorSummary?.cover_media?.url ||
+              actorSummary?.cover_image_url;
+
+            return (
+              <Marker
+                key={itemId}
+                coordinate={coordinate}
+                zIndex={1000}
+                anchor={{ x: 0.5, y: 1.0 }}
+                onPress={() => onSelectActor(itemId)}
+                accessibilityRole="button"
+                accessibilityLabel={a11yLabel}
+                accessibilityState={{ selected: true }}
+              >
+                <SelectedPinCard
+                  actorId={itemId}
+                  name={item.name}
+                  categorySlug={'category_slug' in item ? item.category_slug : undefined}
+                  categoryLabel={categoryLabel}
+                  variant={pinCardVariant}
+                  googleRating={actorSummary?.google_rating}
+                  ratingCount={actorSummary?.rating_count}
+                  photoUrl={photoUrl}
+                  onPressAction={() => onSelectActor(itemId)}
+                />
+              </Marker>
+            );
+          }
 
           return (
             <Marker
@@ -140,21 +186,19 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
               coordinate={coordinate}
               title={item.name}
               description={`Categoria: ${categoryLabel}`}
-              zIndex={selected ? 1000 : 1}
+              zIndex={1}
+              anchor={{ x: 0.5, y: 1.0 }}
               onPress={() => onSelectActor(itemId)}
               accessibilityRole="button"
               accessibilityLabel={a11yLabel}
               accessibilityHint={`Categoria: ${categoryLabel}. Toque para selecionar.`}
-              accessibilityState={{ selected }}
+              accessibilityState={{ selected: false }}
             >
-              <View
-                style={[
-                  styles.contractPin,
-                  { backgroundColor: color },
-                  selected && styles.contractPinSelected,
-                ]}
-              >
-                <Ionicons name={icon} size={selected ? 22 : 19} color="#FFFFFF" />
+              <View style={styles.teardropContainer}>
+                <View style={[styles.teardropHead, { backgroundColor: color }]}>
+                  <Ionicons name={icon} size={18} color="#FFFFFF" />
+                </View>
+                <View style={[styles.teardropPoint, { borderTopColor: color }]} />
               </View>
             </Marker>
           );
@@ -206,6 +250,36 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
 };
 
 const styles = StyleSheet.create({
+  teardropContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 38,
+    height: 46,
+    filter: 'drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.3))' as any,
+  },
+  teardropHead: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
+    zIndex: 2,
+  },
+  teardropPoint: {
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderLeftWidth: 7,
+    borderRightWidth: 7,
+    borderTopWidth: 10,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    marginTop: -4,
+    zIndex: 1,
+  },
   contractPin: {
     width: 44,
     height: 44,
