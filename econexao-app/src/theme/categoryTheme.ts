@@ -7,11 +7,13 @@ export interface CategoryVisualMeta {
   color: string;
   badgeTextColor: string;
   icon: keyof typeof Ionicons.glyphMap;
+  lucideIcon: string;
   order: number;
 }
 
 /**
  * ADR 0010 / ADR 0015 canonical categories and color definitions.
+ * Harmonized with WCAG 2.1 AA contrast requirements.
  */
 export const CANONICAL_CATEGORIES: Record<string, CategoryVisualMeta> = {
   alimentacao: {
@@ -20,6 +22,7 @@ export const CANONICAL_CATEGORIES: Record<string, CategoryVisualMeta> = {
     color: '#D97706',
     badgeTextColor: '#B45309',
     icon: 'restaurant-outline',
+    lucideIcon: 'utensils',
     order: 1,
   },
   atrativos: {
@@ -28,6 +31,7 @@ export const CANONICAL_CATEGORIES: Record<string, CategoryVisualMeta> = {
     color: '#059669',
     badgeTextColor: '#059669',
     icon: 'compass-outline',
+    lucideIcon: 'compass',
     order: 2,
   },
   hospedagem: {
@@ -36,23 +40,8 @@ export const CANONICAL_CATEGORIES: Record<string, CategoryVisualMeta> = {
     color: '#2563EB',
     badgeTextColor: '#2563EB',
     icon: 'bed-outline',
+    lucideIcon: 'bed',
     order: 3,
-  },
-  artesanato: {
-    slug: 'artesanato',
-    label: 'Artesanato',
-    color: '#7C3AED',
-    badgeTextColor: '#7C3AED',
-    icon: 'color-palette-outline',
-    order: 4,
-  },
-  comercio: {
-    slug: 'comercio',
-    label: 'Comércio Local & Lojas',
-    color: '#EA580C',
-    badgeTextColor: '#EA580C',
-    icon: 'storefront-outline',
-    order: 5,
   },
   experiencias: {
     slug: 'experiencias',
@@ -60,14 +49,34 @@ export const CANONICAL_CATEGORIES: Record<string, CategoryVisualMeta> = {
     color: '#0D9488',
     badgeTextColor: '#0D9488',
     icon: 'boat-outline',
-    order: 6,
+    lucideIcon: 'boat',
+    order: 4,
+  },
+  artesanato: {
+    slug: 'artesanato',
+    label: 'Artesanato',
+    color: '#7C3AED',
+    badgeTextColor: '#7C3AED',
+    icon: 'color-palette-outline',
+    lucideIcon: 'palette',
+    order: 5,
   },
   vida_noturna: {
     slug: 'vida_noturna',
     label: 'Vida Noturna & Eventos',
-    color: '#9333EA',
-    badgeTextColor: '#9333EA',
+    color: '#C026D3',
+    badgeTextColor: '#C026D3',
     icon: 'musical-notes-outline',
+    lucideIcon: 'beer',
+    order: 6,
+  },
+  comercio: {
+    slug: 'comercio',
+    label: 'Comércio Local & Lojas',
+    color: '#EA580C',
+    badgeTextColor: '#C2410C',
+    icon: 'storefront-outline',
+    lucideIcon: 'store',
     order: 7,
   },
   servicos_turisticos: {
@@ -76,6 +85,7 @@ export const CANONICAL_CATEGORIES: Record<string, CategoryVisualMeta> = {
     color: '#4F46E5',
     badgeTextColor: '#4F46E5',
     icon: 'briefcase-outline',
+    lucideIcon: 'briefcase',
     order: 8,
   },
   transporte: {
@@ -84,6 +94,7 @@ export const CANONICAL_CATEGORIES: Record<string, CategoryVisualMeta> = {
     color: '#0891B2',
     badgeTextColor: '#0891B2',
     icon: 'bus-outline',
+    lucideIcon: 'bus',
     order: 9,
   },
   saude: {
@@ -92,6 +103,7 @@ export const CANONICAL_CATEGORIES: Record<string, CategoryVisualMeta> = {
     color: '#DC2626',
     badgeTextColor: '#DC2626',
     icon: 'heart-outline',
+    lucideIcon: 'heart-pulse',
     order: 10,
   },
   seguranca: {
@@ -100,6 +112,7 @@ export const CANONICAL_CATEGORIES: Record<string, CategoryVisualMeta> = {
     color: '#1E3A8A',
     badgeTextColor: '#1E3A8A',
     icon: 'shield-checkmark-outline',
+    lucideIcon: 'shield',
     order: 11,
   },
   outros: {
@@ -108,6 +121,7 @@ export const CANONICAL_CATEGORIES: Record<string, CategoryVisualMeta> = {
     color: '#6B7280',
     badgeTextColor: '#4B5563',
     icon: 'help-circle-outline',
+    lucideIcon: 'help-circle',
     order: 99,
   },
 };
@@ -125,6 +139,7 @@ export const getCategoryVisualMeta = (slug?: string | null, label?: string | nul
     color: '#6B7280',
     badgeTextColor: '#4B5563',
     icon: getCategoryIonicons(normalizedSlug) || 'help-circle-outline',
+    lucideIcon: 'help-circle',
     order: 100,
   };
 };
