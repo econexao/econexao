@@ -29,7 +29,7 @@ Data da Catalogação: 11/08/2026
 [1.2] BARRA DE NAVEGAÇÃO INFERIOR (Bottom Tab Bar)
    * Localização: Rodapé fixo das telas principais ((tabs)/_layout.tsx).
    * Safe Area & Responsividade:
-     - Altura e padding inferior dinâmicos via `useSafeAreaInsets` (`height: 64 + insets.bottom`, `paddingBottom: Math.max(insets.bottom, 8)`).
+     - Altura e padding inferior dinâmicos via `useSafeAreaInsets` (`height: 76 + insets.bottom`, `paddingTop: 6`, `paddingBottom: Math.max(insets.bottom, 10)`).
      - Previne corte dos ícones e textos ("Inicial", "Rotas", "Perfil") em dispositivos móveis com barra de navegação por gestos (Android/iOS) ou navegadores móveis.
    * Elementos Interativos (Abas):
      - Aba "Inicial" (Ícone de Casa / Home):
