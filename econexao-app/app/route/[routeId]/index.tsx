@@ -72,7 +72,12 @@ export default function RouteDetailScreen() {
 
   const isCustomLocation = isDynamicRoutingEnabled && (originId === MY_LOCATION_ORIGIN_ID || originId === CHOOSE_ON_MAP_ORIGIN_ID || Boolean(previewData));
   const requestedOriginExists = detail.data?.origins.some((origin) => origin.id === originId);
-  const effectiveOrigin = isCustomLocation ? originId : (requestedOriginExists ? originId : detail.data?.origins[0]?.id);
+  const defaultOrigin = detail.data?.origins.find((o) => {
+    const code = ('code' in o && o.code ? o.code : o.id || '').toLowerCase();
+    const name = (o.name || '').toLowerCase();
+    return code.includes('rodoviaria') || name.includes('rodoviária') || name.includes('rodoviaria');
+  }) || detail.data?.origins[0];
+  const effectiveOrigin = isCustomLocation ? originId : (requestedOriginExists ? originId : defaultOrigin?.id);
 
   useEffect(() => {
     setOriginId(initialOriginId);
@@ -124,8 +129,8 @@ export default function RouteDetailScreen() {
       setOriginId(originType);
       AccessibilityInfo.announceForAccessibility('Trajeto sugerido a partir do ponto escolhido carregado com sucesso.');
     } catch {
-      // Fallback to previous valid origin or first origin
-      const fallbackOrigin = lastValidOriginIdRef.current || detail.data?.origins[0]?.id;
+      // Fallback to previous valid origin or default origin (Rodoviária)
+      const fallbackOrigin = lastValidOriginIdRef.current || defaultOrigin?.id;
       setOriginId(fallbackOrigin);
       setPreviewData(null);
       AccessibilityInfo.announceForAccessibility('Não foi possível calcular o trajeto sugerido.');
