@@ -17,17 +17,16 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: 'rgba(255, 255, 255, 0.96)',
           borderTopColor: theme.colors.surfaceContainer,
-          height: 64 + bottomInset,
-          paddingBottom: Math.max(bottomInset, 8),
-          paddingTop: 8,
+          height: 76 + bottomInset,
+          paddingTop: 6,
+          paddingBottom: Math.max(bottomInset, 10),
           ...theme.shadows.card,
-        },
-        tabBarItemStyle: {
-          paddingVertical: 2,
         },
         tabBarLabelStyle: {
           ...theme.typography.labelSm,
           fontWeight: '600',
+          fontSize: 12,
+          lineHeight: 16,
         },
       }}
     >

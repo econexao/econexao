@@ -37,7 +37,7 @@ describe('TabLayout safe area and layout test', () => {
     jest.clearAllMocks();
   });
 
-  it('computes standard height and padding when bottom inset is 0 (desktop / standard)', async () => {
+  it('computes comfortable height (76px) and padding when bottom inset is 0 (desktop / web)', async () => {
     mockUseSafeAreaInsets.mockReturnValue({
       top: 0,
       bottom: 0,
@@ -51,9 +51,11 @@ describe('TabLayout safe area and layout test', () => {
 
     expect(capturedTabsProps).not.toBeNull();
     const { screenOptions } = capturedTabsProps;
-    expect(screenOptions.tabBarStyle.height).toBe(64);
-    expect(screenOptions.tabBarStyle.paddingBottom).toBe(8);
-    expect(screenOptions.tabBarStyle.paddingTop).toBe(8);
+    expect(screenOptions.tabBarStyle.height).toBe(76);
+    expect(screenOptions.tabBarStyle.paddingTop).toBe(6);
+    expect(screenOptions.tabBarStyle.paddingBottom).toBe(10);
+    expect(screenOptions.tabBarLabelStyle.fontSize).toBe(12);
+    expect(screenOptions.tabBarLabelStyle.lineHeight).toBe(16);
   });
 
   it('dynamically expands height and padding when bottom inset is present (Android gesture bar / iOS)', async () => {
@@ -71,9 +73,9 @@ describe('TabLayout safe area and layout test', () => {
 
     expect(capturedTabsProps).not.toBeNull();
     const { screenOptions } = capturedTabsProps;
-    expect(screenOptions.tabBarStyle.height).toBe(88); // 64 + 24
+    expect(screenOptions.tabBarStyle.height).toBe(100); // 76 + 24
+    expect(screenOptions.tabBarStyle.paddingTop).toBe(6);
     expect(screenOptions.tabBarStyle.paddingBottom).toBe(24);
-    expect(screenOptions.tabBarStyle.paddingTop).toBe(8);
   });
 
   it('handles deep bottom inset such as iPhone home indicator (34px)', async () => {
@@ -90,9 +92,8 @@ describe('TabLayout safe area and layout test', () => {
 
     expect(capturedTabsProps).not.toBeNull();
     const { screenOptions } = capturedTabsProps;
-    expect(screenOptions.tabBarStyle.height).toBe(98); // 64 + 34
+    expect(screenOptions.tabBarStyle.height).toBe(110); // 76 + 34
+    expect(screenOptions.tabBarStyle.paddingTop).toBe(6);
     expect(screenOptions.tabBarStyle.paddingBottom).toBe(34);
-    expect(screenOptions.tabBarStyle.paddingTop).toBe(8);
-    expect(screenOptions.tabBarItemStyle).toEqual({ paddingVertical: 2 });
   });
 });
