@@ -38,7 +38,7 @@ export default function TripsHistoryScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.surfaceBackground }]}>
-      <AppHeader showBack onBackPress={() => router.back()} title="Histórico de Viagens" />
+      <AppHeader showBack fallbackHref="/(tabs)/(profile)" title="Histórico de Viagens" />
 
       <ScrollView contentContainerStyle={styles.content}>
         {tripsQuery.isPending ? (

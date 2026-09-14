@@ -97,7 +97,7 @@ export default function LegalAndPrivacyScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.surfaceBackground }]}>
-      <AppHeader showBack onBackPress={() => router.back()} title="Termos & Privacidade" />
+      <AppHeader showBack fallbackHref="/(tabs)/(profile)" title="Termos & Privacidade" />
 
       <ScrollView contentContainerStyle={styles.content}>
         {/* Aviso de Pré-Publicação */}

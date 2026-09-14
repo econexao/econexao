@@ -34,7 +34,7 @@ export default function SupportScreen() {
 
   return (
     <View style={styles.container}>
-      <AppHeader showBack onBackPress={() => router.back()} title="Ajuda e Suporte" />
+      <AppHeader showBack fallbackHref="/(tabs)/(profile)" title="Ajuda e Suporte" />
 
       <ScrollView contentContainerStyle={styles.content}>
         {supportQuery.isPending ? (

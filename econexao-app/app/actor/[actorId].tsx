@@ -83,10 +83,23 @@ export default function ActorDetailScreen() {
     openExternalLink(url, 'mapa');
   };
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/(routes)');
+    }
+  };
+
   if (actorQuery.isPending) {
     return (
       <View style={styles.container}>
-        <AppHeader showBack onBackPress={() => router.back()} title="Detalhe do Ator" />
+        <AppHeader
+          showBack
+          fallbackHref="/(tabs)/(routes)"
+          onBackPress={handleBack}
+          title="Detalhe do Ator"
+        />
         <LoadingView message="Carregando detalhes do estabelecimento..." />
       </View>
     );
@@ -95,7 +108,12 @@ export default function ActorDetailScreen() {
   if (actorQuery.isError || !actor) {
     return (
       <View style={styles.container}>
-        <AppHeader showBack onBackPress={() => router.back()} title="Detalhe do Ator" />
+        <AppHeader
+          showBack
+          fallbackHref="/(tabs)/(routes)"
+          onBackPress={handleBack}
+          title="Detalhe do Ator"
+        />
         <ErrorStateView
           title="Ator não encontrado"
           message="Não foi possível carregar as informações deste estabelecimento."
@@ -130,7 +148,12 @@ export default function ActorDetailScreen() {
 
   return (
     <View style={styles.container}>
-      <AppHeader showBack onBackPress={() => router.back()} title={actor.name} />
+      <AppHeader
+        showBack
+        fallbackHref="/(tabs)/(routes)"
+        onBackPress={handleBack}
+        title={actor.name}
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Cover / Image Banner */}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme/theme';
 import { useApp } from '../../hooks/useApp';
@@ -10,6 +11,7 @@ import { RegionSelectorModal } from './RegionSelectorModal';
 interface AppHeaderProps {
   showBack?: boolean;
   onBackPress?: () => void;
+  fallbackHref?: string;
   title?: string;
   overlayOnImage?: boolean;
 }
@@ -17,14 +19,30 @@ interface AppHeaderProps {
 export const AppHeader: React.FC<AppHeaderProps> = ({
   showBack = false,
   onBackPress,
+  fallbackHref,
   title = 'ECOnexão',
   overlayOnImage = false,
 }) => {
+  const router = useRouter();
   const { state } = useApp();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const regionButtonRef = React.useRef<React.ElementRef<typeof TouchableOpacity>>(null);
   const regions = useRegionsQuery();
   const activeRegion = regions.data?.find((region) => region.id === state.activeRegionId);
+
+  const handleBack = () => {
+    if (onBackPress) {
+      onBackPress();
+      return;
+    }
+    if (router.canGoBack()) {
+      router.back();
+    } else if (fallbackHref) {
+      router.replace(fallbackHref as any);
+    } else {
+      router.replace('/(tabs)/(routes)');
+    }
+  };
 
   return (
     <>
@@ -34,7 +52,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             <>
               <TouchableOpacity
                 style={styles.backButton}
-                onPress={onBackPress}
+                onPress={handleBack}
                 {...makeAccessibleButton('Voltar', 'Retorna à tela anterior')}
               >
                 <Ionicons name="arrow-back" size={24} color={theme.colors.brandForest} />

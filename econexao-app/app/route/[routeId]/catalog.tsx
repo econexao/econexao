@@ -69,9 +69,23 @@ export default function CatalogScreen() {
       .filter((id: string): id is string => Boolean(id))
   );
 
+  const fallbackRoute = routeId ? `/route/${encodeURIComponent(routeId)}` : '/(tabs)/(routes)';
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace(fallbackRoute as any);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <AppHeader showBack onBackPress={() => router.back()} title="Catálogo de Atores" />
+      <AppHeader
+        showBack
+        fallbackHref={fallbackRoute}
+        onBackPress={handleBack}
+        title="Catálogo de Atores"
+      />
 
       <View style={styles.headerControls}>
         <SearchInput
