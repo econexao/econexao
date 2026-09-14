@@ -198,10 +198,23 @@ export default function RouteDetailScreen() {
     );
   }
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/(routes)');
+    }
+  };
+
   if (detail.isError) {
     return (
       <View style={styles.container}>
-        <AppHeader showBack onBackPress={() => router.back()} title="Detalhes da Rota" />
+        <AppHeader
+          showBack
+          fallbackHref="/(tabs)/(routes)"
+          onBackPress={handleBack}
+          title="Detalhes da Rota"
+        />
         <ErrorStateView
           title="Erro ao carregar rota"
           message="Não foi possível carregar as informações desta rota."
@@ -242,7 +255,12 @@ export default function RouteDetailScreen() {
 
   return (
     <View style={styles.container}>
-      <AppHeader showBack onBackPress={() => router.back()} title={route.title} />
+      <AppHeader
+        showBack
+        fallbackHref="/(tabs)/(routes)"
+        onBackPress={handleBack}
+        title={route.title}
+      />
 
       <ScrollView contentContainerStyle={styles.content}>
         {/* Header Hero Section */}

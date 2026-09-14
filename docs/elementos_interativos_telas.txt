@@ -13,7 +13,7 @@ Data da Catalogação: 11/08/2026
    * Localização: Presente no topo de todas as telas principais.
    * Elementos Interativos:
      - Botão "Voltar" (Ícone de Seta para a esquerda):
-       • Ação: Retorna para a tela/menu anterior na pilha de navegação.
+       • Ação: Retorna para a tela/menu anterior na pilha de navegação (`router.canGoBack() ? router.back() : router.replace(fallbackHref)`). Quando acessado diretamente via link ou sem histórico na pilha, executa fallback inteligente (ex: para a listagem de rotas ou tela inicial).
        • Acessibilidade: Rótulo "Voltar", dica "Retorna à tela anterior".
      - Chip de Seleção de Região ("Região Santarém & Belterra / Alter do Chão"):
        • Ação atual: Alterna diretamente, em modo de demonstração, entre "Santarém & Belterra" e "Alter do Chão".
@@ -30,11 +30,11 @@ Data da Catalogação: 11/08/2026
    * Localização: Rodapé fixo das telas principais ((tabs)/_layout.tsx).
    * Elementos Interativos (Abas):
      - Aba "Inicial" (Ícone de Casa / Home):
-       • Ação: Navega para a Tela de Início / Hero.
+       • Ação: Navega para a Tela de Início / Hero. Ao ser tocada (mesmo quando sub-telas de rota ou de exploração estão abertas), redefine e restaura a pilha para a raiz da tela Inicial (`index`).
      - Aba "Rotas" (Ícone de Bússola / Compass):
-       • Ação: Navega para a Listagem de Rotas da Região.
+       • Ação: Navega para a Listagem de Rotas da Região. Ao ser tocada, restaura a pilha para a listagem principal de rotas (`index`).
      - Aba "Perfil" (Ícone de Usuário / Person):
-       • Ação: Navega para o Perfil do Usuário e Painel de Acessibilidade.
+       • Ação: Navega para o Perfil do Usuário e Painel de Acessibilidade. Ao ser tocada, restaura a pilha para o início do perfil (`index`).
    * Indicadores de Status:
      - Realce de Aba Ativa: Cor verde floresta (#1C4807 / #33601E) e preenchimento de ícone quando a aba está selecionada.
      - Inativa: Cor de contorno suave (#72796C).
@@ -155,7 +155,7 @@ Data da Catalogação: 11/08/2026
 
 [5.1] HERO DA ROTA & CABEÇALHO
    * Elementos Interativos:
-     - Botão "Voltar" no Header: Retorna à lista de rotas.
+     - Botão "Voltar" no Header: Retorna à tela anterior na pilha de navegação, com fallback seguro para a listagem de rotas (`/(tabs)/(routes)`) caso não haja histórico (ex: acesso direto por URL/refresh no navegador).
    * Indicadores de Status:
      - Tag de Localização (Ícone de Pin + Texto de Cidade/Estado).
      - Badge "km Total" e Badge de Origem Selecionada.

@@ -18,7 +18,7 @@ export default function FavoriteActorsScreen() {
 
   return (
     <View style={styles.container}>
-      <AppHeader showBack onBackPress={() => router.back()} title="Atores Favoritos" />
+      <AppHeader showBack fallbackHref="/(tabs)/(profile)" title="Atores Favoritos" />
 
       <ScrollView contentContainerStyle={styles.content}>
         {favActors.isPending ? (

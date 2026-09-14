@@ -33,6 +33,12 @@ export default function TabLayout() {
             <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.navigate('(explore)', { screen: 'index' });
+          },
+        })}
       />
       <Tabs.Screen
         name="(routes)"
@@ -43,6 +49,12 @@ export default function TabLayout() {
             <Ionicons name={focused ? 'compass' : 'compass-outline'} size={size} color={color} />
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.navigate('(routes)', { screen: 'index' });
+          },
+        })}
       />
       <Tabs.Screen
         name="(profile)"
@@ -53,6 +65,12 @@ export default function TabLayout() {
             <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={color} />
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.navigate('(profile)', { screen: 'index' });
+          },
+        })}
       />
     </Tabs>
   );

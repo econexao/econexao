@@ -111,6 +111,15 @@ export default function MapScreen() {
     q?: string;
   }>();
 
+  const fallbackRoute = routeId ? `/route/${encodeURIComponent(routeId)}` : '/(tabs)/(routes)';
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace(fallbackRoute as any);
+    }
+  };
+
   const isSelectionModeInitial = isDynamicRoutingEnabled && initialMode === 'select-origin';
   const [isSelectionMode, setIsSelectionMode] = useState<boolean>(isSelectionModeInitial);
   const [selectedCoordinate, setSelectedCoordinate] = useState<MapCoordinate | null>(null);
@@ -322,7 +331,12 @@ export default function MapScreen() {
       : 'Carregando mapa da rota...';
     return (
       <View style={styles.container}>
-        <AppHeader showBack onBackPress={() => router.back()} title="Mapa da Rota" />
+        <AppHeader
+          showBack
+          fallbackHref={fallbackRoute}
+          onBackPress={handleBack}
+          title="Mapa da Rota"
+        />
         <LoadingView message={loadingMessage} />
       </View>
     );
@@ -346,7 +360,12 @@ export default function MapScreen() {
         };
     return (
       <View style={styles.container}>
-        <AppHeader showBack onBackPress={() => router.back()} title="Mapa da Rota" />
+        <AppHeader
+          showBack
+          fallbackHref={fallbackRoute}
+          onBackPress={handleBack}
+          title="Mapa da Rota"
+        />
         <ErrorStateView
           title={errorCopy.title}
           message={errorCopy.message}
@@ -359,11 +378,16 @@ export default function MapScreen() {
   if (!mapQuery.data && !ephemeralData?.previewData) {
     return (
       <View style={styles.container}>
-        <AppHeader showBack onBackPress={() => router.back()} title="Mapa da Rota" />
+        <AppHeader
+          showBack
+          fallbackHref={fallbackRoute}
+          onBackPress={handleBack}
+          title="Mapa da Rota"
+        />
         <EmptyStateView
           title="Mapa não disponível"
           message="Não há dados de mapa disponíveis para esta origem."
-          onReset={() => router.back()}
+          onReset={handleBack}
           resetLabel="Voltar"
         />
       </View>
@@ -412,7 +436,12 @@ export default function MapScreen() {
   if (hasInvalidMetadata) {
     return (
       <View style={styles.container}>
-        <AppHeader showBack onBackPress={() => router.back()} title="Mapa da Rota" />
+        <AppHeader
+          showBack
+          fallbackHref={fallbackRoute}
+          onBackPress={handleBack}
+          title="Mapa da Rota"
+        />
         <ErrorStateView
           title="Mapa temporariamente indisponível"
           message="Os metadados visuais do mapa são inválidos. Tente carregar novamente."
@@ -425,7 +454,12 @@ export default function MapScreen() {
   if (!isGoogleRoutesPreview && allPins.length === 0 && legend.every((item) => item.count === 0)) {
     return (
       <View style={styles.container}>
-        <AppHeader showBack onBackPress={() => router.back()} title="Mapa da Rota" />
+        <AppHeader
+          showBack
+          fallbackHref={fallbackRoute}
+          onBackPress={handleBack}
+          title="Mapa da Rota"
+        />
         <EmptyStateView
           title="Nenhum ponto nesta rota"
           message="Não há pontos disponíveis para esta origem."
@@ -468,7 +502,8 @@ export default function MapScreen() {
     <View style={styles.container}>
       <AppHeader
         showBack
-        onBackPress={() => router.back()}
+        fallbackHref={fallbackRoute}
+        onBackPress={handleBack}
         title={isSelectionMode ? 'Escolher Origem no Mapa' : 'Mapa da Rota'}
       />
 
