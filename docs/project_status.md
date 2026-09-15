@@ -13,8 +13,11 @@ ainda abertas permanecem em ECO-2603 e não são aprovadas pelo commit documenta
   `TripSchema`, estados loading/erro/retry, navegação e transições reais, adicionando
   filtros acessíveis Todas/Ativas/Concluídas. Verificação local: typecheck, OpenAPI,
   export Web, 48 arquivos/305 testes Jest e 32 testes Playwright desktop/mobile
-  passaram. Publicação no staging canônico (`https://econexao-app-staging.vercel.app/`)
-  permanece pendente dos gates de escrita remota; evidência em
+  passaram. A PR #56 foi integrada por squash em `staging` no SHA `0d214e0`; o
+  pipeline de qualidade, drift/advisors, Render e smoke passou, sem aplicar
+  migrations. O staging canônico (`https://econexao-app-staging.vercel.app/`)
+  serve esse SHA e a inspeção visual do histórico não encontrou erro de runtime;
+  evidência em
   [`audit_stitch_redesigns_2026-09-15.md`](audit_stitch_redesigns_2026-09-15.md).
   ECO-1901 permanece PARCIAL após a PR #29 ser integrada em `staging` pelo squash `0a717b6d0d09ddac829f7b2dce9f9d2e44036c51`. O deploy canônico desse SHA ficou saudável, e a homologação real autorizada confirmou visitante, guest, refresh, paginação, favoritos de rota e isolamento A/B, mas encontrou `GET /me/favorite-actors` com HTTP 500 após `PUT` bem-sucedido. A correção mínima está em revisão local antes de novo push/deploy. Uma task por vez, revisão independente e GO por operação remota.
   A ECO-2617 foi concluída localmente; o baseline incorporado inclui
