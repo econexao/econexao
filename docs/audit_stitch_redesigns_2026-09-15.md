@@ -60,3 +60,17 @@ Se a validação pós-deploy falhar, o rollback Web deve restaurar
 faz parte deste pacote. O projeto correto é `eco-nexao/econexao-app-staging`
 (`prj_Ty7Ph7WpbfZ34Ues4Ct6a8ZbsGf0`); o link `.vercel` da raiz pertence à landing,
 portanto qualquer operação CLI deve selecionar explicitamente o projeto do app.
+
+## Resultado remoto
+
+- PR: `#56`, integrada por squash em 15/09/2026.
+- SHA em `staging`: `0d214e0eda7f13024d0d47f4dd829d011473c701`.
+- Vercel: deployment `dpl_emcu8ninRaoUePGM7dT7kv9n9kpa`, estado `READY`,
+  associado ao SHA integrado e ativo no alias canônico.
+- GitHub Actions: frontend, backend, secret scan, drift/advisors e smoke do Render
+  passaram no run `34993282134`; nenhuma migration foi aplicada.
+- Browser no alias canônico: `/trips` exibiu cabeçalho, região, os três filtros e
+  estado vazio coerente; nenhum overlay ou erro de console foi encontrado.
+- Logs Vercel: nenhuma entrada de erro ou HTTP 500 encontrada na janela consultada.
+- Aviso não bloqueante: as actions informaram que dependências internas ainda
+  direcionadas ao Node.js 20 foram executadas pelo runner em Node.js 24.
