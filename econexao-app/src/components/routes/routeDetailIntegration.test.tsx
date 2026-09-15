@@ -189,7 +189,7 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
         google_rating: 4.6,
       },
     ],
-    meta: { total: 2, limit: 3 },
+    meta: { total: 2, limit: 6 },
   };
 
   beforeEach(() => {
@@ -295,7 +295,7 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     expect(useRouteActorsQuery).toHaveBeenCalledWith('route-pindobal', {
       origin_id: 'origin-rodoviaria',
       category: undefined,
-      limit: 3,
+      limit: 6,
     });
 
     // Open dropdown combobox and select Porto
@@ -313,7 +313,7 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     expect(useRouteActorsQuery).toHaveBeenLastCalledWith('route-pindobal', {
       origin_id: 'origin-porto',
       category: undefined,
-      limit: 3,
+      limit: 6,
     });
   });
 
@@ -339,6 +339,20 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     expect(mockPush).toHaveBeenCalledWith('/route/route-pindobal/catalog?originId=origin-rodoviaria');
   });
 
+  it('opens trip history from the independent arrow action', async () => {
+    let tree!: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(<RouteDetailScreen />);
+    });
+
+    const historyButton = tree.root.find(
+      (node) => node.type === TouchableOpacity && node.props.accessibilityLabel === 'Abrir histórico de rotas'
+    );
+    await act(async () => historyButton.props.onPress());
+
+    expect(mockPush).toHaveBeenCalledWith('/(tabs)/(profile)/trips');
+  });
+
   it('honors a deep-linked origin and actor in map and catalog navigation', async () => {
     (useLocalSearchParams as jest.Mock).mockReturnValue({
       routeId: 'route-pindobal',
@@ -354,7 +368,7 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     expect(useRouteActorsQuery).toHaveBeenCalledWith('route-pindobal', {
       origin_id: 'origin-aeroporto',
       category: undefined,
-      limit: 3,
+      limit: 6,
     });
 
     const buttons = tree.root.findAllByType(TouchableOpacity);
@@ -437,7 +451,7 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     expect(useRouteActorsQuery).toHaveBeenLastCalledWith('route-pindobal', {
       origin_id: 'origin-rodoviaria',
       category: 'hospedagem',
-      limit: 3,
+      limit: 6,
     });
   });
 

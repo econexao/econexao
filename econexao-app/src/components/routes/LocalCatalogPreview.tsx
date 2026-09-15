@@ -27,7 +27,7 @@ export const LocalCatalogPreview: React.FC<LocalCatalogPreviewProps> = ({
   const actors = useRouteActorsQuery(routeId, {
     origin_id: originId,
     category: selectedCategory || undefined,
-    limit: 3,
+    limit: 6,
   });
 
   return (

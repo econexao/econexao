@@ -367,26 +367,29 @@ export default function RouteDetailScreen() {
         />
 
         {/* Start Trip CTA */}
-        <TouchableOpacity
+        <View
           style={[
-            styles.startTripButton,
+            styles.startTripCard,
             {
               backgroundColor: theme.colors.brandForest,
               borderColor: theme.isHighContrast ? theme.colors.brandDeep : 'transparent',
               borderWidth: theme.isHighContrast ? 2 : 0,
             },
           ]}
-          onPress={handleStartTrip}
-          disabled={isStartingTrip}
-          {...makeAccessibleButton(
-            'Registrar início de viagem nesta rota',
-            'Inicia a viagem e registra o passeio no histórico do seu perfil'
-          )}
         >
-          {isStartingTrip ? (
-            <ActivityIndicator size="small" color={theme.colors.surfaceWhite} />
-          ) : (
-            <>
+          <TouchableOpacity
+            style={styles.startTripButton}
+            onPress={handleStartTrip}
+            disabled={isStartingTrip}
+            {...makeAccessibleButton(
+              'Registrar início de viagem nesta rota',
+              'Inicia a viagem e registra o passeio no histórico do seu perfil'
+            )}
+          >
+            {isStartingTrip ? (
+              <ActivityIndicator size="small" color={theme.colors.surfaceWhite} />
+            ) : (
+              <>
               <View style={styles.tripIconBox}>
                 <Ionicons name="navigate-outline" size={21} color={theme.colors.surfaceWhite} />
               </View>
@@ -394,12 +397,17 @@ export default function RouteDetailScreen() {
                 <Text style={[styles.startTripText, { color: theme.colors.surfaceWhite }]}>Registrar Início da Viagem</Text>
                 <Text style={styles.startTripSubtext}>Ativar registro em tempo real</Text>
               </View>
-              <View style={styles.tripArrow}>
-                <Ionicons name="arrow-forward" size={18} color={theme.colors.surfaceWhite} />
-              </View>
-            </>
-          )}
-        </TouchableOpacity>
+              </>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.tripArrow}
+            onPress={() => router.push('/(tabs)/(profile)/trips')}
+            {...makeAccessibleButton('Abrir histórico de rotas', 'Abre o histórico de viagens do perfil')}
+          >
+            <Ionicons name="arrow-forward" size={18} color={theme.colors.surfaceWhite} />
+          </TouchableOpacity>
+        </View>
 
         {/* Route Alerts Section */}
         <View style={styles.section}>
@@ -570,16 +578,22 @@ const styles = StyleSheet.create({
     ...theme.typography.headlineSm,
     color: theme.colors.brandForest,
   },
-  startTripButton: {
+  startTripCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    padding: 12,
+    padding: 8,
     minHeight: 72,
     borderRadius: theme.radii.lg,
-    gap: 12,
     marginVertical: 4,
     ...theme.shadows.card,
+  },
+  startTripButton: {
+    flex: 1,
+    minHeight: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 4,
   },
   startTripText: {
     ...theme.typography.labelMd,
@@ -598,9 +612,9 @@ const styles = StyleSheet.create({
   },
   tripCopy: { flex: 1, gap: 2 },
   tripArrow: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: 'rgba(255,255,255,0.15)',
     alignItems: 'center',
     justifyContent: 'center',
