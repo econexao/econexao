@@ -343,6 +343,42 @@ describe('Marco 11 — Integration Tests', () => {
     expect(rendered).not.toContain('Salvar Favoritos');
   });
 
+  it('exibe botões Encerrar Sessão e Excluir Conta somente para usuário autenticado', async () => {
+    (useAuth as jest.Mock).mockReturnValue({
+      user: { id: 'auth-user-1', email: 'logado@econexao.org', is_anonymous: false },
+      signOut: jest.fn(),
+    });
+    (useMyProfileQuery as jest.Mock).mockReturnValue({ data: { name: 'Usuário Logado' }, isPending: false });
+
+    let tree!: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(renderProfile());
+    });
+
+    const rendered = JSON.stringify(tree.toJSON());
+    expect(rendered).toContain('Encerrar Sessão');
+    expect(rendered).toContain('Excluir Conta');
+    expect(rendered).not.toContain('Entrar na Minha Conta');
+  });
+
+  it('oculta botões de logout e exclusão de conta para visitante e exibe Entrar na Minha Conta', async () => {
+    (useAuth as jest.Mock).mockReturnValue({
+      user: { id: 'guest-user-1', is_anonymous: true },
+      signOut: jest.fn(),
+    });
+    (useMyProfileQuery as jest.Mock).mockReturnValue({ data: null, isPending: false });
+
+    let tree!: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(renderProfile());
+    });
+
+    const rendered = JSON.stringify(tree.toJSON());
+    expect(rendered).not.toContain('Encerrar Sessão');
+    expect(rendered).not.toContain('Excluir Conta');
+    expect(rendered).toContain('Entrar na Minha Conta');
+  });
+
   it('SupportScreen renders contacts and FAQ from query', async () => {
     (useSupportContentQuery as jest.Mock).mockReturnValue({
       data: {

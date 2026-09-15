@@ -35,6 +35,7 @@ export default function ProfileScreen() {
   const profileQuery = useMyProfileQuery(user?.id);
   const profile = profileQuery.data;
   const [isAuthModalVisible, setIsAuthModalVisible] = useState(false);
+  const [authInitialMode, setAuthInitialMode] = useState<'link' | 'signin' | 'signup' | 'recovery' | undefined>(undefined);
   const [isEditProfileModalVisible, setIsEditProfileModalVisible] = useState(false);
   const [isAccountDeletionModalVisible, setIsAccountDeletionModalVisible] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -124,7 +125,10 @@ export default function ProfileScreen() {
 
               <TouchableOpacity
                 style={styles.guestBannerButton}
-                onPress={() => setIsAuthModalVisible(true)}
+                onPress={() => {
+                  setAuthInitialMode('link');
+                  setIsAuthModalVisible(true);
+                }}
                 {...makeAccessibleButton('Salvar conta', 'Abrir opções de login e vinculação')}
               >
                 <Ionicons name="logo-google" size={14} color="#EA4335" style={{ marginRight: 4 }} />
@@ -317,25 +321,39 @@ export default function ProfileScreen() {
 
         {/* Account Deletion & Session Action (Sign Out / LGPD) */}
         <View style={styles.accountActionsSection}>
-          <View style={styles.actionButtonsRow}>
-            <TouchableOpacity
-              style={styles.signOutButton}
-              onPress={handleSignOut}
-              {...makeAccessibleButton('Encerrar sessão', 'Fazer logout da conta atual')}
-            >
-              <Ionicons name="log-out-outline" size={16} color="#42493D" />
-              <Text style={styles.signOutText}>Encerrar Sessão</Text>
-            </TouchableOpacity>
+          {!isAnonymous ? (
+            <View style={styles.actionButtonsRow}>
+              <TouchableOpacity
+                style={styles.signOutButton}
+                onPress={handleSignOut}
+                {...makeAccessibleButton('Encerrar sessão', 'Fazer logout da conta atual')}
+              >
+                <Ionicons name="log-out-outline" size={16} color="#42493D" />
+                <Text style={styles.signOutText}>Encerrar Sessão</Text>
+              </TouchableOpacity>
 
+              <TouchableOpacity
+                style={styles.deleteAccountButton}
+                onPress={() => setIsAccountDeletionModalVisible(true)}
+                {...makeAccessibleButton('Excluir minha conta', 'Solicitar exclusão de conta conforme a LGPD')}
+              >
+                <Ionicons name="trash-outline" size={15} color="#B91C1C" />
+                <Text style={styles.deleteAccountText}>Excluir Conta</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
             <TouchableOpacity
-              style={styles.deleteAccountButton}
-              onPress={() => setIsAccountDeletionModalVisible(true)}
-              {...makeAccessibleButton('Excluir minha conta', 'Solicitar exclusão de conta conforme a LGPD')}
+              style={styles.signInButton}
+              onPress={() => {
+                setAuthInitialMode('signin');
+                setIsAuthModalVisible(true);
+              }}
+              {...makeAccessibleButton('Entrar na minha conta', 'Acessar sua conta com e-mail ou Google')}
             >
-              <Ionicons name="trash-outline" size={15} color="#B91C1C" />
-              <Text style={styles.deleteAccountText}>Excluir Conta</Text>
+              <Ionicons name="log-in-outline" size={18} color="#284B18" />
+              <Text style={styles.signInButtonText}>Entrar na Minha Conta</Text>
             </TouchableOpacity>
-          </View>
+          )}
 
           <Text style={styles.versionFooterText}>
             ECOnexão Sustentável v2.4 • Amazônia Viva
@@ -361,6 +379,7 @@ export default function ProfileScreen() {
       <AuthModal
         visible={isAuthModalVisible}
         onClose={() => setIsAuthModalVisible(false)}
+        initialMode={authInitialMode}
       />
     </View>
   );
@@ -650,6 +669,28 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     color: '#B91C1C',
+  },
+  signInButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: 'rgba(117, 155, 113, 0.35)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  signInButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#284B18',
   },
   versionFooterText: {
     textAlign: 'center',

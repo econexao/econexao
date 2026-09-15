@@ -69,15 +69,17 @@ export class AuthSessionManager {
     if (webCallback.type === 'success' && webCallback.code) {
       try {
         const { data, error } = await this.client.auth.exchangeCodeForSession(webCallback.code);
-        if (!error && data?.session) {
+        if (error) {
+          console.warn('[AuthSessionManager] Falha ao trocar code OAuth:', error.message);
+        } else if (data?.session) {
           cleanWebOAuthUrl();
           if (generation !== this.generation) throw new Error('Inicializacao de sessao cancelada.');
           this.explicitlySignedOut = false;
           this.setSession(data.session);
           return data.session;
         }
-      } catch {
-        // Se a troca falhar, cai para o restore padrao
+      } catch (err) {
+        console.warn('[AuthSessionManager] Erro no processamento de callback PKCE:', err instanceof Error ? err.message : String(err));
       }
     } else if (webCallback.type === 'success' && webCallback.accessToken) {
       try {
@@ -85,15 +87,17 @@ export class AuthSessionManager {
           access_token: webCallback.accessToken,
           refresh_token: webCallback.refreshToken || '',
         });
-        if (!error && data?.session) {
+        if (error) {
+          console.warn('[AuthSessionManager] Falha ao definir sessao OAuth hash:', error.message);
+        } else if (data?.session) {
           cleanWebOAuthUrl();
           if (generation !== this.generation) throw new Error('Inicializacao de sessao cancelada.');
           this.explicitlySignedOut = false;
           this.setSession(data.session);
           return data.session;
         }
-      } catch {
-        // Se a definicao de sessao falhar, cai para o restore padrao
+      } catch (err) {
+        console.warn('[AuthSessionManager] Erro no processamento de token hash:', err instanceof Error ? err.message : String(err));
       }
     } else if (webCallback.type === 'cancel' || webCallback.type === 'error') {
       cleanWebOAuthUrl();
