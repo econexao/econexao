@@ -1,8 +1,13 @@
 .tmp
 .git
 .github
+**/node_modules
+**/.expo
+**/dist
+**/coverage
 backend
 docs
 landing-page
 supabase
+tela detalhes rota
 *.tmp
