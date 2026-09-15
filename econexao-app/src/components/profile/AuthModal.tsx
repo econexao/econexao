@@ -1,13 +1,15 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
   ActivityIndicator,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import * as Linking from 'expo-linking';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useAuth } from '../../hooks/useAuth';
@@ -19,11 +21,17 @@ interface AuthModalProps {
   visible: boolean;
   onClose: () => void;
   returnFocusRef?: React.RefObject<any>;
+  initialMode?: AuthMode;
 }
 
 type AuthMode = 'link' | 'signin' | 'signup' | 'recovery';
 
-export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose, returnFocusRef }) => {
+export const AuthModal: React.FC<AuthModalProps> = ({
+  visible,
+  onClose,
+  returnFocusRef,
+  initialMode,
+}) => {
   const {
     user,
     linkAccount,
@@ -38,7 +46,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose, returnFo
   const isAnonymous = user ? (user.is_anonymous === true && !user.email) : true;
   const closeButtonRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
 
-  const [mode, setMode] = useState<AuthMode>(isAnonymous ? 'link' : 'signin');
+  const [mode, setMode] = useState<AuthMode>(initialMode ?? (isAnonymous ? 'link' : 'signin'));
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -46,6 +54,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose, returnFo
   const [isConflictDetected, setIsConflictDetected] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (visible) {
+      setMode(initialMode ?? (isAnonymous ? 'link' : 'signin'));
+      setErrorMessage(null);
+      setSuccessMessage(null);
+      setIsConflictDetected(false);
+    }
+  }, [visible, initialMode, isAnonymous]);
 
   const resetState = () => {
     setEmail('');
@@ -73,14 +90,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose, returnFo
         mode === 'link' ? 'Iniciando vinculação com o Google...' : 'Iniciando login com o Google...'
       );
 
+      let result: { url?: string };
       if (mode === 'link') {
-        await linkGoogleAccount();
+        result = await linkGoogleAccount();
         setSuccessMessage('Redirecionando para vincular com o Google...');
         AccessibilityInfo.announceForAccessibility('Redirecionando para vincular com o Google.');
       } else {
-        await signInWithGoogle();
+        result = await signInWithGoogle();
         setSuccessMessage('Redirecionando para login com o Google...');
         AccessibilityInfo.announceForAccessibility('Redirecionando para login com o Google.');
+      }
+
+      if (result?.url) {
+        if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location?.assign) {
+          window.location.assign(result.url);
+        } else if (result.url) {
+          await Linking.openURL(result.url);
+        }
       }
     } catch (err: any) {
       if (isIdentityConflictError(err)) {
@@ -110,8 +136,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose, returnFo
 
     try {
       AccessibilityInfo.announceForAccessibility('Entrando na conta existente com o Google...');
-      await signInWithGoogle();
+      const result = await signInWithGoogle();
       setSuccessMessage('Entrando na sua conta Google existente...');
+      if (result?.url) {
+        if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location?.assign) {
+          window.location.assign(result.url);
+        } else if (result.url) {
+          await Linking.openURL(result.url);
+        }
+      }
     } catch (err: any) {
       const msg = err?.message || 'Falha ao entrar na conta existente com o Google.';
       setErrorMessage(msg);

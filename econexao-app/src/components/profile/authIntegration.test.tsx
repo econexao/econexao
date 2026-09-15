@@ -1,10 +1,15 @@
 import React from 'react';
 import renderer, { act } from 'react-test-renderer';
 
+import { Platform } from 'react-native';
+import * as Linking from 'expo-linking';
 import { AuthModal } from './AuthModal';
 import { useAuth } from '../../hooks/useAuth';
 
 jest.mock('@expo/vector-icons', () => ({ Ionicons: 'Ionicons' }));
+jest.mock('expo-linking', () => ({
+  openURL: jest.fn(),
+}));
 
 jest.mock('../../hooks/useAuth', () => ({
   useAuth: jest.fn(),
@@ -236,6 +241,66 @@ describe('ECO-1902 / ECO-2606 — Autenticação, Login Google e Linking (AuthMo
 
     const textNodes = tree.root.findAllByType('Text' as any).flatMap((n) => n.props.children);
     expect(textNodes.join(' ')).toContain('Autenticação com o Google cancelada');
+  });
+
+  test('renderiza modal em modo Entrar quando initialMode="signin" mesmo para usuário visitante', async () => {
+    let tree!: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(<AuthModal visible={true} onClose={mockOnClose} initialMode="signin" />);
+    });
+
+    const textNodes = tree.root.findAllByType('Text' as any).flatMap((n) => n.props.children);
+    expect(textNodes).toContain('Entrar no ECOnexão');
+  });
+
+  test('redireciona a janela para url do Google na Web após linkGoogleAccount', async () => {
+    const originalPlatform = Platform.OS;
+    const originalLocation = window.location;
+    try {
+      Platform.OS = 'web';
+      const assignMock = jest.fn();
+      delete (window as any).location;
+      window.location = { assign: assignMock } as any;
+
+      mockLinkGoogleAccount.mockResolvedValue({ url: 'https://accounts.google.com/o/oauth2/v2/auth?client_id=test' });
+
+      let tree!: renderer.ReactTestRenderer;
+      await act(async () => {
+        tree = renderer.create(<AuthModal visible={true} onClose={mockOnClose} />);
+      });
+
+      const googleBtn = tree.root.findByProps({ accessibilityLabel: 'Salvar conta com o Google' });
+      await act(async () => {
+        await googleBtn.props.onPress();
+      });
+
+      expect(assignMock).toHaveBeenCalledWith('https://accounts.google.com/o/oauth2/v2/auth?client_id=test');
+    } finally {
+      Platform.OS = originalPlatform;
+      (window as any).location = originalLocation;
+    }
+  });
+
+  test('abre Linking.openURL em ambiente nativo após signInWithGoogle', async () => {
+    const originalPlatform = Platform.OS;
+    try {
+      Platform.OS = 'android';
+      mockSignInWithGoogle.mockResolvedValue({ url: 'https://accounts.google.com/o/oauth2/v2/auth?client_id=native-test' });
+
+      let tree!: renderer.ReactTestRenderer;
+      await act(async () => {
+        tree = renderer.create(<AuthModal visible={true} onClose={mockOnClose} initialMode="signin" />);
+      });
+
+      const googleBtn = tree.root.findByProps({ accessibilityLabel: 'Entrar com o Google' });
+      await act(async () => {
+        await googleBtn.props.onPress();
+      });
+
+      expect(Linking.openURL).toHaveBeenCalledWith('https://accounts.google.com/o/oauth2/v2/auth?client_id=native-test');
+    } finally {
+      Platform.OS = originalPlatform;
+    }
   });
 });
 
