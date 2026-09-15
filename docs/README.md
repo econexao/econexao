@@ -86,6 +86,10 @@ e seu commit local autorizado; decisões abertas e gates de execução continuam
 - `elementos_interativos_telas.txt`: inventário canônico do estado atual.
 - `design-specs/DESIGN.md`: linguagem visual global.
 - `stitch-screens/*/DESIGN.md`: referência visual por tela.
+- `stitch-screens/03-route-detail-map/redesign/`: proposta mais recente para a tela
+  de detalhes da rota, preservada ao lado da referência anterior.
+- `stitch-screens/07-trips-history/`: referência Stitch do redesign do histórico
+  de viagens, com captura, protótipo e tokens visuais.
 
 O arquivo `../elementos_interativos_telas.txt` é uma cópia legada e não deve ser atualizado nem usado por agentes. Remoção/arquivamento depende de confirmação do proprietário.
 

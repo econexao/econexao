@@ -41,3 +41,6 @@ Thumbs.db
 .netlify
 
 .vercel
+
+# Owner-provided Stitch drop folders (canonical copies live in docs/stitch-screens/)
+tela historico rotas/
