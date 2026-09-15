@@ -480,7 +480,7 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     const clusterMarkers = page.locator('.leaflet-marker-icon.econexao-cluster-icon-wrapper');
     await expect(clusterMarkers).toHaveCount(0);
 
-    const pinMarkers = page.locator('.leaflet-marker-icon.econexao-map-marker-wrapper');
+    const pinMarkers = page.locator('.leaflet-marker-icon.econexao-teardrop-wrapper');
     await expect(pinMarkers.first()).toBeVisible({ timeout: 10000 });
     const pinCount = await pinMarkers.count();
     expect(pinCount).toBeGreaterThanOrEqual(1);
@@ -539,7 +539,7 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(400);
 
-    const actorPin = page.locator('.econexao-map-marker').first();
+    const actorPin = page.locator('.econexao-teardrop-marker').first();
     await expect(actorPin).toBeVisible({ timeout: 5000 });
 
     const catalogButton = page.locator('[aria-label*="no catálogo"]').first();
@@ -670,7 +670,7 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     await page.waitForLoadState('networkidle');
     expect(new URL(page.url()).searchParams.get('originId')).toBe('origin-porto');
     const captureMapState = async () => ({
-      pins: await page.locator('.econexao-map-marker-wrapper').evaluateAll((nodes) => nodes.map((node) => ({
+      pins: await page.locator('.econexao-teardrop-wrapper, .econexao-selected-card-wrapper').evaluateAll((nodes) => nodes.map((node) => ({
         label: node.getAttribute('title') || node.getAttribute('aria-label') || node.parentElement?.getAttribute('title') || node.parentElement?.getAttribute('aria-label'),
         html: node.innerHTML,
       })).sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)))),
@@ -745,7 +745,7 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     await run('outside');
     await expect(feedback).toContainText('fora da região desta rota');
     await expect(page.getByRole('button', { name: 'Mostrar minha localização no mapa' })).toBeVisible();
-    await expect(page.locator('.econexao-map-marker').first()).toBeVisible();
+    await expect(page.locator('.econexao-teardrop-marker, .econexao-selected-pin-card').first()).toBeVisible();
     expect(await captureMapState()).toEqual(baselineState);
 
     const locateBox = await page.getByRole('button', { name: 'Mostrar minha localização no mapa' }).boundingBox();

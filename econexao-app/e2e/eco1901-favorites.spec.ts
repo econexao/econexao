@@ -93,7 +93,7 @@ test.describe('ECO-1901 — ECOnexão real com fixtures contratuais', () => {
     const fixture = await mockApi(page, { failNextFavorite: true });
     await page.goto('/route/route-fixture/catalog');
     await expect(page.getByText('Ateliê Tapajós').first()).toBeVisible({ timeout: 15000 });
-    await page.getByRole('button', { name: 'Carregar mais atores da rota' }).click();
+    // O catálogo atual agrega as páginas necessárias para montar os carrosséis por categoria.
     await expect(page.getByText('Coletivo Arapiuns')).toBeVisible({ timeout: 15000 });
     await expect(page.getByText('Ateliê Tapajós')).toHaveCount(1);
     await page.getByRole('button', { name: 'Salvar ator nos favoritos' }).first().click();
