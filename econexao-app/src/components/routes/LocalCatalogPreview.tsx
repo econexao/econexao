@@ -34,11 +34,6 @@ export const LocalCatalogPreview: React.FC<LocalCatalogPreviewProps> = ({
     <View style={styles.section}>
       <View style={styles.headerRow}>
         <Text style={styles.title} accessibilityRole="header">Catálogo Local</Text>
-        {!actors.isPending && !actors.isError && (
-          <Text style={styles.totalText}>
-            {actors.data?.meta?.total ?? 0} {(actors.data?.meta?.total ?? 0) === 1 ? 'ator' : 'atores'}
-          </Text>
-        )}
       </View>
 
       {categories.data && categories.data.length > 0 && (
@@ -104,10 +99,6 @@ const styles = StyleSheet.create({
   title: {
     ...theme.typography.headlineSm,
     color: theme.colors.brandDeep,
-  },
-  totalText: {
-    ...theme.typography.labelSm,
-    color: theme.colors.brandForest,
   },
   filtersWrapper: {
     width: '100%',
