@@ -75,7 +75,11 @@ export const ActorCard: React.FC<ActorCardProps> = ({
               accessibilityRole="image"
               accessibilityLabel={`Imagem não disponível para ${actor.name || 'estabelecimento'}`}
             >
-              <Ionicons name="storefront-outline" size={40} color={theme.colors.brandSage} />
+              <Ionicons
+                name={isCompact ? categoryMeta.icon : 'storefront-outline'}
+                size={isCompact ? 24 : 40}
+                color={isCompact ? categoryMeta.color : theme.colors.brandSage}
+              />
             </View>
           )}
 
@@ -86,17 +90,32 @@ export const ActorCard: React.FC<ActorCardProps> = ({
         </View>
 
         <View style={[styles.content, isCompact && styles.compactContent]}>
-          <View style={styles.headerRow}>
-            <Text style={[styles.categoryTag, { color: categoryMeta.badgeTextColor }]}>{categoryName}</Text>
-            {ratingValue != null && (
+          <View style={[styles.headerRow, isCompact && styles.compactHeaderRow]}>
+            {isCompact ? (
+              <Text style={[styles.name, styles.compactName]} numberOfLines={1}>{actor.name}</Text>
+            ) : (
+              <Text style={[styles.categoryTag, { color: categoryMeta.badgeTextColor }]}>{categoryName}</Text>
+            )}
+            {!isCompact && ratingValue != null && (
               <View style={styles.ratingRow}>
                 <Ionicons name="star" size={14} color={theme.colors.brandSun} />
                 <Text style={styles.ratingText}>{`${ratingValue.toFixed(1)} Google`}</Text>
               </View>
             )}
+            {isCompact && (
+              <Text
+                style={[
+                  styles.compactCategoryTag,
+                  { color: categoryMeta.badgeTextColor, backgroundColor: `${categoryMeta.color}14` },
+                ]}
+                numberOfLines={1}
+              >
+                {categoryName}
+              </Text>
+            )}
           </View>
 
-          <Text style={styles.name}>{actor.name}</Text>
+          {!isCompact && <Text style={styles.name}>{actor.name}</Text>}
           {actor.address ? (
             <Text style={styles.address} numberOfLines={1}>
               <Ionicons name="location-outline" size={13} color={theme.colors.brandSage} /> {actor.address}
@@ -148,8 +167,9 @@ const styles = StyleSheet.create({
   },
   compactPressable: {
     flexDirection: 'row',
-    alignItems: 'stretch',
-    minHeight: 104,
+    alignItems: 'center',
+    minHeight: 72,
+    paddingHorizontal: 10,
   },
   imageContainer: {
     height: 160,
@@ -166,9 +186,11 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   compactImageContainer: {
-    width: 104,
-    height: 'auto',
-    minHeight: 104,
+    width: 50,
+    height: 50,
+    minHeight: 50,
+    borderRadius: 10,
+    overflow: 'hidden',
     flexShrink: 0,
   },
   placeholderImage: {
@@ -206,8 +228,22 @@ const styles = StyleSheet.create({
   },
   compactContent: {
     flex: 1,
-    padding: 12,
+    paddingVertical: 9,
+    paddingLeft: 12,
+    paddingRight: 2,
     justifyContent: 'center',
+  },
+  compactHeaderRow: { marginBottom: 2, gap: 8 },
+  compactName: { flex: 1, marginBottom: 0, fontSize: 15, lineHeight: 19 },
+  compactCategoryTag: {
+    ...theme.typography.labelSm,
+    maxWidth: '42%',
+    paddingHorizontal: 7,
+    paddingVertical: 4,
+    borderRadius: 5,
+    fontWeight: '800',
+    fontSize: 10,
+    letterSpacing: 0.3,
   },
   headerRow: {
     flexDirection: 'row',

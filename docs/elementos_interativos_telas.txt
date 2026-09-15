@@ -161,7 +161,22 @@ Data da Catalogação: 11/08/2026
      5. "Ajuda & Suporte" (Ícone Ajuda azul céu): Navega para `/(tabs)/(profile)/support` (dúvidas e SAC).
      6. "Termos & Dados" (Ícone Escudo verde folha): Navega para `/(tabs)/(profile)/legal` (políticas LGPD).
 
-[4.5] AÇÕES DE CONTA & RODAPÉ INSTITUCIONAL
+[4.5] HISTÓRICO DE VIAGENS
+   * Estrutura & Layout: Tela editorial com chips de filtro "Todas", "Ativas" e
+     "Concluídas", contagem derivada do retorno real da API e cartões de viagem.
+   * Conteúdos preservados: título da rota, data de criação, status e vínculo com
+     a rota quando `route_id` está disponível. Dados ilustrativos ausentes de
+     `TripSchema` não são exibidos como se fossem reais.
+   * Elementos Interativos:
+     - Chips filtram localmente a lista já carregada e anunciam a contagem para
+       tecnologias assistivas.
+     - Card abre os detalhes da rota quando existe `route_id`.
+     - Viagem ativa pode ser pausada ou finalizada; viagem pausada pode ser
+       retomada ou finalizada. As ações mantêm anúncio de sucesso e erro/retry.
+   * Estados: loading e erro com retry permanecem explícitos; lista ou filtro
+     vazio exibe orientação própria sem remover os demais filtros.
+
+[4.6] AÇÕES DE CONTA & RODAPÉ INSTITUCIONAL
    * Elementos Interativos:
      - Botão "Encerrar Sessão" (Logout): Limpa o cache da sessão e desloga o usuário.
      - Botão "Excluir Conta" (LGPD): Fundo vermelho suave, abre o modal de exclusão permanente de conta (`AccountDeletionModal`).

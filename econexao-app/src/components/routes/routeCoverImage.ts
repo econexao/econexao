@@ -6,7 +6,21 @@ type RouteCover = {
   cover_image_url?: string | null;
 };
 
+type RouteGallery = RouteCover & {
+  gallery?: Array<{
+    url: string;
+    derivatives?: Record<string, string>;
+    alt_text?: string | null;
+  }>;
+};
+
 const pindobalCoverImage = require('../../../assets/images/pindobal1.png');
+const pindobalGalleryImages = [
+  require('../../../assets/images/pindobal1.png'),
+  require('../../../assets/images/pindobal2.png'),
+  require('../../../assets/images/pindobal3.png'),
+  require('../../../assets/images/pindobal4.png'),
+];
 const alterCoverImage = require('../../../assets/images/alter2.png');
 const pontaDePedrasCoverImage = require('../../../assets/images/pontadepedras3.png');
 const aramanaiCoverImage = require('../../../assets/images/aramanai1.png');
@@ -47,3 +61,22 @@ export const getRouteCoverImage = (route: RouteCover): ImageSourcePropType | und
 export const getPindobalCoverImage = (route: RouteCover): ImageSourcePropType | undefined =>
   isPindobalRoute(route) ? pindobalCoverImage : undefined;
 
+export const getRouteGalleryImages = (route: RouteGallery) => {
+  if (route.gallery?.length) {
+    return route.gallery.map((media, index) => ({
+      key: media.url,
+      source: { uri: media.derivatives?.card ?? media.url } as ImageSourcePropType,
+      alt: media.alt_text || `Foto ${index + 1} da rota ${route.slug || ''}`.trim(),
+    }));
+  }
+
+  if (isPindobalRoute(route)) {
+    return pindobalGalleryImages.map((source, index) => ({
+      key: `pindobal-${index + 1}`,
+      source: source as ImageSourcePropType,
+      alt: `Foto ${index + 1} da Praia de Pindobal`,
+    }));
+  }
+
+  return [];
+};

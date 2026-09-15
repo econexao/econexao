@@ -1,6 +1,6 @@
 # ECOnexão — documento único de tarefas
 
-Atualizado em: 14/09/2026. Redesenho editorial da tela de perfil aplicado (ProfileScreen / UI).
+Atualizado em: 15/09/2026. Redesigns Stitch de detalhes da rota e histórico de viagens preparados localmente para staging.
 Este é o único cadastro de tasks: concluídas, parciais, novas, adiadas e substituídas.
 Os documentos de iniciativas preservam aceites/evidências históricos, mas não definem
 prioridade ou estado atual. A sequência abaixo orienta a próxima execução; decisões
@@ -8,7 +8,14 @@ ainda abertas permanecem em ECO-2603 e não são aprovadas pelo commit documenta
 
 ## Como acompanhar
 
-- **Agora:** Tela de Perfil (`app/(tabs)/(profile)/index.tsx`) atualizada com o novo design editorial contemporâneo: banner escuro de convidado em gradiente com botão estilizado do Google, card de identificação compacto do usuário, menu de preferências em grade de 2 colunas com cartões interativos temáticos e ações de encerramento/exclusão com nota de rodapé institucional. Suíte com 47 arquivos e 300 testes Jest passando 100%, typecheck e export Web verificados localmente. Publicação organizada em staging (`https://econexao-app-staging.vercel.app/`).
+- **Agora:** Branch local `codex/trips-history-stitch-redesign` reúne o redesign Stitch
+  pendente de detalhes da rota e o novo histórico de viagens. O histórico preserva
+  `TripSchema`, estados loading/erro/retry, navegação e transições reais, adicionando
+  filtros acessíveis Todas/Ativas/Concluídas. Verificação local: typecheck, OpenAPI,
+  export Web, 48 arquivos/305 testes Jest e 32 testes Playwright desktop/mobile
+  passaram. Publicação no staging canônico (`https://econexao-app-staging.vercel.app/`)
+  permanece pendente dos gates de escrita remota; evidência em
+  [`audit_stitch_redesigns_2026-09-15.md`](audit_stitch_redesigns_2026-09-15.md).
   ECO-1901 permanece PARCIAL após a PR #29 ser integrada em `staging` pelo squash `0a717b6d0d09ddac829f7b2dce9f9d2e44036c51`. O deploy canônico desse SHA ficou saudável, e a homologação real autorizada confirmou visitante, guest, refresh, paginação, favoritos de rota e isolamento A/B, mas encontrou `GET /me/favorite-actors` com HTTP 500 após `PUT` bem-sucedido. A correção mínima está em revisão local antes de novo push/deploy. Uma task por vez, revisão independente e GO por operação remota.
   A ECO-2617 foi concluída localmente; o baseline incorporado inclui
   `0a717b6d0d09ddac829f7b2dce9f9d2e44036c51`, a identidade visual do PR #30 e as

@@ -10,6 +10,7 @@ import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/compon
 import { LocalCatalogPreview } from '../../../src/components/routes/LocalCatalogPreview';
 import { OriginSelector, MY_LOCATION_ORIGIN_ID, CHOOSE_ON_MAP_ORIGIN_ID } from '../../../src/components/routes/OriginSelector';
 import { RouteMapPreview } from '../../../src/components/routes/RouteMapPreview';
+import { RouteGallery } from '../../../src/components/routes/RouteGallery';
 import { GoogleRoutesMapNotice } from '../../../src/components/routes/GoogleRoutesMapNotice';
 import { getPindobalCoverImage } from '../../../src/components/routes/routeCoverImage';
 import { useRouteAlertsQuery, useRouteDetailQuery } from '../../../src/hooks/queries';
@@ -308,6 +309,8 @@ export default function RouteDetailScreen() {
           </>
         )}
 
+        <RouteGallery route={route} />
+
         {/* Dynamic preview notice banner */}
         {isCustomLocation && (
           <View style={styles.previewNoticeBanner} accessibilityRole="alert" accessibilityLiveRegion="polite">
@@ -364,33 +367,47 @@ export default function RouteDetailScreen() {
         />
 
         {/* Start Trip CTA */}
-        <TouchableOpacity
+        <View
           style={[
-            styles.startTripButton,
+            styles.startTripCard,
             {
               backgroundColor: theme.colors.brandForest,
               borderColor: theme.isHighContrast ? theme.colors.brandDeep : 'transparent',
               borderWidth: theme.isHighContrast ? 2 : 0,
             },
           ]}
-          onPress={handleStartTrip}
-          disabled={isStartingTrip}
-          {...makeAccessibleButton(
-            'Registrar início de viagem nesta rota',
-            'Inicia a viagem e registra o passeio no histórico do seu perfil'
-          )}
         >
-          {isStartingTrip ? (
-            <ActivityIndicator size="small" color={theme.colors.surfaceWhite} />
-          ) : (
-            <>
-              <Ionicons name="play-circle-outline" size={20} color={theme.colors.surfaceWhite} />
-              <Text style={[styles.startTripText, { color: theme.colors.surfaceWhite }]}>
-                Registrar Início de Viagem
-              </Text>
-            </>
-          )}
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.startTripButton}
+            onPress={handleStartTrip}
+            disabled={isStartingTrip}
+            {...makeAccessibleButton(
+              'Registrar início de viagem nesta rota',
+              'Inicia a viagem e registra o passeio no histórico do seu perfil'
+            )}
+          >
+            {isStartingTrip ? (
+              <ActivityIndicator size="small" color={theme.colors.surfaceWhite} />
+            ) : (
+              <>
+              <View style={styles.tripIconBox}>
+                <Ionicons name="navigate-outline" size={21} color={theme.colors.surfaceWhite} />
+              </View>
+              <View style={styles.tripCopy}>
+                <Text style={[styles.startTripText, { color: theme.colors.surfaceWhite }]}>Registrar Início da Viagem</Text>
+                <Text style={styles.startTripSubtext}>Ativar registro em tempo real</Text>
+              </View>
+              </>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.tripArrow}
+            onPress={() => router.push('/(tabs)/(profile)/trips')}
+            {...makeAccessibleButton('Abrir histórico de rotas', 'Abre o histórico de viagens do perfil')}
+          >
+            <Ionicons name="arrow-forward" size={18} color={theme.colors.surfaceWhite} />
+          </TouchableOpacity>
+        </View>
 
         {/* Route Alerts Section */}
         <View style={styles.section}>
@@ -456,18 +473,18 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     padding: theme.spacing.marginMobile,
     paddingBottom: 32,
-    gap: 16,
+    gap: 22,
   },
   heroSection: {
     gap: 4,
   },
   heroSectionWithImage: {
-    height: 300,
+    height: 360,
     backgroundColor: theme.colors.surfaceBackground,
     overflow: 'hidden',
   },
   heroImage: {
-    borderRadius: theme.radii.xl,
+    borderRadius: 24,
     ...StyleSheet.absoluteFillObject,
     width: '100%',
     height: '100%',
@@ -476,14 +493,16 @@ const styles = StyleSheet.create({
     gap: 4,
     backgroundColor: 'rgba(8, 18, 5, 0.36)',
     padding: theme.spacing.marginMobile,
-    minHeight: 150,
+    minHeight: 170,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
   },
   pindobalHeroStack: {
     position: 'relative',
   },
   originSelectorOverlay: {
-    marginTop: -105,
-    paddingHorizontal: 28,
+    marginTop: -82,
+    paddingHorizontal: 16,
     zIndex: 1,
   },
   heroBottomGradient: {
@@ -559,19 +578,46 @@ const styles = StyleSheet.create({
     ...theme.typography.headlineSm,
     color: theme.colors.brandForest,
   },
-  startTripButton: {
+  startTripCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 14,
-    borderRadius: theme.radii.full,
-    gap: 8,
+    padding: 8,
+    minHeight: 72,
+    borderRadius: theme.radii.lg,
     marginVertical: 4,
     ...theme.shadows.card,
+  },
+  startTripButton: {
+    flex: 1,
+    minHeight: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 4,
   },
   startTripText: {
     ...theme.typography.labelMd,
     fontWeight: '700',
+  },
+  startTripSubtext: { ...theme.typography.bodySm, color: 'rgba(255,255,255,0.78)', fontSize: 11 },
+  tripIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.24)',
+  },
+  tripCopy: { flex: 1, gap: 2 },
+  tripArrow: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   alertsContainer: {
     gap: 8,

@@ -254,18 +254,27 @@ describe('Marco 11 — Integration Tests', () => {
     expect(tree.toJSON()).toBeTruthy();
   });
 
-  it('TripsHistoryScreen renders trip history items', async () => {
+  it('TripsHistoryScreen renders the Stitch history layout and filters trips by status', async () => {
     (useMyTripsQuery as jest.Mock).mockReturnValue({
       data: [
         {
           id: 'trip-1',
+          route_id: 'route-1',
           route_title: 'Trilha do Jamaraquá',
           status: 'completed',
           created_at: '2026-08-10T10:00:00Z',
         },
+        {
+          id: 'trip-2',
+          route_id: 'route-2',
+          route_title: 'Pindobal',
+          status: 'active',
+          created_at: '2026-09-14T10:00:00Z',
+        },
       ],
       isPending: false,
       isError: false,
+      refetch: jest.fn(),
     });
 
     let tree!: renderer.ReactTestRenderer;
@@ -273,7 +282,18 @@ describe('Marco 11 — Integration Tests', () => {
       tree = renderer.create(<TripsHistoryScreen />);
     });
 
-    expect(tree.toJSON()).toBeTruthy();
+    expect(JSON.stringify(tree.toJSON())).toContain('Trilha do Jamaraquá');
+    expect(JSON.stringify(tree.toJSON())).toContain('Pindobal');
+    expect(tree.root.findByProps({ accessibilityLabel: 'Todas, 2' }).props.accessibilityState).toEqual({ selected: true });
+
+    await act(async () => {
+      tree.root.findByProps({ accessibilityLabel: 'Concluídas, 1' }).props.onPress();
+    });
+
+    const completedView = JSON.stringify(tree.toJSON());
+    expect(completedView).toContain('Trilha do Jamaraquá');
+    expect(completedView).not.toContain('Pindobal');
+    expect(tree.root.findByProps({ accessibilityLabel: 'Concluídas, 1' }).props.accessibilityState).toEqual({ selected: true });
   });
 
   it('AccessibilityPreferencesScreen renders preference options', async () => {
