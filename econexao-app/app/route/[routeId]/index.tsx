@@ -10,6 +10,7 @@ import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/compon
 import { LocalCatalogPreview } from '../../../src/components/routes/LocalCatalogPreview';
 import { OriginSelector, MY_LOCATION_ORIGIN_ID, CHOOSE_ON_MAP_ORIGIN_ID } from '../../../src/components/routes/OriginSelector';
 import { RouteMapPreview } from '../../../src/components/routes/RouteMapPreview';
+import { RouteGallery } from '../../../src/components/routes/RouteGallery';
 import { GoogleRoutesMapNotice } from '../../../src/components/routes/GoogleRoutesMapNotice';
 import { getPindobalCoverImage } from '../../../src/components/routes/routeCoverImage';
 import { useRouteAlertsQuery, useRouteDetailQuery } from '../../../src/hooks/queries';
@@ -308,6 +309,8 @@ export default function RouteDetailScreen() {
           </>
         )}
 
+        <RouteGallery route={route} />
+
         {/* Dynamic preview notice banner */}
         {isCustomLocation && (
           <View style={styles.previewNoticeBanner} accessibilityRole="alert" accessibilityLiveRegion="polite">
@@ -384,10 +387,16 @@ export default function RouteDetailScreen() {
             <ActivityIndicator size="small" color={theme.colors.surfaceWhite} />
           ) : (
             <>
-              <Ionicons name="play-circle-outline" size={20} color={theme.colors.surfaceWhite} />
-              <Text style={[styles.startTripText, { color: theme.colors.surfaceWhite }]}>
-                Registrar Início de Viagem
-              </Text>
+              <View style={styles.tripIconBox}>
+                <Ionicons name="navigate-outline" size={21} color={theme.colors.surfaceWhite} />
+              </View>
+              <View style={styles.tripCopy}>
+                <Text style={[styles.startTripText, { color: theme.colors.surfaceWhite }]}>Registrar Início da Viagem</Text>
+                <Text style={styles.startTripSubtext}>Ativar registro em tempo real</Text>
+              </View>
+              <View style={styles.tripArrow}>
+                <Ionicons name="arrow-forward" size={18} color={theme.colors.surfaceWhite} />
+              </View>
             </>
           )}
         </TouchableOpacity>
@@ -456,18 +465,18 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     padding: theme.spacing.marginMobile,
     paddingBottom: 32,
-    gap: 16,
+    gap: 22,
   },
   heroSection: {
     gap: 4,
   },
   heroSectionWithImage: {
-    height: 300,
+    height: 360,
     backgroundColor: theme.colors.surfaceBackground,
     overflow: 'hidden',
   },
   heroImage: {
-    borderRadius: theme.radii.xl,
+    borderRadius: 24,
     ...StyleSheet.absoluteFillObject,
     width: '100%',
     height: '100%',
@@ -476,14 +485,16 @@ const styles = StyleSheet.create({
     gap: 4,
     backgroundColor: 'rgba(8, 18, 5, 0.36)',
     padding: theme.spacing.marginMobile,
-    minHeight: 150,
+    minHeight: 170,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
   },
   pindobalHeroStack: {
     position: 'relative',
   },
   originSelectorOverlay: {
-    marginTop: -105,
-    paddingHorizontal: 28,
+    marginTop: -82,
+    paddingHorizontal: 16,
     zIndex: 1,
   },
   heroBottomGradient: {
@@ -562,16 +573,37 @@ const styles = StyleSheet.create({
   startTripButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 14,
-    borderRadius: theme.radii.full,
-    gap: 8,
+    justifyContent: 'flex-start',
+    padding: 12,
+    minHeight: 72,
+    borderRadius: theme.radii.lg,
+    gap: 12,
     marginVertical: 4,
     ...theme.shadows.card,
   },
   startTripText: {
     ...theme.typography.labelMd,
     fontWeight: '700',
+  },
+  startTripSubtext: { ...theme.typography.bodySm, color: 'rgba(255,255,255,0.78)', fontSize: 11 },
+  tripIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.24)',
+  },
+  tripCopy: { flex: 1, gap: 2 },
+  tripArrow: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   alertsContainer: {
     gap: 8,

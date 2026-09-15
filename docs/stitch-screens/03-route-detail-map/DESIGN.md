@@ -167,6 +167,14 @@ The shape language is **Rounded (0.5rem base)**. This strike a balance between t
 
 ## Components
 
+### Route detail composition (Stitch refresh — 2026-09-15)
+- The route hero uses the editorial cover, rounded 24px framing, a dark text scrim and an origin selector overlaid near the lower edge.
+- A horizontal gallery follows the hero. Its item count is data-driven from `RouteDetail.gallery`; Pindobal has four bundled editorial fallbacks while its staging media is being curated.
+- The existing map implementation, geometry, pins, bounds, interactions and adapter are intentionally unchanged. The redesign only repositions the map in the page flow.
+- The local catalog remains contextual to the selected origin and keeps its loading, empty, error and retry behavior.
+- The trip CTA is a full-width green card with a primary label, status hint and arrow affordance.
+- Alerts remain below the trip CTA and retain severity semantics.
+
 ### Buttons
 - **Primary:** Solid Forest Green (#33601E) with White text. High contrast, bold weight.
 - **Secondary (Ghost):** 1.5px border of Forest Green with Forest Green text. Clear, high-visibility affordance.
