@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "total_migrations": 31,
+  "total_migrations": 32,
   "generated_at": "2026-09-10T23:43:57.208832+00:00",
   "migrations": [
     {
@@ -219,6 +219,13 @@
       "path": "supabase/migrations/20260916202210_altamira_xingu_pedral_base.sql",
       "bytes": 31315,
       "sha256": "f81f6a381eeae083ca9627e13c76aa1134bd7244b82c26403934c2ed24628f23"
+    },
+    {
+      "version": "20260916203000",
+      "filename": "20260916203000_altamira_actors_and_route_corridor.sql",
+      "path": "supabase/migrations/20260916203000_altamira_actors_and_route_corridor.sql",
+      "bytes": 1394475,
+      "sha256": "466690ff9ea2308cc394ffccd5170ce06b2d8e068f0db70caa92d80efbb1d80a"
     }
   ]
 }
