@@ -255,7 +255,7 @@ export class ApiClient {
     options?: { signal?: AbortSignal }
   ): Promise<RouteListEnvelope> {
     const query = new URLSearchParams();
-    if (params?.region_id) query.append("region_id", params.region_id);
+    if (params?.region_id && params.region_id !== 'all') query.append("region_id", params.region_id);
     if (params?.q) query.append("q", params.q);
     if (params?.saved !== undefined) query.append("saved", String(params.saved));
     if (params?.verified !== undefined)

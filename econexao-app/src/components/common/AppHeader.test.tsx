@@ -20,9 +20,11 @@ jest.mock('@expo/vector-icons', () => ({
   Ionicons: 'Ionicons',
 }));
 
+let mockAppState: { activeRegionId: string | null } = { activeRegionId: 'reg-1' };
+
 jest.mock('../../hooks/useApp', () => ({
   useApp: () => ({
-    state: { activeRegionId: 'reg-1' },
+    state: mockAppState,
     activeRegion: { id: 'reg-1', name: 'Santarém & Belterra' },
     setActiveRegion: jest.fn(),
     openRegionSelector: jest.fn(),
@@ -129,5 +131,27 @@ describe('AppHeader navigation and fallback', () => {
 
     expect(mockBack).not.toHaveBeenCalled();
     expect(mockReplace).toHaveBeenCalledWith('/(tabs)/(routes)');
+  });
+
+  it('renders "Todas as regiões" when activeRegionId is null', async () => {
+    mockAppState = { activeRegionId: null };
+    let tree!: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(<AppHeader title="ECOnexão" showBack={false} />);
+    });
+    const root = tree.root;
+    const texts = root.findAllByType(Text).map((t) => t.props.children);
+    expect(texts).toContain('Todas as regiões');
+  });
+
+  it('renders specific region name when activeRegionId matches a region', async () => {
+    mockAppState = { activeRegionId: 'reg-1' };
+    let tree!: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(<AppHeader title="ECOnexão" showBack={false} />);
+    });
+    const root = tree.root;
+    const texts = root.findAllByType(Text).map((t) => t.props.children);
+    expect(texts).toContain('Santarém & Belterra');
   });
 });

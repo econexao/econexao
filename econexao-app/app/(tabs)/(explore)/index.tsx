@@ -31,12 +31,17 @@ export default function HomeScreen() {
 
   const regionsQuery = useRegionsQuery();
 
-  const activeRegionId = state.activeRegionId ?? regionsQuery.data?.[0]?.id;
-  const activeRegion = regionsQuery.data?.find((r) => r.id === activeRegionId);
-  const hasNoRegions = regionsQuery.isSuccess && !activeRegionId;
+  const isAllRegions = !state.activeRegionId || state.activeRegionId === 'all';
+  const activeRegion = isAllRegions
+    ? null
+    : regionsQuery.data?.find((r) => r.id === state.activeRegionId);
+  const regionName = isAllRegions ? 'Todas as regiões' : (activeRegion?.name ?? 'Região');
+  const isAltamiraRegion = activeRegion?.slug === 'altamira-xingu';
+  const hasNoRegions = regionsQuery.isSuccess && (regionsQuery.data?.length ?? 0) === 0;
 
-  const featuredQuery = useRoutesQuery(activeRegionId, { limit: 10 });
-  const savedQuery = useRoutesQuery(activeRegionId, { saved: true }, user?.id);
+  const queryRegionId = isAllRegions ? undefined : state.activeRegionId;
+  const featuredQuery = useRoutesQuery(queryRegionId, { limit: 10 });
+  const savedQuery = useRoutesQuery(queryRegionId, { saved: true }, user?.id);
 
   const { toggleFavorite } = useOptimisticFavoriteRoute();
 
@@ -86,13 +91,17 @@ export default function HomeScreen() {
                 style={styles.regionSelectorPill}
                 onPress={() => setIsRegionModalOpen(true)}
                 {...makeAccessibleButton(
-                  `Região atual: ${activeRegion?.name ?? 'indisponível'}`,
+                  `Região atual: ${regionName}`,
                   'Toque para selecionar outra região'
                 )}
               >
-                <Ionicons name="location-sharp" size={17} color={theme.colors.surfaceWhite} />
+                <Ionicons
+                  name={isAllRegions ? 'globe-outline' : 'location-sharp'}
+                  size={17}
+                  color={theme.colors.surfaceWhite}
+                />
                 <Text style={styles.regionPillText} numberOfLines={1}>
-                  {activeRegion?.name ?? 'Região indisponível'}
+                  {regionName}
                 </Text>
                 <Ionicons name="chevron-down" size={16} color={theme.colors.surfaceWhite} />
               </TouchableOpacity>
@@ -141,13 +150,13 @@ export default function HomeScreen() {
                   onRetry={() => void featuredQuery.refetch()}
                 />
               </View>
-            ) : mergeRoutesWithPreviews(featuredQuery.data?.data ?? []).length ? (
+            ) : mergeRoutesWithPreviews(featuredQuery.data?.data ?? [], { isAltamiraRegion }).length ? (
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.carouselScroll}
               >
-                {mergeRoutesWithPreviews(featuredQuery.data?.data ?? []).map((route) => {
+                {mergeRoutesWithPreviews(featuredQuery.data?.data ?? [], { isAltamiraRegion }).map((route) => {
                   const isPreview = isPreviewRoute(route);
                   const isFav = (route as typeof route & { is_favorite?: boolean }).is_favorite ?? savedRouteIds.has(route.id);
                   return (

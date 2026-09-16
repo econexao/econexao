@@ -2,6 +2,7 @@ import React, { createContext, useReducer, useEffect, ReactNode } from 'react';
 import { appReducer, AppAction, AppState, initialAppState } from './appReducer';
 import { useBootstrapQuery, useMyPreferencesQuery } from '../hooks/queries';
 import { useAuth } from '../hooks/useAuth';
+import { getStoredVisitorRegion } from '../utils/regionStorage';
 
 
 export interface AppContextType {
@@ -29,13 +30,24 @@ function AppStateSync({
   const bootstrap = useBootstrapQuery(userId);
   const prefsQuery = useMyPreferencesQuery(userId);
 
+  // 1. Visitors: sync from local storage on mount / when logged out
+  useEffect(() => {
+    if (!userId) {
+      let isMounted = true;
+      getStoredVisitorRegion().then((stored) => {
+        if (isMounted && stored !== activeRegionId) {
+          dispatch({ type: 'SET_ACTIVE_REGION', payload: stored });
+        }
+      });
+      return () => {
+        isMounted = false;
+      };
+    }
+  }, [userId, activeRegionId, dispatch]);
+
+  // 2. Feature flags from bootstrap
   useEffect(() => {
     if (bootstrap.data) {
-      const serverActiveRegionId = bootstrap.data.active_region?.id || bootstrap.data.supported_regions?.[0]?.id;
-      if (serverActiveRegionId && serverActiveRegionId !== activeRegionId) {
-        dispatch({ type: 'SET_ACTIVE_REGION', payload: serverActiveRegionId });
-      }
-
       if (bootstrap.data.feature_flags) {
         const serverFlags = bootstrap.data.feature_flags;
         const dynamicRouting = Boolean(serverFlags.dynamic_routing);
@@ -61,11 +73,18 @@ function AppStateSync({
         }
       }
     }
-  }, [bootstrap.data, activeRegionId, featureFlags, dispatch]);
+  }, [bootstrap.data, featureFlags, dispatch]);
 
   useEffect(() => {
     if (prefsQuery.data) {
       const prefs = prefsQuery.data;
+      if (
+        'active_region_id' in prefs &&
+        (prefs.active_region_id ?? null) !== activeRegionId
+      ) {
+        dispatch({ type: 'SET_ACTIVE_REGION', payload: prefs.active_region_id ?? null });
+      }
+
       if (
         prefs.screen_reader_mode !== accessibility.screenReaderMode ||
         prefs.high_contrast !== accessibility.highContrast ||
