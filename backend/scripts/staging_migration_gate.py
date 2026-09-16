@@ -283,7 +283,7 @@ def apply_staging_migrations(
         args,
         env_vars=env_vars,
         secrets_to_redact=secrets,
-        timeout_seconds=180.0,
+        timeout_seconds=600.0,  # 10 min — seed migrations with hundreds of rows need more time
     )
     if code != 0:
         return False, f"supabase db push failed (exit {code}):\n{output}"
