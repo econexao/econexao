@@ -224,8 +224,8 @@
       "version": "20260916203000",
       "filename": "20260916203000_altamira_actors_and_route_corridor.sql",
       "path": "supabase/migrations/20260916203000_altamira_actors_and_route_corridor.sql",
-      "bytes": 1394475,
-      "sha256": "466690ff9ea2308cc394ffccd5170ce06b2d8e068f0db70caa92d80efbb1d80a"
+      "bytes": 1454135,
+      "sha256": "daa62160983786ee3c593341209e7f978cd6d29b90d56ad116c33bab9b607666"
     }
   ]
 }

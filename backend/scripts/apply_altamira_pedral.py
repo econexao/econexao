@@ -126,8 +126,7 @@ async def apply(dry_run: bool = False, db_url_override: str | None = None) -> in
                 website,
                 instagram,
                 location,
-                status,
-                is_verified,
+                verification_status,
                 created_at,
                 updated_at
             )
@@ -153,8 +152,7 @@ async def apply(dry_run: bool = False, db_url_override: str | None = None) -> in
                     )::extensions.geography
                     ELSE NULL
                 END,
-                'active',
-                :is_verified,
+                :verification_status,
                 clock_timestamp(),
                 clock_timestamp()
             )
@@ -172,7 +170,7 @@ async def apply(dry_run: bool = False, db_url_override: str | None = None) -> in
                 website = EXCLUDED.website,
                 instagram = EXCLUDED.instagram,
                 location = EXCLUDED.location,
-                is_verified = EXCLUDED.is_verified,
+                verification_status = EXCLUDED.verification_status,
                 updated_at = clock_timestamp()
             """
         )
@@ -204,7 +202,7 @@ async def apply(dry_run: bool = False, db_url_override: str | None = None) -> in
                     "instagram": rec.instagram,
                     "lat": rec.latitude,
                     "lon": rec.longitude,
-                    "is_verified": rec.is_verified,
+                    "verification_status": "verified" if rec.is_verified else "unverified",
                 },
             )
 

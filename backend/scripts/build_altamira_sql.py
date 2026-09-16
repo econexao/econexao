@@ -61,21 +61,22 @@ def generate_sql() -> None:
         actor_sql = f"""INSERT INTO app_private.actors (
     id, slug, name, description, category_id, type_id, region_id, address,
     city, state_code, phone, email, website, instagram, location,
-    status, is_verified, created_at, updated_at
+    verification_status, created_at, updated_at
 ) VALUES (
     '{rec.uuid_id}', {esc(rec.slug)}, {esc(rec.name)}, {esc(rec.description)},
     (SELECT id FROM app_private.actor_categories WHERE slug = '{rec.category_slug}'),
     {type_subquery},
     '{ALTAMIRA_REGION_ID}', {esc(full_addr)}, {esc(rec.city)}, {esc(rec.state_code)},
     {esc(rec.phone)}, {esc(rec.email)}, {esc(rec.website)}, {esc(rec.instagram)},
-    {loc_val}, 'active', {"true" if rec.is_verified else "false"},
+    {loc_val}, '{"verified" if rec.is_verified else "unverified"}',
     clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (slug) DO UPDATE SET
     name = EXCLUDED.name, description = EXCLUDED.description,
     category_id = EXCLUDED.category_id, type_id = EXCLUDED.type_id,
     address = EXCLUDED.address, phone = EXCLUDED.phone, email = EXCLUDED.email,
     website = EXCLUDED.website, instagram = EXCLUDED.instagram,
-    location = EXCLUDED.location, updated_at = clock_timestamp();"""
+    location = EXCLUDED.location, verification_status = EXCLUDED.verification_status,
+    updated_at = clock_timestamp();"""
         lines.append(actor_sql)
 
     lines.append("")
