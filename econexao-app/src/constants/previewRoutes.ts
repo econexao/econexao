@@ -80,6 +80,14 @@ export const isPreviewRoute = (route: { id?: string | null; slug?: string | null
  * #5 Aramanai - Belterra/PA
  */
 export function mergeRoutesWithPreviews(apiRoutes: RouteSummary[] = []): RouteSummary[] {
+  // If the routes are from Altamira / Xingu, return only the API routes without Santarém previews
+  const isAltamira = apiRoutes.some(
+    (r) => r.slug === 'rota-pedral' || r.city?.toLowerCase() === 'altamira'
+  );
+  if (isAltamira) {
+    return apiRoutes;
+  }
+
   const pindobal = apiRoutes.find((r) => isPindobalRoute(r));
   const otherApiRoutes = apiRoutes.filter((r) => !isPindobalRoute(r));
 

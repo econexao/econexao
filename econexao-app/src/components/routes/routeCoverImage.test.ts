@@ -1,9 +1,17 @@
-import { getPindobalCoverImage, getRouteCoverImage, getRouteGalleryImages } from './routeCoverImage';
+import { getPedralCoverImage, getPindobalCoverImage, getRouteCoverImage, getRouteGalleryImages, isPedralRoute } from './routeCoverImage';
 
 describe('getRouteCoverImage', () => {
   it('uses the bundled pindobal1 image for the Pindobal route', () => {
     expect(getRouteCoverImage({ slug: 'rota-pindobal', cover_image_url: 'https://example.test/old.jpg' })).toBeDefined();
     expect(getRouteCoverImage({ id: 'route-pindobal' })).toBeDefined();
+  });
+
+  it('uses the bundled pedral hero image for Rota do Pedral', () => {
+    expect(isPedralRoute({ slug: 'rota-pedral' })).toBe(true);
+    expect(isPedralRoute({ id: 'a17a314a-0000-4000-8000-000000000002' })).toBe(true);
+    expect(getRouteCoverImage({ slug: 'rota-pedral' })).toBeDefined();
+    expect(getPedralCoverImage({ slug: 'rota-pedral' })).toBeDefined();
+    expect(getPedralCoverImage({ slug: 'outra-rota' })).toBeUndefined();
   });
 
   it('provides the bundled image only for Pindobal detail heroes', () => {
@@ -48,5 +56,9 @@ describe('getRouteGalleryImages', () => {
   it('provides the four bundled editorial photos only as Pindobal fallback', () => {
     expect(getRouteGalleryImages({ slug: 'rota-pindobal' })).toHaveLength(4);
     expect(getRouteGalleryImages({ slug: 'outra-rota' })).toHaveLength(0);
+  });
+
+  it('provides the bundled hero image for Rota do Pedral gallery', () => {
+    expect(getRouteGalleryImages({ slug: 'rota-pedral' })).toHaveLength(1);
   });
 });

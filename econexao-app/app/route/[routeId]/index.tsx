@@ -12,7 +12,7 @@ import { OriginSelector, MY_LOCATION_ORIGIN_ID, CHOOSE_ON_MAP_ORIGIN_ID } from '
 import { RouteMapPreview } from '../../../src/components/routes/RouteMapPreview';
 import { RouteGallery } from '../../../src/components/routes/RouteGallery';
 import { GoogleRoutesMapNotice } from '../../../src/components/routes/GoogleRoutesMapNotice';
-import { getPindobalCoverImage } from '../../../src/components/routes/routeCoverImage';
+import { getPindobalCoverImage, getPedralCoverImage, getRouteCoverImage } from '../../../src/components/routes/routeCoverImage';
 import { useRouteAlertsQuery, useRouteDetailQuery } from '../../../src/hooks/queries';
 import { theme, useAppTheme } from '../../../src/theme/theme';
 
@@ -226,7 +226,7 @@ export default function RouteDetailScreen() {
   }
 
   const route = detail.data;
-  const pindobalHeroImage = getPindobalCoverImage(route);
+  const routeHeroImage = getPindobalCoverImage(route) || getPedralCoverImage(route) || getRouteCoverImage(route);
   const isGoogleRoutesPreview = previewData?.provider === 'google_routes';
 
   const customGeometry: RouteGeometry | null = previewData && !isGoogleRoutesPreview
@@ -265,11 +265,11 @@ export default function RouteDetailScreen() {
 
       <ScrollView contentContainerStyle={styles.content}>
         {/* Header Hero Section */}
-        {pindobalHeroImage ? (
+        {routeHeroImage ? (
           <View style={styles.pindobalHeroStack}>
             <View style={[styles.heroSection, styles.heroSectionWithImage]}>
               <Image
-                source={pindobalHeroImage}
+                source={routeHeroImage}
                 style={styles.heroImage}
                 resizeMode="cover"
                 accessible={false}

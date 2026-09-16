@@ -15,6 +15,7 @@ type RouteGallery = RouteCover & {
 };
 
 const pindobalCoverImage = require('../../../assets/images/pindobal1.png');
+const pedralCoverImage = require('../../../assets/images/pedral_route_hero.png');
 const pindobalGalleryImages = [
   require('../../../assets/images/pindobal1.png'),
   require('../../../assets/images/pindobal2.png'),
@@ -30,10 +31,18 @@ export const isPindobalRoute = (route: RouteCover) =>
   route.slug === 'rota-pindobal' ||
   route.slug === 'rota-santarem-pindobal';
 
+export const isPedralRoute = (route: RouteCover) =>
+  route.id === 'a17a314a-0000-4000-8000-000000000002' ||
+  route.id === 'route-pedral' ||
+  route.slug === 'rota-pedral';
+
 /** Keeps editorial covers bundled with the app while other routes use API media. */
 export const getRouteCoverImage = (route: RouteCover): ImageSourcePropType | undefined => {
   if (isPindobalRoute(route)) {
     return pindobalCoverImage;
+  }
+  if (isPedralRoute(route)) {
+    return pedralCoverImage;
   }
   if (
     route.slug === 'rota-alter-do-chao' ||
@@ -61,6 +70,9 @@ export const getRouteCoverImage = (route: RouteCover): ImageSourcePropType | und
 export const getPindobalCoverImage = (route: RouteCover): ImageSourcePropType | undefined =>
   isPindobalRoute(route) ? pindobalCoverImage : undefined;
 
+export const getPedralCoverImage = (route: RouteCover): ImageSourcePropType | undefined =>
+  isPedralRoute(route) ? pedralCoverImage : undefined;
+
 export const getRouteGalleryImages = (route: RouteGallery) => {
   if (route.gallery?.length) {
     return route.gallery.map((media, index) => ({
@@ -76,6 +88,16 @@ export const getRouteGalleryImages = (route: RouteGallery) => {
       source: source as ImageSourcePropType,
       alt: `Foto ${index + 1} da Praia de Pindobal`,
     }));
+  }
+
+  if (isPedralRoute(route)) {
+    return [
+      {
+        key: 'pedral-1',
+        source: pedralCoverImage as ImageSourcePropType,
+        alt: 'Foto do Balneário Luiz do Pedral e Rio Xingu',
+      },
+    ];
   }
 
   return [];
