@@ -19,21 +19,27 @@ export default function RoutesScreen() {
   const { user } = useAuth();
   const regionsQuery = useRegionsQuery();
 
-  const activeRegionId = state.activeRegionId ?? regionsQuery.data?.[0]?.id;
-  const hasNoRegions = regionsQuery.isSuccess && !activeRegionId;
+  const isAllRegions = !state.activeRegionId || state.activeRegionId === 'all';
+  const activeRegion = isAllRegions
+    ? null
+    : regionsQuery.data?.find((r) => r.id === state.activeRegionId);
+  const isAltamiraRegion = activeRegion?.slug === 'altamira-xingu';
+  const hasNoRegions = regionsQuery.isSuccess && (regionsQuery.data?.length ?? 0) === 0;
+
+  const queryRegionId = isAllRegions ? undefined : state.activeRegionId;
 
   const routesQuery = useInfiniteRoutesQuery(
-    activeRegionId,
+    queryRegionId,
     {},
     user?.id
   );
 
-  const savedRoutesQuery = useRoutesQuery(activeRegionId, { saved: true }, user?.id);
+  const savedRoutesQuery = useRoutesQuery(queryRegionId, { saved: true }, user?.id);
   const { toggleFavorite } = useOptimisticFavoriteRoute();
 
   const savedRouteIds = new Set(savedRoutesQuery.data?.data?.map((r) => r.id));
   const allRoutes: RouteSummary[] = flattenUniquePages(routesQuery.data?.pages);
-  const displayRoutes: RouteSummary[] = mergeRoutesWithPreviews(allRoutes);
+  const displayRoutes: RouteSummary[] = mergeRoutesWithPreviews(allRoutes, { isAltamiraRegion });
 
   return (
     <View style={styles.container}>

@@ -71,6 +71,10 @@ export const isPreviewRoute = (route: { id?: string | null; slug?: string | null
   );
 };
 
+export interface MergeRoutesOptions {
+  isAltamiraRegion?: boolean;
+}
+
 /**
  * Merges API routes with preview routes ensuring the canonical #1 to #5 order:
  * #1 Pindobal - Belterra/PA
@@ -78,13 +82,32 @@ export const isPreviewRoute = (route: { id?: string | null; slug?: string | null
  * #3 Ponta de Pedras - Santarém/PA
  * #4 Vila Socorro - Santarém/PA
  * #5 Aramanai - Belterra/PA
+ *
+ * When isAltamiraRegion is true, Santarém previews are isolated and only Altamira routes are returned.
+ * When viewing Santarém or Todas as regiões, Santarém previews are preserved alongside API routes.
  */
-export function mergeRoutesWithPreviews(apiRoutes: RouteSummary[] = []): RouteSummary[] {
-  // If the routes are from Altamira / Xingu, return only the API routes without Santarém previews
-  const isAltamira = apiRoutes.some(
+export function mergeRoutesWithPreviews(
+  apiRoutes: RouteSummary[] = [],
+  options?: MergeRoutesOptions
+): RouteSummary[] {
+  // If explicitly flagged as Altamira region, return only the API routes without Santarém previews
+  if (options?.isAltamiraRegion) {
+    return apiRoutes;
+  }
+
+  // If no option was explicitly passed, check if routes are strictly Altamira without Santarém/Belterra
+  const hasAltamira = apiRoutes.some(
     (r) => r.slug === 'rota-pedral' || r.city?.toLowerCase() === 'altamira'
   );
-  if (isAltamira) {
+  const hasSantarem = apiRoutes.some(
+    (r) =>
+      isPindobalRoute(r) ||
+      r.city?.toLowerCase() === 'santarém' ||
+      r.city?.toLowerCase() === 'santarem' ||
+      r.city?.toLowerCase() === 'belterra'
+  );
+
+  if (hasAltamira && !hasSantarem && apiRoutes.length > 0) {
     return apiRoutes;
   }
 
@@ -99,7 +122,7 @@ export function mergeRoutesWithPreviews(apiRoutes: RouteSummary[] = []): RouteSu
   // #1 Pindobal
   if (pindobal) {
     result.push(pindobal);
-  } else if (apiRoutes.length > 0) {
+  } else if (apiRoutes.length > 0 && !hasAltamira) {
     result.push(apiRoutes[0]);
   }
 
@@ -108,7 +131,7 @@ export function mergeRoutesWithPreviews(apiRoutes: RouteSummary[] = []): RouteSu
     result.push(preview);
   }
 
-  // Any other routes from the API
+  // Any other routes from the API (such as Rota do Pedral when viewing Todas)
   for (const other of otherApiRoutes) {
     if (!result.some((r) => r.id === other.id || r.slug === other.slug)) {
       result.push(other);

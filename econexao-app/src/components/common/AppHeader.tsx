@@ -28,7 +28,11 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const regionButtonRef = React.useRef<React.ElementRef<typeof TouchableOpacity>>(null);
   const regions = useRegionsQuery();
-  const activeRegion = regions.data?.find((region) => region.id === state.activeRegionId);
+  const isAllRegions = !state.activeRegionId || state.activeRegionId === 'all';
+  const activeRegion = isAllRegions
+    ? null
+    : regions.data?.find((region) => region.id === state.activeRegionId);
+  const regionLabel = isAllRegions ? 'Todas as regiões' : (activeRegion?.name ?? 'Selecionar região');
 
   const handleBack = () => {
     if (onBackPress) {
@@ -76,12 +80,12 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
           style={[styles.regionChip, overlayOnImage && styles.regionChipOnImage]}
           onPress={() => setIsModalOpen(true)}
           {...makeAccessibleButton(
-            `Região atual: ${activeRegion?.name ?? 'não selecionada'}`,
+            `Região atual: ${regionLabel}`,
             'Toque para abrir o seletor de região'
           )}
         >
           <Ionicons
-            name="location"
+            name={isAllRegions ? 'globe-outline' : 'location'}
             size={16}
             color={overlayOnImage ? theme.colors.surfaceWhite : theme.colors.brandSage}
           />
@@ -89,7 +93,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             style={[styles.regionText, overlayOnImage && styles.regionTextOnImage]}
             numberOfLines={1}
           >
-            {activeRegion?.name ?? 'Selecionar região'}
+            {regionLabel}
           </Text>
         </TouchableOpacity>
       </View>

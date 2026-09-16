@@ -31,7 +31,9 @@ describe('territorial query options', () => {
     expect(adminQueries.context('user-id').enabled).toBe(true);
     expect(territorialQueries.routeDetail('').enabled).toBe(false);
     expect(territorialQueries.routeGeometry('route', '').enabled).toBe(false);
-    expect(territorialQueries.routes(undefined).enabled).toBe(false);
+    expect(territorialQueries.routes(undefined).enabled).toBe(true);
+    expect(territorialQueries.routes(undefined, { saved: true }).enabled).toBe(false);
+    expect(territorialQueries.routes(undefined, { saved: true }, 'user-id').enabled).toBe(true);
     expect(territorialQueries.routes('region', { saved: true }).enabled).toBe(false);
     expect(territorialQueries.routes('region', { saved: true }, 'user-id').enabled).toBe(true);
     expect(territorialQueries.bootstrap('').enabled).toBe(false);

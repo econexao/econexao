@@ -29,9 +29,9 @@ ROOT_DIR = BACKEND_DIR.parent
 DATA_DIR = ROOT_DIR / "docs" / "data" / "altamira"
 
 
-async def apply(dry_run: bool = False) -> int:
+async def apply(dry_run: bool = False, db_url_override: str | None = None) -> int:
     env_file = BACKEND_DIR / ".env"
-    load_dotenv(env_file, override=True)
+    load_dotenv(env_file, override=False)
     settings = Settings()
 
     csv_path = DATA_DIR / "atores_altamira.csv"
@@ -71,7 +71,7 @@ async def apply(dry_run: bool = False) -> int:
         logger.info("Dry-run complete! Saved summary to %s", out_summary)
         return 0
 
-    db_url = settings.DATABASE_URL.get_secret_value()
+    db_url = db_url_override or settings.DATABASE_URL.get_secret_value()
     engine = create_async_engine(db_url)
 
     with open(geoms_path, encoding="utf-8") as f:
@@ -279,4 +279,9 @@ if __name__ == "__main__":
     if sys.platform == "win32":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     is_dry = "--dry-run" in sys.argv
-    raise SystemExit(asyncio.run(apply(dry_run=is_dry)))
+    db_override = None
+    if "--db-url" in sys.argv:
+        idx = sys.argv.index("--db-url")
+        if idx + 1 < len(sys.argv):
+            db_override = sys.argv[idx + 1]
+    raise SystemExit(asyncio.run(apply(dry_run=is_dry, db_url_override=db_override)))

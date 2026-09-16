@@ -44,17 +44,18 @@ export const territorialQueries = {
       staleTime: 1000 * 60 * 10, // 10 minutes
       gcTime: process.env.NODE_ENV === 'test' ? Infinity : 1000 * 60 * 60, // 1 hour
     }),
-  routes: (regionId: string | undefined, params: ListRoutesQuery = {}, userId?: string) => {
+  routes: (regionId: string | null | undefined, params: ListRoutesQuery = {}, userId?: string) => {
+    const isAll = !regionId || regionId === 'all';
     const request = {
       ...params,
-      region_id: normalizeQueryValue(regionId),
+      region_id: isAll ? undefined : normalizeQueryValue(regionId),
       q: normalizeQueryValue(params.q),
       cursor: normalizeQueryValue(params.cursor),
     };
     return queryOptions({
-      queryKey: queryKeys.routes.list(regionId, request, userId),
+      queryKey: queryKeys.routes.list(isAll ? undefined : regionId, request, userId),
       queryFn: ({ signal }) => (signal ? apiClient.getRoutes(request, { signal }) : apiClient.getRoutes(request)),
-      enabled: Boolean(regionId) && (!params.saved || Boolean(userId)),
+      enabled: !params.saved || Boolean(userId),
       meta: { authenticated: params.saved === true, authUserId: params.saved ? userId : undefined },
       staleTime: 1000 * 60 * 2, // 2 minutes
     });
@@ -126,7 +127,11 @@ export const useAdminContextQuery = (isAuthenticated = true) => {
 };
 
 export const useRegionsQuery = () => useQuery(territorialQueries.regions());
-export const useRoutesQuery = (regionId: string | undefined, params?: ListRoutesQuery, userId?: string) => useQuery(territorialQueries.routes(regionId, params, userId));
+export const useRoutesQuery = (
+  regionId: string | null | undefined,
+  params?: ListRoutesQuery,
+  userId?: string
+) => useQuery(territorialQueries.routes(regionId, params, userId));
 export const useRouteDetailQuery = (routeId: string) => useQuery(territorialQueries.routeDetail(routeId));
 export const useRouteOriginsQuery = (routeId: string) => useQuery(territorialQueries.routeOrigins(routeId));
 export const useRouteGeometryQuery = (routeId: string, originId: string) => useQuery(territorialQueries.routeGeometry(routeId, originId));
@@ -139,26 +144,28 @@ export const useActorDetailQuery = (actorId: string) => useQuery(territorialQuer
 export const useBootstrapQuery = (userId: string) => useQuery(territorialQueries.bootstrap(userId));
 
 export const useInfiniteRoutesQuery = (
-  regionId: string | undefined,
+  regionId: string | null | undefined,
   params: ListRoutesQuery = {},
   userId?: string
-) =>
-  useInfiniteQuery({
-    queryKey: ['routes', 'infinite', regionId, params, userId],
+) => {
+  const isAll = !regionId || regionId === 'all';
+  return useInfiniteQuery({
+    queryKey: ['routes', 'infinite', isAll ? 'all' : regionId, params, userId],
     queryFn: ({ pageParam, signal }) =>
       apiClient.getRoutes(
         {
           ...params,
-          region_id: normalizeQueryValue(regionId),
+          region_id: isAll ? undefined : normalizeQueryValue(regionId),
           cursor: pageParam ? String(pageParam) : undefined,
         },
         { signal }
       ),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.meta.next_cursor ?? undefined,
-    enabled: Boolean(regionId) && (!params.saved || Boolean(userId)),
+    enabled: !params.saved || Boolean(userId),
     meta: { authenticated: params.saved === true, authUserId: params.saved ? userId : undefined },
   });
+};
 
 export const useInfiniteRouteActorsQuery = (
   routeId: string,
