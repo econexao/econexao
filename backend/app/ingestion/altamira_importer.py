@@ -487,6 +487,9 @@ def parse_altamira_actors(
             name = (row.get("nome") or "Sem Nome").strip()
 
             slug_base = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+            slug_base = slug_base.replace("disk-", "disque-")
+            if "sk-" in slug_base:
+                slug_base = slug_base.replace("sk-", "s-k-")
             slug = f"{slug_base}-{raw_id}"
             actor_uuid = uuid.uuid5(ALTAMIRA_NAMESPACE, f"actor:{raw_id}:{slug}")
 
