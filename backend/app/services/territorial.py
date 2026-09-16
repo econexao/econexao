@@ -316,6 +316,10 @@ class TerritorialService:
             # Fallback to first origin if geometry is missing
             selected_origin_id = route.origins[0].id
 
+        route_buffer_m = (
+            3000.0 if route.slug == "rota-pedral" else settings.ROUTE_CORRIDOR_BUFFER_METERS
+        )
+
         corridor_actors_data: list[tuple[Any, str, float | None, float | None, bool, int]] = []
         if geojson_obj is not None and layer in (None, "route_corridor", "both"):
             corridor_actors_data = await self.repo.find_route_corridor_actors(
@@ -324,7 +328,7 @@ class TerritorialService:
                 route_id=route_id,
                 origin_id=selected_origin_id,
                 category_slug=category,
-                buffer_m=settings.ROUTE_CORRIDOR_BUFFER_METERS,
+                buffer_m=route_buffer_m,
                 limit=settings.STATIC_MAP_MAX_PINS,
             )
 
@@ -426,9 +430,7 @@ class TerritorialService:
         # route_bounds strictly derived from geometry or corridor pins
         bounds: dict[str, float] | None = None
         if geojson_obj is not None:
-            bounds = await self.repo.get_buffered_route_bounds(
-                geojson_obj, settings.ROUTE_CORRIDOR_BUFFER_METERS
-            )
+            bounds = await self.repo.get_buffered_route_bounds(geojson_obj, route_buffer_m)
         elif geom and geom.bounds:
             raw_bounds = geom.bounds
             min_lng = raw_bounds.get("min_lng", raw_bounds.get("min_lon"))
