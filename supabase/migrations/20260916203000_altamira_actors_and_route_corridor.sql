@@ -10765,7 +10765,7 @@ INSERT INTO app_private.actors (
     (SELECT id FROM app_private.actor_categories WHERE slug = 'alimentacao'),
     (SELECT id FROM app_private.actor_types WHERE slug = 'restaurante'),
     'a17a314a-0000-4000-8000-000000000001', 'Av. João Pessoa, Centro', 'Altamira', 'PA',
-    '(93) 98435-3732', NULL, 'https://l.instagram.com/?u=https://app.anota.ai/froes-pizzaria?from=msa&utm_source=portal-share-btn&fbclid=PAAaaRF7dRWiQ1fKmo-cIYrbLRhr4xWZb5L7srdFPQSUUO5mwnBBA32l1EPbM_aem_AdIM-hxcRGr2aV504ID6L0Zx74lj5UkeNT8wDPwJW5KsfyuR3EkRMwflAhR2u4AoleI&e=AT3RZRPH3-jBuEa4Ue0LBXP-d0kAfCA0zseP-3MdJ6sjurxwn2_zzX-iwBRXDFSoK0TtanujXW64z3tXXCVY3ZYiWv9DlCOh4ZViCs7nRbrr2msTO96yorA', NULL,
+    '(93) 98435-3732', NULL, 'https://app.anota.ai/froes-pizzaria?from=msa', NULL,
     extensions.ST_SetSRID(extensions.ST_MakePoint(-52.2066983, -3.2066512), 4326)::extensions.geography, 'unverified',
     clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (slug) DO UPDATE SET

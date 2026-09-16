@@ -544,27 +544,50 @@ def parse_altamira_actors(
             )
             is_verified = is_key_stop or (row.get("status_revisao") == "revisado")
 
+            raw_phone = (row.get("telefone") or "").strip() or None
+            clean_phone = raw_phone[:50] if raw_phone else None
+
+            raw_email = (row.get("email") or "").strip() or None
+            clean_email = raw_email[:255] if raw_email else None
+
+            raw_insta = (row.get("instagram") or "").strip() or None
+            clean_insta = raw_insta[:100] if raw_insta else None
+
+            raw_website = (row.get("site") or "").strip() or None
+            clean_website = None
+            if raw_website:
+                if "l.instagram.com/?u=" in raw_website:
+                    import urllib.parse
+                    parsed_wrap = urllib.parse.urlparse(raw_website)
+                    qs = urllib.parse.parse_qs(parsed_wrap.query)
+                    target_u = qs.get("u", [""])[0]
+                    clean_website = target_u or raw_website
+                else:
+                    clean_website = raw_website
+                if clean_website and len(clean_website) > 255:
+                    clean_website = clean_website[:255]
+
             rec = AltamiraActorRecord(
                 raw_id=raw_id,
                 uuid_id=actor_uuid,
                 slug=slug,
-                name=name,
+                name=name[:255],
                 category_slug=cat_slug,
                 type_slug=type_slug,
                 description=(row.get("resumo") or None),
-                city=(row.get("cidade") or "Altamira").strip(),
-                state_code=(row.get("uf") or "PA").strip(),
+                city=(row.get("cidade") or "Altamira").strip()[:100],
+                state_code=(row.get("uf") or "PA").strip()[:2],
                 street=(row.get("rua") or None),
                 number=(row.get("numero") or None),
                 neighborhood=(row.get("bairro") or None),
                 complement=(row.get("complemento") or None),
                 latitude=lat,
                 longitude=lon,
-                phone=(row.get("telefone") or None),
+                phone=clean_phone,
                 whatsapp=(row.get("whatsapp") or None),
-                email=(row.get("email") or None),
-                website=(row.get("site") or None),
-                instagram=(row.get("instagram") or None),
+                email=clean_email,
+                website=clean_website,
+                instagram=clean_insta,
                 opening_hours=(row.get("horario_funcionamento") or None),
                 amenities=(row.get("servicos_atracoes") or None),
                 is_verified=is_verified,
