@@ -1,6 +1,6 @@
 # ECOnexão — documento único de tarefas
 
-Atualizado em: 15/09/2026. Redesigns Stitch de detalhes da rota e histórico de viagens preparados localmente para staging.
+Atualizado em: 17/09/2026. Acrescentado planejamento de motion ECO-2700–ECO-2709; registros anteriores preservados.
 Este é o único cadastro de tasks: concluídas, parciais, novas, adiadas e substituídas.
 Os documentos de iniciativas preservam aceites/evidências históricos, mas não definem
 prioridade ou estado atual. A sequência abaixo orienta a próxima execução; decisões
@@ -170,7 +170,7 @@ autorizada simplesmente por estar nesta lista.
 
 Total: **206 registros**, incluindo histórico substituído; são 203 headings `ECO-*` e 3 registros `RQ-*`; não usar como percentual de progresso.
 
-A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELADA NO ESCOPO: 1 | CONCLUÍDA DOCUMENTAL: 13 | CONCLUÍDA LOCAL: 15 | CONCLUÍDA STAGING LIMITADA: 1 | CONDICIONAL: 1 | DECISÃO PENDENTE: 1 | EM REVISÃO: 4 | PARCIAL: 48 | PENDENTE: 8 | SUBSTITUÍDA: 86
+A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELADA NO ESCOPO: 1 | CONCLUÍDA DOCUMENTAL: 13 | CONCLUÍDA LOCAL: 16 | CONCLUÍDA STAGING LIMITADA: 1 | CONDICIONAL: 1 | DECISÃO PENDENTE: 1 | EM REVISÃO: 4 | PARCIAL: 48 | PENDENTE: 7 | SUBSTITUÍDA: 86
 
 ### Novas tasks para concluir a versão e conteúdo
 
@@ -1865,6 +1865,94 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Conclusão / aceite:** build de produção não contém fallback silencioso para dados fictícios.
 - **Evidência e limite:** Checkbox antigo marcado; não comprova execução.
 - **Referência:** [archive/planning/2026-08-12/backend_integration_tasks.md](archive/planning/2026-08-12/backend_integration_tasks.md). **Commit:** Não vinculado.
+
+## Iniciativa de motion design — solicitada em 17/09/2026
+
+Plano de execução: [motion_design/README.md](motion_design/README.md). Esta iniciativa
+acrescenta motion à experiência existente; não reabre nem substitui as tasks funcionais
+acima. A ordem interna é ECO-2700 → ECO-2709, uma task por sessão, com integração local
+serial e uma publicação final em staging. O planejamento não comprova implementação,
+revisão ou publicação. A execução começa por reconciliar a base atual.
+
+#### ECO-2700 — Baseline, inventário e isolamento
+
+- **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Motion Web staging / NOVA.
+- **Dependências ou sucessoras:** Baseline real de origin/staging; sem dependência de motion anterior.
+- **Conclusão / aceite:** criar uma base verificável para que nenhuma animação mascare regressão existente. Cumprir todos os aceites A numerados na seção desta task do plano.
+- **Evidência e limite:** Executada em 17/09/2026 no worktree isolado `eco-nexao-motion-2700` (branch `codex/eco-2700-motion`). Baseline de SHA `2d62f2724bc3f180e3e98638ad353f9dd94c3e32` preservada. Auditoria de superfícies de motion (pins/card/origem/traçado/galerias/modais), inventário explícito de 10 falhas preexistentes (F1 a F10), novos testes de regressão para 4 origens oficiais do Pedral e segregação corredor/municipal (`pedralAndCorridorRegression.test.ts`), teste E2E de jornada contínua e medição de desempenho baseline (`eco2700-motion-baseline.spec.ts`) com RAF mediana 16.7 ms / p95 16.8 ms e 18 capturas PNG. Typecheck, OpenAPI check, Jest (51 suítes/330 testes) e Playwright (34 testes desktop/mobile) passaram com exit code 0. Nenhuma publicação remota realizada.
+- **Referência:** [Evidência ECO-2700](motion_design/evidence/ECO-2700.md), [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2700.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Local na branch `codex/eco-2700-motion`.
+
+#### ECO-2701 — Fundação e movimento reduzido
+
+- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
+- **Dependências ou sucessoras:** ECO-2700 revisada; demais gates específicos no plano.
+- **Conclusão / aceite:** todos os efeitos futuros compartilham tokens, preferência e cancelamento, demonstrados em um botão e um bloco real. Cumprir todos os aceites A numerados na seção desta task do plano.
+- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
+- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2701.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
+
+#### ECO-2702 — Pins, seleção e card no mapa
+
+- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
+- **Dependências ou sucessoras:** ECO-2701 revisada; demais gates específicos no plano.
+- **Conclusão / aceite:** entrada e seleção de pins perceptíveis e breves, mantendo o ponto geográfico e o fluxo atual de card selecionado. Cumprir todos os aceites A numerados na seção desta task do plano.
+- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
+- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2702.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
+
+#### ECO-2703 — Traçados e câmera
+
+- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
+- **Dependências ou sucessoras:** ECO-2702 revisada; demais gates específicos no plano.
+- **Conclusão / aceite:** traçado ganha realce breve de apresentação sem esconder caminho nem alterar geometria; câmera respeita intenção e movimento reduzido. Cumprir todos os aceites A numerados na seção desta task do plano.
+- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
+- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2703.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
+
+#### ECO-2704 — Galerias e carrosséis
+
+- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
+- **Dependências ou sucessoras:** ECO-2703 revisada; demais gates específicos no plano.
+- **Conclusão / aceite:** navegar por fotos e cards com continuidade, controle explícito e sem alteração de créditos/alt text. Cumprir todos os aceites A numerados na seção desta task do plano.
+- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
+- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2704.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
+
+#### ECO-2705 — Entradas, filtros e navegação
+
+- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
+- **Dependências ou sucessoras:** ECO-2704 revisada; demais gates específicos no plano.
+- **Conclusão / aceite:** conteúdo aparece com hierarquia leve, preservando prontidão, foco e contexto de leitura. Cumprir todos os aceites A numerados na seção desta task do plano.
+- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
+- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2705.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
+
+#### ECO-2706 — Modais, painéis e microinterações
+
+- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
+- **Dependências ou sucessoras:** ECO-2705 revisada; demais gates específicos no plano.
+- **Conclusão / aceite:** todos os overlays existentes abrem/fecham consistentemente e ações têm resposta visual sem mentir sobre estado remoto. Cumprir todos os aceites A numerados na seção desta task do plano.
+- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
+- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2706.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
+
+#### ECO-2707 — Qualificação integrada
+
+- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
+- **Dependências ou sucessoras:** ECO-2706 revisada; demais gates específicos no plano.
+- **Conclusão / aceite:** provar o conjunto completo antes de qualquer push para publicar. Cumprir todos os aceites A numerados na seção desta task do plano.
+- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
+- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2707.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
+
+#### ECO-2708 — Reconciliação e preparação de release
+
+- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
+- **Dependências ou sucessoras:** ECO-2707 revisada; demais gates específicos no plano.
+- **Conclusão / aceite:** entregar um candidato publicável, revisado contra staging atual, com PR e rollback concretos. Cumprir todos os aceites A numerados na seção desta task do plano.
+- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
+- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2708.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
+
+#### ECO-2709 — Publicação e homologação em staging
+
+- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
+- **Dependências ou sucessoras:** ECO-2708 revisada; demais gates específicos no plano.
+- **Conclusão / aceite:** disponibilizar e comprovar o motion no endereço canônico; não encerrar apenas no merge ou preview. Cumprir todos os aceites A numerados na seção desta task do plano.
+- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
+- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2709.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
 
 ## Evidências preservadas e limites desta consolidação
 

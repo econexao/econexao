@@ -81,6 +81,11 @@ e seu commit local autorizado; decisões abertas e gates de execução continuam
 - `repository_health/prompts/`: um prompt Codex autocontido por task, com `/goal`,
   subagentes e verificação independente obrigatória.
 
+## Motion design
+
+- `motion_design/README.md`: pacote de execução ECO-2700–ECO-2709, com plano, protocolo Git/release e prompts por task; destino final app staging.
+- Estados, dependências e evidências permanecem exclusivamente em `project_status.md`.
+
 ## Design e inventário
 
 - `elementos_interativos_telas.txt`: inventário canônico do estado atual.
