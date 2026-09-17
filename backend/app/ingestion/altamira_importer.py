@@ -2,7 +2,7 @@
 
 Parses the 765 Altamira catalog records, maps them to canonical taxonomy (ADR 0010/ADR 0011),
 cleans scraping/formatting artifacts in coordinates, and calculates spatial relationships
-with the Rota do Pedral corridor (3.0 km buffer).
+with the Rota do Pedral corridor (1.0 km buffer).
 """
 
 from __future__ import annotations
@@ -29,7 +29,12 @@ ALTAMIRA_NAMESPACE: Final[uuid.UUID] = uuid.UUID("a17a314a-0000-4000-8000-000000
 ALTAMIRA_REGION_ID: Final[uuid.UUID] = uuid.UUID("a17a314a-0000-4000-8000-000000000001")
 ROTA_PEDRAL_ID: Final[uuid.UUID] = uuid.UUID("a17a314a-0000-4000-8000-000000000002")
 
-PEDRAL_CORRIDOR_BUFFER_METERS: Final[float] = 3000.0
+PEDRAL_CORRIDOR_BUFFER_METERS: Final[float] = 1000.0
+PEDRAL_ORIGIN_CODES: Final[tuple[str, ...]] = (
+    "rodoviaria",
+    "aeroporto",
+    "terminal_fluvial",
+)
 
 CATEGORY_MAPPING: Final[dict[str, set[str]]] = {
     "saude": {
@@ -414,11 +419,24 @@ def min_dist_to_polyline_m(lat: float, lon: float, polyline: list[list[float]]) 
     """Calculate minimum distance in meters from point (lat, lon)
     to a polyline [[lon, lat], ...].
     """
+    if len(polyline) < 2:
+        return haversine_m(lat, lon, polyline[0][1], polyline[0][0]) if polyline else float("inf")
+    lat0 = math.radians(lat)
+    scale_x = 6371000.0 * math.cos(lat0) * math.pi / 180.0
+    scale_y = 6371000.0 * math.pi / 180.0
+    px, py = lon * scale_x, lat * scale_y
     min_dist = float("inf")
-    for pt in polyline:
-        d = haversine_m(lat, lon, pt[1], pt[0])
-        if d < min_dist:
-            min_dist = d
+    for (x1, y1), (x2, y2) in zip(polyline, polyline[1:], strict=False):
+        ax, ay = x1 * scale_x, y1 * scale_y
+        bx, by = x2 * scale_x, y2 * scale_y
+        dx, dy = bx - ax, by - ay
+        denominator = dx * dx + dy * dy
+        t = (
+            max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / denominator))
+            if denominator
+            else 0.0
+        )
+        min_dist = min(min_dist, math.hypot(px - (ax + t * dx), py - (ay + t * dy)))
     return min_dist
 
 
@@ -476,8 +494,9 @@ def parse_altamira_actors(
     if geometries_path and geometries_path.exists():
         with open(geometries_path, encoding="utf-8") as f:
             geoms_data = json.load(f)
-            for orig_code, orig_geom in geoms_data.items():
-                route_polylines[orig_code] = orig_geom["geojson"]["coordinates"]
+            for orig_code in PEDRAL_ORIGIN_CODES:
+                if orig_code in geoms_data:
+                    route_polylines[orig_code] = geoms_data[orig_code]["geojson"]["coordinates"]
 
     with open(csv_path, encoding="utf-8") as f:
         reader = csv.DictReader(f)

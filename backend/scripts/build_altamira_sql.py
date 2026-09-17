@@ -8,6 +8,7 @@ from typing import Any
 
 from app.ingestion.altamira_importer import (
     ALTAMIRA_REGION_ID,
+    PEDRAL_CORRIDOR_BUFFER_METERS,
     ROTA_PEDRAL_ID,
     min_dist_to_polyline_m,
     parse_altamira_actors,
@@ -80,7 +81,12 @@ def generate_sql() -> None:
         lines.append(actor_sql)
 
     lines.append("")
-    lines.append("-- Route Actors for Rota do Pedral (<= 3km buffer)")
+    lines.append("-- Route Actors for Rota do Pedral (<= 1km segment distance)")
+    lines.append(
+        "UPDATE app_private.route_actors SET archived_at = clock_timestamp(), "
+        "updated_at = clock_timestamp() "
+        f"WHERE route_id = '{ROTA_PEDRAL_ID}' AND archived_at IS NULL;"
+    )
     for rec in report.records:
         if (
             not rec.is_pedral_corridor
@@ -92,7 +98,7 @@ def generate_sql() -> None:
         for orig_code, orig_geom in geoms_data.items():
             poly = orig_geom["geojson"]["coordinates"]
             d = min_dist_to_polyline_m(rec.latitude, rec.longitude, poly)
-            flags[orig_code] = d <= 3000.0
+            flags[orig_code] = d <= PEDRAL_CORRIDOR_BUFFER_METERS
         flags_json = json.dumps(flags).replace("'", "''")
         dist_m = int(round(rec.min_distance_to_pedral_m))
 
@@ -105,6 +111,7 @@ def generate_sql() -> None:
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();"""
         lines.append(route_actor_sql)
 

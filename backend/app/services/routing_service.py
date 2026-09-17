@@ -11,6 +11,7 @@ from app.connectors.routing_connector import (
 )
 from app.core.config import settings
 from app.core.taxonomy import get_canonical_category
+from app.ingestion.altamira_importer import ROTA_PEDRAL_ID
 from app.repositories.routing import RoutingRepository
 from app.repositories.territorial import TerritorialRepository
 from app.schemas.envelopes import (
@@ -45,6 +46,8 @@ class RoutingService:
         self.territorial_repo = TerritorialRepository(self.db)
 
     async def _get_route_anchor_coordinate(self, route_id: uuid.UUID) -> Coordinate | None:
+        if route_id == ROTA_PEDRAL_ID:
+            return Coordinate(latitude=-3.255088, longitude=-52.2194072)
         endpoints = await self.routing_repo.list_official_destination_endpoints(route_id)
         if not endpoints:
             return None

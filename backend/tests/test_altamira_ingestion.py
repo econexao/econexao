@@ -11,11 +11,17 @@ from app.core.taxonomy import CANONICAL_CATEGORIES
 from app.ingestion.altamira_importer import (
     PEDRAL_CORRIDOR_BUFFER_METERS,
     _clean_coord,
+    min_dist_to_polyline_m,
     parse_altamira_actors,
     resolve_canonical_category,
 )
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "docs" / "data" / "altamira"
+
+
+def test_min_dist_to_polyline_uses_segments() -> None:
+    # The point lies on the middle of a long segment and is far from vertices.
+    assert min_dist_to_polyline_m(0.0, 0.005, [[0.0, 0.0], [0.01, 0.0]]) < 1.0
 
 
 def test_clean_coord_handles_commas_and_dots():
@@ -57,8 +63,8 @@ def test_parse_altamira_actors_counts_and_metrics():
     assert report.total_parsed == 765
     assert report.with_coordinates == 571
     assert report.missing_coordinates == 194
-    # Corridor count within 3km of the 4 routes
-    assert report.pedral_corridor_actors_count >= 450
+    # Corridor count within 1km of route segments (not vertices).
+    assert report.pedral_corridor_actors_count == 368
     # Citywide essential services count
     assert report.citywide_essential_count >= 110
 
@@ -68,13 +74,13 @@ def test_parse_altamira_actors_counts_and_metrics():
 
 
 def test_pedral_geometries_integrity():
-    """Verify all 4 origins have valid geometries, bounds, and distance/duration."""
+    """Verify the three configured origins have valid geometry metadata."""
     geoms_path = DATA_DIR / "pedral_geometries.json"
     with open(geoms_path, encoding="utf-8") as f:
         geoms = json.load(f)
 
-    expected_origins = {"rodoviaria", "aeroporto", "terminal_fluvial", "centro"}
-    assert set(geoms.keys()) == expected_origins
+    expected_origins = {"rodoviaria", "aeroporto", "terminal_fluvial"}
+    assert expected_origins.issubset(geoms.keys())
 
     for code in expected_origins:
         g = geoms[code]
