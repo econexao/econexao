@@ -238,8 +238,8 @@
       "version": "20260917160415",
       "filename": "20260917160415_pedral_four_origins_coherent_geometries.sql",
       "path": "supabase/migrations/20260917160415_pedral_four_origins_coherent_geometries.sql",
-      "bytes": 31640,
-      "sha256": "0f6365f940347dd5a4088d02f91ff4b29cdf13f8d980c330b42ac1308afe55e6"
+      "bytes": 31396,
+      "sha256": "dab93777a177c9e72c7bb4fa48cc0f8a134ff26f05ada9d9cf464d800bb32a56"
     }
   ]
 }
