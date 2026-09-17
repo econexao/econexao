@@ -1399,7 +1399,7 @@ INSERT INTO app_private.actors (
     (SELECT id FROM app_private.actor_types WHERE slug = 'nao_classificado'),
     'a17a314a-0000-4000-8000-000000000001', NULL, 'Altamira', 'PA',
     NULL, NULL, NULL, 'https://www.instagram.com/balnearioluizdopedral',
-    extensions.ST_SetSRID(extensions.ST_MakePoint(-52.2539949, -3.2105149), 4326)::extensions.geography, 'verified',
+    extensions.ST_SetSRID(extensions.ST_MakePoint(-52.2194072, -3.255088), 4326)::extensions.geography, 'verified',
     clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (slug) DO UPDATE SET
     name = EXCLUDED.name, description = EXCLUDED.description,
@@ -14538,4976 +14538,4209 @@ INSERT INTO app_private.actors (
     location = EXCLUDED.location, verification_status = EXCLUDED.verification_status,
     updated_at = clock_timestamp();
 
--- Route Actors for Rota do Pedral (<= 3km buffer)
+-- Route Actors for Rota do Pedral (<= 1km segment distance)
+UPDATE app_private.route_actors SET archived_at = clock_timestamp(), updated_at = clock_timestamp() WHERE route_id = 'a17a314a-0000-4000-8000-000000000002' AND archived_at IS NULL;
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '86d6ced0-cca2-547d-a936-677abd805bb7', 645, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '86d6ced0-cca2-547d-a936-677abd805bb7', 94, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c7638d41-78d8-572c-91a1-233ce803b1f7', 645, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c7638d41-78d8-572c-91a1-233ce803b1f7', 94, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '20c2a49c-fd8a-52e7-ac71-f656905b009d', 2486, 0,
-    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '20c2a49c-fd8a-52e7-ac71-f656905b009d', 759, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c72bdf0c-3e7e-5781-81cb-8f79f3016274', 578, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c72bdf0c-3e7e-5781-81cb-8f79f3016274', 405, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '559686bd-ae44-5bb3-9a5b-023d09309317', 152, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c328614e-620f-5555-9ac4-c8b9ae62d116', 85, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c328614e-620f-5555-9ac4-c8b9ae62d116', 365, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f746fc7d-9282-5d33-98d3-1bb6aff203c1', 348, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f746fc7d-9282-5d33-98d3-1bb6aff203c1', 1323, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fc0d8eef-8971-5c70-a4de-5159e31c0bf7', 328, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fc0d8eef-8971-5c70-a4de-5159e31c0bf7', 496, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '963f9fef-0b40-5624-b690-ace7bb60d707', 20, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '963f9fef-0b40-5624-b690-ace7bb60d707', 326, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '11c0a04a-296e-5507-a78a-c702967c1635', 544, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '11c0a04a-296e-5507-a78a-c702967c1635', 459, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '535f0499-0ee3-5105-9e7c-d814dfdd9243', 199, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '535f0499-0ee3-5105-9e7c-d814dfdd9243', 236, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fa77362b-4e44-591d-a09d-28ee7bd69bd3', 5, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fa77362b-4e44-591d-a09d-28ee7bd69bd3', 117, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6aee5d99-1c3c-5fda-944b-bdd5f5e692c7', 25, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6aee5d99-1c3c-5fda-944b-bdd5f5e692c7', 745, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1e414149-5716-5260-8d92-b26510151684', 3, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd01e4acb-e25b-5ea8-bd7b-fb34322866cc', 650, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ac972baa-0dbf-590c-9520-db197a474965', 90, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1e414149-5716-5260-8d92-b26510151684', 838, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6534beb4-e6d8-5e10-a134-d7d2fbbe981b', 24, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ac972baa-0dbf-590c-9520-db197a474965', 28, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b393d265-d3aa-5da6-8faa-aa99c2cf0fa7', 36, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6534beb4-e6d8-5e10-a134-d7d2fbbe981b', 750, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7f49f2d3-dda8-58c0-b13e-352c16b6488b', 103, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c27b0e8b-9701-53b7-a926-31f43f678f06', 81, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9bb2bb13-3421-5358-be65-657f5a9c8d41', 473, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b393d265-d3aa-5da6-8faa-aa99c2cf0fa7', 918, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c9cb23d6-9339-5590-aa3a-3f8be459c795', 400, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7f49f2d3-dda8-58c0-b13e-352c16b6488b', 14, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8f7a27da-7011-532e-a784-f5e5e5c26068', 198, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9bb2bb13-3421-5358-be65-657f5a9c8d41', 375, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd4a5b61c-1a70-5c1e-8040-d158ffc8a758', 180, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c9cb23d6-9339-5590-aa3a-3f8be459c795', 556, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '63c290cc-174a-56d1-b256-1f709d5c84ed', 117, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6fab2faf-8052-5188-a33b-2663f2af59f3', 229, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5b114655-2e42-5e3d-9705-3f8afa4bca5b', 199, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8f7a27da-7011-532e-a784-f5e5e5c26068', 933, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'db9ab454-ba86-5e59-9e1b-ffa4e5d9a231', 43, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd4a5b61c-1a70-5c1e-8040-d158ffc8a758', 82, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b58f1e1a-7e8e-505e-94c8-6069bea93303', 151, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '63c290cc-174a-56d1-b256-1f709d5c84ed', 3, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'aa862d9e-d582-52e8-a747-25527ef6205d', 8, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5b114655-2e42-5e3d-9705-3f8afa4bca5b', 236, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f4964163-f712-5dc2-adde-a73a3eeaaf8a', 538, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'db9ab454-ba86-5e59-9e1b-ffa4e5d9a231', 32, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd40b9aaf-8b14-50dc-85f9-1431b19da613', 993, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b58f1e1a-7e8e-505e-94c8-6069bea93303', 768, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9a252b45-d642-593c-8865-886e58da0803', 230, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'aa862d9e-d582-52e8-a747-25527ef6205d', 734, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd7deba0b-84ef-5cd5-8c94-6f155d5da8e9', 346, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f4964163-f712-5dc2-adde-a73a3eeaaf8a', 511, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f3b01c37-f883-5c03-a89a-016e20196cab', 28, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b0e826bc-d8e4-5e36-a2bc-c8b5c2165ba5', 358, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'db516f2f-95b6-585d-8a16-452d9312721b', 102, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6ec1bd3c-b26d-5d89-9d28-dd2e1715d098', 1048, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '526ac408-057e-5753-a7c9-7e666e053fd6', 11, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd9920214-03e3-5e78-ae57-771e404305fe', 351, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '04cb9be5-446e-558c-b692-139d206c9315', 91, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd40b9aaf-8b14-50dc-85f9-1431b19da613', 57, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd8640813-c112-57dd-b2b0-81e05c135bd2', 484, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9a252b45-d642-593c-8865-886e58da0803', 1021, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd7deba0b-84ef-5cd5-8c94-6f155d5da8e9', 1237, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f3b01c37-f883-5c03-a89a-016e20196cab', 386, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'db516f2f-95b6-585d-8a16-452d9312721b', 652, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '526ac408-057e-5753-a7c9-7e666e053fd6', 1039, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bb6409bd-5989-5023-a01d-db4b626950b4', 657, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '04cb9be5-446e-558c-b692-139d206c9315', 187, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd8640813-c112-57dd-b2b0-81e05c135bd2', 22, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
     gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ea2131d1-abd1-5eb3-957b-4e371b54eeaf', 39, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4a411472-647e-59b2-be84-226c1ccf3a38', 637, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6f2e5135-89a7-537a-83a6-306655c4c8b2', 231, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cf2f7e0f-1667-5105-a78a-eb68e1f75c33', 590, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f3c4d45b-a348-547f-a7aa-5aaf85cc65a5', 335, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '327592ac-8b96-5588-857a-f9ecf31dfdc0', 870, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2281b1dc-1b29-54bc-8af0-701ad05a3969', 437, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '755b4b6a-f749-50a1-a336-19b820e0d993', 82, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd7dd969d-e71e-547e-b7c6-a4ae27a5cb17', 516, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2caf479a-ff77-542e-91e3-cc535116f073', 30, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '72e88a3d-a74e-519a-a798-f81a52558b69', 636, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a92fa506-2c80-5942-8a62-b68e2c818402', 108, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0839851d-b477-5e01-a13d-eabd876528d8', 273, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b1d20fd6-d8e9-53fc-b0a9-bf86c4a5f00b', 175, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ac5d9cee-219c-5d2a-b3ae-fb575bb885c7', 664, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f47dc9db-3101-50df-9c17-2f94002910e9', 1861, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2dfad3f3-a12e-568e-be5e-9b80f73c7b32', 603, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '263a48ba-2f8b-51e9-a7c9-28dd08e224e1', 422, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '37a9278b-7545-5e70-80d9-e96bc122d092', 226, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e2c7cad5-99bf-5b53-99aa-15ad66e30114', 1464, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a9de460e-4b41-549d-a998-69f556bbcfb9', 26, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '54f82c77-9c86-5fce-9bc3-a383c70df5d0', 510, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2c8c22e0-a6bd-5cc3-80a9-3ab155113c43', 1318, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2664f825-5979-5180-b65b-c71cb50a1b25', 751, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9dcc23f5-b669-5ff8-b072-7e442461a806', 1188, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '86ba4976-95bc-5611-a9fa-7f23999a061c', 87, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '46d23dc0-ff53-551e-8a34-cd8fdbfdb1ea', 50, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cbb6bde1-1ab4-5133-a2d4-fe87906d78e7', 419, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e2f787e2-e207-5248-9d29-1c4d3e1c45bc', 694, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2f6c20b1-1b8d-5351-893a-96e7bf20cdff', 694, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8530279e-1c0c-5156-a574-d2764f6e40b6', 694, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '65b3bb5c-f07d-5874-92d9-3db47aaf823d', 694, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b7069a62-6aab-5b1b-9a88-dd775cc2bf8c', 2626, 0,
-    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '58b3f519-dec4-5c9f-850f-3bd74c73e489', 1978, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5e23e17e-9e27-5ed7-b8d7-7fcd44e470cb', 131, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3e4f672b-0ab0-5678-be91-f6e6d25e3d11', 178, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7b9315d2-8ae6-5722-88c0-f3b718fb23b5', 178, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c57d2f51-4ca6-5369-8e4d-0939b37f17c6', 1047, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e5fee495-4204-5bf8-b346-2420ac8d4310', 1909, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '26c3997f-c91d-59d9-af57-17dca877e707', 867, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '89089018-538d-54c4-9a80-411124df5152', 330, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8a22050f-5ec5-5efe-9fa1-ad4f8ef58605', 12, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '815b5843-3bcb-51c1-9632-38b28bfe8622', 258, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '47a24d7c-f624-5bcc-85fa-9ac53f602567', 668, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '514a3c3e-82cf-55eb-9b46-b5e32f09c06c', 582, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '050b0eae-fd3c-5da5-bc6c-e34b732d5ee1', 1168, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '633bbd68-cc9d-5822-9eca-666fa6ca9720', 673, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '894c9676-13d3-5784-87fd-46b5ad91ec87', 13, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a19731db-a252-5e3b-ac9b-df8867f7bde6', 773, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd54e60c8-e6dc-5492-bf11-533fa3e43c18', 98, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5af90848-35f6-5331-806e-c3b20c020ee8', 2078, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fdf417a1-4f97-52c3-bce0-9eed2c6eb017', 1686, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '08247e56-a644-566e-b081-7d31ad42b2be', 1376, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8224971a-e11d-5e8b-b01e-fd9313ef38f2', 852, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3971aa1f-c73f-578f-bbf1-3bdce93dbf4c', 1424, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1233def4-7f14-57dc-aa2f-5d12e59d56d3', 1439, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '05f7f1d1-b6a5-5aea-a614-ce3c2224ef27', 1287, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c8890f78-8451-5e8b-817c-c0990621bfbc', 1942, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '00f0bfad-2e27-54a0-b392-6564e426680b', 1040, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6589429f-f4f5-5ccf-af6c-b7a8766efbb8', 725, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9bfc60d9-2524-57c1-b408-cc64e195a64e', 1847, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '60f24f23-e24d-5faf-ad1f-63fe674955b8', 1580, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '57d93d8a-dd8b-5d83-9581-b82f4065aff2', 1216, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ff066350-0ba0-5356-b7cd-b79250a9a546', 524, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9e53dd33-ca47-5f45-86c2-d41e69d00d76', 656, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'dd6ab792-6479-5543-bb79-0073b13a120e', 1489, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fe6c9f69-c6a8-5ded-ae2a-2e6009b0f0fb', 110, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6a3ba54d-087c-5456-b6bd-f63da9ed9ed3', 2048, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c04ec051-be12-595f-b4ad-703571b781f6', 1154, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b51da759-a0d5-51f0-a906-711c3b226f51', 184, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '443ef90e-962f-5d3e-b2ba-69ac651d36b0', 467, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '690a84e3-c3a2-55f5-93b7-d43d5b57b8fa', 586, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1d9bc66f-f269-5366-b537-1dc80b1496d2', 2905, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'efe9c2d4-16c8-5eb8-b077-8e809643448d', 1338, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4e498196-16de-5f0f-b440-bab0c1646412', 1268, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ad539739-615f-50eb-b180-c57ecec1e69d', 1646, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '71a373f0-745e-5012-8b32-6abbd047b08d', 2451, 0,
-    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6a1c1683-e988-51ad-bc04-9f5f9fb38421', 217, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '55623199-9e56-58fb-826f-2110a26d7510', 842, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a52db139-7700-56ef-8a68-d4f15c50e549', 2627, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c6f3becd-4a8e-538e-861a-63f198573f8f', 1683, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd1466131-2f40-5135-affe-33e56a5cf768', 1003, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9c5c2568-186d-5c18-9904-4cb9e30106a8', 5, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1c2cad8c-f6fa-588c-b08c-4244ed5f6365', 2568, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8b33d523-9e4a-5f32-afdb-63fb7dce7fd7', 932, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7fe5ef73-30e8-5672-8367-df1070dd4d21', 2711, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e0aafab8-238f-5a85-a617-022ed8724d6e', 2680, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '29f17ead-0c62-5099-a3b3-5796ea19bd38', 2776, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd9c3d536-b5ce-558d-bf51-9bfdd40e037f', 563, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ea9fd5de-5fba-5992-9c1e-01ce052208ea', 2233, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '269d1304-bc7d-5b97-960a-543e9726e5a4', 524, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2d8389b0-f0cc-57b2-978e-508aaba4eeef', 326, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f3b710ef-891d-59e5-8883-ba636e742f92', 1094, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '03c4512d-23aa-5b8b-9cf7-450a3f70aabd', 655, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '853aae6f-0b34-5980-a355-0649c64a653a', 642, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'acd80371-dbd4-54db-8469-9c23b708e122', 640, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8a20815f-b8b5-5173-9912-412368a371db', 1146, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '89818578-0e5d-56f4-a847-c2028ef3d757', 1750, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3c43f0e7-01e3-5fe8-a212-acf1b2c47179', 1417, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '538f1216-d3d0-5a46-a44d-f9d8faeaea8e', 520, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2c2a64d6-cd75-5b63-bf4b-2e35a21a3f35', 508, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8d30254e-7cd8-5fef-a472-e292a70c7f17', 378, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a33cadae-339e-563c-8010-22032bec22bb', 1960, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '36497755-f376-5e4a-b73f-d7166060a701', 1785, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ca9052a2-3de1-5f68-a9f1-310da3107674', 21, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '51e0221d-3eaa-58f2-b1f7-c122517c3f4b', 217, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fb8f3e8e-4e17-56d5-a670-797eda992655', 530, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7675abd9-b146-5679-9f04-8c3d58e566bf', 2781, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '138d2269-fc75-5c13-892d-55c4f0c59f52', 976, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '660a649a-1832-5ce0-9de1-7dacc5ea68dc', 164, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ea099465-c29c-5ec9-8dd6-fd7228f71bca', 178, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'dd832187-53fe-52d1-a77d-1e201d6f7021', 162, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd7f7c36b-2f40-5e9b-980f-046bd55b5862', 2670, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '41f0de19-b6d5-5955-84c9-2ad1d3ea6c5c', 2619, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e7c2e627-f06c-5c10-badb-26fc8d730f27', 1727, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '60bc82e2-ee87-5d14-898f-6d4adffe07df', 11, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8923fdd5-2a76-5392-8574-13d4e331d393', 754, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bd50c38e-8513-5059-a9f1-ad9412b1ee12', 59, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bb252e9f-2cdd-5162-b4fc-9d55ac301a3f', 838, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'da870e6f-f999-5b63-9aff-97800eb7bea6', 689, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c5a911e8-85d8-55b4-bb3b-381a1378b3ca', 280, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '82bd1377-d6de-5671-8290-372b91d08f0b', 330, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5ce55d18-e3da-59c5-95d3-d9702bc5a811', 671, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8c439a42-65c1-5df8-ba82-8e41c610319f', 735, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '083d6dca-4b6e-5854-95eb-2d327c10271c', 796, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '73cccc35-341c-54a2-935a-d48a2e636ceb', 623, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4983d44d-f667-5cbf-999a-ca8b71213c57', 729, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7a3e4431-e9e8-5032-a058-497ed97d7160', 602, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bd6c70d5-c7b7-5031-9113-a78a1b3f7f24', 105, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'eb727dbb-e502-53b1-b3f0-d3893f2c4bd1', 8, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fdfaa8cd-f477-5834-a641-061899a9c299', 8, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '74f56e90-35dd-5b20-87e2-55b888985d76', 689, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '064d65d4-c3ca-5022-a26c-e088fd44cf46', 355, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6680b162-a82b-5acc-bee8-ee2c4e1e8904', 361, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '82686890-27e6-5896-b0ef-1c0c21068cc6', 152, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4b401e21-b196-5ac2-8807-13f4dafe1a8b', 20, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '27c35dd4-bf75-52d2-b56f-54c78ddc1bd1', 28, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8b0ce9ea-747a-5c60-90ad-d843b6c06a76', 2, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '67b469fd-baf4-569b-b218-b02a19a2dfd6', 239, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6e41bb77-8ef9-53c4-9f90-2de2ee998a83', 624, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8ab91287-c48f-5edc-a442-05b93b31f86f', 723, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '27e569b2-3aa4-56b2-bd60-7dc734923a10', 6, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c4876c3b-cedc-5935-bc5d-4c8c0ca40669', 1086, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b654a761-028f-50cb-9ebe-26e40625c9e9', 764, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6b70592f-c5fe-5e6b-8c13-5ee290bb425a', 669, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e037be28-ecaf-5f46-b4aa-d10975edfb5d', 678, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'dc64b14a-b874-5d7f-871f-db6bd45939bd', 762, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7a82d9f1-4e5a-53bd-b298-11f0ddb16de5', 2942, 0,
-    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd780d9d3-b3cc-53be-8899-c70882df47d1', 1795, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b49f120d-ea1b-5ce9-9c4a-70854105a341', 105, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3acdc4a0-bb3b-5150-ae07-b7270795af44', 351, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bb81f2d9-e777-53db-aa1c-94f44be327f4', 382, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '77ab0bc1-5d86-5b6e-9328-8943207208bf', 1000, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'dffa49f4-6e2a-58a3-9d19-3341027a1bc2', 1341, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e5817813-82ad-5a76-8e33-1ed6d278d761', 439, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6d28706b-fc12-5b07-a35f-7c7c9dc3d055', 397, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9133c1bb-0cfa-5c41-8963-1874fe6c9e9b', 250, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b5c6d894-f9f4-565f-a5a5-48b42023e801', 837, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1e737dfa-99b1-5fe1-8726-d9d679315638', 529, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a4a80091-87f9-5059-90bc-b3b17f80495c', 714, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fbd220ba-c22d-5073-a90d-45e38f50b879', 1940, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '66121519-4bc4-5054-a703-12df9ef7def6', 738, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '694a84c2-35b1-5352-8a5f-e135f7701572', 730, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '48393aa5-9e0a-514f-9693-4ec71a8c4afa', 417, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '80a2d2ec-3630-5bb0-92cb-5524d292a370', 677, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c5415f83-0bd4-516c-ad55-66d3a76a4121', 698, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '42455cfd-b50e-5433-9c4a-29263627174a', 788, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cab8a2ad-c5a6-5ada-901d-2aba5de70a3e', 744, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0ac498d5-24cc-5070-b853-c82ae059beef', 608, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'beba92b9-3e57-5b3c-93b4-ba74ff9b3823', 840, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0a35328f-2495-5815-a9b5-9cb52ef52332', 595, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6f8f538a-edeb-5cff-b4fc-2685f1a47c6c', 971, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '632d101f-cd25-5312-8f7b-ae09e672edc7', 733, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c185b7c3-30df-5795-adb3-859596e1fb24', 575, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8c844574-46ab-5cf5-8d0f-ffaa92182a23', 482, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '42370511-b835-5896-a594-eed53c9c4807', 884, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '08618bf6-59ce-5419-9f10-8fb5c780bd04', 605, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b83fb270-247b-59d4-8fa8-59568316498a', 524, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '767c8d41-73ab-54b3-8fe4-471373356b4c', 15, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '198bd227-45e2-5546-af39-fdf3dbcaf4f1', 672, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c639025b-5b95-5ec5-8cad-d2139ac74244', 416, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'accda810-8f65-5b46-ad98-0bc882e77d15', 737, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5bf4dbf1-f4bd-50ec-b849-4bffe24b04c4', 777, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '80b29b97-4fd5-59e5-8912-394c8808e832', 712, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6c7a7864-b9e3-5537-bac5-5ef5bfaa8f37', 43, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f7f7b236-ced4-5e66-b489-ff1e634ecbcf', 665, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6fdd9fd6-614e-51d6-8857-a7777c6f2a9f', 674, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd5f26e9c-66f0-5b58-a838-ee560befdb05', 110, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'aefb681b-bb77-5305-8f5d-c29fd98a9a1d', 814, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4adc6783-2768-5e41-9030-147f2cbdf56c', 666, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6b40c2ff-0ea9-5e51-9497-d93ceb75d7ad', 666, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1c45cbe0-7162-5ae6-81bb-9ff3c74206fb', 1280, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f41f69cc-abec-5fe1-b039-2ad3c1ae1672', 554, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '318e3c97-5e44-57ce-8837-d0d0f308ea2f', 1313, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a20d7053-90b8-5ee1-97b1-3bddd12450a8', 112, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '321dc09a-bf1f-5e60-913c-28c342aec7e6', 1392, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cbf27580-02d8-5216-b801-99cccab96fc4', 496, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '02e35f34-f12d-57db-9787-6298440a3b85', 576, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '25340da8-f798-5069-bb8e-89d2e3c7885b', 302, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '478def89-4b4a-5f75-acfa-ff7f9bd5eeca', 58, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '679f456e-2b59-55c9-abaf-18c15333220d', 64, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c9490fde-d904-5a02-a8bb-c7055ed42200', 334, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2aeb8062-f1d7-558e-9bc1-bd382af65e70', 5, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '03a7f45a-4909-5cde-aaa6-797b7524f03f', 448, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7659c64b-5e8b-5ae0-af4c-134298dc9182', 359, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ad34e915-da28-5f63-bb8c-9536bbc97a50', 104, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8a0f7cc0-a134-58b5-9a83-1bd6aee76e2f', 1564, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '34154a70-0f6a-59dd-a1f7-f79663e5b527', 486, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'da8d4afe-60be-52a3-a15b-bf1c57b9b574', 437, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bee4fbaf-e490-5ce9-8003-7b1009f63d95', 755, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c614ab1c-5ad6-5418-a083-50c6fd68d1be', 90, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '13f1918b-1ca3-5a8f-9ea4-3ef45745b62b', 733, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c8090541-c9af-5ab2-aa7b-2a5051967e79', 797, 0,
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4a411472-647e-59b2-be84-226c1ccf3a38', 0, 0,
     '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b0b1e77f-1b4f-5743-82de-506cdaeba92a', 2028, 0,
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6f2e5135-89a7-537a-83a6-306655c4c8b2', 13, 0,
     '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0695c1fb-37c8-582b-a92d-f226c7e95b03', 649, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '65657826-244a-5690-8070-97a7371c85fe', 1099, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '37dfc3f1-44f2-5d2e-b028-f8b488ed2b4f', 733, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3e7ef6b1-754e-5d3d-95fe-d0560d36d939', 764, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6c1ceb5c-1382-5ef8-bfa1-1b183c4dd368', 286, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e115f96c-1e6c-53d7-9be4-c66ccaaeeb2e', 1460, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ba0a0dca-638a-53c6-88bc-cc955604b42b', 736, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ab828c48-2717-5725-8576-c5742cdfb5bf', 537, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fd40e14b-2a39-51c1-a94b-8b3809b7e6c4', 2175, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ec91186b-1e4e-5f87-8627-edf9017bfc45', 954, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2e56b2af-5a7a-5a97-83f7-d2c4c6007f56', 566, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '820c5e2e-6ee3-54a2-8470-bbabc35ae3ef', 514, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ab16a831-7958-5987-93cd-1e30cd4cdece', 982, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c8c56e8d-d84d-5542-abf1-5aa84ecf54f6', 608, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '54a679ef-f3f1-5ffc-a7d8-fc8a32a9e8b2', 1124, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6769acfe-bb88-5bef-be97-24b1ff1bef20', 634, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd925d4bf-b2d1-508f-aa68-a8f105039c42', 346, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e2c0f4c6-6f59-552a-ba5d-c96d8df38ff7', 78, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4f250b0e-5a65-5929-9b53-a8cf2385fd72', 90, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9a0315d1-8f4c-5fc3-bfc8-aef5f396edf5', 208, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4e3bea21-1e09-586f-b294-7dfad78120d5', 1854, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ba54c76a-88f3-57ac-92fb-90b9bea35aa4', 351, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a7cb9451-1aa5-5704-b228-430bd092673d', 753, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '850da215-b3e4-51f5-83ed-a06ab746f82c', 25, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4d919bf3-0bbd-512d-a66b-dbee94d1254f', 315, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '93a21134-1355-5c75-8cab-1e98a78d8ef7', 747, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8430f9ca-4ae8-5bb2-aa97-9fac75bdaa23', 754, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0beb8d9c-f48a-5054-adc8-a9db4974e99d', 165, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '61576745-d965-5173-949b-f9f9001fa843', 538, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd7eddef5-c53a-52cf-8b2a-b12d1304f2ec', 53, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd381ec2b-5d27-53bb-9282-261b3a96e822', 146, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f8675966-0730-5bb6-aa08-e6cb3e453996', 637, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '360423d5-911c-56ea-b532-a98255dacfdc', 582, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '59a3bc9b-0b3a-5c69-bdb5-da92b676f4af', 372, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '176a28d0-3db3-5994-b272-ee7888675f07', 332, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4a1b2dae-5823-5cfc-b801-c8f4e87c7cd9', 54, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '11c642ea-5129-59f4-ab2a-75cac08ea21c', 454, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '616d4d05-8fed-5624-a609-a8d856a01398', 641, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f201f840-fc65-5654-8458-7d60ef89bd17', 497, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4132f51e-b5a1-5b25-b721-38312ddd8722', 709, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '10274a5b-3da6-5798-a4fc-a212cf809d39', 239, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'af08c24b-7d3e-5fc7-a7d1-9bb44f87c408', 1955, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '67e86fa2-8aed-52a5-bf1f-235ce04ecc40', 1888, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8f90b9f8-cee7-59b7-8bda-4cae77db2161', 170, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ba68881c-1988-5345-8f30-d5c2b1a55e4f', 236, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1245873b-73a2-5c0a-83de-066eba464df2', 533, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '42f4d15d-90b9-582a-a87b-6d3f46a44c4d', 624, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e5af0ed3-632b-52ba-a5af-8fe54a6da92f', 983, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a735f9bf-5249-526e-9fa0-a081d0ae69d1', 280, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4eb43973-550b-5af2-8898-a4249d7ec7a3', 248, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '62479ab0-6120-5eb4-9301-a534cf35e371', 641, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fbd9a116-0e85-5eef-960f-4320be4a981c', 806, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '06cae865-405b-5dd4-9f3b-5d17c2c48e7b', 388, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '11acace3-7459-5596-90d2-1cd12e2ab02c', 675, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c5dc59e1-a6a1-5265-bb40-b8fd22371227', 825, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c442066c-1dc2-5a39-9f77-1f30d749b75e', 583, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b682df7a-c1c3-5041-9111-743b813290f8', 2028, 0,
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cf2f7e0f-1667-5105-a78a-eb68e1f75c33', 368, 0,
     '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ab2f4c7c-940c-5273-974e-bbab168e5cdc', 1647, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f3c4d45b-a348-547f-a7aa-5aaf85cc65a5', 155, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd2d857e2-ce1a-5314-96ac-fc11118640d5', 813, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '327592ac-8b96-5588-857a-f9ecf31dfdc0', 72, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '96a384c6-d730-5857-95ff-66d7d85fd1e8', 133, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2281b1dc-1b29-54bc-8af0-701ad05a3969', 119, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'de2e5322-21f1-5e58-91c9-0dcaa8097d20', 314, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2caf479a-ff77-542e-91e3-cc535116f073', 961, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '35c2f38c-c338-50fc-8934-cb6470f15633', 114, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '72e88a3d-a74e-519a-a798-f81a52558b69', 353, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a92fa506-2c80-5942-8a62-b68e2c818402', 199, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0839851d-b477-5e01-a13d-eabd876528d8', 243, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b1d20fd6-d8e9-53fc-b0a9-bf86c4a5f00b', 11, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ac5d9cee-219c-5d2a-b3ae-fb575bb885c7', 275, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2dfad3f3-a12e-568e-be5e-9b80f73c7b32', 329, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '263a48ba-2f8b-51e9-a7c9-28dd08e224e1', 126, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e2c7cad5-99bf-5b53-99aa-15ad66e30114', 486, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a9de460e-4b41-549d-a998-69f556bbcfb9', 102, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '54f82c77-9c86-5fce-9bc3-a383c70df5d0', 12, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2c8c22e0-a6bd-5cc3-80a9-3ab155113c43', 355, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2664f825-5979-5180-b65b-c71cb50a1b25', 26, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9dcc23f5-b669-5ff8-b072-7e442461a806', 810, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '86ba4976-95bc-5611-a9fa-7f23999a061c', 203, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '46d23dc0-ff53-551e-8a34-cd8fdbfdb1ea', 106, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cbb6bde1-1ab4-5133-a2d4-fe87906d78e7', 845, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e2f787e2-e207-5248-9d29-1c4d3e1c45bc', 423, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2f6c20b1-1b8d-5351-893a-96e7bf20cdff', 423, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8530279e-1c0c-5156-a574-d2764f6e40b6', 423, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '65b3bb5c-f07d-5874-92d9-3db47aaf823d', 423, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b7069a62-6aab-5b1b-9a88-dd775cc2bf8c', 28, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5e23e17e-9e27-5ed7-b8d7-7fcd44e470cb', 242, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3e4f672b-0ab0-5678-be91-f6e6d25e3d11', 267, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7b9315d2-8ae6-5722-88c0-f3b718fb23b5', 267, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e5fee495-4204-5bf8-b346-2420ac8d4310', 10, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '89089018-538d-54c4-9a80-411124df5152', 297, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8a22050f-5ec5-5efe-9fa1-ad4f8ef58605', 111, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '815b5843-3bcb-51c1-9632-38b28bfe8622', 21, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '47a24d7c-f624-5bcc-85fa-9ac53f602567', 69, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '514a3c3e-82cf-55eb-9b46-b5e32f09c06c', 288, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '050b0eae-fd3c-5da5-bc6c-e34b732d5ee1', 190, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '633bbd68-cc9d-5822-9eca-666fa6ca9720', 307, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '894c9676-13d3-5784-87fd-46b5ad91ec87', 972, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a19731db-a252-5e3b-ac9b-df8867f7bde6', 169, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd54e60c8-e6dc-5492-bf11-533fa3e43c18', 209, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5af90848-35f6-5331-806e-c3b20c020ee8', 213, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fdf417a1-4f97-52c3-bce0-9eed2c6eb017', 173, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '08247e56-a644-566e-b081-7d31ad42b2be', 545, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8224971a-e11d-5e8b-b01e-fd9313ef38f2', 964, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c8890f78-8451-5e8b-817c-c0990621bfbc', 643, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '00f0bfad-2e27-54a0-b392-6564e426680b', 301, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6589429f-f4f5-5ccf-af6c-b7a8766efbb8', 839, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9bfc60d9-2524-57c1-b408-cc64e195a64e', 109, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '60f24f23-e24d-5faf-ad1f-63fe674955b8', 52, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '57d93d8a-dd8b-5d83-9581-b82f4065aff2', 251, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ff066350-0ba0-5356-b7cd-b79250a9a546', 212, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'dd6ab792-6479-5543-bb79-0073b13a120e', 491, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b51da759-a0d5-51f0-a906-711c3b226f51', 275, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '443ef90e-962f-5d3e-b2ba-69ac651d36b0', 888, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '71a373f0-745e-5012-8b32-6abbd047b08d', 663, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '55623199-9e56-58fb-826f-2110a26d7510', 287, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c6f3becd-4a8e-538e-861a-63f198573f8f', 583, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd1466131-2f40-5135-affe-33e56a5cf768', 193, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd9c3d536-b5ce-558d-bf51-9bfdd40e037f', 144, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '269d1304-bc7d-5b97-960a-543e9726e5a4', 26, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2d8389b0-f0cc-57b2-978e-508aaba4eeef', 328, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f3b710ef-891d-59e5-8883-ba636e742f92', 239, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '853aae6f-0b34-5980-a355-0649c64a653a', 746, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'acd80371-dbd4-54db-8469-9c23b708e122', 742, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8a20815f-b8b5-5173-9912-412368a371db', 341, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '89818578-0e5d-56f4-a847-c2028ef3d757', 225, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a33cadae-339e-563c-8010-22032bec22bb', 327, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '36497755-f376-5e4a-b73f-d7166060a701', 922, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ca9052a2-3de1-5f68-a9f1-310da3107674', 63, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '51e0221d-3eaa-58f2-b1f7-c122517c3f4b', 155, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fb8f3e8e-4e17-56d5-a670-797eda992655', 645, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '660a649a-1832-5ce0-9de1-7dacc5ea68dc', 286, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ea099465-c29c-5ec9-8dd6-fd7228f71bca', 267, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'dd832187-53fe-52d1-a77d-1e201d6f7021', 274, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e7c2e627-f06c-5c10-badb-26fc8d730f27', 270, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8923fdd5-2a76-5392-8574-13d4e331d393', 59, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bd50c38e-8513-5059-a9f1-ad9412b1ee12', 873, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bb252e9f-2cdd-5162-b4fc-9d55ac301a3f', 62, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'da870e6f-f999-5b63-9aff-97800eb7bea6', 1, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5ce55d18-e3da-59c5-95d3-d9702bc5a811', 58, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8c439a42-65c1-5df8-ba82-8e41c610319f', 220, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '73cccc35-341c-54a2-935a-d48a2e636ceb', 15, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4983d44d-f667-5cbf-999a-ca8b71213c57', 103, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7a3e4431-e9e8-5032-a058-497ed97d7160', 203, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bd6c70d5-c7b7-5031-9113-a78a1b3f7f24', 179, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '74f56e90-35dd-5b20-87e2-55b888985d76', 1, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6680b162-a82b-5acc-bee8-ee2c4e1e8904', 480, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '82686890-27e6-5896-b0ef-1c0c21068cc6', 239, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4b401e21-b196-5ac2-8807-13f4dafe1a8b', 98, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '27c35dd4-bf75-52d2-b56f-54c78ddc1bd1', 93, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8b0ce9ea-747a-5c60-90ad-d843b6c06a76', 116, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '67b469fd-baf4-569b-b218-b02a19a2dfd6', 196, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6e41bb77-8ef9-53c4-9f90-2de2ee998a83', 199, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8ab91287-c48f-5edc-a442-05b93b31f86f', 78, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '27e569b2-3aa4-56b2-bd60-7dc734923a10', 945, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c4876c3b-cedc-5935-bc5d-4c8c0ca40669', 10, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b654a761-028f-50cb-9ebe-26e40625c9e9', 140, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6b70592f-c5fe-5e6b-8c13-5ee290bb425a', 21, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e037be28-ecaf-5f46-b4aa-d10975edfb5d', 5, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'dc64b14a-b874-5d7f-871f-db6bd45939bd', 34, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7a82d9f1-4e5a-53bd-b298-11f0ddb16de5', 28, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd780d9d3-b3cc-53be-8899-c70882df47d1', 72, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b49f120d-ea1b-5ce9-9c4a-70854105a341', 81, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3acdc4a0-bb3b-5150-ae07-b7270795af44', 101, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bb81f2d9-e777-53db-aa1c-94f44be327f4', 192, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '77ab0bc1-5d86-5b6e-9328-8943207208bf', 214, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'dffa49f4-6e2a-58a3-9d19-3341027a1bc2', 241, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6d28706b-fc12-5b07-a35f-7c7c9dc3d055', 473, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9133c1bb-0cfa-5c41-8963-1874fe6c9e9b', 13, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b5c6d894-f9f4-565f-a5a5-48b42023e801', 3, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1e737dfa-99b1-5fe1-8726-d9d679315638', 203, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a4a80091-87f9-5059-90bc-b3b17f80495c', 10, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fbd220ba-c22d-5073-a90d-45e38f50b879', 12, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '66121519-4bc4-5054-a703-12df9ef7def6', 145, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '694a84c2-35b1-5352-8a5f-e135f7701572', 106, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '80a2d2ec-3630-5bb0-92cb-5524d292a370', 21, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c5415f83-0bd4-516c-ad55-66d3a76a4121', 11, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '42455cfd-b50e-5433-9c4a-29263627174a', 46, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cab8a2ad-c5a6-5ada-901d-2aba5de70a3e', 194, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0ac498d5-24cc-5070-b853-c82ae059beef', 371, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'beba92b9-3e57-5b3c-93b4-ba74ff9b3823', 62, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0a35328f-2495-5815-a9b5-9cb52ef52332', 320, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '632d101f-cd25-5312-8f7b-ae09e672edc7', 131, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c185b7c3-30df-5795-adb3-859596e1fb24', 9, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8c844574-46ab-5cf5-8d0f-ffaa92182a23', 17, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '42370511-b835-5896-a594-eed53c9c4807', 150, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '08618bf6-59ce-5419-9f10-8fb5c780bd04', 351, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b83fb270-247b-59d4-8fa8-59568316498a', 18, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '198bd227-45e2-5546-af39-fdf3dbcaf4f1', 219, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c639025b-5b95-5ec5-8cad-d2139ac74244', 8, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'accda810-8f65-5b46-ad98-0bc882e77d15', 151, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5bf4dbf1-f4bd-50ec-b849-4bffe24b04c4', 165, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '80b29b97-4fd5-59e5-8912-394c8808e832', 23, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f7f7b236-ced4-5e66-b489-ff1e634ecbcf', 93, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6fdd9fd6-614e-51d6-8857-a7777c6f2a9f', 282, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd5f26e9c-66f0-5b58-a838-ee560befdb05', 151, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'aefb681b-bb77-5305-8f5d-c29fd98a9a1d', 927, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1c45cbe0-7162-5ae6-81bb-9ff3c74206fb', 72, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f41f69cc-abec-5fe1-b039-2ad3c1ae1672', 17, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '318e3c97-5e44-57ce-8837-d0d0f308ea2f', 159, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a20d7053-90b8-5ee1-97b1-3bddd12450a8', 31, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '321dc09a-bf1f-5e60-913c-28c342aec7e6', 553, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cbf27580-02d8-5216-b801-99cccab96fc4', 102, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '02e35f34-f12d-57db-9787-6298440a3b85', 52, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '679f456e-2b59-55c9-abaf-18c15333220d', 869, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c9490fde-d904-5a02-a8bb-c7055ed42200', 450, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2aeb8062-f1d7-558e-9bc1-bd382af65e70', 60, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '03a7f45a-4909-5cde-aaa6-797b7524f03f', 45, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7659c64b-5e8b-5ae0-af4c-134298dc9182', 276, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ad34e915-da28-5f63-bb8c-9536bbc97a50', 181, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8a0f7cc0-a134-58b5-9a83-1bd6aee76e2f', 291, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '34154a70-0f6a-59dd-a1f7-f79663e5b527', 30, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'da8d4afe-60be-52a3-a15b-bf1c57b9b574', 120, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bee4fbaf-e490-5ce9-8003-7b1009f63d95', 29, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c614ab1c-5ad6-5418-a083-50c6fd68d1be', 194, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '13f1918b-1ca3-5a8f-9ea4-3ef45745b62b', 97, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c8090541-c9af-5ab2-aa7b-2a5051967e79', 71, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b0b1e77f-1b4f-5743-82de-506cdaeba92a', 499, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '65657826-244a-5690-8070-97a7371c85fe', 344, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '37dfc3f1-44f2-5d2e-b028-f8b488ed2b4f', 203, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3e7ef6b1-754e-5d3d-95fe-d0560d36d939', 140, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ab828c48-2717-5725-8576-c5742cdfb5bf', 651, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fd40e14b-2a39-51c1-a94b-8b3809b7e6c4', 199, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ec91186b-1e4e-5f87-8627-edf9017bfc45', 53, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2e56b2af-5a7a-5a97-83f7-d2c4c6007f56', 670, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '820c5e2e-6ee3-54a2-8470-bbabc35ae3ef', 617, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c8c56e8d-d84d-5542-abf1-5aa84ecf54f6', 672, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '54a679ef-f3f1-5ffc-a7d8-fc8a32a9e8b2', 337, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6769acfe-bb88-5bef-be97-24b1ff1bef20', 135, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd925d4bf-b2d1-508f-aa68-a8f105039c42', 292, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e2c0f4c6-6f59-552a-ba5d-c96d8df38ff7', 25, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4f250b0e-5a65-5929-9b53-a8cf2385fd72', 194, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9a0315d1-8f4c-5fc3-bfc8-aef5f396edf5', 8, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4e3bea21-1e09-586f-b294-7dfad78120d5', 453, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ba54c76a-88f3-57ac-92fb-90b9bea35aa4', 465, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a7cb9451-1aa5-5704-b228-430bd092673d', 23, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '850da215-b3e4-51f5-83ed-a06ab746f82c', 114, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4d919bf3-0bbd-512d-a66b-dbee94d1254f', 477, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '93a21134-1355-5c75-8cab-1e98a78d8ef7', 198, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8430f9ca-4ae8-5bb2-aa97-9fac75bdaa23', 197, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0beb8d9c-f48a-5054-adc8-a9db4974e99d', 14, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd381ec2b-5d27-53bb-9282-261b3a96e822', 263, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f8675966-0730-5bb6-aa08-e6cb3e453996', 186, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '360423d5-911c-56ea-b532-a98255dacfdc', 45, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '59a3bc9b-0b3a-5c69-bdb5-da92b676f4af', 258, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '176a28d0-3db3-5994-b272-ee7888675f07', 42, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4a1b2dae-5823-5cfc-b801-c8f4e87c7cd9', 38, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '11c642ea-5129-59f4-ab2a-75cac08ea21c', 568, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '616d4d05-8fed-5624-a609-a8d856a01398', 206, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f201f840-fc65-5654-8458-7d60ef89bd17', 498, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1245873b-73a2-5c0a-83de-066eba464df2', 13, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '42f4d15d-90b9-582a-a87b-6d3f46a44c4d', 36, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e5af0ed3-632b-52ba-a5af-8fe54a6da92f', 135, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a735f9bf-5249-526e-9fa0-a081d0ae69d1', 21, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4eb43973-550b-5af2-8898-a4249d7ec7a3', 94, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '62479ab0-6120-5eb4-9301-a534cf35e371', 317, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fbd9a116-0e85-5eef-960f-4320be4a981c', 136, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '06cae865-405b-5dd4-9f3b-5d17c2c48e7b', 30, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '11acace3-7459-5596-90d2-1cd12e2ab02c', 248, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c5dc59e1-a6a1-5265-bb40-b8fd22371227', 6, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c442066c-1dc2-5a39-9f77-1f30d749b75e', 362, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b682df7a-c1c3-5041-9111-743b813290f8', 520, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ab2f4c7c-940c-5273-974e-bbab168e5cdc', 678, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd2d857e2-ce1a-5314-96ac-fc11118640d5', 11, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '96a384c6-d730-5857-95ff-66d7d85fd1e8', 414, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '35c2f38c-c338-50fc-8934-cb6470f15633', 180, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
     gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4c4ae32b-f56d-5b33-befc-b2208010e2bb', 39, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '19c11862-b0ea-5175-9b2f-105780725b13', 381, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cd89acb6-524b-575c-9a23-fc8738059fe2', 1113, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd10cb617-c13b-5f44-9871-ed15939143a5', 276, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd6c83f12-9996-53a3-abcf-834f74658d5d', 729, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'be7eef37-3661-5ffc-8f93-03211ee25036', 46, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '93ac3908-2779-5258-8ff2-4f0c07f55403', 412, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a22b73dd-6aaa-569b-b376-00d6ed326033', 602, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4830ee79-efe1-55a4-9779-2e469192840f', 1984, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c899425b-1226-51b5-a248-976f60e92f96', 2496, 0,
-    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'eff2c9cb-776f-56e0-bdc2-9f783df49c69', 1505, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '428e4c4b-7b69-5d80-ab6d-2400294b3cb7', 194, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9dc910ec-4c99-529e-aa76-1fc22dda6a50', 1255, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '77d0cb27-3e98-539d-9bf0-0edd326b0d70', 468, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ec340a69-c267-5ec6-9d80-0007938a13a0', 48, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'dc4aa464-71c0-596d-aa1e-9d6948ef5a44', 1572, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '66d5edd5-6b4c-5a68-92a9-b07f0bcb37f0', 74, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '54112207-1478-5743-a778-32b3df3efbea', 337, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5bbdf09b-0b2d-5a43-81fd-de67c15ed6f8', 1422, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fee4912b-b972-575b-b0e5-d2a5092f52ad', 2179, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8d839fe5-b8bc-582b-9bc8-2c95c4f53c2a', 1535, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e0c509e4-7227-5448-8074-1b0cf92db538', 602, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b2cfadd6-bd03-5196-adb8-e9acd1920fe7', 398, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a5123893-e3c6-5379-9ca4-0a4ce376620f', 42, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '699ae47a-1473-517c-af4f-2146c16a84bd', 338, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '65f67701-4279-5e19-8374-9e122d5c60f7', 838, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '12dd23b6-f954-5dbf-9713-70c140c22bd6', 1813, 0,
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '19c11862-b0ea-5175-9b2f-105780725b13', 214, 0,
     '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2ffeb542-1757-52bb-826f-b1b43a5afb69', 188, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cd89acb6-524b-575c-9a23-fc8738059fe2', 128, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '42ef50e8-39e0-5f81-b3d9-bbaeaf54a074', 1215, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd6c83f12-9996-53a3-abcf-834f74658d5d', 176, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c791b3b1-a473-55e5-8b3d-8e777b469665', 368, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'be7eef37-3661-5ffc-8f93-03211ee25036', 110, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '97085ce5-a733-57e5-8941-6a3c34bb9d49', 1442, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '93ac3908-2779-5258-8ff2-4f0c07f55403', 24, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '60f2b5ed-ffac-5c2a-b84a-834a4e1adde1', 69, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a22b73dd-6aaa-569b-b376-00d6ed326033', 103, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a3c0ea45-a1d6-581b-8245-3ab909152123', 1001, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4830ee79-efe1-55a4-9779-2e469192840f', 962, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'dbcbc9f7-433d-52c9-a933-c38c727d4d9b', 1498, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c899425b-1226-51b5-a248-976f60e92f96', 647, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '27241a4b-031d-56ba-a406-ab570dba2200', 732, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '428e4c4b-7b69-5d80-ab6d-2400294b3cb7', 532, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7dcd55be-571c-53e0-95d9-a4165cca746f', 595, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9dc910ec-4c99-529e-aa76-1fc22dda6a50', 569, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3ac218d8-ba49-5b1b-961e-1496adcc7251', 111, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '77d0cb27-3e98-539d-9bf0-0edd326b0d70', 930, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '03c8b058-4cba-535a-8f3d-45f50046ab64', 318, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ec340a69-c267-5ec6-9d80-0007938a13a0', 461, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5d58afe4-6e29-5c5c-919c-36de12aa4779', 1661, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'dc4aa464-71c0-596d-aa1e-9d6948ef5a44', 197, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '23e53504-19a7-583a-9f73-4e442203383c', 565, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '66d5edd5-6b4c-5a68-92a9-b07f0bcb37f0', 254, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6fbccd36-cda3-5596-939f-cc4e298fab35', 1151, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '54112207-1478-5743-a778-32b3df3efbea', 787, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7ac9ca5e-d579-5e7b-b73c-857ccf427918', 607, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e0c509e4-7227-5448-8074-1b0cf92db538', 11, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b084945a-3c25-54ca-a2ea-04b8a719cc61', 296, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a5123893-e3c6-5379-9ca4-0a4ce376620f', 59, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e1507a77-7dcc-5059-b0c8-c32cf24f0890', 345, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '699ae47a-1473-517c-af4f-2146c16a84bd', 485, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cc4e0386-0ed4-5d8b-a36e-1a6230e8cd7a', 1358, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '65f67701-4279-5e19-8374-9e122d5c60f7', 39, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '12dd23b6-f954-5dbf-9713-70c140c22bd6', 477, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c791b3b1-a473-55e5-8b3d-8e777b469665', 707, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a3c0ea45-a1d6-581b-8245-3ab909152123', 258, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'dbcbc9f7-433d-52c9-a933-c38c727d4d9b', 605, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3ac218d8-ba49-5b1b-961e-1496adcc7251', 220, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '03c8b058-4cba-535a-8f3d-45f50046ab64', 302, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '23e53504-19a7-583a-9f73-4e442203383c', 185, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7ac9ca5e-d579-5e7b-b73c-857ccf427918', 2, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b084945a-3c25-54ca-a2ea-04b8a719cc61', 644, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cc4e0386-0ed4-5d8b-a36e-1a6230e8cd7a', 429, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
     gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5efdaa8f-4223-5fb2-b730-d64f2edbeb81', 53, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c1c0754e-ad7f-5062-b5d2-50b53d00475c', 806, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b235458a-428e-5927-8987-6ece7a3984ae', 1012, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bbb498dd-5201-5277-a006-3a55ac9b7a00', 369, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8dda1266-42c4-5ef6-bfb6-2e49ac026a58', 1299, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8adf55fc-e428-52c9-ae89-7ea85981f3ab', 1296, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2aa66144-8bcc-509d-a727-801cacf3a4da', 161, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a8eacfbf-aaa3-59a3-9376-524893462656', 551, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fe56b2e9-ec0f-5648-b81d-8ade0c1b925a', 1413, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ec6f8b21-dc89-5019-806c-073e2ce145eb', 1148, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cbf0a541-6b10-5dcc-bd1b-f67f3b79a955', 31, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2e2769af-d280-508c-b8c7-82d3dd054833', 1994, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'afae6191-de98-5fda-b61b-275cde273718', 818, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1005ec55-b909-5e3b-9773-9db242b5b703', 1741, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2bdb9f06-eba1-5314-baba-eb1ce56a9785', 1595, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '703efde9-caf5-5c31-83c4-2e487bdbe53b', 1086, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '55046ca4-af8a-5933-bd90-08fe506a3bc4', 154, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ede78cc9-85fe-5466-aba7-6d88708c3a4c', 143, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '27861a70-f9be-52e6-9f56-2b6b416cd0f0', 275, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4aa5b8a6-3ead-5bec-a0e6-508485d6120e', 34, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1992a58a-0a34-5690-a539-ab631688ff61', 994, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c25742bd-4109-5753-bd68-34ee66f1308a', 764, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3f309603-72fb-579a-8200-bc7f94663dc6', 1573, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cb0985a0-9b80-5cd7-9bc9-a34bc19fd81f', 1148, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '32c7c7e6-c5e4-56b1-a54d-6c7c50211928', 696, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c28e3d39-5710-5cd2-b109-c01b62d5dc09', 395, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3cd70c77-e7cf-54e7-a2da-3179257f9332', 379, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '978d3b97-abd9-5560-a666-7017f090faac', 640, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '44431a77-ff38-5f94-aa4b-47523d575ca9', 1154, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1069810d-a381-5503-bb38-307102f86e7b', 102, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ef6b38a9-f38c-5349-980d-6a421e4b594a', 1451, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f72f6754-37ab-5f12-b290-37ed6e93318b', 1083, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '715b5eb7-eb3b-5a2f-a899-8c5a372d0aa1', 652, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '72ffb7c2-77e0-58cd-9e5a-bf7e05538a13', 56, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '17d7a62a-2945-57d2-83a5-eb0a9c210054', 921, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ab108f9c-737c-563d-b322-f9579ba28aef', 119, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7da0bd84-61aa-5387-a688-3199e3c98284', 120, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '958ec193-b5de-512b-b85a-3bc303c0a33a', 1413, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3e0de9fb-1d47-5888-913a-c212406f8d0b', 657, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'aecda0b7-d012-5685-ac70-48fb233db117', 654, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '807faae4-ab53-51a0-a4bf-6f0f0455a3de', 261, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a3e1be53-1324-51e1-ad44-146de93e4574', 1541, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '77b4fbca-4335-5ae5-afdf-1201f4fd7230', 61, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5f46dde2-3bf8-59fa-a1ff-07a59f192e1e', 316, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c4e441e1-7413-5be2-bd7b-7f083835bef7', 317, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '88cd93b0-1f3e-553c-9db9-311085406202', 493, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f0ea6a9c-4699-5302-b4cd-3600d4e59e18', 62, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1d21fd1c-7f47-5262-bd94-99dd49bd1ba0', 531, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ac60a9ce-5aef-5061-9d11-38073e25d56a', 633, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0a1c30e5-8bc9-5859-9fd4-161fb5193342', 378, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ef5f7deb-4d32-55d3-9133-6145282f2b52', 625, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '82c65268-6fc7-5dc0-b523-a2faf9d402c1', 358, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a3d3fe30-8ddb-542d-a5cf-b79c8a2d10c0', 26, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '284ca38e-94da-50ac-af63-da8dfc82febb', 986, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a1541972-5cf2-5d21-bb24-4c0b737b1b3b', 211, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9d6c9414-bcb4-57b4-8639-8e15d331ce3e', 207, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ce4b582e-14bc-56b0-95a1-9667db883b06', 1613, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '94bd4c82-8e8d-5839-83f5-e1b18869a175', 820, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'de271745-173e-59b5-ac00-a9ee860c0a3d', 535, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5f6ca358-ebb7-5d9c-b5d4-9b2aa75cfdf0', 68, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7043829a-f0ac-520c-8075-e0c9f77fe1ce', 1686, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7b8c2199-ca2c-5868-b9b1-a8705d89a7b5', 329, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4974d980-b15b-53da-8d2c-5e0515e22e68', 1235, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '80591231-ae06-5f49-8d00-96e7640f045b', 104, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6caf56b8-0064-52a2-bdaa-f521275c0c6a', 1336, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f472b148-2605-5954-aefa-d66ceb76fb0b', 1044, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3a377005-dc35-5b25-8101-4a5fbeb9292d', 303, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6695e071-1a5c-508c-b3f2-54093445b7cf', 1958, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '484187bf-0afa-5b70-92fb-04978ba3ce7c', 1349, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8413bfe2-6f4f-56b8-ad1e-06789e04fca2', 718, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6df104d3-30fd-5f96-a862-af50f80129bd', 2027, 0,
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c1c0754e-ad7f-5062-b5d2-50b53d00475c', 136, 0,
     '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '43fe616f-693d-5d2e-bda9-5c8251e41125', 2202, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8bdb8328-192b-57f4-89cc-b92765f02ec4', 1533, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9d712794-2194-5b55-965a-e3851b452724', 763, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c224285b-2e7c-5fdb-bc9c-255349e74a11', 1532, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0e276475-ca86-5ff9-a9b8-d871192a201e', 485, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '40faef06-0f55-5c77-8016-b071cff86563', 663, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '932e9bec-c560-53e4-b2c1-ae2ba5bb86f5', 1498, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a6816cbe-57a8-575d-abac-dd68876baecb', 384, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
-) ON CONFLICT (route_id, actor_id) DO UPDATE SET
-    distance_to_route_m = EXCLUDED.distance_to_route_m,
-    origin_flags = EXCLUDED.origin_flags,
-    updated_at = clock_timestamp();
-INSERT INTO app_private.route_actors (
-    id, route_id, actor_id, distance_to_route_m, route_segment_index,
-    origin_flags, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '90f0e24c-f1a1-52e1-aa58-849fad08fae1', 1806, 0,
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b235458a-428e-5927-8987-6ece7a3984ae', 961, 0,
     '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '40fc66a2-9ffa-5cb0-900a-e11cba6d0e90', 1127, 0,
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8adf55fc-e428-52c9-ae89-7ea85981f3ab', 119, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2aa66144-8bcc-509d-a727-801cacf3a4da', 11, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ec6f8b21-dc89-5019-806c-073e2ce145eb', 194, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2e2769af-d280-508c-b8c7-82d3dd054833', 799, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'afae6191-de98-5fda-b61b-275cde273718', 104, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1005ec55-b909-5e3b-9773-9db242b5b703', 198, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2bdb9f06-eba1-5314-baba-eb1ce56a9785', 316, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '55046ca4-af8a-5933-bd90-08fe506a3bc4', 355, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ede78cc9-85fe-5466-aba7-6d88708c3a4c', 136, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '27861a70-f9be-52e6-9f56-2b6b416cd0f0', 312, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4aa5b8a6-3ead-5bec-a0e6-508485d6120e', 845, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1992a58a-0a34-5690-a539-ab631688ff61', 58, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c25742bd-4109-5753-bd68-34ee66f1308a', 12, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3f309603-72fb-579a-8200-bc7f94663dc6', 270, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'cb0985a0-9b80-5cd7-9bc9-a34bc19fd81f', 299, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '32c7c7e6-c5e4-56b1-a54d-6c7c50211928', 183, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c28e3d39-5710-5cd2-b109-c01b62d5dc09', 42, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '978d3b97-abd9-5560-a666-7017f090faac', 741, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '44431a77-ff38-5f94-aa4b-47523d575ca9', 344, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ef6b38a9-f38c-5349-980d-6a421e4b594a', 165, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '715b5eb7-eb3b-5a2f-a899-8c5a372d0aa1', 102, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '17d7a62a-2945-57d2-83a5-eb0a9c210054', 36, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'ab108f9c-737c-563d-b322-f9579ba28aef', 235, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7da0bd84-61aa-5387-a688-3199e3c98284', 237, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3e0de9fb-1d47-5888-913a-c212406f8d0b', 686, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '807faae4-ab53-51a0-a4bf-6f0f0455a3de', 74, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a3e1be53-1324-51e1-ad44-146de93e4574', 28, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '77b4fbca-4335-5ae5-afdf-1201f4fd7230', 884, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5f46dde2-3bf8-59fa-a1ff-07a59f192e1e', 22, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c4e441e1-7413-5be2-bd7b-7f083835bef7', 26, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '88cd93b0-1f3e-553c-9db9-311085406202', 283, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f0ea6a9c-4699-5302-b4cd-3600d4e59e18', 143, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '1d21fd1c-7f47-5262-bd94-99dd49bd1ba0', 126, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0a1c30e5-8bc9-5859-9fd4-161fb5193342', 7, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '82c65268-6fc7-5dc0-b523-a2faf9d402c1', 314, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '542d4201-02a3-549e-badc-fe26cb6e58bf', 668, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4ea01096-d60b-55ab-b66c-a47dbb917cd0', 73, 0,
     '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5277c93e-44e2-51c1-a944-4923a4268b3d', 345, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '94bd4c82-8e8d-5839-83f5-e1b18869a175', 108, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b3581a4c-78e9-543a-894a-a187b7ec9696', 608, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'de271745-173e-59b5-ac00-a9ee860c0a3d', 90, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b75f59ea-4daf-5e47-9973-935417a2f0c8', 55, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5f6ca358-ebb7-5d9c-b5d4-9b2aa75cfdf0', 180, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bec42ba5-d564-5f20-bf8d-301952f9e5d2', 592, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7043829a-f0ac-520c-8075-e0c9f77fe1ce', 94, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '05759a65-f696-54ed-8811-3a7ec6cf98b3', 359, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7b8c2199-ca2c-5868-b9b1-a8705d89a7b5', 64, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b3f0873d-76ec-52cd-ae17-db5f5f2961a2', 93, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4974d980-b15b-53da-8d2c-5e0515e22e68', 310, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7eefe7bd-0abd-55f3-82af-115524de7d11', 761, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '80591231-ae06-5f49-8d00-96e7640f045b', 103, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fec66468-ebdc-54d9-887c-066bfeca29e6', 304, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6caf56b8-0064-52a2-bdaa-f521275c0c6a', 490, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '24963d30-ddec-5ffa-8888-e1150cc69ffc', 807, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'f472b148-2605-5954-aefa-d66ceb76fb0b', 403, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd8789018-f7e7-5c7c-80a4-5d91976a9821', 57, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3a377005-dc35-5b25-8101-4a5fbeb9292d', 418, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e1a04a2c-0584-56fd-a5b5-98800c9bce7d', 508, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6695e071-1a5c-508c-b3f2-54093445b7cf', 385, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd32f954f-3328-5ff7-bfa4-c0710a162830', 162, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '484187bf-0afa-5b70-92fb-04978ba3ce7c', 394, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9bb44a66-6e18-5d8e-b1b4-418a58b9cbcd', 703, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8413bfe2-6f4f-56b8-ad1e-06789e04fca2', 103, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '10b80c79-b44f-5486-a821-b91e0b0dbfeb', 673, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6df104d3-30fd-5f96-a862-af50f80129bd', 592, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a5ce324e-f70c-51ac-b779-11ed8e2e98c0', 1324, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '43fe616f-693d-5d2e-bda9-5c8251e41125', 739, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0af19d3b-30bf-50b5-9ce8-72a8069a56d5', 757, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '8bdb8328-192b-57f4-89cc-b92765f02ec4', 521, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7ba1e9c1-caf2-55d9-86fc-14253bd1ae36', 1735, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9d712794-2194-5b55-965a-e3851b452724', 13, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'aaa405e7-bc42-5573-8c4c-74068673f77b', 631, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'c224285b-2e7c-5fdb-bc9c-255349e74a11', 344, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fdae2b6d-53bb-5887-91f1-e84409a425b3', 1620, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0e276475-ca86-5ff9-a9b8-d871192a201e', 55, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '39e4a445-c560-534d-bd40-d3dcab5aeb8a', 647, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '40faef06-0f55-5c77-8016-b071cff86563', 279, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6cd4d19f-bd9a-509c-beae-175add9f62b3', 1267, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '932e9bec-c560-53e4-b2c1-ae2ba5bb86f5', 432, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e5581d12-ede4-5e88-a8de-8415e2bb96b8', 419, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '90f0e24c-f1a1-52e1-aa58-849fad08fae1', 561, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4c386853-bfae-5989-b010-8c1fd493d0d2', 455, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '40fc66a2-9ffa-5cb0-900a-e11cba6d0e90', 304, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '28756b72-47d4-5caf-a877-678babd824a0', 694, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5277c93e-44e2-51c1-a944-4923a4268b3d', 242, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e2c4ab73-e4ff-5a9b-a830-928e1a9d5a68', 793, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b3581a4c-78e9-543a-894a-a187b7ec9696', 354, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4597cc73-209d-5cd6-9c93-85b52af3ec81', 525, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b75f59ea-4daf-5e47-9973-935417a2f0c8', 122, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b340cb10-b3b7-5b91-a9e0-af043029b1a4', 2649, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bec42ba5-d564-5f20-bf8d-301952f9e5d2', 399, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '481b935a-8e65-5d8d-892c-d358a706e829', 44, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '05759a65-f696-54ed-8811-3a7ec6cf98b3', 88, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'afebbfe1-8257-5281-9c82-f642804b9e4c', 156, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b3f0873d-76ec-52cd-ae17-db5f5f2961a2', 49, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '22ff89fe-b8b3-5249-903d-7f65df6387cc', 68, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7eefe7bd-0abd-55f3-82af-115524de7d11', 133, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '48a8a180-a13c-5ded-9b74-9c44f6a5ea54', 535, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fec66468-ebdc-54d9-887c-066bfeca29e6', 159, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b593d774-a037-50e5-a6b9-a598fb0b0baf', 361, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '24963d30-ddec-5ffa-8888-e1150cc69ffc', 44, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a116b76f-7637-579a-91bc-6f8f7fb445e2', 611, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'd8789018-f7e7-5c7c-80a4-5d91976a9821', 121, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '332e4640-d62a-5f94-b5f3-2e3461483c70', 1265, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e1a04a2c-0584-56fd-a5b5-98800c9bce7d', 53, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '08298451-ecab-5768-b0b5-6f8b25ce69cb', 458, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '9bb44a66-6e18-5d8e-b1b4-418a58b9cbcd', 37, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '96947f89-5ace-5949-9a89-f726f7f9c0a2', 650, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '10b80c79-b44f-5486-a821-b91e0b0dbfeb', 9, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '99633a2b-8354-58af-bca3-269f178775e1', 1587, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a5ce324e-f70c-51ac-b779-11ed8e2e98c0', 486, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2962af95-f192-56da-b634-e82d25ae7aa3', 1724, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '0af19d3b-30bf-50b5-9ce8-72a8069a56d5', 13, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '86c2c308-9fa1-5e89-a407-d5ad6fdcc80f', 571, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '7ba1e9c1-caf2-55d9-86fc-14253bd1ae36', 231, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3c100028-09bd-5a46-b001-b90ace90b2ba', 914, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'aaa405e7-bc42-5573-8c4c-74068673f77b', 358, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2d32865b-0dc1-540a-b69a-e6dd75bdc706', 13, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fdae2b6d-53bb-5887-91f1-e84409a425b3', 199, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5754c0b5-28a1-5b52-9f03-72cd36ddd39a', 1513, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '39e4a445-c560-534d-bd40-d3dcab5aeb8a', 760, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2ca7224e-087a-56fc-a228-75c31ff9025e', 614, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '6cd4d19f-bd9a-509c-beae-175add9f62b3', 212, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bbbb6bd6-5037-539a-b2a6-e1e0053438be', 733, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e5581d12-ede4-5e88-a8de-8415e2bb96b8', 98, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e335a6fe-69f2-5cc2-abcd-21232e723595', 109, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4c386853-bfae-5989-b010-8c1fd493d0d2', 104, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fa547a9a-c709-52dc-b95a-2a5aec169225', 191, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '28756b72-47d4-5caf-a877-678babd824a0', 103, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a538975a-8bd5-5958-98cb-9c4da45145e7', 180, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e2c4ab73-e4ff-5a9b-a830-928e1a9d5a68', 20, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '641e5984-2b6d-55fa-9a46-7f46029864ce', 854, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '4597cc73-209d-5cd6-9c93-85b52af3ec81', 23, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5522208d-cc9e-54a1-a8d2-f8705e2c1e9a', 841, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'afebbfe1-8257-5281-9c82-f642804b9e4c', 25, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a3434a26-678c-5943-b649-a2d6b3ae3f94', 23, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '22ff89fe-b8b3-5249-903d-7f65df6387cc', 185, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'dc3e5fce-8f36-54f1-8241-942ee7704dae', 2040, 0,
-    '{"rodoviaria": false, "aeroporto": true, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '48a8a180-a13c-5ded-9b74-9c44f6a5ea54', 650, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": false, "centro": false}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 INSERT INTO app_private.route_actors (
     id, route_id, actor_id, distance_to_route_m, route_segment_index,
     origin_flags, created_at, updated_at
 ) VALUES (
-    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'be2ded49-b5f4-5b3d-9306-97e251df1eaf', 645, 0,
-    '{"rodoviaria": true, "aeroporto": true, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'b593d774-a037-50e5-a6b9-a598fb0b0baf', 154, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
 ) ON CONFLICT (route_id, actor_id) DO UPDATE SET
     distance_to_route_m = EXCLUDED.distance_to_route_m,
     origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'a116b76f-7637-579a-91bc-6f8f7fb445e2', 433, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '332e4640-d62a-5f94-b5f3-2e3461483c70', 314, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '08298451-ecab-5768-b0b5-6f8b25ce69cb', 54, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '99633a2b-8354-58af-bca3-269f178775e1', 378, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2962af95-f192-56da-b634-e82d25ae7aa3', 222, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '86c2c308-9fa1-5e89-a407-d5ad6fdcc80f', 20, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '3c100028-09bd-5a46-b001-b90ace90b2ba', 172, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2d32865b-0dc1-540a-b69a-e6dd75bdc706', 114, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5754c0b5-28a1-5b52-9f03-72cd36ddd39a', 4, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '2ca7224e-087a-56fc-a228-75c31ff9025e', 87, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'bbbb6bd6-5037-539a-b2a6-e1e0053438be', 161, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'e335a6fe-69f2-5cc2-abcd-21232e723595', 172, 0,
+    '{"rodoviaria": false, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'fa547a9a-c709-52dc-b95a-2a5aec169225', 399, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '641e5984-2b6d-55fa-9a46-7f46029864ce', 121, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', '5522208d-cc9e-54a1-a8d2-f8705e2c1e9a', 8, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
+    updated_at = clock_timestamp();
+INSERT INTO app_private.route_actors (
+    id, route_id, actor_id, distance_to_route_m, route_segment_index,
+    origin_flags, created_at, updated_at
+) VALUES (
+    gen_random_uuid(), 'a17a314a-0000-4000-8000-000000000002', 'be2ded49-b5f4-5b3d-9306-97e251df1eaf', 94, 0,
+    '{"rodoviaria": true, "aeroporto": false, "terminal_fluvial": true, "centro": true}'::jsonb, clock_timestamp(), clock_timestamp()
+) ON CONFLICT (route_id, actor_id) DO UPDATE SET
+    distance_to_route_m = EXCLUDED.distance_to_route_m,
+    origin_flags = EXCLUDED.origin_flags,
+    archived_at = NULL,
     updated_at = clock_timestamp();
 
 COMMIT;

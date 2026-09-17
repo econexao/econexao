@@ -34,6 +34,7 @@ PEDRAL_ORIGIN_CODES: Final[tuple[str, ...]] = (
     "rodoviaria",
     "aeroporto",
     "terminal_fluvial",
+    "centro",
 )
 
 CATEGORY_MAPPING: Final[dict[str, set[str]]] = {

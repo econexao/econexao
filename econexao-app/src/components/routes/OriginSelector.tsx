@@ -47,9 +47,12 @@ export const getOriginIconAndLabel = (origin: SelectorOrigin): { iconName: keyof
   } else if (originCode.includes('aeroporto') || originName.includes('aeroporto')) {
     iconName = 'airplane-outline';
     shortName = 'Aeroporto';
-  } else if (originCode.includes('porto') || originName.includes('porto')) {
+  } else if (originCode.includes('porto') || originName.includes('porto') || originCode.includes('fluvial') || originName.includes('fluvial') || originCode.includes('cais') || originName.includes('cais')) {
     iconName = 'boat-outline';
-    shortName = 'Porto';
+    shortName = originName.includes('cais') || originCode.includes('terminal_fluvial') ? 'Terminal Fluvial' : 'Porto';
+  } else if (originCode.includes('centro') || originName.includes('centro')) {
+    iconName = 'business-outline';
+    shortName = 'Centro';
   }
 
   return { iconName, shortName };

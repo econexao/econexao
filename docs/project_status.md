@@ -825,7 +825,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Base da versão Web / PRESERVADA.
 - **Dependências ou sucessoras:** ECO-2303, ECO-2305.
 - **Conclusão / aceite:** VERIFIED em 2026-08-25 no Supabase test: migration forward 20260825003236 aplicada sem editar a migration registrada, 22 versões alinhadas, matriz PostGIS/negativos com rollback aprovada, advisors sem findings e 370 testes backend aprovados
-- **Evidência e limite:** RQ-03 registra LOCAL_TEST; isso não comprova toda a versão implantada. Correção local de 17/09 separa o escopo espacial efetivo da categoria: transporte fora do corredor de 1 km volta a constar apenas como `citywide_essential`, enquanto o transporte retornado pela consulta PostGIS do corredor mantém `both`.
+- **Evidência e limite:** RQ-03 registra LOCAL_TEST; isso não comprova toda a versão implantada. Correção local de 17/09 separa o escopo espacial efetivo da categoria: transporte fora do corredor de 1 km volta a constar apenas como `citywide_essential`, enquanto o transporte retornado pela consulta PostGIS do corredor mantém `both`. Resolução de geometrias da Rota do Pedral em 17/09: as quatro origens oficiais (rodoviaria, aeroporto, terminal_fluvial, centro) traçam trajetos viários contínuos até o Balneário Luiz do Pedral (-3.255088, -52.2194072) com 384 atores no corredor de 1 km, migration versionada 20260917160415.
 - **Referência:** [mapa_dinamico/tasks.md](mapa_dinamico/tasks.md). **Commit:** Não vinculado.
 
 #### ECO-2307 — Interface Rota × Cidade

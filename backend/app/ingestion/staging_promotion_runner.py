@@ -63,7 +63,7 @@ CANONICAL_PINDOBAL_METRICS: dict[str, int] = {
     "unchanged": 0,
     "updated": 0,
 }
-CANONICAL_MIGRATIONS_COUNT: int = 33
+CANONICAL_MIGRATIONS_COUNT: int = 34
 
 
 class CanonicalPromotionProfile(NamedTuple):
