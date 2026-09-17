@@ -233,8 +233,17 @@ async def apply(dry_run: bool = False, db_url_override: str | None = None) -> in
             ON CONFLICT (route_id, actor_id) DO UPDATE SET
                 distance_to_route_m = EXCLUDED.distance_to_route_m,
                 origin_flags = EXCLUDED.origin_flags,
+                archived_at = NULL,
                 updated_at = clock_timestamp()
             """
+        )
+
+        await conn.execute(
+            text(
+                "UPDATE app_private.route_actors SET archived_at = clock_timestamp(), "
+                "updated_at = clock_timestamp() WHERE route_id = :route_id AND archived_at IS NULL"
+            ),
+            {"route_id": ROTA_PEDRAL_ID},
         )
 
         linked_count = 0

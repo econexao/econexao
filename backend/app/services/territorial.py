@@ -316,9 +316,7 @@ class TerritorialService:
             # Fallback to first origin if geometry is missing
             selected_origin_id = route.origins[0].id
 
-        route_buffer_m = (
-            3000.0 if route.slug == "rota-pedral" else settings.ROUTE_CORRIDOR_BUFFER_METERS
-        )
+        route_buffer_m = settings.ROUTE_CORRIDOR_BUFFER_METERS
 
         corridor_actors_data: list[tuple[Any, str, float | None, float | None, bool, int]] = []
         if geojson_obj is not None and layer in (None, "route_corridor", "both"):
@@ -364,7 +362,11 @@ class TerritorialService:
 
         for actor, cat_slug, lat, lon in essential_actors_data:
             actor_layer = str(get_canonical_category(cat_slug)["spatial_scope"])
-            if actor.id not in combined_actors and (layer is None or layer == actor_layer):
+            if (
+                actor.id not in combined_actors
+                and actor_layer != "both"
+                and (layer is None or layer == actor_layer)
+            ):
                 combined_actors[actor.id] = (actor, cat_slug, lat, lon, actor_layer, False, 0)
 
         # Deterministic sorting: is_featured DESC, green_badge_status DESC, sort_order ASC, name ASC
