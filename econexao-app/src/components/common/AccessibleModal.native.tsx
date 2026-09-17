@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Modal, View, StyleSheet, ModalProps, StyleProp, ViewStyle } from 'react-native';
 import { useModalFocus } from '../../utils/focusManager';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 export interface AccessibleModalProps extends ModalProps {
   visible: boolean;
@@ -24,6 +25,7 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
   ...restProps
 }) => {
   const containerRef = useRef<View>(null);
+  const prefersReducedMotion = useReducedMotion();
 
   useModalFocus({
     visible,
@@ -37,7 +39,7 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
     <Modal
       visible={visible}
       transparent={transparent}
-      animationType={animationType}
+      animationType={prefersReducedMotion ? 'none' : animationType}
       onRequestClose={onClose}
       accessibilityViewIsModal
       aria-modal

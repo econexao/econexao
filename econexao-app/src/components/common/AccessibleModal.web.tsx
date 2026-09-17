@@ -1,6 +1,8 @@
-import React, { useLayoutEffect, useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { View, StyleSheet, ModalProps, StyleProp, ViewStyle } from 'react-native';
+import { motion } from '../../theme/motion';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 export interface AccessibleModalProps extends ModalProps {
   visible: boolean;
@@ -22,22 +24,36 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
+  const prefersReducedMotion = useReducedMotion();
+  const [mounted, setMounted] = useState(visible);
+  const [exiting, setExiting] = useState(false);
+
+  useEffect(() => {
+    if (visible) {
+      setMounted(true);
+      setExiting(false);
+      return;
+    }
+    setExiting(true);
+    if (prefersReducedMotion) {
+      setMounted(false);
+      setExiting(false);
+      return;
+    }
+    const timeout = setTimeout(() => {
+      setMounted(false);
+      setExiting(false);
+    }, motion.durations.modalExit);
+    return () => clearTimeout(timeout);
+  }, [prefersReducedMotion, visible]);
 
   useLayoutEffect(() => {
     if (typeof document === 'undefined') return;
 
-    if (visible) {
+    if (visible && mounted && !exiting) {
       if (document.activeElement instanceof HTMLElement) {
         previousActiveElementRef.current = document.activeElement;
         document.activeElement.blur();
-      }
-
-      const rootNode = document.getElementById('root') || document.querySelector('[data-testid="root"]') || document.body.firstElementChild;
-      if (rootNode && rootNode !== containerRef.current) {
-        rootNode.setAttribute('aria-hidden', 'true');
-        if ('inert' in rootNode) {
-          (rootNode as any).inert = true;
-        }
       }
 
       const focusTimer = setTimeout(() => {
@@ -62,34 +78,55 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
 
       return () => {
         clearTimeout(focusTimer);
-        if (rootNode) {
-          rootNode.removeAttribute('aria-hidden');
-          if ('inert' in rootNode) {
-            (rootNode as any).inert = false;
-          }
-        }
-
-        const targetToRestore = returnFocusRef?.current || previousActiveElementRef.current;
-        if (targetToRestore) {
-          const node = (targetToRestore as any)?.node || targetToRestore;
-          if (node && typeof node.focus === 'function') {
-            setTimeout(() => {
-              node.focus();
-            }, 0);
-          }
-        }
       };
     }
-  }, [visible, initialFocusRef, returnFocusRef]);
+  }, [exiting, initialFocusRef, mounted, returnFocusRef, visible]);
 
   useEffect(() => {
-    if (!visible || typeof document === 'undefined') return;
+    if (mounted || !previousActiveElementRef.current) return;
+    const targetToRestore = returnFocusRef?.current || previousActiveElementRef.current;
+    const node = (targetToRestore as any)?.node || targetToRestore;
+    if (node && typeof node.focus === 'function') setTimeout(() => node.focus(), 0);
+    previousActiveElementRef.current = null;
+  }, [mounted, returnFocusRef]);
+
+  useEffect(() => {
+    if (!mounted || typeof document === 'undefined') return;
+    const rootNode = document.getElementById('root') || document.querySelector('[data-testid="root"]') || document.body.firstElementChild;
+    if (rootNode && rootNode !== containerRef.current) {
+      rootNode.setAttribute('aria-hidden', 'true');
+      if ('inert' in rootNode) (rootNode as any).inert = true;
+    }
+    return () => {
+      if (rootNode) {
+        rootNode.removeAttribute('aria-hidden');
+        if ('inert' in rootNode) (rootNode as any).inert = false;
+      }
+    };
+  }, [mounted]);
+
+  useEffect(() => {
+    if (visible || typeof document === 'undefined') return;
+    const rootNode = document.getElementById('root') || document.querySelector('[data-testid="root"]') || document.body.firstElementChild;
+    // aria-hidden may be released as soon as close is requested; inert remains
+    // owned by the mounted modal until the exit fallback completes.
+    rootNode?.removeAttribute('aria-hidden');
+  }, [visible]);
+
+  useEffect(() => {
+    if (!mounted || typeof document === 'undefined') return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
         e.stopPropagation();
         onClose?.();
+        return;
+      }
+
+      if (exiting && e.key === 'Tab') {
+        e.preventDefault();
+        containerRef.current?.focus();
         return;
       }
 
@@ -125,9 +162,9 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
     return () => {
       document.removeEventListener('keydown', handleKeyDown, true);
     };
-  }, [visible, onClose]);
+  }, [exiting, mounted, onClose]);
 
-  if (!visible || typeof document === 'undefined') return null;
+  if (!mounted || typeof document === 'undefined') return null;
 
   return createPortal(
     <div
@@ -135,6 +172,7 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-label={accessibilityLabel || 'Janela modal'}
+      aria-hidden={exiting ? undefined : false}
       tabIndex={-1}
       style={{
         position: 'fixed',
@@ -146,6 +184,10 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
         display: 'flex',
         flexDirection: 'column',
         outline: 'none',
+        opacity: exiting ? 0 : 1,
+        transform: exiting ? 'translateY(8px)' : 'translateY(0)',
+        transition: `opacity ${motion.durations.modalExit}ms ${motion.easings.easeOutCss}, transform ${motion.durations.modalExit}ms ${motion.easings.easeOutCss}`,
+        pointerEvents: exiting ? 'none' : 'auto',
       }}
     >
       <View style={[styles.fullScreen, contentStyle]}>

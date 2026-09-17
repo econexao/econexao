@@ -92,6 +92,9 @@ describe('Real DOM & Focus Management Integrity (ECO-2101 / WCAG 2.1 AA)', () =>
     await act(async () => {
       root.render(<ModalHarness visible={false} onClose={handleClose} />);
     });
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    });
 
     // Verify #root aria-hidden is removed
     expect(rootNode.getAttribute('aria-hidden')).toBeNull();
