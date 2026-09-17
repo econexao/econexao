@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "total_migrations": 33,
+  "total_migrations": 34,
   "generated_at": "2026-09-10T23:43:57.208832+00:00",
   "migrations": [
     {
@@ -233,6 +233,13 @@
       "path": "supabase/migrations/20260917123804_pedral_three_origins_destination_correction.sql",
       "bytes": 1198,
       "sha256": "91171220909cb98411d66f7dc566f32f939218be3b928401aa7ee46bcbdd25d7"
+    },
+    {
+      "version": "20260917160415",
+      "filename": "20260917160415_pedral_four_origins_coherent_geometries.sql",
+      "path": "supabase/migrations/20260917160415_pedral_four_origins_coherent_geometries.sql",
+      "bytes": 31396,
+      "sha256": "dab93777a177c9e72c7bb4fa48cc0f8a134ff26f05ada9d9cf464d800bb32a56"
     }
   ]
 }

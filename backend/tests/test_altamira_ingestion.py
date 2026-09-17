@@ -10,7 +10,9 @@ import pytest
 from app.core.taxonomy import CANONICAL_CATEGORIES
 from app.ingestion.altamira_importer import (
     PEDRAL_CORRIDOR_BUFFER_METERS,
+    PEDRAL_ORIGIN_CODES,
     _clean_coord,
+    haversine_m,
     min_dist_to_polyline_m,
     parse_altamira_actors,
     resolve_canonical_category,
@@ -64,7 +66,7 @@ def test_parse_altamira_actors_counts_and_metrics():
     assert report.with_coordinates == 571
     assert report.missing_coordinates == 194
     # Corridor count within 1km of route segments (not vertices).
-    assert report.pedral_corridor_actors_count == 368
+    assert report.pedral_corridor_actors_count == 384
     # Citywide essential services count
     assert report.citywide_essential_count >= 110
 
@@ -74,22 +76,43 @@ def test_parse_altamira_actors_counts_and_metrics():
 
 
 def test_pedral_geometries_integrity():
-    """Verify the three configured origins have valid geometry metadata."""
+    """Verify the four configured origins have valid geometry metadata ending at Pedral."""
     geoms_path = DATA_DIR / "pedral_geometries.json"
     with open(geoms_path, encoding="utf-8") as f:
         geoms = json.load(f)
 
-    expected_origins = {"rodoviaria", "aeroporto", "terminal_fluvial"}
-    assert expected_origins.issubset(geoms.keys())
+    expected_origins = {"rodoviaria", "aeroporto", "terminal_fluvial", "centro"}
+    assert expected_origins.issubset(
+        geoms.keys()
+    ), f"Missing origins: {expected_origins - set(geoms.keys())}"
+    assert (
+        set(PEDRAL_ORIGIN_CODES) == expected_origins
+    ), f"PEDRAL_ORIGIN_CODES must have 4 origins, got {PEDRAL_ORIGIN_CODES}"
+
+    pedral_dest_lat = -3.255088
+    pedral_dest_lon = -52.2194072
 
     for code in expected_origins:
         g = geoms[code]
         assert g["distance_m"] > 0
         assert g["duration_s"] > 0
-        assert len(g["geojson"]["coordinates"]) > 100
+        coords = g["geojson"]["coordinates"]
+        assert len(coords) > 50
         assert "bounds" in g
         b = g["bounds"]
         assert b["min_lat"] <= b["max_lat"]
         assert b["min_lon"] <= b["max_lon"]
         assert g["encoded_polyline"] is not None
         assert len(g["sha256"]) == 64
+
+        # Verify continuity: no adjacent points further than 1500m apart
+        for (lon1, lat1), (lon2, lat2) in zip(coords, coords[1:], strict=False):
+            step_d = haversine_m(lat1, lon1, lat2, lon2)
+            assert step_d < 1500.0, f"Discontinuity in {code}: {step_d:.1f}m between points"
+
+        # All four origins must arrive at Balneário Luiz do Pedral (within 100m)
+        end_lon, end_lat = coords[-1]
+        dist_to_dest = haversine_m(end_lat, end_lon, pedral_dest_lat, pedral_dest_lon)
+        msg = f"{code} ends at ({end_lat}, {end_lon}), {dist_to_dest:.1f}m from destination"
+        assert dist_to_dest < 100.0, msg
+

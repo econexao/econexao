@@ -1,16 +1,23 @@
-# Correção local da Rota do Pedral
+# Correção das Geometrias da Rota do Pedral
 
-Branch `codex/fix-pedral-map`, baseada em `staging` (`fa9076f`).
+Branch `codex/fix-pedral-geometries`, baseada em `staging` (`258d7ec`).
 
-Esta correção fixa o corredor em 1.000 m, calcula distância ao segmento da
-geometria (e não somente aos vértices), filtra pins `both` fora do corredor no
-modo rota, usa o destino confirmado no preview dinâmico e reconcilia vínculos
-antigos por arquivamento antes do upsert idempotente. A importação local dos
-765 registros produz 369 atores no corredor de 1 km.
+Esta correção conclui a resolução definitiva das geometrias da Rota do Pedral
+para as quatro origens oficiais de Altamira:
+1. Terminal Rodoviário de Altamira (`rodoviaria`)
+2. Aeroporto de Altamira (`aeroporto`)
+3. Terminal Fluvial / Cais da Orla (`terminal_fluvial`)
+4. Centro / Praça da Matriz (`centro`)
 
-Pendência explícita: as quatro geometrias versionadas ainda terminam em
-`(-3.206021, -52.250432)` e não no destino confirmado
-`(-3.255088, -52.2194072)`. Nenhum trecho viário novo foi inventado. A geração
-ou substituição dessas geometrias depende de dados reais validados e da
-autorização de provedor prevista no ADR 0013; por isso a entrega é PARTIAL até
-essa evidência existir.
+Todas as quatro geometrias são LineStrings viárias contínuas baseadas no grafo
+OpenStreetMap (perfil OSRM driving) e terminam no destino canônico oficial:
+**Balneário Luiz do Pedral** (`[-52.2194072, -3.255088]`).
+
+A nova migration versionada e idempotente
+`20260917160415_pedral_four_origins_coherent_geometries.sql` atualiza as origens,
+insere/atualiza as 4 geometrias com bounds e hashes calculados, e recalcula as
+flags de corredor de 1.000 m (`origin_flags`) e distâncias em `app_private.route_actors`.
+A separação de camadas da PR #67 é rigorosamente preservada: somente atores dentro
+de 1.000 m da geometria selecionada aparecem no modo rota; serviços municipais fora
+do corredor permanecem restritos ao modo cidade. A importação dos 765 registros
+produz 384 atores no corredor viário expandido de 1 km até o balneário.
