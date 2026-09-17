@@ -134,7 +134,10 @@ class RoutingService:
         for actor, cat_slug, lat, lon in essential_actors_data:
             if actor.id not in combined_actors:
                 layer = str(get_canonical_category(cat_slug)["spatial_scope"])
-                combined_actors[actor.id] = (actor, cat_slug, lat, lon, layer)
+                # Regional transport is eligible for the city layer, but only the
+                # corridor query establishes membership in a dynamic preview route.
+                rendered_layer = "citywide_essential" if layer == "both" else layer
+                combined_actors[actor.id] = (actor, cat_slug, lat, lon, rendered_layer)
 
         # Deterministic sorting: is_featured DESC, green_badge_status DESC,
         # sort_order ASC, name ASC, id ASC

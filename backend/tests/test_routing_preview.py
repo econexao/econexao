@@ -208,6 +208,49 @@ async def test_routing_service_preview_route_success() -> None:
 
 
 @pytest.mark.asyncio
+async def test_dynamic_preview_marks_transport_outside_corridor_as_city_only() -> None:
+    """Dynamic previews must not leak city transport pins into the route camera."""
+    region_id = uuid.uuid4()
+    route_id = uuid.uuid4()
+    transport_on_route = MagicMock()
+    transport_on_route.id = uuid.uuid4()
+    transport_on_route.name = "Terminal da rota"
+    transport_on_route.is_featured = False
+    transport_on_route.green_badge_status = "none"
+    transport_on_route.sort_order = 0
+    municipal_transport = MagicMock()
+    municipal_transport.id = uuid.uuid4()
+    municipal_transport.name = "Rodoviária municipal"
+    municipal_transport.is_featured = False
+    municipal_transport.green_badge_status = "none"
+    municipal_transport.sort_order = 0
+
+    service = RoutingService(db=AsyncMock(), connector=FakeRoutingConnector(steps=4))
+    service._get_route_anchor_coordinate = AsyncMock(
+        return_value=Coordinate(latitude=-3.255088, longitude=-52.2194072)
+    )
+    service.routing_repo.get_active_route_region_id = AsyncMock(return_value=region_id)
+    service.territorial_repo.find_corridor_actors_by_geometry = AsyncMock(
+        return_value=[(transport_on_route, "transporte", -3.255, -52.219)]
+    )
+    service.territorial_repo.list_region_essential_actors = AsyncMock(
+        return_value=[
+            (transport_on_route, "transporte", -3.255, -52.219),
+            (municipal_transport, "transporte", -3.205, -52.208),
+        ]
+    )
+    service.territorial_repo.get_region_bounds = AsyncMock(return_value=None)
+
+    envelope = await service.preview_route(
+        route_id, RoutePreviewRequest(latitude=-3.20, longitude=-52.20, travel_mode="DRIVE")
+    )
+    pins = {pin.actor_id: pin for pin in envelope.data.pins}
+
+    assert pins[transport_on_route.id].layer == "both"
+    assert pins[municipal_transport.id].layer == "citywide_essential"
+
+
+@pytest.mark.asyncio
 async def test_routing_service_multi_region_isolation() -> None:
     """RoutingService filters corridor actors strictly by the route region."""
     region_a_id = uuid.uuid4()

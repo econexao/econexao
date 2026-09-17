@@ -825,7 +825,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Base da versão Web / PRESERVADA.
 - **Dependências ou sucessoras:** ECO-2303, ECO-2305.
 - **Conclusão / aceite:** VERIFIED em 2026-08-25 no Supabase test: migration forward 20260825003236 aplicada sem editar a migration registrada, 22 versões alinhadas, matriz PostGIS/negativos com rollback aprovada, advisors sem findings e 370 testes backend aprovados
-- **Evidência e limite:** RQ-03 registra LOCAL_TEST; isso não comprova toda a versão implantada.
+- **Evidência e limite:** RQ-03 registra LOCAL_TEST; isso não comprova toda a versão implantada. Correção local de 17/09 separa o escopo espacial efetivo da categoria: transporte fora do corredor de 1 km volta a constar apenas como `citywide_essential`, enquanto o transporte retornado pela consulta PostGIS do corredor mantém `both`.
 - **Referência:** [mapa_dinamico/tasks.md](mapa_dinamico/tasks.md). **Commit:** Não vinculado.
 
 #### ECO-2307 — Interface Rota × Cidade
@@ -873,7 +873,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Base da versão Web / PRESERVADA.
 - **Dependências ou sucessoras:** ECO-2306, ECO-2309.
 - **Conclusão / aceite:** VERIFIED em 2026-08-25: isolamento estrito por region_id em find_corridor_actors_by_geometry, semântica canônica de camadas ADR 0011 (route_corridor, citywide_essential, both), ordenação estável e limite STATIC_MAP_MAX_PINS (200), consumo e repasse de pins/legend/city_bounds pelo RouteMapPreview, expansão de mapa com preservação de contexto efêmero via TanStack Query cache, zero persistência em banco e 387 testes backend + 182 testes frontend aprovados
-- **Evidência e limite:** RQ-03 registra LOCAL_TEST; isso não comprova toda a versão implantada.
+- **Evidência e limite:** RQ-03 registra LOCAL_TEST; isso não comprova toda a versão implantada. Correção local de 17/09 aplica a mesma separação ao preview efêmero: somente a consulta espacial do corredor concede camada elegível à rota; transporte municipal fora dela permanece no payload com camada de cidade.
 - **Referência:** [mapa_dinamico/tasks.md](mapa_dinamico/tasks.md). **Commit:** Não vinculado.
 
 #### ECO-2313 — Benchmark e decisão de provedor

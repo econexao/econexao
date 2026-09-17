@@ -364,10 +364,22 @@ class TerritorialService:
             actor_layer = str(get_canonical_category(cat_slug)["spatial_scope"])
             if (
                 actor.id not in combined_actors
-                and actor_layer != "both"
                 and (layer is None or layer == actor_layer)
             ):
-                combined_actors[actor.id] = (actor, cat_slug, lat, lon, actor_layer, False, 0)
+                # A `both` category is not proof that this particular actor is in the
+                # selected geometry. This branch contains only city-wide actors that
+                # were absent from the PostGIS corridor query, so it must stay out of
+                # the route camera while remaining available in "Ver cidade".
+                rendered_layer = "citywide_essential" if actor_layer == "both" else actor_layer
+                combined_actors[actor.id] = (
+                    actor,
+                    cat_slug,
+                    lat,
+                    lon,
+                    rendered_layer,
+                    False,
+                    0,
+                )
 
         # Deterministic sorting: is_featured DESC, green_badge_status DESC, sort_order ASC, name ASC
         def get_priority_key(

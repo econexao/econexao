@@ -557,3 +557,43 @@ async def test_route_map_payload_dual_layers_and_city_bounds():
 
     # Check prioritization: actor_both has verified green badge (comes before corridor/city)
     assert payload.pins[0].actor_id == actor_both.id
+
+
+@pytest.mark.asyncio
+async def test_route_map_marks_transport_outside_corridor_as_city_only() -> None:
+    """A transport category does not prove spatial membership in the selected route."""
+    route_id = uuid.uuid4()
+    origin_id = uuid.uuid4()
+    region_id = uuid.uuid4()
+    transport_on_route = Actor(
+        id=uuid.uuid4(), slug="porto-rota", name="Porto na rota", category_id=uuid.uuid4()
+    )
+    municipal_transport = Actor(
+        id=uuid.uuid4(),
+        slug="rodoviaria-cidade",
+        name="Rodoviária municipal",
+        category_id=uuid.uuid4(),
+    )
+    service = TerritorialService(AsyncMock())
+    service.repo.get_route_by_id = AsyncMock(
+        return_value=MagicMock(id=route_id, region_id=region_id, origins=[])
+    )
+    geojson = {"type": "LineString", "coordinates": [[-52.22, -3.26], [-52.21, -3.25]]}
+    service.repo.get_route_geometry = AsyncMock(return_value=(None, geojson))
+    service.repo.find_route_corridor_actors = AsyncMock(
+        return_value=[(transport_on_route, "transporte", -3.25, -52.21, False, 0)]
+    )
+    service.repo.list_region_essential_actors = AsyncMock(
+        return_value=[
+            (transport_on_route, "transporte", -3.25, -52.21),
+            (municipal_transport, "transporte", -3.20, -52.20),
+        ]
+    )
+    service.repo.get_region_bounds = AsyncMock(return_value=None)
+    service.repo.get_buffered_route_bounds = AsyncMock(return_value=None)
+
+    payload = (await service.get_route_map_payload(route_id, origin_id=origin_id)).data
+    pins = {pin.actor_id: pin for pin in payload.pins}
+
+    assert pins[transport_on_route.id].layer == "both"
+    assert pins[municipal_transport.id].layer == "citywide_essential"
