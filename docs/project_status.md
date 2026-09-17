@@ -1892,11 +1892,11 @@ revisão ou publicação. A execução começa por reconciliar a base atual.
 
 #### ECO-2702 — Pins, seleção e card no mapa
 
-- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
+- **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Motion Web staging / NOVA.
 - **Dependências ou sucessoras:** ECO-2701 revisada; demais gates específicos no plano.
-- **Conclusão / aceite:** entrada e seleção de pins perceptíveis e breves, mantendo o ponto geográfico e o fluxo atual de card selecionado. Cumprir todos os aceites A numerados na seção desta task do plano.
-- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
-- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2702.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
+- **Conclusão / aceite:** implementação local concluída; aceites A1–A7 atendidos em código e testes locais.
+- **Evidência e limite:** `MapAdapter.web.tsx` anima apenas o filho visual, registra pins vistos por contexto, respeita reduced motion e remove pulso infinito. Typecheck, OpenAPI, testes direcionados (45) e Jest completo (353) passaram. Playwright dedicado/vídeo ainda não reproduzido; sem publicação remota.
+- **Referência:** [Evidência ECO-2702](motion_design/evidence/ECO-2702.md), [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2702.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Local na branch `codex/eco-2702-motion`.
 
 #### ECO-2703 — Traçados e câmera
 
