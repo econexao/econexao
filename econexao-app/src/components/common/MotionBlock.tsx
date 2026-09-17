@@ -100,7 +100,9 @@ export const MotionBlock: React.FC<MotionBlockProps> = ({
     };
   }, [prefersReducedMotion, staggerIndex, duration]);
 
-  const opacity = animValue;
+  // Keep content perceptible and focusable during the entrance; never hide a
+  // live interactive block with opacity: 0 while waiting for its animation.
+  const opacity = animValue.interpolate({ inputRange: [0, 1], outputRange: [0.72, 1] });
   const translateY = animValue.interpolate({
     inputRange: [0, 1],
     outputRange: [initialTranslateY, 0],

@@ -11,6 +11,7 @@ import type { TripSchema } from '../../../src/api/types';
 import { useAuth } from '../../../src/hooks/useAuth';
 import { useAppTheme } from '../../../src/theme/theme';
 import { makeAccessibleButton } from '../../../src/utils/accessibility';
+import { MotionBlock } from '../../../src/components/common/MotionBlock';
 
 type TripFilter = 'all' | 'active' | 'completed';
 const FILTERS: { key: TripFilter; label: string }[] = [
@@ -65,6 +66,7 @@ export default function TripsHistoryScreen() {
     <View style={[styles.container, { backgroundColor: theme.colors.surfaceBackground }]}>
       <AppHeader showBack fallbackHref="/(tabs)/(profile)" title="Histórico de viagens" />
       <ScrollView contentContainerStyle={styles.content}>
+        <MotionBlock staggerIndex={0}>
         {!tripsQuery.isPending && !tripsQuery.isError && (
           <View accessibilityRole="tablist" style={styles.filtersRow}>
             {FILTERS.map((item) => {
@@ -146,6 +148,7 @@ export default function TripsHistoryScreen() {
             </View>
           </>
         )}
+        </MotionBlock>
       </ScrollView>
     </View>
   );

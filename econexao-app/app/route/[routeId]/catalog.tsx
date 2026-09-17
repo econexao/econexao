@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { CategoryFilters } from '../../../src/components/catalog/CategoryFilters';
 import { CategoryCarouselsCatalog } from '../../../src/components/catalog/CategoryCarouselsCatalog';
+import { MotionBlock } from '../../../src/components/common/MotionBlock';
 import { AppHeader } from '../../../src/components/common/AppHeader';
 import { ErrorStateView, LoadingView } from '../../../src/components/common/UIStateViews';
 import { SearchInput } from '../../../src/components/common/SearchInput';
@@ -115,6 +116,7 @@ export default function CatalogScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
+        <MotionBlock staggerIndex={0}>
         <CategoryCarouselsCatalog
           actors={allActors}
           categories={categories.data ?? []}
@@ -167,6 +169,7 @@ export default function CatalogScreen() {
             onRetry={() => void actorsQuery.fetchNextPage()}
           />
         )}
+        </MotionBlock>
       </ScrollView>
     </View>
   );

@@ -24,6 +24,7 @@ import { theme } from '../../src/theme/theme';
 import { makeAccessibleButton } from '../../src/utils/accessibility';
 import { useReducedMotion } from '../../src/hooks/useReducedMotion';
 import type { ActorSummary } from '../../src/api/types';
+import { MotionBlock } from '../../src/components/common/MotionBlock';
 
 export default function ActorDetailScreen() {
   const router = useRouter();
@@ -163,6 +164,7 @@ export default function ActorDetailScreen() {
       />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <MotionBlock staggerIndex={0}>
         {/* Cover / Image Banner */}
         <View style={styles.bannerContainer}>
           {coverImageUrl ? (
@@ -369,6 +371,7 @@ export default function ActorDetailScreen() {
         {actor.cover_media?.credit ? (
           <Text style={styles.mediaCredit}>Crédito da imagem principal: {actor.cover_media.credit}</Text>
         ) : null}
+        </MotionBlock>
       </ScrollView>
     </View>
   );
