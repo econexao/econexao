@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "total_migrations": 32,
+  "total_migrations": 33,
   "generated_at": "2026-09-10T23:43:57.208832+00:00",
   "migrations": [
     {
@@ -226,6 +226,13 @@
       "path": "supabase/migrations/20260916203000_altamira_actors_and_route_corridor.sql",
       "bytes": 1434304,
       "sha256": "89ad639106e010fb2470e4163fb487f498e073f4f147dcb0734d89e73463f672"
+    },
+    {
+      "version": "20260917123804",
+      "filename": "20260917123804_pedral_three_origins_destination_correction.sql",
+      "path": "supabase/migrations/20260917123804_pedral_three_origins_destination_correction.sql",
+      "bytes": 1198,
+      "sha256": "91171220909cb98411d66f7dc566f32f939218be3b928401aa7ee46bcbdd25d7"
     }
   ]
 }
