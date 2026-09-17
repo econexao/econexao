@@ -6,6 +6,27 @@ import {
   isCoordinateWithinBounds,
 } from '../map/MapAdapter.helpers';
 
+interface MockOrigin extends RouteOrigin {
+  latitude: number;
+  longitude: number;
+}
+
+interface MockRouteDetail extends Omit<RouteDetail, 'origins'> {
+  origins: MockOrigin[];
+  bounds?: {
+    min_lat: number;
+    max_lat: number;
+    min_lng: number;
+    max_lng: number;
+  };
+  city_bounds?: {
+    min_lat: number;
+    max_lat: number;
+    min_lng: number;
+    max_lng: number;
+  };
+}
+
 describe('ECO-2700 Regression: Pedral 4 official origins and corridor boundaries', () => {
   // 4 Origens oficiais da Rota do Pedral (Balneário Luiz do Pedral) - Migration 20260917160415
   const PEDRAL_DESTINATION = {
@@ -14,11 +35,13 @@ describe('ECO-2700 Regression: Pedral 4 official origins and corridor boundaries
     name: 'Balneário Luiz do Pedral',
   };
 
-  const PEDRAL_ORIGINS: RouteOrigin[] = [
+  const PEDRAL_ORIGINS: MockOrigin[] = [
     {
       id: 'a17a314a-0000-4000-8000-000000000011',
+      route_id: 'a17a314a-0000-4000-8000-000000000002',
       code: 'rodoviaria',
       name: 'Terminal Rodoviário de Altamira',
+      sort_order: 1,
       latitude: -3.205732,
       longitude: -52.2198928,
       description: 'Terminal Rodoviário de Altamira (10,5 km até Balneário Luiz do Pedral)',
@@ -27,8 +50,10 @@ describe('ECO-2700 Regression: Pedral 4 official origins and corridor boundaries
     },
     {
       id: 'a17a314a-0000-4000-8000-000000000012',
+      route_id: 'a17a314a-0000-4000-8000-000000000002',
       code: 'aeroporto',
       name: 'Aeroporto de Altamira',
+      sort_order: 2,
       latitude: -3.2534371,
       longitude: -52.2480994,
       description: 'Aeroporto de Altamira (5,5 km até Balneário Luiz do Pedral)',
@@ -37,8 +62,10 @@ describe('ECO-2700 Regression: Pedral 4 official origins and corridor boundaries
     },
     {
       id: 'a17a314a-0000-4000-8000-000000000013',
+      route_id: 'a17a314a-0000-4000-8000-000000000002',
       code: 'terminal_fluvial',
       name: 'Terminal Fluvial / Cais da Orla',
+      sort_order: 3,
       latitude: -3.2058603,
       longitude: -52.2054132,
       description: 'Terminal Fluvial de Altamira (10,6 km até Balneário Luiz do Pedral)',
@@ -47,8 +74,10 @@ describe('ECO-2700 Regression: Pedral 4 official origins and corridor boundaries
     },
     {
       id: 'a17a314a-0000-4000-8000-000000000014',
+      route_id: 'a17a314a-0000-4000-8000-000000000002',
       code: 'centro',
       name: 'Centro (Praça da Matriz)',
+      sort_order: 4,
       latitude: -3.205289,
       longitude: -52.206082,
       description: 'Centro de Altamira (10,5 km até Balneário Luiz do Pedral)',
@@ -57,7 +86,7 @@ describe('ECO-2700 Regression: Pedral 4 official origins and corridor boundaries
     },
   ];
 
-  const PEDRAL_ROUTE: RouteDetail = {
+  const PEDRAL_ROUTE: MockRouteDetail = {
     id: 'a17a314a-0000-4000-8000-000000000002',
     slug: 'rota-pedral',
     title: 'Rota do Pedral (Altamira)',
@@ -68,9 +97,6 @@ describe('ECO-2700 Regression: Pedral 4 official origins and corridor boundaries
     status: 'active',
     is_verified: true,
     best_season: 'Ano todo',
-    distance_km: 10.5,
-    duration_hours: 0.3,
-    difficulty: 'facil',
     bounds: {
       min_lat: -3.258951,
       max_lat: -3.205203,
@@ -87,8 +113,6 @@ describe('ECO-2700 Regression: Pedral 4 official origins and corridor boundaries
     cover_image_url: null,
     cover_media: null,
     is_favorite: false,
-    categories: [],
-    actors: [],
   };
 
   it('valida que todas as 4 origens do Pedral estão presentes e possuem coordenadas válidas', () => {

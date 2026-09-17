@@ -1884,11 +1884,11 @@ revisão ou publicação. A execução começa por reconciliar a base atual.
 
 #### ECO-2701 — Fundação e movimento reduzido
 
-- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
-- **Dependências ou sucessoras:** ECO-2700 revisada; demais gates específicos no plano.
-- **Conclusão / aceite:** todos os efeitos futuros compartilham tokens, preferência e cancelamento, demonstrados em um botão e um bloco real. Cumprir todos os aceites A numerados na seção desta task do plano.
-- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
-- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2701.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
+- **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Motion Web staging / NOVA.
+- **Dependências ou sucessoras:** ECO-2700 revisada; desbloqueia ECO-2702.
+- **Conclusão / aceite:** todos os efeitos futuros compartilham tokens (`src/theme/motion.ts`), preferência com cleanup determinístico (`src/hooks/useReducedMotion.ts`) e cancelamento/interrupção em runtime (`useMotionTransition.ts`), demonstrados no caminho normal do app em 1 botão real (`FilterChip.tsx` com `MotionPressable`) e 1 bloco real (`app/(tabs)/(explore)/index.tsx` com `MotionBlock`), sem telas de debug públicas. Cumpridos todos os aceites A1 a A6.
+- **Evidência e limite:** Executada em 17/09/2026 no worktree isolado `eco-nexao-motion-2701` na branch `codex/eco-2701-motion` sobre a base `codex/motion-integration` (`98451fc801a57bc4742246ffa4af9b613749a3ac`). Criados design tokens em `src/theme/motion.ts` e exportados no tema; adapters de preferência de movimento reduzido com isolamento rigoroso de DOM (`.web.ts` e `.native.ts`); hook de transição `useMotionTransition` com salto estático imediato sob mudança em runtime; componentes `MotionPressable` e `MotionBlock` acessíveis. Verificados `typecheck` (exit code 0), `openapi:check` (exit code 0), `npm test -- --watch=false` (57 suítes/353 testes Jest passaram com exit code 0) e `npm run test:browser` (40/40 testes Playwright passaram em Chromium Desktop e Mobile). Testes dedicados `e2e/eco2701-motion-reduced.spec.ts` cobriram modos normal, reduzido e alternância dinâmica em runtime. Subagentes testador (`ALL PASS`) e revisor independente (`APPROVE`) aprovaram a entrega. Nenhuma nova dependência adicionada e nenhuma publicação remota realizada.
+- **Referência:** [Evidência ECO-2701](motion_design/evidence/ECO-2701.md), [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2701.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Local na branch `codex/eco-2701-motion`.
 
 #### ECO-2702 — Pins, seleção e card no mapa
 

@@ -1,8 +1,9 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme/theme';
 import { makeAccessibleButton } from '../../utils/accessibility';
+import { MotionPressable } from './MotionPressable';
 
 interface FilterChipProps {
   label: string;
@@ -18,17 +19,17 @@ export const FilterChip: React.FC<FilterChipProps> = ({
   icon,
 }) => {
   return (
-    <TouchableOpacity
+    <MotionPressable
       style={[
         styles.chip,
         isSelected ? styles.chipSelected : styles.chipUnselected,
       ]}
       onPress={onPress}
-      accessibilityState={{ selected: isSelected }}
       {...makeAccessibleButton(
         `Filtro ${label}`,
         isSelected ? 'Filtro ativado. Toque para desativar.' : 'Toque para filtrar por esta categoria.'
       )}
+      accessibilityState={{ disabled: false, selected: isSelected }}
     >
       {icon && (
         <Ionicons
@@ -46,7 +47,7 @@ export const FilterChip: React.FC<FilterChipProps> = ({
       >
         {label}
       </Text>
-    </TouchableOpacity>
+    </MotionPressable>
   );
 };
 
