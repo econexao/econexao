@@ -225,12 +225,9 @@ ON CONFLICT (route_id, actor_id) DO UPDATE SET
     archived_at = NULL,
     updated_at = clock_timestamp();
 
--- Archive actors that are no longer within 1000m of any of the four geometries
-UPDATE app_private.route_actors ra
-SET archived_at = clock_timestamp(),
-    updated_at = clock_timestamp()
+-- Remove route associations that are no longer within 1000m of any of the four geometries
+DELETE FROM app_private.route_actors ra
 WHERE ra.route_id = 'a17a314a-0000-4000-8000-000000000002'
-  AND ra.archived_at IS NULL
   AND NOT EXISTS (
       SELECT 1
       FROM app_private.actors a
