@@ -30,6 +30,7 @@ const MIN_ZOOM = 3;
 const MAX_ZOOM = 19;
 const PIN_ENTER_CLASS = 'econexao-pin-enter';
 const PIN_SELECTED_CLASS = 'econexao-pin-selected';
+const ROUTE_HIGHLIGHT_CLASS = 'econexao-route-highlight';
 
 const ensurePinMotionStyles = () => {
   if (typeof document === 'undefined' || document.getElementById('econexao-pin-motion-styles')) return;
@@ -40,9 +41,45 @@ const ensurePinMotionStyles = () => {
     @keyframes econexao-pin-selected { from { transform: scale(.94); } 60% { transform: scale(1.06); } to { transform: scale(1); } }
     .${PIN_ENTER_CLASS} { animation: econexao-pin-enter 180ms cubic-bezier(.2,0,0,1) both; transform-origin: 50% 100%; }
     .${PIN_SELECTED_CLASS} { animation: econexao-pin-selected 180ms cubic-bezier(.2,0,0,1) both; transform-origin: 50% 100%; }
-    @media (prefers-reduced-motion: reduce) { .${PIN_ENTER_CLASS}, .${PIN_SELECTED_CLASS} { animation: none !important; } }
+    .${ROUTE_HIGHLIGHT_CLASS} { stroke-dasharray: 14 10; animation: econexao-route-highlight 650ms cubic-bezier(.2,0,0,1) both; pointer-events: none; }
+    @keyframes econexao-route-highlight { from { stroke-dashoffset: 220; opacity: .2; } to { stroke-dashoffset: 0; opacity: .72; } }
+    @media (prefers-reduced-motion: reduce) { .${PIN_ENTER_CLASS}, .${PIN_SELECTED_CLASS}, .${ROUTE_HIGHLIGHT_CLASS} { animation: none !important; } }
   `;
   document.head.appendChild(style);
+};
+
+const RouteHighlight: React.FC<{
+  coordinates: MapCoordinate[];
+  signature: string;
+  reducedMotion: boolean;
+}> = ({ coordinates, signature, reducedMotion }) => {
+  const playedSignaturesRef = useRef<Set<string>>(new Set());
+  const [visibleSignature, setVisibleSignature] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (reducedMotion || coordinates.length < 2 || playedSignaturesRef.current.has(signature)) {
+      setVisibleSignature(null);
+      return;
+    }
+
+    playedSignaturesRef.current.add(signature);
+    setVisibleSignature(signature);
+    const timeout = window.setTimeout(() => setVisibleSignature(null), 650);
+    return () => window.clearTimeout(timeout);
+  }, [coordinates.length, reducedMotion, signature]);
+
+  if (!visibleSignature || visibleSignature !== signature) return null;
+  return (
+    <Polyline
+      positions={coordinates.map(({ latitude, longitude }) => [latitude, longitude])}
+      pathOptions={{
+        className: ROUTE_HIGHLIGHT_CLASS,
+        color: theme.colors.brandLeaf,
+        weight: 7,
+        opacity: 0.72,
+      }}
+    />
+  );
 };
 
 const toLeafletBounds = (coordinates: MapCoordinate[]): LatLngBoundsExpression | null =>
@@ -408,26 +445,26 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   const recenter = useCallback(() => {
     if (leafletBounds && mapRef.current) {
       try {
-        mapRef.current.fitBounds(leafletBounds, { padding: [52, 52], animate: true });
+        mapRef.current.fitBounds(leafletBounds, { padding: [52, 52], animate: !prefersReducedMotion });
       } catch {}
     } else if (mapRef.current) {
       try {
         mapRef.current.setView([initialRegion.latitude, initialRegion.longitude], calculatedInitialZoom, {
-          animate: true,
+          animate: !prefersReducedMotion,
         });
       } catch {}
     }
-  }, [calculatedInitialZoom, initialRegion, leafletBounds]);
+  }, [calculatedInitialZoom, initialRegion, leafletBounds, prefersReducedMotion]);
 
   const changeZoom = useCallback((delta: number) => {
     const map = mapRef.current;
     if (!map) return;
     try {
       const nextZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, map.getZoom() + delta));
-      map.setZoom(nextZoom, { animate: true });
+      map.setZoom(nextZoom, { animate: !prefersReducedMotion });
       setZoomLevel(nextZoom);
     } catch {}
-  }, []);
+  }, [prefersReducedMotion]);
 
   const selectionPinA11y = useMemo(
     () => getSelectionPinAccessibilityLabel(selectedCoordinate, selectionPinLabel),
@@ -466,10 +503,17 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
         />
 
         {routeCoordinates.length >= 2 && (
-          <Polyline
-            positions={routeCoordinates.map(({ latitude, longitude }) => [latitude, longitude])}
-            pathOptions={{ color: theme.colors.brandForest, weight: 5 }}
-          />
+          <>
+            <Polyline
+              positions={routeCoordinates.map(({ latitude, longitude }) => [latitude, longitude])}
+              pathOptions={{ color: theme.colors.brandForest, weight: 5 }}
+            />
+            <RouteHighlight
+              coordinates={routeCoordinates}
+              signature={motionRouteSignature}
+              reducedMotion={prefersReducedMotion}
+            />
+          </>
         )}
 
         {renderableItems.map((item) => {

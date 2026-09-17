@@ -1900,11 +1900,11 @@ revisão ou publicação. A execução começa por reconciliar a base atual.
 
 #### ECO-2703 — Traçados e câmera
 
-- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
+- **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Motion Web staging / NOVA.
 - **Dependências ou sucessoras:** ECO-2702 revisada; demais gates específicos no plano.
 - **Conclusão / aceite:** traçado ganha realce breve de apresentação sem esconder caminho nem alterar geometria; câmera respeita intenção e movimento reduzido. Cumprir todos os aceites A numerados na seção desta task do plano.
-- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
-- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2703.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
+- **Evidência e limite:** Implementação local no worktree isolado; typecheck, OpenAPI, Jest completo, export fixture e regressão browser ECO-2609 reproduzida. `npm run test:browser` mantém 8 falhas históricas/ajustadas no cenário ECO-2609 antes da reprodução direcionada; sem vídeo/trace dedicado e sem publicação remota.
+- **Referência:** [Evidência ECO-2703](motion_design/evidence/ECO-2703.md), [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2703.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Local na branch `codex/eco-2703-motion`.
 
 #### ECO-2704 — Galerias e carrosséis
 
