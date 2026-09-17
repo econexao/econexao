@@ -252,6 +252,23 @@ describe('MapAdapter shared geospatial helpers', () => {
       expect(result.map((p) => p.id)).toEqual(['pin-corridor-1', 'pin-both-1', 'pin-no-layer']);
     });
 
+    it('keeps municipal transport in city mode when its effective layer is citywide', () => {
+      const municipalTransport: MapPin = {
+        ...pinsSample[2],
+        id: 'pin-city-transport',
+        actor_id: 'actor-city-transport',
+        name: 'Rodoviária municipal',
+        category_slug: 'transporte',
+        category_label: 'Transporte',
+        layer: 'citywide_essential',
+      };
+
+      expect(filterPinsByModeAndCategory([municipalTransport], 'route')).toEqual([]);
+      expect(filterPinsByModeAndCategory([municipalTransport], 'city')).toEqual([
+        municipalTransport,
+      ]);
+    });
+
     it('in route mode, preserves selection state without leaking a city pin into route layer', () => {
       const result = filterPinsByModeAndCategory(pinsSample, 'route', '', 'actor-2');
       expect(result.map((p) => p.id)).toEqual([
