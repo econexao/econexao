@@ -50,6 +50,14 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
   useLayoutEffect(() => {
     if (typeof document === 'undefined') return;
 
+    // Move focus before controls become inert/non-interactive. Layout effect
+    // guarantees this happens before the browser paints the exit state.
+    if (mounted && !visible && !exiting && containerRef.current) {
+      containerRef.current.focus();
+      setExiting(true);
+      return;
+    }
+
     if (visible && mounted && !exiting) {
       if (document.activeElement instanceof HTMLElement) {
         previousActiveElementRef.current = document.activeElement;
@@ -118,6 +126,11 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        if (exiting) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
         e.preventDefault();
         e.stopPropagation();
         onClose?.();
