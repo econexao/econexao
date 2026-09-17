@@ -1932,11 +1932,11 @@ revisão ou publicação. A execução começa por reconciliar a base atual.
 
 #### ECO-2707 — Qualificação integrada
 
-- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
+- **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Motion Web staging / NOVA.
 - **Dependências ou sucessoras:** ECO-2706 revisada; demais gates específicos no plano.
 - **Conclusão / aceite:** provar o conjunto completo antes de qualquer push para publicar. Cumprir todos os aceites A numerados na seção desta task do plano.
-- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
-- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2707.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
+- **Evidência e limite:** Qualificação integrada local: typecheck/OpenAPI/Jest 57/354, export fixture, Playwright 40/40 desktop/mobile e export web passaram. A3/A6/A7 permanecem NOT_VERIFIABLE por ausência de comparação pós-motion, teste integrado de 20 ciclos e revisor externo; sem publicação remota.
+- **Referência:** [Evidência ECO-2707](motion_design/evidence/ECO-2707.md), [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2707.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Local `b86bbc0` em `codex/motion-integration`.
 
 #### ECO-2708 — Reconciliação e preparação de release
 
