@@ -1908,11 +1908,11 @@ revisão ou publicação. A execução começa por reconciliar a base atual.
 
 #### ECO-2704 — Galerias e carrosséis
 
-- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
+- **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Motion Web staging / NOVA.
 - **Dependências ou sucessoras:** ECO-2703 revisada; demais gates específicos no plano.
 - **Conclusão / aceite:** navegar por fotos e cards com continuidade, controle explícito e sem alteração de créditos/alt text. Cumprir todos os aceites A numerados na seção desta task do plano.
-- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
-- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2704.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
+- **Evidência e limite:** Implementação local no worktree isolado; typecheck, OpenAPI, Jest completo, export fixture e E2E de fotos (10/10 desktop/mobile) passaram. Sem homologação nativa, vídeo/trace dedicado ou publicação remota.
+- **Referência:** [Evidência ECO-2704](motion_design/evidence/ECO-2704.md), [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2704.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Local na branch `codex/eco-2704-motion`.
 
 #### ECO-2705 — Entradas, filtros e navegação
 
