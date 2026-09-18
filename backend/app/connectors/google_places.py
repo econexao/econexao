@@ -228,7 +228,7 @@ class GooglePlacesClient:
         client: httpx.AsyncClient | None = None,
         sleep: Sleep = asyncio.sleep,
     ) -> None:
-        if not api_key.strip():
+        if enabled and not api_key.strip():
             raise ValueError("Google Places API key is required")
         if timeout_s <= 0:
             raise ValueError("timeout_s must be positive")

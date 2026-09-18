@@ -1948,11 +1948,11 @@ revisão ou publicação. A execução começa por reconciliar a base atual.
 
 #### ECO-2709 — Publicação e homologação em staging
 
-- **Estado / horizonte / alteração:** PENDENTE / Motion Web staging / NOVA.
+- **Estado / horizonte / alteração:** PARCIAL / Motion Web staging / PUBLICADA, NÃO HOMOLOGADA.
 - **Dependências ou sucessoras:** ECO-2708 revisada; demais gates específicos no plano.
 - **Conclusão / aceite:** disponibilizar e comprovar o motion no endereço canônico; não encerrar apenas no merge ou preview. Cumprir todos os aceites A numerados na seção desta task do plano.
-- **Evidência e limite:** Planejamento de 17/09/2026; nenhuma implementação/teste de produto/publicação desta task executada.
-- **Referência:** [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2709.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Não vinculado.
+- **Evidência e limite:** PR #70 integrada por squash em `staging` no SHA `943b11a426d91c87e83140f82e1e6c84ccf6de3b`; workflow `35341124936` passou backend, frontend, drift/advisors, secret scan e Render smoke; deployment Vercel `dpl_FnWnCm5ao4p44gmA352b6djW4Seg` ficou READY e serve o alias canônico. A homologação desktop pública passou rota Pedral, mapa, pins/categorias, modos rota/cidade, quatro origens, traçado, catálogo e modal, mas encontrou HTTP 500 reproduzível no endpoint Google Photo da Praia do Pedral. A causa foi isolada localmente: chave ausente com feature desabilitada lançava `ValueError` durante dependency injection; correção local faz o modo desabilitado falhar como 503 seguro e passou 10 testes direcionados, Ruff/mypy e 849 testes backend. Foto real ainda depende de credencial/flag e novo GO remoto. Mobile, movimento reduzido e vídeo/trace temporal ficaram NOT_VERIFIABLE; nenhuma escrita remota foi executada. O relatório/status e a correção permanecem locais e não foram enviados a `staging`.
+- **Referência:** [Evidência ECO-2709](motion_design/evidence/ECO-2709.md), [PR #70](https://github.com/econexao/econexao/pull/70), [workflow](https://github.com/econexao/econexao/actions/runs/35341124936), [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2709.md), [protocolo](motion_design/execution_protocol.md). **Commit publicado:** `943b11a426d91c87e83140f82e1e6c84ccf6de3b`; **registro pós-publicação:** branch local `codex/eco-2709-motion`.
 
 ## Evidências preservadas e limites desta consolidação
 
