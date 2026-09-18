@@ -733,7 +733,7 @@ export default function MapScreen() {
         {!isSelectionMode && Boolean(selectedActorId) && Boolean(selectedPin || selectedActorSummary) && (
           <View
             style={styles.floatingCardContainer}
-            accessibilityRole="region"
+            accessibilityRole="summary"
             accessibilityLabel={`Detalhes de ${selectedPin?.name || selectedActorSummary?.name || 'ponto selecionado'}`}
           >
             <View style={styles.floatingCard}>

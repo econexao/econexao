@@ -267,7 +267,7 @@ describe('MapScreen actor sheet (ECO-0905)', () => {
     await act(async () => pin.props.onPress());
 
     const floatingCard = root.find(
-      (node) => node.props.accessibilityRole === 'region' && node.props.accessibilityLabel?.includes('Pousada Pindobal')
+      (node) => node.props.accessibilityRole === 'summary' && node.props.accessibilityLabel?.includes('Pousada Pindobal')
     );
     expect(floatingCard).toBeDefined();
 
@@ -281,7 +281,7 @@ describe('MapScreen actor sheet (ECO-0905)', () => {
     await act(async () => closeBtn.props.onPress());
 
     const closedCard = root.findAll(
-      (node) => node.props.accessibilityRole === 'region' && node.props.accessibilityLabel?.includes('Pousada Pindobal')
+      (node) => node.props.accessibilityRole === 'summary' && node.props.accessibilityLabel?.includes('Pousada Pindobal')
     );
     expect(closedCard.length).toBe(0);
     expect(push).not.toHaveBeenCalled();
@@ -645,7 +645,7 @@ describe('MapScreen actor sheet (ECO-0905)', () => {
     );
     await act(async () => pin.props.onPress());
     const floatingCards = root.findAll(
-      (node) => node.props.accessibilityRole === 'region' && node.props.accessibilityLabel?.includes('Detalhes')
+      (node) => node.props.accessibilityRole === 'summary' && node.props.accessibilityLabel?.includes('Detalhes')
     );
     expect(floatingCards.length).toBe(0);
 
