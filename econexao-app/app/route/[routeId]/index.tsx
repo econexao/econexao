@@ -13,7 +13,7 @@ import { RouteMapPreview } from '../../../src/components/routes/RouteMapPreview'
 import { RouteGallery } from '../../../src/components/routes/RouteGallery';
 import { MotionBlock } from '../../../src/components/common/MotionBlock';
 import { GoogleRoutesMapNotice } from '../../../src/components/routes/GoogleRoutesMapNotice';
-import { getPindobalCoverImage, getPedralCoverImage, getRouteCoverImage } from '../../../src/components/routes/routeCoverImage';
+import { getPindobalCoverImage, getPedralCoverImage, getRouteCoverImage, getRouteDisplayName } from '../../../src/components/routes/routeCoverImage';
 import { useRouteAlertsQuery, useRouteDetailQuery } from '../../../src/hooks/queries';
 import { theme, useAppTheme } from '../../../src/theme/theme';
 
@@ -255,13 +255,15 @@ export default function RouteDetailScreen() {
     />
   ) : null;
 
+  const displayTitle = route ? getRouteDisplayName(route) : '';
+
   return (
     <View style={styles.container}>
       <AppHeader
         showBack
         fallbackHref="/(tabs)/(routes)"
         onBackPress={handleBack}
-        title={route.title}
+        title={displayTitle}
       />
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -277,7 +279,7 @@ export default function RouteDetailScreen() {
                 accessible={false}
               />
               <View style={styles.heroOverlay}>
-                <Text style={[styles.title, styles.titleOnImage]}>{route.title}</Text>
+                <Text style={[styles.title, styles.titleOnImage]}>{displayTitle}</Text>
                 <Text style={[styles.subtitle, styles.subtitleOnImage]}>
                   {route.city}, {route.state_code}
                   {route.is_verified && ' • Rota Verificada'}
@@ -301,7 +303,7 @@ export default function RouteDetailScreen() {
         ) : (
           <>
             <View style={styles.heroSection}>
-              <Text style={styles.title}>{route.title}</Text>
+              <Text style={styles.title}>{displayTitle}</Text>
               <Text style={styles.subtitle}>
                 {route.city}, {route.state_code}
                 {route.is_verified && ' • Rota Verificada'}
