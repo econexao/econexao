@@ -146,12 +146,20 @@ def test_actor_endpoint_is_safe_for_success_no_photo_and_upstream_failure() -> N
 async def test_missing_reconciled_reference_and_upstream_error_fail_closed() -> None:
     service = ActorGooglePhotoService(
         _Repository(None),
-        GooglePlacesClient("test-key", enabled=False),
+        GooglePlacesClient("", enabled=False),
         GooglePhotoProxyService(_fetcher),
     )
     with pytest.raises(Exception) as missing:
         await service.issue(uuid.uuid4())
     assert "place" not in str(missing.value).lower()
+
+    disabled = ActorGooglePhotoService(
+        _Repository(),
+        GooglePlacesClient("", enabled=False),
+        GooglePhotoProxyService(_fetcher),
+    )
+    with pytest.raises(ActorGooglePhotoUpstreamUnavailable):
+        await disabled.issue(uuid.uuid4())
 
     class BrokenPlaces:
         async def place_details(self, *_: object, **__: object) -> object:
