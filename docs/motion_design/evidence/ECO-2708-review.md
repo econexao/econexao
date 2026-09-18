@@ -27,9 +27,10 @@ A revisão executou inspeção do diff completo entre `origin/staging` (`2d62f27
    - O endpoint de imagem `/google-photo` é respondido com payload fixture válido sem gerar erro HTTP 404 no console.
    - O teste Playwright monitora eventos `console.error` e `pageerror` e **falha explicitamente** caso qualquer erro inesperado ocorra (`expect(consoleErrors).toEqual([])`).
 5. **Auditoria de Branch Protection e Política de Release (Aceite A5):**
-   - Chamada `gh api repos/econexao/econexao/branches/staging/protection` retornou HTTP 404.
-   - Chamada `gh api repos/econexao/econexao/rulesets` retornou `[]` (vazio).
-   - O workflow de CI `validate-promotion.yml` valida a linhagem da branch e `APPLY_STAGING_MIGRATIONS=false` bloqueia migrations não autorizadas, porém o GitHub não possui ruleset remoto que bloqueie merge de base desatualizada via servidor. A garantia de ancestralidade (`git merge-base --is-ancestor origin/staging HEAD`) deve ser conferida operacionalmente pelo operador antes do merge.
+   - A proteção de `staging` foi configurada após GO explícito do owner e verificada pela API do GitHub em 18/09/2026.
+   - `required_status_checks.strict` está ativo, impedindo merge com a base desatualizada.
+   - Os checks obrigatórios são `Validate branch promotion flow`, `contract` e `Vercel`; a proteção também se aplica a administradores.
+   - Force push e exclusão da branch estão bloqueados. O pipeline mantém `APPLY_STAGING_MIGRATIONS=false`, impedindo migrations não autorizadas.
 
 ---
 
@@ -53,7 +54,7 @@ A revisão executou inspeção do diff completo entre `origin/staging` (`2d62f27
 - **A2 (Isolamento de escopo):** Satisfeito integralmente. Nenhuma mutação em backend, banco ou landing page.
 - **A3 (Alinhamento e conflitos):** Satisfeito integralmente. Base fast-forward com `origin/staging` (`2d62f27`).
 - **A4 (Reversibilidade / Rollback):** Satisfeito integralmente. Procedimentos Git e Vercel documentados.
-- **A5 (Identidade remota e política):** **Aprovado com ressalva documental (Parcialmente Verificável Remotamente)** — Alvo Vercel/Render confirmado; CI promotion gate e migration gate verificados; ausência de ruleset remoto de branch protection em staging no GitHub documentada.
+- **A5 (Identidade remota e política):** Satisfeito integralmente. Alvo Vercel/Render, checks obrigatórios, atualização estrita da base, aplicação a administradores e migration gate foram verificados.
 - **A6 (Manifesto de release candidate):** Satisfeito integralmente em `release-candidate.md` e `ECO-2708.md`.
 - **A7 (Parecer independente):** Satisfeito com a emissão e versionamento deste relatório.
 

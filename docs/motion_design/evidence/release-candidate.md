@@ -28,6 +28,7 @@ A iniciativa de Motion Design Web foi construída incrementalmente com isolament
 | `b86bbc0` | ECO-2706 | docs(motion): record ECO-2706 review evidence |
 | `13a81fc` | ECO-2707 | docs(motion): record ECO-2707 integrated qualification |
 | `9e80d36` | ECO-2708 | docs(motion): reconcile ECO-2708 release candidate and clean test fixtures |
+| `8d5cc8f` | ECO-2708 | docs(motion): align contractual types, clean e2e fixtures, and record independent review |
 
 ---
 
@@ -63,7 +64,9 @@ A iniciativa de Motion Design Web foi construída incrementalmente com isolament
 - **Ambiente Render:** `https://econexao-backend-staging-30dt.onrender.com`
 - **Pipeline GitHub Actions:** `.github/workflows/staging-deploy.yml` acionado no push para `staging`.
 - **Supabase Staging Gate:** `APPLY_STAGING_MIGRATIONS=false` — falha se houver migrations pendentes (garantia de integridade).
-- **Auditoria de Branch Protection em Staging:** Chamada `gh api repos/econexao/econexao/branches/staging/protection` retornou HTTP 404 (sem ruleset remoto ativo). O bloqueio por avanço de base depende de conferência operacional pré-merge (`git merge-base --is-ancestor origin/staging HEAD`).
+- **Proteção de `staging`:** configurada e verificada pela API do GitHub em 18/09/2026 com atualização obrigatória da branch (`strict: true`) e aplicação também a administradores.
+- **Checks obrigatórios:** `Validate branch promotion flow`, `contract` e `Vercel`.
+- **Integridade da branch:** force push e exclusão bloqueados. Não foi exigida aprovação adicional de PR nesta alteração.
 
 ---
 
