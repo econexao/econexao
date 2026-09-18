@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AppHeader } from '../../../src/components/common/AppHeader';
 import { RegionSelectorModal } from '../../../src/components/common/RegionSelectorModal';
 import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/components/common/UIStateViews';
 import { MotionBlock } from '../../../src/components/common/MotionBlock';
@@ -26,6 +26,7 @@ import { isPreviewRoute, mergeRoutesWithPreviews } from '../../../src/constants/
 
 export default function HomeScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { state } = useApp();
   const { user } = useAuth();
   const [isRegionModalOpen, setIsRegionModalOpen] = useState(false);
@@ -59,14 +60,12 @@ export default function HomeScreen() {
         {/* Scrim Overlay contínuo com escurecimento progressivo para legibilidade AAA */}
         <View style={styles.scrimOverlay} />
 
-        <AppHeader overlayOnImage />
-
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Espaçamento superior ajustado para acomodar a logo */}
-          <View style={styles.heroTopSpacer} />
+          {/* Espaçamento superior com respeito a safe-area para aproximar a logo do topo */}
+          <View style={[styles.heroTopSpacer, { height: Math.max(insets.top + 8, 24) }]} />
 
           {/* Bloco do Hero com MotionBlock */}
           <MotionBlock style={styles.heroBlock}>
@@ -284,7 +283,7 @@ const styles = StyleSheet.create({
     paddingBottom: 72,
   },
   heroTopSpacer: {
-    height: 48,
+    height: 24,
   },
   heroBlock: {
     paddingHorizontal: theme.spacing.marginMobile,
