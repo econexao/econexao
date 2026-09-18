@@ -252,20 +252,98 @@ async function setupBaselineMocks(page: import('@playwright/test').Page) {
       return;
     }
 
-    if (pathname.includes('/preferences') || pathname.includes('/me') || pathname.includes('/bootstrap')) {
+    // Specific /me routes evaluated BEFORE generic /me
+    if (pathname === '/api/v1/me/favorite-actors' || pathname.startsWith('/api/v1/me/favorite-actors')) {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ data: { active_region_id: 'reg-santarem-belterra', favorites: [] } }),
+        body: JSON.stringify({ data: [], meta: { total: 0, page: 1, limit: 50, total_pages: 1 } }),
       });
       return;
     }
 
-    if (pathname.includes('/favorite-actors') || pathname.includes('/favorite-routes')) {
+    if (pathname === '/api/v1/me/favorite-routes' || pathname.startsWith('/api/v1/me/favorite-routes')) {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ data: [], meta: { total: 0, page: 1, limit: 50 } }),
+        body: JSON.stringify({ data: [], meta: { total: 0, page: 1, limit: 50, total_pages: 1 } }),
+      });
+      return;
+    }
+
+    if (pathname === '/api/v1/me/trips' || pathname.startsWith('/api/v1/me/trips')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: [
+            {
+              id: 'trip-1',
+              route_id: 'rota-santarem-pindobal',
+              route_title: 'Rota Santarém → Praia de Pindobal',
+              status: 'in_progress',
+              started_at: '2026-09-17T10:00:00Z',
+              completed_at: null,
+            },
+            {
+              id: 'trip-2',
+              route_id: 'a17a314a-0000-4000-8000-000000000002',
+              route_title: 'Rota do Pedral (Altamira)',
+              status: 'completed',
+              started_at: '2026-09-10T08:00:00Z',
+              completed_at: '2026-09-10T11:30:00Z',
+            },
+          ],
+        }),
+      });
+      return;
+    }
+
+    if (pathname === '/api/v1/me/preferences') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: {
+            active_region_id: 'reg-santarem-belterra',
+            interests: [],
+            dietary_restrictions: [],
+            transport_modes: [],
+            accessibility_needs: [],
+          },
+        }),
+      });
+      return;
+    }
+
+    if (pathname === '/api/v1/me' || pathname === '/api/v1/me/') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: {
+            id: 'user-e2e-tester',
+            email: 'tester@econexao.org.br',
+            full_name: 'Turista ECOnexão',
+            avatar_url: null,
+            role: 'authenticated',
+          },
+        }),
+      });
+      return;
+    }
+
+    if (pathname.includes('/google-photo')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: {
+            photo_url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="400" height="300" fill="%232D6A4F"/></svg>',
+            author_name: 'ECOnexão Guia',
+            author_url: 'https://econexao.org.br',
+          },
+        }),
       });
       return;
     }
@@ -379,11 +457,6 @@ async function setupBaselineMocks(page: import('@playwright/test').Page) {
       return;
     }
 
-    if (pathname.endsWith('/google-photo')) {
-      await route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ detail: 'Foto não disponível' }) });
-      return;
-    }
-
     if (pathname.startsWith('/api/v1/actors/')) {
       const actorId = pathname.split('/').pop();
       await route.fulfill({
@@ -444,14 +517,22 @@ async function setupBaselineMocks(page: import('@playwright/test').Page) {
 }
 
 test.describe('ECO-2700: Motion Baseline, Inventory & Isolation', () => {
+  const consoleErrors: string[] = [];
+  const pageErrors: string[] = [];
+
   test.beforeEach(async ({ page }) => {
+    consoleErrors.length = 0;
+    pageErrors.length = 0;
+
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
         console.log('BROWSER CONSOLE ERROR:', msg.text());
+        consoleErrors.push(msg.text());
       }
     });
     page.on('pageerror', (err) => {
       console.log('PAGE ERROR:', err.message);
+      pageErrors.push(err.message || String(err));
     });
     await setupBaselineMocks(page);
   });
@@ -593,8 +674,10 @@ test.describe('ECO-2700: Motion Baseline, Inventory & Isolation', () => {
       JSON.stringify({ device: isMobile ? 'chromium-mobile (400x832)' : 'chromium-desktop (1280x800)', metrics }, null, 2)
     );
 
-    // Validações de sanidade do baseline
+    // Validações de sanidade do baseline e ausência de erros no console
     expect(metrics.sampleCount).toBeGreaterThan(20);
     expect(metrics.rafMedianMs).toBeLessThan(40);
+    expect(consoleErrors, `Console errors detectados durante a jornada: ${consoleErrors.join(' | ')}`).toEqual([]);
+    expect(pageErrors, `Page errors detectados durante a jornada: ${pageErrors.join(' | ')}`).toEqual([]);
   });
 });

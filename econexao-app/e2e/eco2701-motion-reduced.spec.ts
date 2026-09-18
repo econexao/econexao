@@ -81,7 +81,25 @@ async function setupMocks(page: import('@playwright/test').Page) {
       return;
     }
 
-    if (pathname.includes('/preferences') || pathname.includes('/me') || pathname.includes('/bootstrap')) {
+    if (pathname === '/api/v1/me/favorite-actors' || pathname.startsWith('/api/v1/me/favorite-actors')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ data: [], meta: { total: 0, page: 1, limit: 50, total_pages: 1 } }),
+      });
+      return;
+    }
+
+    if (pathname === '/api/v1/me/favorite-routes' || pathname.startsWith('/api/v1/me/favorite-routes') || pathname.includes('/saved-routes')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ data: [], meta: { total: 0, page: 1, limit: 50, total_pages: 1 } }),
+      });
+      return;
+    }
+
+    if (pathname === '/api/v1/me/preferences' || pathname.includes('/preferences') || pathname.includes('/bootstrap')) {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -90,11 +108,19 @@ async function setupMocks(page: import('@playwright/test').Page) {
       return;
     }
 
-    if (pathname.includes('/favorite-actors') || pathname.includes('/favorite-routes') || pathname.includes('/saved-routes')) {
+    if (pathname === '/api/v1/me' || pathname === '/api/v1/me/') {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ data: [], meta: { total: 0, page: 1, limit: 50 } }),
+        body: JSON.stringify({
+          data: {
+            id: 'user-e2e-tester',
+            email: 'tester@econexao.org.br',
+            full_name: 'Turista ECOnexão',
+            avatar_url: null,
+            role: 'authenticated',
+          },
+        }),
       });
       return;
     }

@@ -28,11 +28,7 @@ export default function TripsHistoryScreen() {
   const tripsQuery = useMyTripsQuery(user?.id);
   const [filter, setFilter] = useState<TripFilter>('all');
   const [transitioningTripId, setTransitioningTripId] = useState<string | null>(null);
-  const trips: TripSchema[] = Array.isArray(tripsQuery.data)
-    ? tripsQuery.data
-    : Array.isArray((tripsQuery.data as any)?.items)
-    ? (tripsQuery.data as any).items
-    : [];
+  const trips = tripsQuery.data ?? [];
   const counts = useMemo(() => ({
     all: trips.length,
     active: trips.filter((trip) => !isCompleted(trip)).length,

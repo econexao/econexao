@@ -7,8 +7,7 @@
 - **SHA base auditada em origin/staging:** `2d62f2724bc3f180e3e98638ad353f9dd94c3e32`
 - **Branch de integração da iniciativa:** `codex/motion-integration`
 - **Branch de release prep:** `codex/eco-2708-motion`
-- **SHA candidato inicial:** `13a81fc8e675796e72babf8f6a2d4c82d64ee767`
-- **Avanço de staging verificado:** Não houve avanço em `origin/staging` (continua em `2d62f2724bc3f180e3e98638ad353f9dd94c3e32`). Nenhum merge intermediário necessário.
+- **Avanço de staging verificado:** Não houve avanço em `origin/staging` (continua em `2d62f2724bc3f180e3e98638ad353f9dd94c3e32`). Linhagem perfeitamente alinhada.
 
 ---
 
@@ -28,18 +27,21 @@ A iniciativa de Motion Design Web foi construída incrementalmente com isolament
 | `d5d8992` | ECO-2706 | fix(motion): complete modal exit focus handling |
 | `b86bbc0` | ECO-2706 | docs(motion): record ECO-2706 review evidence |
 | `13a81fc` | ECO-2707 | docs(motion): record ECO-2707 integrated qualification |
+| `9e80d36` | ECO-2708 | docs(motion): reconcile ECO-2708 release candidate and clean test fixtures |
 
 ---
 
 ## 3. Auditoria de Escopo e Integridade do Diff
 
-- **Arquivos modificados no diff `origin/staging..codex/motion-integration`:** 58 arquivos (código TypeScript/React Native em `econexao-app/` e documentação técnica em `docs/`).
+- **Total de arquivos modificados no diff `origin/staging..codex/motion-integration`:** **61 arquivos** (código TypeScript/React Native em `econexao-app/` e documentação técnica em `docs/`).
 - **Verificação de isolamento:**
   - Nenhuma alteração em `backend/` ou APIs Python.
   - Nenhuma alteração em `supabase/` ou novas migrations SQL.
   - Nenhuma alteração na landing page de produção.
   - Nenhuma exposição de segredos, variáveis `.env` ou tokens.
   - Nenhum artefato de teste de fixture exportado para deploy de produção.
+- **Tipos Contratuais Preservados:**
+  - `econexao-app/app/actor/[actorId].tsx` e `econexao-app/app/(tabs)/(profile)/trips.tsx` utilizam estritamente os tipos OpenAPI/contratuais sem mutações extracontratuais.
 
 ---
 
@@ -61,10 +63,11 @@ A iniciativa de Motion Design Web foi construída incrementalmente com isolament
 - **Ambiente Render:** `https://econexao-backend-staging-30dt.onrender.com`
 - **Pipeline GitHub Actions:** `.github/workflows/staging-deploy.yml` acionado no push para `staging`.
 - **Supabase Staging Gate:** `APPLY_STAGING_MIGRATIONS=false` — falha se houver migrations pendentes (garantia de integridade).
+- **Auditoria de Branch Protection em Staging:** Chamada `gh api repos/econexao/econexao/branches/staging/protection` retornou HTTP 404 (sem ruleset remoto ativo). O bloqueio por avanço de base depende de conferência operacional pré-merge (`git merge-base --is-ancestor origin/staging HEAD`).
 
 ---
 
-## 5. Evidência Local dos Checks de Qualidade
+## 5. Evidência dos Checks de Qualidade e Console Limpo
 
 Executados no diretório `econexao-app` da worktree dedicada:
 
@@ -75,23 +78,22 @@ Executados no diretório `econexao-app` da worktree dedicada:
 | Sincronização OpenAPI | `npm run openapi:check` | EXIT 0 | Tipos alinhados com `docs/openapi.yaml` |
 | Testes unitários / integração | `npm test -- --watch=false` | EXIT 0 | 57 suítes, 354 testes PASS |
 | Build normal Web (sem fixture) | `npm run export:web` | EXIT 0 | Bundle limpo gerado em `dist/` |
-| Bundle de fixture | `npm run export:web:fixture` | EXIT 0 | Bundle com mocks locais para E2E |
-| Testes no browser (Playwright) | `npm run test:browser` | EXIT 0 | 40 testes PASS (20 desktop + 20 mobile) |
+| Bundle de fixture | `npm run export:web:fixture` | EXIT 0 | Bundle com mocks contratuais para E2E |
+| Testes no browser (Playwright) | `npm run test:browser` | EXIT 0 | 40 testes PASS (20 desktop + 20 mobile) com asserção explícita de console limpo (0 console.error / 0 pageerror) |
 
 ---
 
-## 6. Plano de Verificação de SHA e Homologação (ECO-2709)
+## 6. Pull Request e Checks Remotos
 
-1. **Acompanhamento de Checks da PR:**
-   - Validar `Branch flow policy` (PASS)
-   - Validar `Frontend contract` (PASS)
-   - Validar `Vercel preview deployment` (PASS)
-2. **Homologação Pós-Merge:**
-   - Obter o SHA gerado pelo squash merge em `origin/staging`.
-   - Acompanhar execução de `.github/workflows/staging-deploy.yml` até sucesso.
-   - Confirmar conclusão do deploy da Vercel para o commit squash.
-   - Verificar SHA do frontend através dos metadados de deployment da Vercel (não confundir header `x-vercel-id` com o SHA de commit Git).
-   - Executar smoke visual e funcional na URL canônica `https://econexao-app-staging.vercel.app/` cobrindo navegação, mapa, modais e preferência `prefers-reduced-motion`.
+- **Pull Request:** [#70 — feat(motion): integrate accessible motion design, tokens and web microinteractions](https://github.com/econexao/econexao/pull/70)
+- **Branch de Integração Publicada:** `codex/motion-integration`
+- **Alvo:** `staging`
+- **Checks Remotos de CI no GitHub:**
+  - `Validate branch promotion flow`: **SUCCESS**
+  - `contract` (Frontend contract): **SUCCESS**
+  - `Vercel Preview Deployment`: **SUCCESS** (`https://econexao-app-staging.vercel.app` preview)
+  - `Vercel Preview Comments`: **SUCCESS**
+- **Sem mutações proibidas:** Não foi realizado merge nem deploy em produção nesta task.
 
 ---
 
@@ -103,14 +105,8 @@ Executados no diretório `econexao-app` da worktree dedicada:
 - **Backend / Banco de Dados:**
   - A iniciativa não realiza mutações de schema nem migrations SQL. Nenhuma ação de rollback em Supabase ou banco de dados é necessária.
 
+---
 
-### 6. Pull Request e Checks Remotos
-- **Pull Request**: [#70 — feat(motion): reconcile ECO-2701..2708 motion design release candidate](https://github.com/econexao/econexao/pull/70)
-- **Branch de Integração Publicada**: `codex/motion-integration`
-- **Alvo**: `staging`
-- **Checks Remotos de CI no GitHub**:
-  - `Validate branch promotion flow`: **SUCCESS**
-  - `contract` (Frontend contract): **SUCCESS**
-  - `Vercel Preview Deployment`: **SUCCESS** (`https://econexao-app-staging.vercel.app` preview)
-  - `Vercel Preview Comments`: **SUCCESS**
-- **Sem mutações proibidas**: Não foi realizado merge nem deploy em produção nesta task.
+## 8. Parecer Independente Versionado
+
+- O parecer conclusivo de aprovação do Revisor Independente está formalizado em [`ECO-2708-review.md`](ECO-2708-review.md).

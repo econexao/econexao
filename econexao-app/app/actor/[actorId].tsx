@@ -135,11 +135,7 @@ export default function ActorDetailScreen() {
   const categoryLabel = actor.category?.label || (actor as any).category_label || (actor as any).category_slug || 'Geral';
   const categorySlug = actor.category?.slug || (actor as any).category_slug || 'outros';
   const isFavorite = actor.is_favorite
-    || (Array.isArray(favoriteActorsQuery.data)
-      ? favoriteActorsQuery.data.some((favorite) => favorite.id === actor.id)
-      : Array.isArray((favoriteActorsQuery.data as any)?.items)
-      ? (favoriteActorsQuery.data as any).items.some((favorite: any) => favorite.id === actor.id)
-      : false);
+    || (favoriteActorsQuery.data?.some((favorite) => favorite.id === actor.id) ?? false);
   const actorSummary: ActorSummary = {
     id: actor.id,
     slug: actor.slug,
