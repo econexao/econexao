@@ -369,13 +369,13 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 - **Evidência e limite:** Owner prevê informações até sexta; insumo final e revisão ainda não conferidos.
 - **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
 
-#### ECO-2626 — Preparar, importar e verificar rota: Altamira 1 — nome a fornecer
+#### ECO-2626 — Preparar, importar e verificar rota: Praia do Massanori (Altamira/PA)
 
-- **Estado / horizonte / alteração:** BLOQUEADA POR DADOS / Versão do evento / NOVA.
-- **Dependências ou sucessoras:** ECO-2605, ECO-2611, conteúdo e revisão do owner, ECO-2622 (prova da segunda rota); independente das demais rotas.
-- **Conclusão / aceite:** Ficha/origens/percursos/modos de acesso revisados, atores pertinentes, categorias/tags/mídia/proveniência válidos; dry-run aprovado, carga autorizada em ambiente confirmado e conferência via API/Web. Não exige infraestrutura turística inexistente nem inventa conteúdo.
-- **Evidência e limite:** Owner prevê informações até sexta; insumo final e revisão ainda não conferidos.
-- **Referência:** [direcionamento_versao_web_evento.md](direcionamento_versao_web_evento.md). **Commit:** Não vinculado.
+- **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Versão do evento / NOVA.
+- **Dependências ou sucessoras:** ECO-2605, ECO-2611, ECO-2621, ECO-2622.
+- **Conclusão / aceite:** Ficha, 4 origens oficiais (Rodoviária, Aeroporto, Terminal Fluvial, Centro), geometrias OSRM contínuas até o acesso viário (-3.209977, -52.140359), metadados editoriais, imagem oficial e associação de 435 atores únicos no corredor de 1.000 m (280 rodoviária, 145 aeroporto, 168 terminal fluvial, 173 centro) preparadas e validadas; dry-run aprovado, testes unitários frontend (58 suítes / 366 testes), testes backend (39 testes), typecheck e export Web concluídos com exit code 0; migration versionada 20260918193000 pronta para carga remota mediante GO.
+- **Evidência e limite:** Inserção preparada em 18/09/2026 na branch codex/eco-2626-rota-massanori sobre o SHA fcbd1c5; massanori_geometries.json, massanori_route_package.md e massanori_report.md criados; dry-run comprovado em massanori_ingestion_summary.json. Nenhuma escrita no banco remoto ou push de branch executados antes dos respectivos GOs.
+- **Referência:** [docs/data/altamira/massanori_report.md](data/altamira/massanori_report.md). **Commit:** Não vinculado.
 
 #### ECO-2627 — Preparar, importar e verificar rota: Altamira 2 — nome a fornecer
 

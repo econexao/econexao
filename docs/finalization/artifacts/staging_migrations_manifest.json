@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "total_migrations": 34,
+  "total_migrations": 35,
   "generated_at": "2026-09-10T23:43:57.208832+00:00",
   "migrations": [
     {
@@ -240,6 +240,13 @@
       "path": "supabase/migrations/20260917160415_pedral_four_origins_coherent_geometries.sql",
       "bytes": 31311,
       "sha256": "96e5df2d3f3bf5b7de9fe24f244ba50965d9a0d34aeb12e7b178a023c773ed90"
+    },
+    {
+      "version": "20260918193000",
+      "filename": "20260918193000_massanori_four_origins_route.sql",
+      "path": "supabase/migrations/20260918193000_massanori_four_origins_route.sql",
+      "bytes": 37722,
+      "sha256": "83a2e77724ec78bf86d2ee9ca8ee2c160a0641393d65cdbbacf588f1f31b4751"
     }
   ]
 }

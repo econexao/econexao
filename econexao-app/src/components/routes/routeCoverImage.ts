@@ -16,6 +16,7 @@ type RouteGallery = RouteCover & {
 
 const pindobalCoverImage = require('../../../assets/images/pindobal1.png');
 const pedralCoverImage = require('../../../assets/images/pedral_route_hero.png');
+const massanoriCoverImage = require('../../../assets/images/massanori_route_hero.png');
 const pindobalGalleryImages = [
   require('../../../assets/images/pindobal1.png'),
   require('../../../assets/images/pindobal2.png'),
@@ -37,6 +38,12 @@ export const isPedralRoute = (route: RouteCover) =>
   route.id === 'route-pedral' ||
   route.slug === 'rota-pedral';
 
+export const isMassanoriRoute = (route: RouteCover) =>
+  route.id === 'a17a314a-0000-4000-8000-000000000003' ||
+  route.id === 'route-massanori' ||
+  route.slug === 'rota-massanori' ||
+  route.slug === 'rota-macanori';
+
 /** Keeps editorial covers bundled with the app while other routes use API media. */
 export const getRouteCoverImage = (route: RouteCover): ImageSourcePropType | undefined => {
   if (isPindobalRoute(route)) {
@@ -44,6 +51,9 @@ export const getRouteCoverImage = (route: RouteCover): ImageSourcePropType | und
   }
   if (isPedralRoute(route)) {
     return pedralCoverImage;
+  }
+  if (isMassanoriRoute(route)) {
+    return massanoriCoverImage;
   }
   if (
     route.slug === 'rota-alter-do-chao' ||
@@ -80,6 +90,9 @@ export const getPindobalCoverImage = (route: RouteCover): ImageSourcePropType | 
 export const getPedralCoverImage = (route: RouteCover): ImageSourcePropType | undefined =>
   isPedralRoute(route) ? pedralCoverImage : undefined;
 
+export const getMassanoriCoverImage = (route: RouteCover): ImageSourcePropType | undefined =>
+  isMassanoriRoute(route) ? massanoriCoverImage : undefined;
+
 export const getRouteGalleryImages = (route: RouteGallery) => {
   if (route.gallery?.length) {
     return route.gallery.map((media, index) => ({
@@ -107,6 +120,16 @@ export const getRouteGalleryImages = (route: RouteGallery) => {
     ];
   }
 
+  if (isMassanoriRoute(route)) {
+    return [
+      {
+        key: 'massanori-1',
+        source: massanoriCoverImage as ImageSourcePropType,
+        alt: 'Foto da Praia do Massanori e Rio Xingu',
+      },
+    ];
+  }
+
   return [];
 };
 
@@ -125,12 +148,21 @@ export const getRouteDisplayName = (
   ) {
     return 'Balneário Luiz do Pedral';
   }
+  if (
+    isMassanoriRoute(route) ||
+    route.slug === 'rota-massanori' ||
+    route.slug === 'rota-macanori' ||
+    route.title === 'Rota Massanori' ||
+    route.title === 'Rota Praia do Massanori'
+  ) {
+    return 'Praia do Massanori';
+  }
   return route.title ?? '';
 };
 
 /**
  * Returns a curated, concise location description (max 250 characters)
- * for destination routes like Pedral and Pindobal.
+ * for destination routes like Pedral, Massanori and Pindobal.
  */
 export const getRouteDescription = (
   route?: (RouteCover & { description?: string | null; summary?: string | null }) | null
@@ -139,6 +171,10 @@ export const getRouteDescription = (
 
   if (isPedralRoute(route) || route.slug === 'rota-pedral') {
     return 'Refúgio natural às margens do Rio Xingu, o Balneário Luiz do Pedral encanta pelas águas cristalinas entre pedrais dourados, formando piscinas naturais perfeitas para banho e contemplação da Amazônia.';
+  }
+
+  if (isMassanoriRoute(route) || route.slug === 'rota-massanori' || route.slug === 'rota-macanori') {
+    return 'Banhada pelas águas do Rio Xingu, a Praia do Massanori encanta com sua ampla faixa de areia dourada na estiagem, águas refrescantes, quiosques com peixes típicos e um visual deslumbrante em Altamira.';
   }
 
   if (isPindobalRoute(route)) {

@@ -1,5 +1,7 @@
 # Desenvolvimento diário com Codex e Google Antigravity
 
+Para preparar um destino por vez em Altamira, consulte [Inserção de rotas de Altamira](insercao_rotas_altamira.md): padrão Pedral, snapshots OSRM, corredor de 1 km e gates de carga/publicação. Use o [prompt pronto para o Antigravity](prompt_rota_altamira.md) para iniciar a sessão.
+
 Este é o ponto de entrada operacional para desenvolver o ECOnexão com dois agentes:
 
 - **Codex:** identifica a próxima tarefa, planeja, prepara prompts, revisa evidências e recomenda decisões.
