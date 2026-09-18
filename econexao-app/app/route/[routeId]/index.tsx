@@ -3,8 +3,6 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert, ActivityIn
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
-import { LinearGradient } from 'expo-linear-gradient';
-
 import { AppHeader } from '../../../src/components/common/AppHeader';
 import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/components/common/UIStateViews';
 import { LocalCatalogPreview } from '../../../src/components/routes/LocalCatalogPreview';
@@ -13,7 +11,13 @@ import { RouteMapPreview } from '../../../src/components/routes/RouteMapPreview'
 import { RouteGallery } from '../../../src/components/routes/RouteGallery';
 import { MotionBlock } from '../../../src/components/common/MotionBlock';
 import { GoogleRoutesMapNotice } from '../../../src/components/routes/GoogleRoutesMapNotice';
-import { getPindobalCoverImage, getPedralCoverImage, getRouteCoverImage, getRouteDisplayName } from '../../../src/components/routes/routeCoverImage';
+import {
+  getPindobalCoverImage,
+  getPedralCoverImage,
+  getRouteCoverImage,
+  getRouteDisplayName,
+  getRouteDescription,
+} from '../../../src/components/routes/routeCoverImage';
 import { useRouteAlertsQuery, useRouteDetailQuery } from '../../../src/hooks/queries';
 import { theme, useAppTheme } from '../../../src/theme/theme';
 
@@ -256,6 +260,7 @@ export default function RouteDetailScreen() {
   ) : null;
 
   const displayTitle = route ? getRouteDisplayName(route) : '';
+  const routeDescription = route ? getRouteDescription(route) : '';
 
   return (
     <View style={styles.container}>
@@ -285,18 +290,6 @@ export default function RouteDetailScreen() {
                   {route.is_verified && ' • Rota Verificada'}
                 </Text>
               </View>
-              <LinearGradient
-                pointerEvents="none"
-                colors={[
-                  'rgba(249, 250, 247, 0)',
-                  'rgba(249, 250, 247, 0.12)',
-                  'rgba(249, 250, 247, 0.42)',
-                  'rgba(249, 250, 247, 0.76)',
-                  theme.colors.surfaceBackground,
-                ]}
-                locations={[0, 0.28, 0.56, 0.8, 1]}
-                style={styles.heroBottomGradient}
-              />
             </View>
             {originSelector ? <View style={styles.originSelectorOverlay}>{originSelector}</View> : null}
           </View>
@@ -314,6 +307,18 @@ export default function RouteDetailScreen() {
         )}
 
         <RouteGallery route={route} />
+
+        {/* Breve Descrição sobre o Local */}
+        {routeDescription ? (
+          <View style={styles.descriptionCard} accessible accessibilityLabel="Sobre o local">
+            <View style={styles.descriptionHeaderRow}>
+              <Ionicons name="information-circle-outline" size={18} color={theme.colors.brandForest} />
+              <Text style={styles.descriptionHeading}>Sobre o local</Text>
+            </View>
+            <Text style={styles.descriptionBody}>{routeDescription}</Text>
+          </View>
+        ) : null}
+
 
         {/* Dynamic preview notice banner */}
         {isCustomLocation && (
@@ -477,14 +482,15 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
     overflow: 'hidden',
     padding: theme.spacing.marginMobile,
-    paddingBottom: 32,
-    gap: 22,
+    paddingBottom: 36,
+    gap: 24,
   },
   heroSection: {
     gap: 4,
   },
   heroSectionWithImage: {
-    height: 360,
+    height: 320,
+    borderRadius: 24,
     backgroundColor: theme.colors.surfaceBackground,
     overflow: 'hidden',
   },
@@ -496,38 +502,53 @@ const styles = StyleSheet.create({
   },
   heroOverlay: {
     gap: 4,
-    backgroundColor: 'rgba(8, 18, 5, 0.36)',
     padding: theme.spacing.marginMobile,
-    minHeight: 170,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
   },
   pindobalHeroStack: {
     position: 'relative',
+    marginBottom: 8,
   },
   originSelectorOverlay: {
-    marginTop: -82,
+    marginTop: -72,
     paddingHorizontal: 16,
     zIndex: 1,
   },
-  heroBottomGradient: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 118,
-  },
   titleOnImage: {
     color: theme.colors.surfaceWhite,
-    textShadowColor: 'rgba(0, 0, 0, 0.60)',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
+    textShadowRadius: 6,
   },
   subtitleOnImage: {
-    color: 'rgba(255, 255, 255, 0.92)',
-    textShadowColor: 'rgba(0, 0, 0, 0.55)',
+    color: 'rgba(255, 255, 255, 0.95)',
+    textShadowColor: 'rgba(0, 0, 0, 0.70)',
     textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
+    textShadowRadius: 5,
+  },
+  descriptionCard: {
+    gap: 8,
+    backgroundColor: theme.colors.surfaceContainerLow,
+    padding: 16,
+    borderRadius: theme.radii.lg,
+    borderWidth: 1,
+    borderColor: theme.colors.outlineVariant,
+  },
+  descriptionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  descriptionHeading: {
+    ...theme.typography.labelMd,
+    color: theme.colors.brandForest,
+    fontWeight: '700',
+  },
+  descriptionBody: {
+    ...theme.typography.bodyMd,
+    color: theme.colors.onSurface,
+    lineHeight: 22,
   },
   descriptionOnImage: {
     color: 'rgba(255, 255, 255, 0.94)',

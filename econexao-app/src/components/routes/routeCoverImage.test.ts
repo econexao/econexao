@@ -3,6 +3,7 @@ import {
   getPindobalCoverImage,
   getRouteCoverImage,
   getRouteDisplayName,
+  getRouteDescription,
   getRouteGalleryImages,
   isPedralRoute,
 } from './routeCoverImage';
@@ -81,3 +82,32 @@ describe('getRouteGalleryImages', () => {
     expect(getRouteGalleryImages({ slug: 'rota-pedral' })).toHaveLength(1);
   });
 });
+
+describe('getRouteDescription', () => {
+  it('returns a brief description under 250 chars for Balneário Luiz do Pedral', () => {
+    const desc = getRouteDescription({ slug: 'rota-pedral' });
+    expect(desc).toContain('Pedral');
+    expect(desc.length).toBeLessThanOrEqual(250);
+    expect(desc.length).toBeGreaterThan(20);
+  });
+
+  it('returns a brief description under 250 chars for Praia de Pindobal', () => {
+    const desc = getRouteDescription({ slug: 'rota-pindobal' });
+    expect(desc).toContain('Pindobal');
+    expect(desc.length).toBeLessThanOrEqual(250);
+    expect(desc.length).toBeGreaterThan(20);
+  });
+
+  it('returns custom description for preview routes', () => {
+    const alterDesc = getRouteDescription({ slug: 'rota-alter-do-chao' });
+    expect(alterDesc.length).toBeLessThanOrEqual(250);
+    expect(alterDesc).toContain('Alter do Chão');
+  });
+
+  it('returns API description/summary if provided and not matched to known slugs', () => {
+    expect(getRouteDescription({ slug: 'outra-rota', description: 'Descrição da API' })).toBe('Descrição da API');
+    expect(getRouteDescription({ slug: 'outra-rota', summary: 'Resumo da API' })).toBe('Resumo da API');
+    expect(getRouteDescription(null)).toBe('');
+  });
+});
+

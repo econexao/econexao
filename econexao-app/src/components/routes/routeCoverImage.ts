@@ -128,3 +128,53 @@ export const getRouteDisplayName = (
   return route.title ?? '';
 };
 
+/**
+ * Returns a curated, concise location description (max 250 characters)
+ * for destination routes like Pedral and Pindobal.
+ */
+export const getRouteDescription = (
+  route?: (RouteCover & { description?: string | null; summary?: string | null }) | null
+): string => {
+  if (!route) return '';
+
+  if (isPedralRoute(route) || route.slug === 'rota-pedral') {
+    return 'Refúgio natural às margens do Rio Xingu, o Balneário Luiz do Pedral encanta pelas águas cristalinas entre pedrais dourados, formando piscinas naturais perfeitas para banho e contemplação da Amazônia.';
+  }
+
+  if (isPindobalRoute(route)) {
+    return 'Com areias brancas e águas calmas do Rio Tapajós, a Praia de Pindobal é famosa por suas charmosas cabanas de palha à beira-rio, gastronomia regional e um inesquecível pôr do sol amazônico.';
+  }
+
+  if (
+    route.slug === 'rota-alter-do-chao' ||
+    route.slug === 'rota-praia-do-amor' ||
+    route.id === 'preview-route-alter-do-chao'
+  ) {
+    return 'Localizada em Alter do Chão, no Rio Tapajós, a Praia do Amor se destaca por seus bancos de areia branca, águas doces e mornas, e quiosques com vista privilegiada para o paraíso amazônico.';
+  }
+
+  if (
+    route.slug === 'rota-ponta-de-pedras' ||
+    route.id === 'preview-route-ponta-de-pedras'
+  ) {
+    return 'Com formações rochosas singulares e águas tranquilas do Tapajós, Ponta de Pedras oferece uma praia rústica e preservada, ideal para relaxar e saborear peixes típicos da região.';
+  }
+
+  if (
+    route.slug === 'rota-vila-socorro' ||
+    route.id === 'preview-route-vila-socorro'
+  ) {
+    return 'Comunidade tradicional ribeirinha na região do Tapajós, Vila Socorro combina turismo comunitário, vivência cultural amazônica e trilhas na floresta nativa.';
+  }
+
+  if (
+    route.slug === 'rota-aramanai' ||
+    route.id === 'preview-route-aramanai'
+  ) {
+    return 'Praia tranquila de Belterra com faixa de areia dourada e vegetação preservada, Aramanaí é um refúgio acolhedor para desfrutar da natureza e da brisa do Tapajós.';
+  }
+
+  return route.description || route.summary || '';
+};
+
+
