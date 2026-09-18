@@ -1,0 +1,16 @@
+{
+  "status": "dry_run_success",
+  "region": "altamira-xingu",
+  "route": "rota-massanori",
+  "route_id": "a17a314a-0000-4000-8000-000000000003",
+  "total_parsed": 765,
+  "with_coordinates": 571,
+  "missing_coordinates": 194,
+  "corridor_actors_count": 435,
+  "origin_counts": {
+    "rodoviaria": 280,
+    "aeroporto": 145,
+    "terminal_fluvial": 168,
+    "centro": 173
+  }
+}

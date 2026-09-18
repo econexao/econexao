@@ -17,6 +17,7 @@ describe('getRouteDisplayName', () => {
 
   it('preserves other route titles as-is', () => {
     expect(getRouteDisplayName({ slug: 'rota-pindobal', title: 'Pindobal' })).toBe('Pindobal');
+    expect(getRouteDisplayName({ slug: 'rota-massanori', title: 'Rota Praia do Massanori' })).toBe('Praia do Massanori');
     expect(getRouteDisplayName({ slug: 'rota-alter-do-chao', title: 'Praia do Amor (Alter do Chão)' })).toBe('Praia do Amor (Alter do Chão)');
     expect(getRouteDisplayName(null)).toBe('');
   });
@@ -35,6 +36,11 @@ describe('getRouteCoverImage', () => {
     expect(getRouteCoverImage({ slug: 'rota-pedral' })).toBeDefined();
     expect(getPedralCoverImage({ slug: 'rota-pedral' })).toBeDefined();
     expect(getPedralCoverImage({ slug: 'outra-rota' })).toBeUndefined();
+  });
+
+  it('uses the bundled massanori hero image for Praia do Massanori', () => {
+    expect(getRouteCoverImage({ slug: 'rota-massanori' })).toBeDefined();
+    expect(getRouteCoverImage({ id: 'a17a314a-0000-4000-8000-000000000003' })).toBeDefined();
   });
 
   it('provides the bundled image only for Pindobal detail heroes', () => {
@@ -81,12 +87,23 @@ describe('getRouteGalleryImages', () => {
   it('provides the bundled hero image for Rota do Pedral gallery', () => {
     expect(getRouteGalleryImages({ slug: 'rota-pedral' })).toHaveLength(1);
   });
+
+  it('provides the bundled hero image for Praia do Massanori gallery', () => {
+    expect(getRouteGalleryImages({ slug: 'rota-massanori' })).toHaveLength(1);
+  });
 });
 
 describe('getRouteDescription', () => {
   it('returns a brief description under 250 chars for Balneário Luiz do Pedral', () => {
     const desc = getRouteDescription({ slug: 'rota-pedral' });
     expect(desc).toContain('Pedral');
+    expect(desc.length).toBeLessThanOrEqual(250);
+    expect(desc.length).toBeGreaterThan(20);
+  });
+
+  it('returns a brief description under 250 chars for Praia do Massanori', () => {
+    const desc = getRouteDescription({ slug: 'rota-massanori' });
+    expect(desc).toContain('Massanori');
     expect(desc.length).toBeLessThanOrEqual(250);
     expect(desc.length).toBeGreaterThan(20);
   });
