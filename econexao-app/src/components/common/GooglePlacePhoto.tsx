@@ -6,6 +6,8 @@ import type { GooglePhotoMetadata } from '../../api/types';
 import { theme } from '../../theme/theme';
 import { makeAccessibleButton } from '../../utils/accessibility';
 
+import { Ionicons } from '@expo/vector-icons';
+
 type PhotoLoader = (actorId: string) => Promise<{ data: GooglePhotoMetadata }>;
 
 const defaultPhotoLoader: PhotoLoader = (actorId) =>
@@ -18,6 +20,7 @@ export interface GooglePlacePhotoProps {
   alt: string;
   loadPhoto?: PhotoLoader;
   compact?: boolean;
+  variant?: 'standard' | 'compact' | 'thumbnail';
   style?: any;
 }
 
@@ -30,12 +33,14 @@ export function GooglePlacePhoto({
   alt,
   loadPhoto = defaultPhotoLoader,
   compact = false,
+  variant = compact ? 'compact' : 'standard',
   style,
 }: GooglePlacePhotoProps) {
   const [photo, setPhoto] = useState<GooglePhotoMetadata | null>(null);
   const [state, setState] = useState<'loading' | 'empty' | 'error' | 'ready'>('loading');
   const [imageLoaded, setImageLoaded] = useState(false);
   const requestIdRef = useRef(0);
+  const isThumbnail = variant === 'thumbnail';
 
   const load = useCallback(async () => {
     const requestId = ++requestIdRef.current;
@@ -68,6 +73,17 @@ export function GooglePlacePhoto({
   }, [load]);
 
   if (state === 'loading') {
+    if (isThumbnail) {
+      return (
+        <View
+          style={[styles.thumbnailState, style]}
+          accessibilityRole="progressbar"
+          accessibilityLabel="Carregando foto do Google"
+        >
+          <ActivityIndicator size="small" color={theme.colors.brandForest} />
+        </View>
+      );
+    }
     return (
       <View
         style={[styles.state, compact && styles.compactState, style]}
@@ -79,6 +95,14 @@ export function GooglePlacePhoto({
     );
   }
   if (state === 'empty') {
+    if (isThumbnail) {
+      return (
+        <View style={[styles.thumbnailFallback, style]} accessibilityRole="text" accessibilityLabel="Foto indisponível">
+          <Ionicons name="image-outline" size={24} color={theme.colors.brandForest} />
+          <Text style={styles.thumbnailFallbackText}>Sem foto</Text>
+        </View>
+      );
+    }
     return (
       <View style={[styles.state, compact && styles.compactState, style]} accessibilityRole="text">
         <Text style={[styles.message, compact && styles.compactMessage]}>Foto indisponível.</Text>
@@ -87,10 +111,36 @@ export function GooglePlacePhoto({
     );
   }
   if (state === 'error' || !photo) {
+    if (isThumbnail) {
+      return (
+        <Pressable onPress={load} style={[styles.thumbnailFallback, style]} {...makeAccessibleButton('Tentar carregar foto novamente')}>
+          <Ionicons name="refresh-outline" size={22} color={theme.colors.brandForest} />
+          <Text style={styles.thumbnailFallbackText}>Recarregar</Text>
+        </Pressable>
+      );
+    }
     return (
       <View style={[styles.state, compact && styles.compactState, style]} accessibilityRole="alert">
         <Text style={[styles.message, compact && styles.compactMessage]}>Não foi possível exibir esta foto.</Text>
         <Retry onPress={load} compact={compact} />
+      </View>
+    );
+  }
+
+  if (isThumbnail) {
+    return (
+      <View style={[styles.thumbnailContainer, style]} accessibilityLabel={`Foto: ${alt}`}>
+        <Image
+          source={{ uri: photo.proxy_url, cache: 'reload' }}
+          accessibilityLabel={alt}
+          style={[styles.thumbnailImage, !imageLoaded && styles.imageLoading]}
+          resizeMode="cover"
+          onLoad={() => setImageLoaded(true)}
+          onError={() => { setImageLoaded(true); setState('error'); }}
+        />
+        <View style={styles.thumbnailGoogleBadgeWrapper}>
+          <Text style={styles.thumbnailGoogleBadgeText}>Google</Text>
+        </View>
       </View>
     );
   }
@@ -132,6 +182,56 @@ function Retry({ onPress, compact }: { onPress: () => void; compact?: boolean })
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+  },
+  thumbnailContainer: {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  thumbnailImage: {
+    width: '100%',
+    height: '100%',
+  },
+  thumbnailState: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.surfaceContainerLow,
+    borderRadius: 12,
+  },
+  thumbnailFallback: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(117, 155, 113, 0.12)',
+    borderRadius: 12,
+    gap: 2,
+    padding: 4,
+  },
+  thumbnailFallbackText: {
+    ...theme.typography.labelSm,
+    fontSize: 9,
+    color: theme.colors.brandForest,
+    fontWeight: '600',
+  },
+  thumbnailGoogleBadgeWrapper: {
+    position: 'absolute',
+    bottom: 3,
+    left: 3,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+    borderRadius: 3,
+  },
+  thumbnailGoogleBadgeText: {
+    ...theme.typography.labelSm,
+    color: '#FFFFFF',
+    fontSize: 8,
+    fontWeight: '700',
   },
   image: { width: '100%', aspectRatio: 4 / 3, borderRadius: theme.radii.md },
   imageLoading: { opacity: 0.35 },

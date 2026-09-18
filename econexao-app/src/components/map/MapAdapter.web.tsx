@@ -337,18 +337,21 @@ const MapEventsHandler: React.FC<{
 
 const CameraSync: React.FC<{
   bounds: LatLngBoundsExpression | null;
+  boundsSignature: string;
   onZoomChange?: (zoom: number) => void;
-}> = ({ bounds, onZoomChange }) => {
+}> = ({ bounds, boundsSignature, onZoomChange }) => {
   const map = useMap();
+  const lastFittedSignatureRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (bounds && map) {
+    if (bounds && map && boundsSignature && lastFittedSignatureRef.current !== boundsSignature) {
+      lastFittedSignatureRef.current = boundsSignature;
       try {
         map.fitBounds(bounds, { padding: [52, 52], animate: false });
         onZoomChange?.(map.getZoom());
       } catch {}
     }
-  }, [bounds, map, onZoomChange]);
+  }, [bounds, boundsSignature, map, onZoomChange]);
 
   return null;
 };
@@ -414,6 +417,12 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   }, [motionRouteSignature]);
   const leafletBounds = useMemo(() => toLeafletBounds(fitCoordinates), [fitCoordinates]);
   const initialRegion = useMemo(() => getInitialRegion(fitCoordinates), [fitCoordinates]);
+
+  const boundsSignature = useMemo(() => {
+    if (bounds) return JSON.stringify(bounds);
+    if (geometry?.id) return `geo-${geometry.id}`;
+    return 'initial-load';
+  }, [bounds, geometry?.id]);
 
   const calculatedInitialZoom = useMemo(() => {
     const maxDelta = Math.max(initialRegion.latitudeDelta, initialRegion.longitudeDelta);
@@ -500,7 +509,7 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <CameraSync bounds={leafletBounds} onZoomChange={setZoomLevel} />
+        <CameraSync bounds={leafletBounds} boundsSignature={boundsSignature} onZoomChange={setZoomLevel} />
         <MapEventsHandler
           selectionMode={selectionMode}
           onSelectCoordinate={onSelectCoordinate}

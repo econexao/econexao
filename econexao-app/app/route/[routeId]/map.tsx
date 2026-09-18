@@ -759,16 +759,16 @@ export default function MapScreen() {
                         `Foto de ${selectedPin?.name || selectedActorSummary?.name}`
                       }
                     />
-                  ) : (selectedPin?.actor_id || selectedPin?.id || selectedActorSummary?.id || selectedActorId) ? (
+                  ) : (selectedPin?.actor_id || selectedActorSummary?.id || selectedPin?.id || selectedActorId) ? (
                     <GooglePlacePhoto
                       actorId={
                         (selectedPin?.actor_id ||
-                          selectedPin?.id ||
                           selectedActorSummary?.id ||
+                          selectedPin?.id ||
                           selectedActorId)!
                       }
                       alt={`Foto de ${selectedPin?.name || selectedActorSummary?.name || 'estabelecimento'}`}
-                      compact
+                      variant="thumbnail"
                     />
                   ) : (
                     <View style={styles.cardPhotoFallback}>
