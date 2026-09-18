@@ -245,8 +245,8 @@
       "version": "20260918193000",
       "filename": "20260918193000_massanori_four_origins_route.sql",
       "path": "supabase/migrations/20260918193000_massanori_four_origins_route.sql",
-      "bytes": 38024,
-      "sha256": "57abd03773fb30e3ffaf70e8c5952afa8c0efddf2854758ac8c6e48553fbabad"
+      "bytes": 37722,
+      "sha256": "83a2e77724ec78bf86d2ee9ca8ee2c160a0641393d65cdbbacf588f1f31b4751"
     }
   ]
 }
