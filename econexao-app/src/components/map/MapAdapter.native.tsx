@@ -77,6 +77,14 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
     [items, zoomLevel, selectedActorId]
   );
 
+  const boundsSignature = useMemo(() => {
+    if (bounds) return JSON.stringify(bounds);
+    if (geometry?.id) return `geo-${geometry.id}`;
+    return 'initial-load';
+  }, [bounds, geometry?.id]);
+
+  const lastFittedSignatureRef = useRef<string | null>(null);
+
   const recenter = useCallback(() => {
     if (fitCoordinates.length >= 2) {
       mapRef.current?.fitToCoordinates(fitCoordinates as LatLng[], {
@@ -90,8 +98,11 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   }, [fitCoordinates, initialRegion]);
 
   useEffect(() => {
-    recenter();
-  }, [recenter]);
+    if (lastFittedSignatureRef.current !== boundsSignature) {
+      lastFittedSignatureRef.current = boundsSignature;
+      recenter();
+    }
+  }, [boundsSignature, recenter]);
 
   const changeZoom = useCallback(async (delta: number) => {
     const nextZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoomLevel + delta));
