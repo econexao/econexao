@@ -163,7 +163,7 @@ function escapeHtml(value: unknown): string {
 const createPinIcon = (
   item: FlexiblePinItem,
   selected: boolean,
-  variant: 'full' | 'simple' = 'full',
+  variant: 'full' | 'simple' | 'none' = 'full',
   motionClass = '',
   actorSummary?: {
     google_rating?: number | null;
@@ -179,7 +179,7 @@ const createPinIcon = (
   const iconSvg = getPinIconSvg(icon);
   if (!iconSvg) return null;
 
-  if (selected) {
+  if (selected && variant !== 'none') {
     const isSimple = variant === 'simple';
     const cardWidth = isSimple ? 220 : 260;
     const name = escapeHtml(item.name || 'Ponto');
@@ -236,15 +236,20 @@ const createPinIcon = (
     });
   }
 
-  // Teardrop Marker (38px x 46px) com ancoragem exata na ponta inferior (19, 46)
-  const width = 38;
-  const height = 46;
-  const iconSize = 18;
+  // Teardrop Marker (38px x 46px padrão, ou 44px x 54px quando selecionado com variant === 'none')
+  const isHighlighted = selected && variant === 'none';
+  const width = isHighlighted ? 44 : 38;
+  const height = isHighlighted ? 54 : 46;
+  const iconSize = isHighlighted ? 20 : 18;
+  const filterStyle = isHighlighted
+    ? 'filter: drop-shadow(0 0 6px rgba(255,255,255,0.95)) drop-shadow(0 4px 10px rgba(0,0,0,0.4)); transform: scale(1.15);'
+    : 'filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));';
+  const strokeWidth = isHighlighted ? 2.5 : 1.5;
 
   const teardropHtml = `
-    <div class="econexao-teardrop-marker ${motionClass}" style="width:${width}px;height:${height}px;position:relative;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3));cursor:pointer;transition:transform 0.15s ease;">
+    <div class="econexao-teardrop-marker ${isHighlighted ? PIN_SELECTED_CLASS : motionClass}" style="width:${width}px;height:${height}px;position:relative;${filterStyle}cursor:pointer;transition:transform 0.15s ease;">
       <svg width="${width}" height="${height}" viewBox="0 0 38 46" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
-        <path d="M19 45C19 45 36 27.5 36 18C36 8.61116 28.3888 1 19 1C9.61116 1 2 8.61116 2 18C2 27.5 19 45 19 45Z" fill="${color}" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M19 45C19 45 36 27.5 36 18C36 8.61116 28.3888 1 19 1C9.61116 1 2 8.61116 2 18C2 27.5 19 45 19 45Z" fill="${color}" stroke="#FFFFFF" stroke-width="${strokeWidth}" stroke-linejoin="round"/>
         <g transform="translate(10, 9)" stroke="#FFFFFF" color="#FFFFFF">
           <svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             ${iconSvg}
@@ -255,7 +260,7 @@ const createPinIcon = (
   `;
 
   return L.divIcon({
-    className: 'econexao-teardrop-wrapper',
+    className: isHighlighted ? 'econexao-teardrop-wrapper-selected' : 'econexao-teardrop-wrapper',
     html: teardropHtml,
     iconSize: [width, height],
     iconAnchor: [width / 2, height],

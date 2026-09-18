@@ -49,7 +49,7 @@ export interface MapAdapterProps {
   selectionPinLabel?: string;
   userLocation?: MapCoordinate | null;
   userLocationLabel?: string;
-  pinCardVariant?: 'full' | 'simple';
+  pinCardVariant?: 'full' | 'simple' | 'none';
   actorSummaries?: Array<{
     id: string;
     name?: string;

@@ -253,7 +253,7 @@ describe('MapScreen actor sheet (ECO-0905)', () => {
     });
   });
 
-  it('abre como modal acessível e fecha pelo backdrop sem acionar o mapa', async () => {
+  it('abre card flutuante acessível ao selecionar ponto e fecha pelo botão fechar', async () => {
     let renderer!: TestRenderer.ReactTestRenderer;
     await act(async () => {
       currentRenderer = renderer = TestRenderer.create(<MapScreen />);
@@ -266,20 +266,24 @@ describe('MapScreen actor sheet (ECO-0905)', () => {
 
     await act(async () => pin.props.onPress());
 
-    const modal = root.findByType(Modal);
-    expect(modal.props.visible).toBe(true);
-    expect(modal.props.accessibilityViewIsModal).toBe(true);
+    const floatingCard = root.find(
+      (node) => node.props.accessibilityRole === 'region' && node.props.accessibilityLabel?.includes('Pousada Pindobal')
+    );
+    expect(floatingCard).toBeDefined();
 
-    const sheetTexts = modal.findAllByType(require('react-native').Text);
+    const sheetTexts = floatingCard.findAllByType(require('react-native').Text);
     const categoryTag = sheetTexts.find((t) => t.props.children === 'HOSPEDAGEM');
     expect(categoryTag).toBeDefined();
 
-    const backdrop = root.find(
-      (node) => node.props.accessibilityLabel === 'Fechar preview do ator pelo fundo'
+    const closeBtn = root.find(
+      (node) => node.props.accessibilityLabel === 'Fechar detalhes do ponto'
     );
-    await act(async () => backdrop.props.onPress());
+    await act(async () => closeBtn.props.onPress());
 
-    expect(root.findByType(Modal).props.visible).toBe(false);
+    const closedCard = root.findAll(
+      (node) => node.props.accessibilityRole === 'region' && node.props.accessibilityLabel?.includes('Pousada Pindobal')
+    );
+    expect(closedCard.length).toBe(0);
     expect(push).not.toHaveBeenCalled();
   });
 
@@ -635,13 +639,15 @@ describe('MapScreen actor sheet (ECO-0905)', () => {
     );
     expect(mapClickArea).toBeDefined();
 
-    // Actor sheet modal should NOT open when pin is clicked in selection mode
+    // Actor floating card should NOT open when pin is clicked in selection mode
     const pin = root.find(
       (node) => node.props.accessibilityLabel === 'Selecionar pin Pousada Pindobal'
     );
     await act(async () => pin.props.onPress());
-    const modal = root.findByType(Modal);
-    expect(modal.props.visible).toBe(false);
+    const floatingCards = root.findAll(
+      (node) => node.props.accessibilityRole === 'region' && node.props.accessibilityLabel?.includes('Detalhes')
+    );
+    expect(floatingCards.length).toBe(0);
 
     // Select a coordinate by clicking the map
     await act(async () => mapClickArea.props.onPress());
