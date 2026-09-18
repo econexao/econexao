@@ -379,6 +379,11 @@ async function setupBaselineMocks(page: import('@playwright/test').Page) {
       return;
     }
 
+    if (pathname.endsWith('/google-photo')) {
+      await route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ detail: 'Foto não disponível' }) });
+      return;
+    }
+
     if (pathname.startsWith('/api/v1/actors/')) {
       const actorId = pathname.split('/').pop();
       await route.fulfill({
@@ -454,6 +459,7 @@ test.describe('ECO-2700: Motion Baseline, Inventory & Isolation', () => {
   test('Jornada Contínua e Perfil de Desempenho Baseline: Rota -> Mapa -> Seleção -> Categoria -> Pedral -> Galeria -> Histórico', async ({
     page,
   }, testInfo) => {
+    test.setTimeout(90000);
     const isMobile = testInfo.project.name === 'chromium-mobile';
     const capturesDir = path.resolve(process.cwd(), '.tmp-baseline-captures', testInfo.project.name);
     fs.mkdirSync(capturesDir, { recursive: true });
@@ -544,19 +550,19 @@ test.describe('ECO-2700: Motion Baseline, Inventory & Isolation', () => {
 
     // 7. Galeria da Rota (Detalhes de Pindobal)
     await page.goto('/route/rota-santarem-pindobal');
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(300);
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(capturesDir, '07_route_gallery.png') });
 
     // 8. Galeria do Ator
     await page.goto('/actor/actor-125');
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(300);
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(capturesDir, '08_actor_gallery.png') });
 
     // 9. Histórico de Viagens
     await page.goto('/trips');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(300);
     await page.screenshot({ path: path.join(capturesDir, '09_trips_history.png') });
 

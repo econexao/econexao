@@ -102,3 +102,15 @@ Executados no diretório `econexao-app` da worktree dedicada:
   2. Rollback Vercel Imediato: Caso seja necessária restauração instantânea de tráfego antes da conclusão do pipeline de revert, reatribuir o alias `https://econexao-app-staging.vercel.app/` para o deployment anterior verificado `6507502161` (`https://econexao-app-staging-hdv1nhnbr-eco-nexao.vercel.app`).
 - **Backend / Banco de Dados:**
   - A iniciativa não realiza mutações de schema nem migrations SQL. Nenhuma ação de rollback em Supabase ou banco de dados é necessária.
+
+
+### 6. Pull Request e Checks Remotos
+- **Pull Request**: [#70 — feat(motion): reconcile ECO-2701..2708 motion design release candidate](https://github.com/econexao/econexao/pull/70)
+- **Branch de Integração Publicada**: `codex/motion-integration`
+- **Alvo**: `staging`
+- **Checks Remotos de CI no GitHub**:
+  - `Validate branch promotion flow`: **SUCCESS**
+  - `contract` (Frontend contract): **SUCCESS**
+  - `Vercel Preview Deployment`: **SUCCESS** (`https://econexao-app-staging.vercel.app` preview)
+  - `Vercel Preview Comments`: **SUCCESS**
+- **Sem mutações proibidas**: Não foi realizado merge nem deploy em produção nesta task.

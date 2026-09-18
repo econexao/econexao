@@ -1940,11 +1940,11 @@ revisão ou publicação. A execução começa por reconciliar a base atual.
 
 #### ECO-2708 — Reconciliação e preparação de release
 
-- **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Motion Web staging / NOVA.
+- **Estado / horizonte / alteração:** EM REVISÃO / Motion Web staging / NOVA.
 - **Dependências ou sucessoras:** ECO-2707 revisada; demais gates específicos no plano.
-- **Conclusão / aceite:** candidato publicável reconciliado e preparado com manifesto release-candidate.md, evidências locais completas (Typecheck, OpenAPI, Jest 57/354, Export Web, Playwright 40/40) e plano de rollback/homologação.
-- **Evidência e limite:** Manifesto de release candidate e evidência ECO-2708 registrados. Identidade remota do staging confirmada (Vercel econexao-app-staging / Render / GitHub Actions). Sem merge ou publicação remota nesta task.
-- **Referência:** [Evidência ECO-2708](motion_design/evidence/ECO-2708.md), [Release Candidate](motion_design/evidence/release-candidate.md), [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2708.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Local na branch `codex/eco-2708-motion`.
+- **Conclusão / aceite:** candidato publicável reconciliado e preparado com manifesto release-candidate.md (diff de 60 arquivos), evidências locais completas (Typecheck, OpenAPI, Jest 57/354, Export Web, Playwright 40/40 limpos), PR #70 aberta com checks verdes e plano de rollback/homologação.
+- **Evidência e limite:** Manifesto de release candidate e evidência ECO-2708 registrados. Branch de integração publicada na PR #70 com checks remotos aprovados. A5 registra que o bloqueio por avanço de base não é forçado por ruleset do GitHub (HTTP 404) e requer conferência operacional. Sem merge ou publicação remota nesta task.
+- **Referência:** [Evidência ECO-2708](motion_design/evidence/ECO-2708.md), [Release Candidate](motion_design/evidence/release-candidate.md), [PR #70](https://github.com/econexao/econexao/pull/70), [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2708.md), [protocolo](motion_design/execution_protocol.md). **Commit:** Branch `codex/motion-integration` publicada na PR #70.
 
 #### ECO-2709 — Publicação e homologação em staging
 
