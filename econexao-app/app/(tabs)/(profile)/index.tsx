@@ -27,6 +27,7 @@ import { queryKeys } from '../../../src/api/queryKeys';
 import { queryClient } from '../../../src/api/queryClient';
 import { theme, useAppTheme } from '../../../src/theme/theme';
 import { makeAccessibleButton } from '../../../src/utils/accessibility';
+import { MotionBlock } from '../../../src/components/common/MotionBlock';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -98,6 +99,7 @@ export default function ProfileScreen() {
       <AppHeader title="Meu Perfil" />
 
       <ScrollView contentContainerStyle={styles.content}>
+        <MotionBlock staggerIndex={0}>
         {/* Banner de Convidado / Salvar Conta com Google (ADR 0007 / ECO-2606) */}
         {isAnonymous && (
           <LinearGradient
@@ -359,6 +361,7 @@ export default function ProfileScreen() {
             ECOnexão Sustentável v2.4 • Amazônia Viva
           </Text>
         </View>
+        </MotionBlock>
       </ScrollView>
 
       {/* Edit Profile Modal */}
@@ -700,4 +703,3 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
 });
-

@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { AppHeader } from '../../../src/components/common/AppHeader';
 import { RegionSelectorModal } from '../../../src/components/common/RegionSelectorModal';
 import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/components/common/UIStateViews';
+import { MotionBlock } from '../../../src/components/common/MotionBlock';
 import { CompactRouteCard } from '../../../src/components/routes/CompactRouteCard';
 import { useApp } from '../../../src/hooks/useApp';
 import { useAuth } from '../../../src/hooks/useAuth';
@@ -67,8 +68,8 @@ export default function HomeScreen() {
           {/* Espaçamento superior ajustado para acomodar a logo */}
           <View style={styles.heroTopSpacer} />
 
-          {/* Bloco do Hero */}
-          <View style={styles.heroBlock}>
+          {/* Bloco do Hero com MotionBlock */}
+          <MotionBlock style={styles.heroBlock}>
             <View style={styles.heroLogoContainer}>
               <Image
                 source={require('../../../assets/images/logo-horizontal.png')}
@@ -116,7 +117,7 @@ export default function HomeScreen() {
                 <Ionicons name="arrow-forward" size={18} color={theme.colors.onPrimary} />
               </TouchableOpacity>
             </View>
-          </View>
+          </MotionBlock>
 
           {/* Seção 1: Rotas em Destaque */}
           <View style={styles.carouselSection}>

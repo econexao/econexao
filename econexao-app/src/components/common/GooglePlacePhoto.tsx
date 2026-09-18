@@ -34,12 +34,14 @@ export function GooglePlacePhoto({
 }: GooglePlacePhotoProps) {
   const [photo, setPhoto] = useState<GooglePhotoMetadata | null>(null);
   const [state, setState] = useState<'loading' | 'empty' | 'error' | 'ready'>('loading');
+  const [imageLoaded, setImageLoaded] = useState(false);
   const requestIdRef = useRef(0);
 
   const load = useCallback(async () => {
     const requestId = ++requestIdRef.current;
     setState('loading');
     setPhoto(null);
+    setImageLoaded(false);
     try {
       const response = await loadPhoto(actorId);
       if (requestId !== requestIdRef.current) return;
@@ -98,8 +100,9 @@ export function GooglePlacePhoto({
       <Image
         source={{ uri: photo.proxy_url, cache: 'reload' }}
         accessibilityLabel={alt}
-        style={[styles.image, compact && styles.compactImage]}
-        onError={() => setState('error')}
+        style={[styles.image, compact && styles.compactImage, !imageLoaded && styles.imageLoading]}
+        onLoad={() => setImageLoaded(true)}
+        onError={() => { setImageLoaded(true); setState('error'); }}
       />
       <View style={[styles.attribution, compact && styles.compactAttribution]} accessibilityRole="text" accessibilityLabel="Atribuição da foto">
         <View style={styles.badgeAndCredits}>
@@ -131,6 +134,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   image: { width: '100%', aspectRatio: 4 / 3, borderRadius: theme.radii.md },
+  imageLoading: { opacity: 0.35 },
   compactImage: { width: '100%', aspectRatio: 16 / 9, maxHeight: 150, borderRadius: theme.radii.sm },
   state: { minHeight: 120, alignItems: 'center', justifyContent: 'center', gap: 8, padding: 8 },
   compactState: { minHeight: 70, gap: 4, padding: 4 },

@@ -668,6 +668,8 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     if (viewportWidth) await page.setViewportSize({ width: viewportWidth, height: 720 });
     await page.goto('/route/rota-santarem-pindobal/map?originId=origin-porto');
     await page.waitForLoadState('networkidle');
+    // ECO-2703: capture the stable geometry after the one-shot route highlight.
+    await page.waitForTimeout(700);
     expect(new URL(page.url()).searchParams.get('originId')).toBe('origin-porto');
     const captureMapState = async () => ({
       pins: await page.locator('.econexao-teardrop-wrapper, .econexao-selected-card-wrapper').evaluateAll((nodes) => nodes.map((node) => ({

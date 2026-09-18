@@ -18,6 +18,7 @@ import { getCategoryVisualMeta } from '../../theme/categoryTheme';
 import { makeAccessibleButton } from '../../utils/accessibility';
 import { ActorCard } from './ActorCard';
 import { ErrorStateView, LoadingView } from '../common/UIStateViews';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 export interface CategoryCarouselSectionProps {
   categorySlug: string;
@@ -58,6 +59,8 @@ export const CategoryCarouselSection: React.FC<CategoryCarouselSectionProps> = (
   const [scrollX, setScrollX] = useState(0);
   const [contentWidth, setContentWidth] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [announcement, setAnnouncement] = useState('');
+  const reducedMotion = useReducedMotion();
 
   const categoryMeta = getCategoryVisualMeta(categorySlug, categoryLabel);
   const countDisplay = totalCount ?? actors.length;
@@ -75,14 +78,16 @@ export const CategoryCarouselSection: React.FC<CategoryCarouselSectionProps> = (
   const scrollPrev = () => {
     if (!scrollRef.current) return;
     const targetX = Math.max(0, scrollX - SCROLL_AMOUNT * 2);
-    scrollRef.current.scrollTo({ x: targetX, animated: true });
+    scrollRef.current.scrollTo({ x: targetX, animated: !reducedMotion });
+    setAnnouncement(`Mostrando itens anteriores de ${displayLabel}`);
   };
 
   const scrollNext = () => {
     if (!scrollRef.current) return;
     const maxX = Math.max(0, contentWidth - containerWidth);
     const targetX = Math.min(maxX, scrollX + SCROLL_AMOUNT * 2);
-    scrollRef.current.scrollTo({ x: targetX, animated: true });
+    scrollRef.current.scrollTo({ x: targetX, animated: !reducedMotion });
+    setAnnouncement(`Mostrando próximos itens de ${displayLabel}`);
   };
 
   return (
@@ -175,6 +180,7 @@ export const CategoryCarouselSection: React.FC<CategoryCarouselSectionProps> = (
           </Text>
         </View>
       ) : (
+        <>
         <ScrollView
           ref={scrollRef}
           horizontal
@@ -207,6 +213,8 @@ export const CategoryCarouselSection: React.FC<CategoryCarouselSectionProps> = (
             );
           })}
         </ScrollView>
+        <Text accessibilityLiveRegion="polite" style={styles.srOnly}>{announcement}</Text>
+        </>
       )}
     </View>
   );
@@ -326,4 +334,5 @@ const styles = StyleSheet.create({
     color: theme.colors.onSurfaceVariant,
     textAlign: 'center',
   },
+  srOnly: { position: 'absolute', width: 1, height: 1, opacity: 0, overflow: 'hidden' },
 });

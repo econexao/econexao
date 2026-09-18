@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -22,7 +22,9 @@ import { useOptimisticFavoriteActor } from '../../src/hooks/useOptimisticFavorit
 import { useAuth } from '../../src/hooks/useAuth';
 import { theme } from '../../src/theme/theme';
 import { makeAccessibleButton } from '../../src/utils/accessibility';
+import { useReducedMotion } from '../../src/hooks/useReducedMotion';
 import type { ActorSummary } from '../../src/api/types';
+import { MotionBlock } from '../../src/components/common/MotionBlock';
 
 export default function ActorDetailScreen() {
   const router = useRouter();
@@ -32,6 +34,12 @@ export default function ActorDetailScreen() {
   }>();
 
   const actorQuery = useActorDetailQuery(actorId);
+  const galleryRef = useRef<ScrollView>(null);
+  const [galleryScrollX, setGalleryScrollX] = useState(0);
+  const [galleryContentWidth, setGalleryContentWidth] = useState(0);
+  const [galleryContainerWidth, setGalleryContainerWidth] = useState(0);
+  const [loadedGalleryImages, setLoadedGalleryImages] = useState<Record<string, boolean>>({});
+  const reducedMotion = useReducedMotion();
   const { user } = useAuth();
   const favoriteActorsQuery = useMyFavoriteActorsQuery(user?.id);
   const { toggleFavorite, isPending: isFavPending } = useOptimisticFavoriteActor();
@@ -156,6 +164,7 @@ export default function ActorDetailScreen() {
       />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <MotionBlock staggerIndex={0}>
         {/* Cover / Image Banner */}
         <View style={styles.bannerContainer}>
           {coverImageUrl ? (
@@ -249,18 +258,44 @@ export default function ActorDetailScreen() {
         {/* Media Gallery */}
         {Boolean(actor.gallery && actor.gallery.length > 0) && (
           <View style={styles.cardSection}>
-            <Text style={styles.sectionTitle}>Galeria de Fotos</Text>
+            <View style={styles.galleryHeader}>
+              <Text style={styles.sectionTitle}>Galeria de Fotos</Text>
+              {(actor.gallery?.length ?? 0) > 1 && (
+                <View style={styles.galleryControls}>
+                  <TouchableOpacity
+                    disabled={galleryScrollX <= 4}
+                    onPress={() => galleryRef.current?.scrollTo({ x: Math.max(0, galleryScrollX - 220), animated: !reducedMotion })}
+                    style={[styles.galleryControl, galleryScrollX <= 4 && styles.galleryControlDisabled]}
+                    {...makeAccessibleButton('Foto anterior do ator', 'Mostra as fotos anteriores', galleryScrollX <= 4)}
+                  ><Ionicons name="chevron-back" size={18} color={galleryScrollX > 4 ? theme.colors.brandDeep : theme.colors.outlineVariant} /></TouchableOpacity>
+                  <TouchableOpacity
+                    disabled={galleryScrollX >= Math.max(0, galleryContentWidth - galleryContainerWidth - 4)}
+                    onPress={() => galleryRef.current?.scrollTo({ x: Math.min(Math.max(0, galleryContentWidth - galleryContainerWidth), galleryScrollX + 220), animated: !reducedMotion })}
+                    style={[styles.galleryControl, galleryScrollX >= Math.max(0, galleryContentWidth - galleryContainerWidth - 4) && styles.galleryControlDisabled]}
+                    {...makeAccessibleButton('Próxima foto do ator', 'Mostra as próximas fotos', galleryScrollX >= Math.max(0, galleryContentWidth - galleryContainerWidth - 4))}
+                  ><Ionicons name="chevron-forward" size={18} color={galleryScrollX < galleryContentWidth - galleryContainerWidth - 4 ? theme.colors.brandDeep : theme.colors.outlineVariant} /></TouchableOpacity>
+                </View>
+              )}
+            </View>
             <ScrollView
+              ref={galleryRef}
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.galleryScroller}
+              onScroll={(event) => setGalleryScrollX(event.nativeEvent.contentOffset.x)}
+              onLayout={(event) => setGalleryContainerWidth(event.nativeEvent.layout.width)}
+              onContentSizeChange={(width) => setGalleryContentWidth(width)}
+              scrollEventThrottle={16}
+              accessibilityLabel={`Galeria com ${actor.gallery!.length} fotos de ${actor.name}`}
             >
               {actor.gallery!.map((item, index) => (
                 <View key={item.url || index} style={styles.galleryItem}>
                   <Image
                     source={{ uri: item.derivatives?.card ?? item.url }}
-                    style={styles.galleryImage}
                     resizeMode="cover"
+                    onLoad={() => setLoadedGalleryImages((current) => ({ ...current, [item.url || String(index)]: true }))}
+                    onError={() => setLoadedGalleryImages((current) => ({ ...current, [item.url || String(index)]: true }))}
+                    style={[styles.galleryImage, loadedGalleryImages[item.url || String(index)] && styles.galleryImageLoaded]}
                     accessible
                     accessibilityLabel={item.alt_text || `Foto ${index + 1} de ${actor.name}`}
                   />
@@ -336,6 +371,7 @@ export default function ActorDetailScreen() {
         {actor.cover_media?.credit ? (
           <Text style={styles.mediaCredit}>Crédito da imagem principal: {actor.cover_media.credit}</Text>
         ) : null}
+        </MotionBlock>
       </ScrollView>
     </View>
   );
@@ -472,6 +508,10 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     fontSize: 12,
   },
+  galleryHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  galleryControls: { flexDirection: 'row', gap: 6 },
+  galleryControl: { width: 36, height: 36, borderRadius: theme.radii.full, borderWidth: 1, borderColor: theme.colors.outlineVariant, backgroundColor: theme.colors.surfaceWhite, alignItems: 'center', justifyContent: 'center' },
+  galleryControlDisabled: { opacity: 0.4 },
   galleryScroller: {
     paddingVertical: 6,
     gap: 12,
@@ -487,7 +527,9 @@ const styles = StyleSheet.create({
   galleryImage: {
     width: '100%',
     height: 140,
+    opacity: 0.35,
   },
+  galleryImageLoaded: { opacity: 1 },
   galleryCredit: {
     ...theme.typography.labelSm,
     color: theme.colors.onSurfaceVariant,

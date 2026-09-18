@@ -3,6 +3,7 @@ import { typography } from './typography';
 import { spacing } from './spacing';
 import { radii } from './radii';
 import { shadows } from './shadows';
+import { motion } from './motion';
 
 export const theme = {
   colors,
@@ -10,8 +11,11 @@ export const theme = {
   spacing,
   radii,
   shadows,
+  motion,
 };
 
 export type Theme = typeof theme;
+export { motion } from './motion';
+export type { MotionTheme } from './motion';
 export { useAppTheme } from './useAppTheme';
 

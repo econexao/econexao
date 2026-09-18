@@ -5,6 +5,7 @@ import { MapContainer, Marker, Polyline, TileLayer, useMap, useMapEvents } from 
 import 'leaflet/dist/leaflet.css';
 
 import { theme } from '../../theme/theme';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { MapControls } from './MapControls';
 import {
   SELECTION_PIN_COLOR,
@@ -27,6 +28,59 @@ import type { FlexiblePinItem, MapAdapterProps, MapCoordinate } from './MapAdapt
 
 const MIN_ZOOM = 3;
 const MAX_ZOOM = 19;
+const PIN_ENTER_CLASS = 'econexao-pin-enter';
+const PIN_SELECTED_CLASS = 'econexao-pin-selected';
+const ROUTE_HIGHLIGHT_CLASS = 'econexao-route-highlight';
+
+const ensurePinMotionStyles = () => {
+  if (typeof document === 'undefined' || document.getElementById('econexao-pin-motion-styles')) return;
+  const style = document.createElement('style');
+  style.id = 'econexao-pin-motion-styles';
+  style.textContent = `
+    @keyframes econexao-pin-enter { from { opacity: 0; transform: translateY(6px) scale(.88); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes econexao-pin-selected { from { transform: scale(.94); } 60% { transform: scale(1.06); } to { transform: scale(1); } }
+    .${PIN_ENTER_CLASS} { animation: econexao-pin-enter 180ms cubic-bezier(.2,0,0,1) both; transform-origin: 50% 100%; }
+    .${PIN_SELECTED_CLASS} { animation: econexao-pin-selected 180ms cubic-bezier(.2,0,0,1) both; transform-origin: 50% 100%; }
+    .${ROUTE_HIGHLIGHT_CLASS} { stroke-dasharray: 14 10; animation: econexao-route-highlight 650ms cubic-bezier(.2,0,0,1) both; pointer-events: none; }
+    @keyframes econexao-route-highlight { from { stroke-dashoffset: 220; opacity: .2; } to { stroke-dashoffset: 0; opacity: .72; } }
+    @media (prefers-reduced-motion: reduce) { .${PIN_ENTER_CLASS}, .${PIN_SELECTED_CLASS}, .${ROUTE_HIGHLIGHT_CLASS} { animation: none !important; } }
+  `;
+  document.head.appendChild(style);
+};
+
+const RouteHighlight: React.FC<{
+  coordinates: MapCoordinate[];
+  signature: string;
+  reducedMotion: boolean;
+}> = ({ coordinates, signature, reducedMotion }) => {
+  const playedSignaturesRef = useRef<Set<string>>(new Set());
+  const [visibleSignature, setVisibleSignature] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (reducedMotion || coordinates.length < 2 || playedSignaturesRef.current.has(signature)) {
+      setVisibleSignature(null);
+      return;
+    }
+
+    playedSignaturesRef.current.add(signature);
+    setVisibleSignature(signature);
+    const timeout = window.setTimeout(() => setVisibleSignature(null), 650);
+    return () => window.clearTimeout(timeout);
+  }, [coordinates.length, reducedMotion, signature]);
+
+  if (!visibleSignature || visibleSignature !== signature) return null;
+  return (
+    <Polyline
+      positions={coordinates.map(({ latitude, longitude }) => [latitude, longitude])}
+      pathOptions={{
+        className: ROUTE_HIGHLIGHT_CLASS,
+        color: theme.colors.brandLeaf,
+        weight: 7,
+        opacity: 0.72,
+      }}
+    />
+  );
+};
 
 const toLeafletBounds = (coordinates: MapCoordinate[]): LatLngBoundsExpression | null =>
   coordinates.length
@@ -110,6 +164,7 @@ const createPinIcon = (
   item: FlexiblePinItem,
   selected: boolean,
   variant: 'full' | 'simple' = 'full',
+  motionClass = '',
   actorSummary?: {
     google_rating?: number | null;
     rating_count?: number | null;
@@ -154,7 +209,7 @@ const createPinIcon = (
     const actionText = isSimple ? 'Ver no mapa' : 'Ver detalhes';
 
     const cardHtml = `
-      <div class="econexao-selected-pin-card" style="position:relative;width:${cardWidth}px;background:#ffffff;border-radius:12px;padding:${isSimple ? '10px 12px' : '10px'};box-shadow:0 8px 24px rgba(0,0,0,0.22);border:1px solid rgba(0,0,0,0.08);cursor:pointer;user-select:none;font-family:system-ui,-apple-system,sans-serif;">
+      <div class="econexao-selected-pin-card ${motionClass}" style="position:relative;width:${cardWidth}px;background:#ffffff;border-radius:12px;padding:${isSimple ? '10px 12px' : '10px'};box-shadow:0 8px 24px rgba(0,0,0,0.22);border:1px solid rgba(0,0,0,0.08);cursor:pointer;user-select:none;font-family:system-ui,-apple-system,sans-serif;">
         <div style="display:flex;flex-direction:${isSimple ? 'column' : 'row'};align-items:${isSimple ? 'stretch' : 'center'};gap:${isSimple ? '6px' : '10px'};">
           ${photoHtml}
           <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;">
@@ -187,7 +242,7 @@ const createPinIcon = (
   const iconSize = 18;
 
   const teardropHtml = `
-    <div class="econexao-teardrop-marker" style="width:${width}px;height:${height}px;position:relative;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3));cursor:pointer;transition:transform 0.15s ease;">
+    <div class="econexao-teardrop-marker ${motionClass}" style="width:${width}px;height:${height}px;position:relative;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3));cursor:pointer;transition:transform 0.15s ease;">
       <svg width="${width}" height="${height}" viewBox="0 0 38 46" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
         <path d="M19 45C19 45 36 27.5 36 18C36 8.61116 28.3888 1 19 1C9.61116 1 2 8.61116 2 18C2 27.5 19 45 19 45Z" fill="${color}" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
         <g transform="translate(10, 9)" stroke="#FFFFFF" color="#FFFFFF">
@@ -214,7 +269,7 @@ const createSelectionPinIcon = () => {
   const color = SELECTION_PIN_COLOR;
   const svgContent = getPinIconSvg('flag');
   const ringStyle =
-    'box-shadow:0 0 0 3px #FFFFFF, 0 0 0 6px rgba(234,88,12,0.8), 0 6px 16px rgba(0,0,0,0.45); transform:scale(1.1); animation:pulse 2s infinite;';
+    'box-shadow:0 0 0 3px #FFFFFF, 0 0 0 6px rgba(234,88,12,0.8), 0 6px 16px rgba(0,0,0,0.45); transform:scale(1.1);';
 
   const html = `
     <div style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;background:${color};border:3px solid #FFFFFF;color:#FFFFFF;transition:transform 0.15s ease,box-shadow 0.15s ease;cursor:grab;${ringStyle}" aria-label="Marcador de seleção">
@@ -340,6 +395,18 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
     () => getFitCoordinates(bounds, geometry, items),
     [bounds, geometry, items]
   );
+  const prefersReducedMotion = useReducedMotion();
+  const seenPinIdsRef = useRef<Set<string>>(new Set());
+  const motionRouteSignature = useMemo(() => JSON.stringify(routeCoordinates), [routeCoordinates]);
+  const previousMotionRouteSignatureRef = useRef(motionRouteSignature);
+
+  useEffect(() => {
+    ensurePinMotionStyles();
+    if (previousMotionRouteSignatureRef.current !== motionRouteSignature) {
+      seenPinIdsRef.current.clear();
+      previousMotionRouteSignatureRef.current = motionRouteSignature;
+    }
+  }, [motionRouteSignature]);
   const leafletBounds = useMemo(() => toLeafletBounds(fitCoordinates), [fitCoordinates]);
   const initialRegion = useMemo(() => getInitialRegion(fitCoordinates), [fitCoordinates]);
 
@@ -371,30 +438,33 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
     () => filterPinsByDensity(items, zoomLevel, selectedActorId),
     [items, zoomLevel, selectedActorId]
   );
+  useEffect(() => {
+    renderableItems.forEach((item) => seenPinIdsRef.current.add(getItemId(item)));
+  }, [renderableItems]);
 
   const recenter = useCallback(() => {
     if (leafletBounds && mapRef.current) {
       try {
-        mapRef.current.fitBounds(leafletBounds, { padding: [52, 52], animate: true });
+        mapRef.current.fitBounds(leafletBounds, { padding: [52, 52], animate: !prefersReducedMotion });
       } catch {}
     } else if (mapRef.current) {
       try {
         mapRef.current.setView([initialRegion.latitude, initialRegion.longitude], calculatedInitialZoom, {
-          animate: true,
+          animate: !prefersReducedMotion,
         });
       } catch {}
     }
-  }, [calculatedInitialZoom, initialRegion, leafletBounds]);
+  }, [calculatedInitialZoom, initialRegion, leafletBounds, prefersReducedMotion]);
 
   const changeZoom = useCallback((delta: number) => {
     const map = mapRef.current;
     if (!map) return;
     try {
       const nextZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, map.getZoom() + delta));
-      map.setZoom(nextZoom, { animate: true });
+      map.setZoom(nextZoom, { animate: !prefersReducedMotion });
       setZoomLevel(nextZoom);
     } catch {}
-  }, []);
+  }, [prefersReducedMotion]);
 
   const selectionPinA11y = useMemo(
     () => getSelectionPinAccessibilityLabel(selectedCoordinate, selectionPinLabel),
@@ -433,10 +503,17 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
         />
 
         {routeCoordinates.length >= 2 && (
-          <Polyline
-            positions={routeCoordinates.map(({ latitude, longitude }) => [latitude, longitude])}
-            pathOptions={{ color: theme.colors.brandForest, weight: 5 }}
-          />
+          <>
+            <Polyline
+              positions={routeCoordinates.map(({ latitude, longitude }) => [latitude, longitude])}
+              pathOptions={{ color: theme.colors.brandForest, weight: 5 }}
+            />
+            <RouteHighlight
+              coordinates={routeCoordinates}
+              signature={motionRouteSignature}
+              reducedMotion={prefersReducedMotion}
+            />
+          </>
         )}
 
         {renderableItems.map((item) => {
@@ -446,7 +523,9 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
           const isSelected = itemId === selectedActorId;
           const a11yLabel = getItemAccessibilityLabel(item, isSelected);
           const actorSummary = actorSummariesById.get(itemId);
-          const pinIcon = createPinIcon(item, isSelected, pinCardVariant, actorSummary);
+          const firstSeen = !seenPinIdsRef.current.has(itemId);
+          const motionClass = prefersReducedMotion ? '' : isSelected ? PIN_SELECTED_CLASS : firstSeen ? PIN_ENTER_CLASS : '';
+          const pinIcon = createPinIcon(item, isSelected, pinCardVariant, motionClass, actorSummary);
           if (!pinIcon) return null;
 
           return (

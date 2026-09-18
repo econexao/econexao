@@ -11,6 +11,7 @@ import { LocalCatalogPreview } from '../../../src/components/routes/LocalCatalog
 import { OriginSelector, MY_LOCATION_ORIGIN_ID, CHOOSE_ON_MAP_ORIGIN_ID } from '../../../src/components/routes/OriginSelector';
 import { RouteMapPreview } from '../../../src/components/routes/RouteMapPreview';
 import { RouteGallery } from '../../../src/components/routes/RouteGallery';
+import { MotionBlock } from '../../../src/components/common/MotionBlock';
 import { GoogleRoutesMapNotice } from '../../../src/components/routes/GoogleRoutesMapNotice';
 import { getPindobalCoverImage, getPedralCoverImage, getRouteCoverImage } from '../../../src/components/routes/routeCoverImage';
 import { useRouteAlertsQuery, useRouteDetailQuery } from '../../../src/hooks/queries';
@@ -264,6 +265,7 @@ export default function RouteDetailScreen() {
       />
 
       <ScrollView contentContainerStyle={styles.content}>
+        <MotionBlock staggerIndex={0}>
         {/* Header Hero Section */}
         {routeHeroImage ? (
           <View style={styles.pindobalHeroStack}>
@@ -457,6 +459,7 @@ export default function RouteDetailScreen() {
           )}
         </View>
 
+        </MotionBlock>
       </ScrollView>
     </View>
   );

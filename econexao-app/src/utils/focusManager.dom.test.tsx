@@ -92,6 +92,9 @@ describe('Real DOM & Focus Management Integrity (ECO-2101 / WCAG 2.1 AA)', () =>
     await act(async () => {
       root.render(<ModalHarness visible={false} onClose={handleClose} />);
     });
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    });
 
     // Verify #root aria-hidden is removed
     expect(rootNode.getAttribute('aria-hidden')).toBeNull();
@@ -109,5 +112,33 @@ describe('Real DOM & Focus Management Integrity (ECO-2101 / WCAG 2.1 AA)', () =>
     await act(async () => {
       root.unmount();
     });
+  });
+
+  test('mantém foco no contêiner neutro durante a saída e ignora Escape repetido', async () => {
+    const trigger = document.getElementById('external-trigger') as HTMLButtonElement;
+    trigger.focus();
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    const handleClose = jest.fn();
+
+    await act(async () => root.render(<ModalHarness visible={true} onClose={handleClose} />));
+    await act(async () => await new Promise((resolve) => setTimeout(resolve, 5)));
+    const closeButton = document.getElementById('modal-close-btn')!;
+    closeButton.focus();
+
+    await act(async () => root.render(<ModalHarness visible={false} onClose={handleClose} />));
+    const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+    expect(document.activeElement).toBe(dialog);
+    expect(dialog.style.pointerEvents).toBe('none');
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    expect(handleClose).not.toHaveBeenCalled();
+
+    await act(async () => await new Promise((resolve) => setTimeout(resolve, 500)));
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+    await act(async () => await new Promise((resolve) => setTimeout(resolve, 5)));
+    expect(document.activeElement).toBe(trigger);
+    root.unmount();
   });
 });

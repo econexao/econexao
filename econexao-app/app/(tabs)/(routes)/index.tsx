@@ -12,6 +12,7 @@ import { useOptimisticFavoriteRoute } from '../../../src/hooks/useOptimisticFavo
 import { theme } from '../../../src/theme/theme';
 import type { RouteSummary } from '../../../src/api/types';
 import { isPreviewRoute, mergeRoutesWithPreviews } from '../../../src/constants/previewRoutes';
+import { MotionBlock } from '../../../src/components/common/MotionBlock';
 
 export default function RoutesScreen() {
   const router = useRouter();
@@ -45,6 +46,7 @@ export default function RoutesScreen() {
     <View style={styles.container}>
       <AppHeader />
       <ScrollView contentContainerStyle={styles.content}>
+        <MotionBlock staggerIndex={0}>
         {regionsQuery.isPending ? (
           <LoadingView message="Carregando regiões..." />
         ) : regionsQuery.isError ? (
@@ -108,6 +110,7 @@ export default function RoutesScreen() {
             message="Não há rotas cadastradas para a região selecionada."
           />
         )}
+        </MotionBlock>
       </ScrollView>
     </View>
   );
