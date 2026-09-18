@@ -8,7 +8,6 @@ import { AppHeader } from '../../../src/components/common/AppHeader';
 import { Badge } from '../../../src/components/common/Badge';
 import { CategoryFilters } from '../../../src/components/catalog/CategoryFilters';
 import { MapAdapter } from '../../../src/components/map/MapAdapter';
-import { AccessibleModal } from '../../../src/components/common/AccessibleModal';
 import { GooglePlacePhoto } from '../../../src/components/common/GooglePlacePhoto';
 import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/components/common/UIStateViews';
 import { useRouteActorsQuery, useRouteMapQuery } from '../../../src/hooks/queries';
@@ -629,7 +628,7 @@ export default function MapScreen() {
             geometry={mapPayload.geometry}
             bounds={activeBounds}
             selectedActorId={selectedActorId}
-            pinCardVariant="full"
+            pinCardVariant="none"
             actorSummaries={actorsList}
             onSelectActor={(id) => {
               if (!isSelectionMode) {
@@ -718,7 +717,7 @@ export default function MapScreen() {
         )}
 
         {/* Contextual button to return to route mode when in city view */}
-        {!isSelectionMode && displayedViewMode === 'city' && (
+        {!isSelectionMode && displayedViewMode === 'city' && !selectedActorId && (
           <AccessibleMapControl
             style={styles.returnToRouteButton}
             onPress={() => setViewMode('route')}
@@ -729,160 +728,177 @@ export default function MapScreen() {
             <Text style={styles.returnToRouteText}>Voltar para a rota</Text>
           </AccessibleMapControl>
         )}
-      </View>
 
-      {/* Accessible actor preview sheet. The backdrop is a sibling so its press
-          cannot propagate through the sheet to map controls or pins. */}
-      <AccessibleModal
-        visible={!isSelectionMode && Boolean(selectedActorId) && Boolean(selectedPin || selectedActorSummary)}
-        transparent
-        animationType="slide"
-        onClose={closeActorSheet}
-        initialFocusRef={closeSheetButtonRef}
-        returnFocusRef={mapRegionRef}
-        accessibilityLabel="Painel de detalhes do ator selecionado"
-      >
-        <View style={styles.sheetModalRoot}>
-          <TouchableOpacity
-            style={styles.sheetBackdrop}
-            activeOpacity={1}
-            onPress={closeActorSheet}
-            {...makeAccessibleButton('Fechar preview do ator pelo fundo')}
-          />
+        {/* Floating Actor Detail Card (Interactive & Non-blocking) */}
+        {!isSelectionMode && Boolean(selectedActorId) && Boolean(selectedPin || selectedActorSummary) && (
+          <View
+            style={styles.floatingCardContainer}
+            accessibilityRole="summary"
+            accessibilityLabel={`Detalhes de ${selectedPin?.name || selectedActorSummary?.name || 'ponto selecionado'}`}
+          >
+            <View style={styles.floatingCard}>
+              {/* Main Content Row: Left Photo + Right Details */}
+              <View style={styles.cardMainRow}>
+                {/* Left Column: Photo / Thumbnail */}
+                <View style={styles.cardPhotoWrapper}>
+                  {selectedActorSummary?.cover_media?.derivatives?.card ||
+                  selectedActorSummary?.cover_media?.url ||
+                  selectedActorSummary?.cover_image_url ? (
+                    <Image
+                      source={{
+                        uri:
+                          selectedActorSummary?.cover_media?.derivatives?.card ??
+                          selectedActorSummary?.cover_media?.url ??
+                          selectedActorSummary?.cover_image_url,
+                      }}
+                      style={styles.cardPhoto}
+                      resizeMode="cover"
+                      accessible
+                      accessibilityLabel={
+                        selectedActorSummary?.cover_media?.alt_text ||
+                        `Foto de ${selectedPin?.name || selectedActorSummary?.name}`
+                      }
+                    />
+                  ) : (selectedPin?.actor_id || selectedPin?.id || selectedActorSummary?.id || selectedActorId) ? (
+                    <GooglePlacePhoto
+                      actorId={
+                        (selectedPin?.actor_id ||
+                          selectedPin?.id ||
+                          selectedActorSummary?.id ||
+                          selectedActorId)!
+                      }
+                      alt={`Foto de ${selectedPin?.name || selectedActorSummary?.name || 'estabelecimento'}`}
+                      compact
+                    />
+                  ) : (
+                    <View style={styles.cardPhotoFallback}>
+                      <Ionicons name="location" size={28} color={theme.colors.brandForest} />
+                    </View>
+                  )}
+                </View>
 
-          <View style={styles.bottomSheetCard} accessibilityRole="summary">
-            <View style={styles.sheetHandle} />
-            <View style={styles.sheetHeader}>
-              <View style={styles.sheetTagWrapper}>
-                <Text style={styles.sheetCategoryTag}>
-                  {(selectedPin?.category_label || selectedActorSummary?.category_label || selectedPin?.category_slug || 'Ponto da Rota').toUpperCase()}
-                </Text>
-                {selectedActorSummary?.verification_status === 'verified' && (
-                  <Badge type="semturInventory" label="Inventário SEMTUR" />
-                )}
-                {selectedActorSummary?.green_badge_status === 'verified' && (
-                  <Badge type="greenSeal" label="Selo Verde" />
-                )}
+                {/* Right Column: Information & Metadata */}
+                <View style={styles.cardInfoColumn}>
+                  {/* Category & Badges + Close Button */}
+                  <View style={styles.cardHeaderRow}>
+                    <View style={styles.cardTagWrapper}>
+                      <Text style={styles.cardCategoryTag}>
+                        {(selectedPin?.category_label || selectedActorSummary?.category_label || selectedPin?.category_slug || 'Ponto da Rota').toUpperCase()}
+                      </Text>
+                      {selectedActorSummary?.verification_status === 'verified' && (
+                        <Badge type="semturInventory" label="SEMTUR" />
+                      )}
+                      {selectedActorSummary?.green_badge_status === 'verified' && (
+                        <Badge type="greenSeal" label="Selo Verde" />
+                      )}
+                    </View>
+
+                    <TouchableOpacity
+                      ref={closeSheetButtonRef}
+                      style={styles.cardCloseBtn}
+                      onPress={closeActorSheet}
+                      {...makeAccessibleButton(
+                        'Fechar detalhes do ponto',
+                        'Fecha este card e mantém o mapa interativo'
+                      )}
+                    >
+                      <Ionicons name="close" size={18} color={theme.colors.onSurfaceVariant} />
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Title / Name */}
+                  <Text style={styles.cardTitle} numberOfLines={2} accessibilityRole="header">
+                    {selectedPin?.name || selectedActorSummary?.name}
+                  </Text>
+
+                  {/* Address */}
+                  {Boolean(selectedActorSummary?.address) && (
+                    <View style={styles.cardMetaRow}>
+                      <Ionicons name="location-outline" size={13} color={theme.colors.brandForest} />
+                      <Text style={styles.cardAddress} numberOfLines={1}>
+                        {selectedActorSummary?.address}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Rating & Distance Badges Row */}
+                  <View style={styles.cardBadgesRow}>
+                    {typeof selectedActorSummary?.google_rating === 'number' && Number.isFinite(selectedActorSummary.google_rating) && (
+                      <View
+                        style={styles.cardRatingBadge}
+                        accessibilityRole="text"
+                        accessibilityLabel={`Avaliação Google: ${selectedActorSummary.google_rating.toFixed(1)} estrelas`}
+                      >
+                        <Ionicons name="star" size={12} color="#F59E0B" />
+                        <Text style={styles.cardRatingText}>
+                          {selectedActorSummary.google_rating.toFixed(1)}
+                        </Text>
+                      </View>
+                    )}
+
+                    {typeof selectedPin?.distance_from_origin_m === 'number' && (
+                      <View style={styles.cardDistanceBadge}>
+                        <Ionicons name="navigate-outline" size={11} color={theme.colors.brandForest} />
+                        <Text style={styles.cardDistanceText}>
+                          {(selectedPin.distance_from_origin_m / 1000).toFixed(1)} km da origem
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                </View>
               </View>
+
+              {/* Loading or Query Error States */}
+              {actorsQuery.isFetching && !selectedActorSummary && (
+                <ActivityIndicator size="small" style={{ marginVertical: 2 }} accessibilityLabel="Carregando detalhes do ator" />
+              )}
+              {actorsQuery.isError && !selectedActorSummary && (
+                <View accessibilityLiveRegion="polite" style={styles.cardErrorRow}>
+                  <Text style={styles.cardErrorText}>Detalhes adicionais indisponíveis.</Text>
+                  <TouchableOpacity
+                    style={styles.cardRetryBtn}
+                    onPress={() => void actorsQuery.refetch()}
+                    {...makeAccessibleButton('Tentar carregar detalhes novamente')}
+                  >
+                    <Text style={styles.cardRetryText}>Tentar novamente</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {/* Action Button: Ver no catálogo */}
               <TouchableOpacity
-                ref={closeSheetButtonRef}
-                style={styles.closeButton}
-                onPress={closeActorSheet}
+                style={styles.cardActionBtn}
+                onPress={() => {
+                  const targetActorId =
+                    selectedPin?.actor_id ||
+                    selectedPin?.id ||
+                    selectedActorSummary?.id ||
+                    selectedActorId;
+                  if (targetActorId) {
+                    closeActorSheet();
+                    router.push(
+                      `/route/${encodeURIComponent(routeId)}/catalog?${new URLSearchParams({
+                        ...(originId ? { originId } : {}),
+                        actorId: targetActorId,
+                        ...(selectedCategory ? { category: selectedCategory } : {}),
+                        ...(initialQuery ? { q: initialQuery } : {}),
+                        viewMode: displayedViewMode,
+                      }).toString()}`
+                    );
+                  }
+                }}
                 {...makeAccessibleButton(
-                  'Fechar preview do ator',
-                  'Fecha o preview e retorna o foco ao mapa'
+                  `Ver ${selectedPin?.name || selectedActorSummary?.name} no catálogo`,
+                  'Abre o catálogo mantendo a origem e o ator selecionados'
                 )}
               >
-                <Ionicons name="close" size={20} color={theme.colors.onSurfaceVariant} />
+                <Text style={styles.cardActionBtnText}>Ver no catálogo</Text>
+                <Ionicons name="chevron-forward" size={16} color={theme.colors.onPrimary} />
               </TouchableOpacity>
             </View>
-
-            <Text style={styles.sheetTitle} accessibilityRole="header">
-              {selectedPin?.name || selectedActorSummary?.name}
-            </Text>
-
-            {Boolean(selectedActorSummary?.address) && (
-              <Text style={styles.sheetSub} numberOfLines={1}>
-                <Ionicons name="location-outline" size={13} color={theme.colors.brandForest} /> {selectedActorSummary?.address}
-              </Text>
-            )}
-
-            {typeof selectedActorSummary?.google_rating === 'number' && Number.isFinite(selectedActorSummary.google_rating) && (
-              <View
-                style={styles.sheetRatingRow}
-                accessibilityRole="text"
-                accessibilityLabel={`Avaliação Google: ${selectedActorSummary.google_rating.toFixed(1)} estrelas`}
-              >
-                <Ionicons name="star" size={14} color={theme.colors.brandSun} />
-                <Text style={styles.sheetRatingText}>{`${selectedActorSummary.google_rating.toFixed(1)} Google`}</Text>
-              </View>
-            )}
-
-            {typeof selectedPin?.distance_from_origin_m === 'number' && (
-              <Text style={styles.sheetDistance}>
-                Distância da origem: {(selectedPin.distance_from_origin_m / 1000).toFixed(1)} km
-              </Text>
-            )}
-
-            <View style={styles.sheetPhotoContainer}>
-              {selectedActorSummary?.cover_media?.derivatives?.card || selectedActorSummary?.cover_media?.url || selectedActorSummary?.cover_image_url ? (
-                <Image
-                  source={{
-                    uri:
-                      selectedActorSummary?.cover_media?.derivatives?.card ??
-                      selectedActorSummary?.cover_media?.url ??
-                      selectedActorSummary?.cover_image_url,
-                  }}
-                  style={styles.sheetCoverImage}
-                  resizeMode="cover"
-                  accessible
-                  accessibilityLabel={
-                    selectedActorSummary?.cover_media?.alt_text ||
-                    `Foto de ${selectedPin?.name || selectedActorSummary?.name}`
-                  }
-                />
-              ) : (selectedPin?.actor_id || selectedPin?.id || selectedActorSummary?.id || selectedActorId) ? (
-                <GooglePlacePhoto
-                  actorId={
-                    (selectedPin?.actor_id ||
-                      selectedPin?.id ||
-                      selectedActorSummary?.id ||
-                      selectedActorId)!
-                  }
-                  alt={`Foto de ${selectedPin?.name || selectedActorSummary?.name || 'estabelecimento'}`}
-                  compact
-                />
-              ) : null}
-            </View>
-
-            {actorsQuery.isFetching && !selectedActorSummary && (
-              <ActivityIndicator accessibilityLabel="Carregando detalhes do ator" />
-            )}
-            {actorsQuery.isError && !selectedActorSummary && (
-              <View accessibilityLiveRegion="polite" style={styles.sheetQueryError}>
-                <Text style={styles.sheetQueryErrorText}>Detalhes adicionais indisponíveis.</Text>
-                <TouchableOpacity
-                  style={styles.sheetRetryButton}
-                  onPress={() => void actorsQuery.refetch()}
-                  {...makeAccessibleButton('Tentar carregar detalhes do ator novamente')}
-                >
-                  <Text style={styles.sheetRetryButtonText}>Tentar novamente</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => {
-                const targetActorId =
-                  selectedPin?.actor_id ||
-                  selectedPin?.id ||
-                  selectedActorSummary?.id ||
-                  selectedActorId;
-                if (targetActorId) {
-                  closeActorSheet();
-                  router.push(
-                    `/route/${encodeURIComponent(routeId)}/catalog?${new URLSearchParams({
-                      ...(originId ? { originId } : {}),
-                      actorId: targetActorId,
-                      ...(selectedCategory ? { category: selectedCategory } : {}),
-                      ...(initialQuery ? { q: initialQuery } : {}),
-                      viewMode: displayedViewMode,
-                    }).toString()}`
-                  );
-                }
-              }}
-              {...makeAccessibleButton(
-                `Ver ${selectedPin?.name || selectedActorSummary?.name} no catálogo`,
-                'Abre o catálogo mantendo a origem e o ator selecionados'
-              )}
-            >
-              <Text style={styles.actionButtonText}>Ver no catálogo</Text>
-              <Ionicons name="chevron-forward" size={16} color={theme.colors.onPrimary} />
-            </TouchableOpacity>
           </View>
-        </View>
-      </AccessibleModal>
+        )}
+      </View>
 
       {/* LGPD Dynamic Location Consent Gate Modal */}
       {showConsentModal && (
@@ -1149,121 +1165,170 @@ const styles = StyleSheet.create({
     ...theme.typography.labelMd,
     color: theme.colors.brandForest,
   },
-  sheetModalRoot: {
-    flex: 1,
-    justifyContent: 'flex-end',
+  floatingCardContainer: {
+    position: 'absolute',
+    bottom: 16,
+    left: 16,
+    right: 16,
+    maxWidth: 480,
+    alignSelf: 'center',
+    zIndex: 30,
   },
-  sheetBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
-  },
-  bottomSheetCard: {
+  floatingCard: {
     backgroundColor: theme.colors.surfaceWhite,
-    borderTopLeftRadius: theme.radii.xl,
-    borderTopRightRadius: theme.radii.xl,
-    padding: 16,
-    paddingBottom: 24,
-    gap: 8,
+    borderRadius: 16,
+    padding: 12,
+    gap: 10,
     ...theme.shadows.card,
     borderWidth: 1,
-    borderColor: 'rgba(117, 155, 113, 0.2)',
+    borderColor: 'rgba(117, 155, 113, 0.22)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.16,
+    shadowRadius: 14,
+    elevation: 8,
   },
-  sheetHandle: {
-    width: 40,
-    height: 4,
-    borderRadius: theme.radii.full,
-    backgroundColor: theme.colors.surfaceContainer,
+  cardMainRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    gap: 12,
+  },
+  cardPhotoWrapper: {
+    width: 90,
+    height: 90,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: theme.colors.surfaceContainerLow,
+    flexShrink: 0,
     alignSelf: 'center',
-    marginBottom: 4,
   },
-  sheetHeader: {
+  cardPhoto: {
+    width: '100%',
+    height: '100%',
+  },
+  cardPhotoFallback: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(117, 155, 113, 0.12)',
+  },
+  cardInfoColumn: {
+    flex: 1,
+    minWidth: 0,
+    justifyContent: 'space-between',
+    gap: 3,
+  },
+  cardHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 6,
   },
-  sheetTagWrapper: {
+  cardTagWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: 4,
+    flex: 1,
+    minWidth: 0,
   },
-  sheetCategoryTag: {
+  cardCategoryTag: {
     ...theme.typography.labelSm,
     backgroundColor: theme.colors.surfaceContainerLow,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
     borderRadius: theme.radii.sm,
     color: theme.colors.brandForest,
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '700',
+    letterSpacing: 0.4,
   },
-  closeButton: {
-    width: 44,
-    height: 44,
+  cardCloseBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: theme.radii.full,
+    backgroundColor: theme.colors.surfaceContainerLow,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
-  sheetTitle: {
+  cardTitle: {
     ...theme.typography.headlineSm,
     color: theme.colors.brandDeep,
-    fontSize: 16,
+    fontSize: 14,
+    fontWeight: '700',
+    lineHeight: 18,
   },
-  sheetSub: {
+  cardMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  cardAddress: {
     ...theme.typography.bodySm,
     color: theme.colors.onSurfaceVariant,
-    fontSize: 12,
+    fontSize: 11,
+    flex: 1,
   },
-  sheetDistance: {
+  cardBadgesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 2,
+  },
+  cardRatingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: '#FEF3C7',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: theme.radii.sm,
+  },
+  cardRatingText: {
+    ...theme.typography.labelSm,
+    color: '#92400E',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  cardDistanceBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
+  cardDistanceText: {
     ...theme.typography.labelSm,
     color: theme.colors.brandForest,
     fontSize: 11,
     fontWeight: '600',
   },
-  sheetRatingRow: {
+  cardErrorRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginVertical: 2,
-  },
-  sheetRatingText: {
-    ...theme.typography.labelSm,
-    color: theme.colors.brandDeep,
-    fontWeight: '700',
-    fontSize: 12,
-  },
-  sheetPhotoContainer: {
-    width: '100%',
-    marginVertical: 4,
-    borderRadius: theme.radii.md,
-    overflow: 'hidden',
-  },
-  sheetCoverImage: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    maxHeight: 140,
-    borderRadius: theme.radii.md,
-  },
-  sheetQueryError: {
+    justifyContent: 'space-between',
     gap: 8,
   },
-  sheetQueryErrorText: {
+  cardErrorText: {
     ...theme.typography.bodySm,
     color: theme.colors.error,
+    fontSize: 11,
   },
-  sheetRetryButton: {
-    minHeight: 44,
-    alignSelf: 'flex-start',
-    justifyContent: 'center',
-    paddingHorizontal: 14,
+  cardRetryBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: theme.radii.full,
     borderWidth: 1,
     borderColor: theme.colors.brandForest,
   },
-  sheetRetryButtonText: {
-    ...theme.typography.labelMd,
+  cardRetryText: {
+    ...theme.typography.labelSm,
     color: theme.colors.brandForest,
+    fontSize: 11,
+    fontWeight: '600',
   },
-  actionButton: {
+  cardActionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -1272,12 +1337,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: theme.radii.full,
     gap: 6,
-    marginTop: 4,
     minHeight: 44,
   },
-  actionButtonText: {
+  cardActionBtnText: {
     ...theme.typography.labelMd,
     color: theme.colors.onPrimary,
     fontWeight: '700',
+    fontSize: 13,
   },
 });

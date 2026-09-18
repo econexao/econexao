@@ -149,7 +149,7 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
           const actorSummary = actorSummariesById.get(itemId);
           if (!color || !icon) return null;
 
-          if (selected) {
+          if (selected && pinCardVariant !== 'none') {
             const photoUrl = actorSummary?.cover_media?.derivatives?.card ||
               actorSummary?.cover_media?.url ||
               actorSummary?.cover_image_url;
@@ -180,23 +180,25 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
             );
           }
 
+          const isHighlightedNative = selected && pinCardVariant === 'none';
+
           return (
             <Marker
               key={itemId}
               coordinate={coordinate}
               title={item.name}
               description={`Categoria: ${categoryLabel}`}
-              zIndex={1}
+              zIndex={isHighlightedNative ? 1000 : 1}
               anchor={{ x: 0.5, y: 1.0 }}
               onPress={() => onSelectActor(itemId)}
               accessibilityRole="button"
               accessibilityLabel={a11yLabel}
               accessibilityHint={`Categoria: ${categoryLabel}. Toque para selecionar.`}
-              accessibilityState={{ selected: false }}
+              accessibilityState={{ selected: isHighlightedNative }}
             >
-              <View style={styles.teardropContainer}>
-                <View style={[styles.teardropHead, { backgroundColor: color }]}>
-                  <Ionicons name={icon} size={18} color="#FFFFFF" />
+              <View style={[styles.teardropContainer, isHighlightedNative && { transform: [{ scale: 1.18 }] }]}>
+                <View style={[styles.teardropHead, { backgroundColor: color }, isHighlightedNative && { borderWidth: 2.5, borderColor: '#FFFFFF' }]}>
+                  <Ionicons name={icon} size={isHighlightedNative ? 20 : 18} color="#FFFFFF" />
                 </View>
                 <View style={[styles.teardropPoint, { borderTopColor: color }]} />
               </View>
