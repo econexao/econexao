@@ -51,7 +51,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.screenContainer}>
       <ImageBackground
-        source={require('../../../assets/images/florestaencantada.png')}
+        source={require('../../../assets/images/home_hero_bg.jpg')}
         style={styles.fullScreenBackground}
         resizeMode="cover"
         accessible={false}
