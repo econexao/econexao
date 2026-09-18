@@ -24,7 +24,8 @@ const pindobalGalleryImages = [
 ];
 const alterCoverImage = require('../../../assets/images/alter2.png');
 const pontaDePedrasCoverImage = require('../../../assets/images/pontadepedras3.png');
-const aramanaiCoverImage = require('../../../assets/images/aramanai1.png');
+const vilaSocorroCoverImage = require('../../../assets/images/vila-socorro-1.png');
+const aramanaiCoverImage = require('../../../assets/images/aramanai-1.png');
 
 export const isPindobalRoute = (route: RouteCover) =>
   route.id === 'route-pindobal' ||
@@ -56,6 +57,12 @@ export const getRouteCoverImage = (route: RouteCover): ImageSourcePropType | und
     route.id === 'preview-route-ponta-de-pedras'
   ) {
     return pontaDePedrasCoverImage;
+  }
+  if (
+    route.slug === 'rota-vila-socorro' ||
+    route.id === 'preview-route-vila-socorro'
+  ) {
+    return vilaSocorroCoverImage;
   }
   if (
     route.slug === 'rota-aramanai' ||
