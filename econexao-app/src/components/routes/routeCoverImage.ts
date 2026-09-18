@@ -102,3 +102,22 @@ export const getRouteGalleryImages = (route: RouteGallery) => {
 
   return [];
 };
+
+/**
+ * Standardizes the display name of routes across cards and detail screens.
+ * Specifically canonicalizes the Pedral route to "Balneário Luiz do Pedral".
+ */
+export const getRouteDisplayName = (
+  route?: (RouteCover & { title?: string | null }) | null
+): string => {
+  if (!route) return '';
+  if (
+    isPedralRoute(route) ||
+    route.slug === 'rota-pedral' ||
+    route.title === 'Rota do Pedral'
+  ) {
+    return 'Balneário Luiz do Pedral';
+  }
+  return route.title ?? '';
+};
+

@@ -5,7 +5,7 @@ import { theme } from '../../theme/theme';
 import type { RouteSummary } from '../../api/types';
 import { Badge } from '../common/Badge';
 import { makeAccessibleButton } from '../../utils/accessibility';
-import { getRouteCoverImage } from './routeCoverImage';
+import { getRouteCoverImage, getRouteDisplayName } from './routeCoverImage';
 
 interface CompactRouteCardProps {
   route: RouteSummary;
@@ -21,6 +21,7 @@ export const CompactRouteCard: React.FC<CompactRouteCardProps> = ({
   isFavorite = false,
 }) => {
   const coverImage = getRouteCoverImage(route);
+  const displayTitle = getRouteDisplayName(route);
 
   return (
     <View style={styles.card}>
@@ -31,16 +32,27 @@ export const CompactRouteCard: React.FC<CompactRouteCardProps> = ({
         accessibilityRole={onPress ? 'button' : 'none'}
         {...(onPress
           ? makeAccessibleButton(
-              `Rota ${route.title}`,
+              `Rota ${displayTitle}`,
               `${route.city}, ${route.state_code}. Toque para ver os detalhes.`
             )
           : {
               accessible: true,
-              accessibilityLabel: `Rota ${route.title}, ${route.city}, ${route.state_code}`,
+              accessibilityLabel: `Rota ${displayTitle}, ${route.city}, ${route.state_code}`,
             })}
       >
         <View style={styles.imageContainer}>
-          {coverImage ? <Image source={coverImage} style={styles.image} resizeMode="cover" accessibilityLabel={`Imagem da rota ${route.title}`} /> : <View style={styles.imagePlaceholder}><Ionicons name="map-outline" size={36} color={theme.colors.brandSage} /></View>}
+          {coverImage ? (
+            <Image
+              source={coverImage}
+              style={styles.image}
+              resizeMode="cover"
+              accessibilityLabel={`Imagem da rota ${displayTitle}`}
+            />
+          ) : (
+            <View style={styles.imagePlaceholder}>
+              <Ionicons name="map-outline" size={36} color={theme.colors.brandSage} />
+            </View>
+          )}
           <View style={styles.gradientOverlay} />
 
           <View style={styles.topRow}>
@@ -53,14 +65,8 @@ export const CompactRouteCard: React.FC<CompactRouteCardProps> = ({
         </View>
 
         <View style={styles.contentContainer}>
-          <View style={styles.categoryRow}>
-            <Text style={styles.categoryText} numberOfLines={1}>
-              {route.best_season ?? ''}
-            </Text>
-          </View>
-
           <Text style={styles.title} numberOfLines={1}>
-            {route.title}
+            {displayTitle}
           </Text>
 
           <View style={styles.footerRow}>
@@ -112,7 +118,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   imageContainer: {
-    height: 130,
+    height: 150,
     width: '100%',
     position: 'relative',
     backgroundColor: theme.colors.surfaceContainerLow,
@@ -166,31 +172,21 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   contentContainer: {
-    padding: 12,
-    gap: 4,
-  },
-  categoryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  categoryText: {
-    ...theme.typography.labelSm,
-    color: theme.colors.brandForest,
-    textTransform: 'uppercase',
-    fontWeight: '700',
-    letterSpacing: 0.5,
-    fontSize: 11,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    gap: 2,
   },
   title: {
     ...theme.typography.titleMd,
     color: theme.colors.brandDeep,
     fontWeight: '700',
-    marginTop: 2,
+    fontSize: 15,
+    lineHeight: 20,
   },
   footerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 6,
+    marginTop: 2,
   },
   infoBadge: {
     flexDirection: 'row',

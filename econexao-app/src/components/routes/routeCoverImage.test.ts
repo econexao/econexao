@@ -1,4 +1,26 @@
-import { getPedralCoverImage, getPindobalCoverImage, getRouteCoverImage, getRouteGalleryImages, isPedralRoute } from './routeCoverImage';
+import {
+  getPedralCoverImage,
+  getPindobalCoverImage,
+  getRouteCoverImage,
+  getRouteDisplayName,
+  getRouteGalleryImages,
+  isPedralRoute,
+} from './routeCoverImage';
+
+describe('getRouteDisplayName', () => {
+  it('standardizes Rota do Pedral to Balneário Luiz do Pedral', () => {
+    expect(getRouteDisplayName({ slug: 'rota-pedral', title: 'Rota do Pedral' })).toBe('Balneário Luiz do Pedral');
+    expect(getRouteDisplayName({ id: 'a17a314a-0000-4000-8000-000000000002', title: 'Rota do Pedral (Altamira)' })).toBe('Balneário Luiz do Pedral');
+    expect(getRouteDisplayName({ title: 'Rota do Pedral' })).toBe('Balneário Luiz do Pedral');
+  });
+
+  it('preserves other route titles as-is', () => {
+    expect(getRouteDisplayName({ slug: 'rota-pindobal', title: 'Pindobal' })).toBe('Pindobal');
+    expect(getRouteDisplayName({ slug: 'rota-alter-do-chao', title: 'Praia do Amor (Alter do Chão)' })).toBe('Praia do Amor (Alter do Chão)');
+    expect(getRouteDisplayName(null)).toBe('');
+  });
+});
+
 
 describe('getRouteCoverImage', () => {
   it('uses the bundled pindobal1 image for the Pindobal route', () => {

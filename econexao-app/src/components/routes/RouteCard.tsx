@@ -5,7 +5,7 @@ import { theme } from '../../theme/theme';
 import type { RouteSummary } from '../../api/types';
 import { Badge } from '../common/Badge';
 import { makeAccessibleButton } from '../../utils/accessibility';
-import { getRouteCoverImage } from './routeCoverImage';
+import { getRouteCoverImage, getRouteDisplayName } from './routeCoverImage';
 
 interface RouteCardProps {
   route: RouteSummary;
@@ -21,6 +21,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
   isFavorite = false,
 }) => {
   const coverImage = getRouteCoverImage(route);
+  const displayTitle = getRouteDisplayName(route);
 
   return (
     <View style={styles.card}>
@@ -31,12 +32,12 @@ export const RouteCard: React.FC<RouteCardProps> = ({
         accessibilityRole={onPress ? 'button' : 'none'}
         {...(onPress
           ? makeAccessibleButton(
-              `Rota ${route.title}`,
+              `Rota ${displayTitle}`,
               `${route.city}, ${route.state_code}. Toque para ver os detalhes.`
             )
           : {
               accessible: true,
-              accessibilityLabel: `Rota ${route.title}, ${route.city}, ${route.state_code}`,
+              accessibilityLabel: `Rota ${displayTitle}, ${route.city}, ${route.state_code}`,
             })}
       >
         <View style={styles.imageContainer}>
@@ -45,7 +46,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
               source={coverImage}
               style={styles.image}
               resizeMode="cover"
-              accessibilityLabel={`Imagem da rota ${route.title}`}
+              accessibilityLabel={`Imagem da rota ${displayTitle}`}
             />
           ) : (
             <View style={styles.imagePlaceholder} accessibilityLabel="Imagem da rota não disponível">
@@ -65,7 +66,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
                 {route.city}, {route.state_code}
               </Text>
             </View>
-            <Text style={styles.title}>{route.title}</Text>
+            <Text style={styles.title}>{displayTitle}</Text>
           </View>
         </View>
       </Pressable>
