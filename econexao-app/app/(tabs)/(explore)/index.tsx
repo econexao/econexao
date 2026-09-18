@@ -64,8 +64,8 @@ export default function HomeScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Espaçamento superior com respeito a safe-area para aproximar a logo do topo */}
-          <View style={[styles.heroTopSpacer, { height: Math.max(insets.top + 8, 24) }]} />
+          {/* Espaçamento superior com respeito a safe-area para respiro no banner */}
+          <View style={[styles.heroTopSpacer, { height: Math.max(insets.top + 20, 32) }]} />
 
           {/* Bloco do Hero com MotionBlock */}
           <MotionBlock style={styles.heroBlock}>
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
   },
   heroLogoContainer: {
     alignItems: 'flex-start',
-    marginBottom: 8,
+    marginBottom: 16,
     width: '100%',
     maxWidth: 340,
     position: 'relative',
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
   },
   heroControls: {
     gap: 14,
-    marginTop: 6,
+    marginTop: 16,
   },
   regionSelectorPill: {
     flexDirection: 'row',
