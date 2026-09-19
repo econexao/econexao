@@ -17,6 +17,7 @@ type RouteGallery = RouteCover & {
 const pindobalCoverImage = require('../../../assets/images/pindobal1.png');
 const pedralCoverImage = require('../../../assets/images/pedral_route_hero.png');
 const massanoriCoverImage = require('../../../assets/images/massanori_route_hero.png');
+const ambeCoverImage = require('../../../assets/images/ambe_route_hero.png');
 const pindobalGalleryImages = [
   require('../../../assets/images/pindobal1.png'),
   require('../../../assets/images/pindobal2.png'),
@@ -44,6 +45,12 @@ export const isMassanoriRoute = (route: RouteCover) =>
   route.slug === 'rota-massanori' ||
   route.slug === 'rota-macanori';
 
+export const isAmbeRoute = (route: RouteCover) =>
+  route.id === 'a17a314a-0000-4000-8000-000000000004' ||
+  route.id === 'route-ambe' ||
+  route.slug === 'rota-ambe' ||
+  route.slug === 'rota-ambe-floresta-park';
+
 /** Keeps editorial covers bundled with the app while other routes use API media. */
 export const getRouteCoverImage = (route: RouteCover): ImageSourcePropType | undefined => {
   if (isPindobalRoute(route)) {
@@ -54,6 +61,9 @@ export const getRouteCoverImage = (route: RouteCover): ImageSourcePropType | und
   }
   if (isMassanoriRoute(route)) {
     return massanoriCoverImage;
+  }
+  if (isAmbeRoute(route)) {
+    return ambeCoverImage;
   }
   if (
     route.slug === 'rota-alter-do-chao' ||
@@ -93,6 +103,9 @@ export const getPedralCoverImage = (route: RouteCover): ImageSourcePropType | un
 export const getMassanoriCoverImage = (route: RouteCover): ImageSourcePropType | undefined =>
   isMassanoriRoute(route) ? massanoriCoverImage : undefined;
 
+export const getAmbeCoverImage = (route: RouteCover): ImageSourcePropType | undefined =>
+  isAmbeRoute(route) ? ambeCoverImage : undefined;
+
 export const getRouteGalleryImages = (route: RouteGallery) => {
   if (route.gallery?.length) {
     return route.gallery.map((media, index) => ({
@@ -130,6 +143,16 @@ export const getRouteGalleryImages = (route: RouteGallery) => {
     ];
   }
 
+  if (isAmbeRoute(route)) {
+    return [
+      {
+        key: 'ambe-1',
+        source: ambeCoverImage as ImageSourcePropType,
+        alt: 'Foto do Ambé Floresta Park e igarapé natural',
+      },
+    ];
+  }
+
   return [];
 };
 
@@ -157,6 +180,15 @@ export const getRouteDisplayName = (
   ) {
     return 'Praia do Massanori';
   }
+  if (
+    isAmbeRoute(route) ||
+    route.slug === 'rota-ambe' ||
+    route.slug === 'rota-ambe-floresta-park' ||
+    route.title === 'Rota Ambé' ||
+    route.title === 'Rota Ambé Floresta Park'
+  ) {
+    return 'Ambé Floresta Park';
+  }
   return route.title ?? '';
 };
 
@@ -175,6 +207,10 @@ export const getRouteDescription = (
 
   if (isMassanoriRoute(route) || route.slug === 'rota-massanori' || route.slug === 'rota-macanori') {
     return 'Banhada pelas águas do Rio Xingu, a Praia do Massanori encanta com sua ampla faixa de areia dourada na estiagem, águas refrescantes, quiosques com peixes típicos e um visual deslumbrante em Altamira.';
+  }
+
+  if (isAmbeRoute(route) || route.slug === 'rota-ambe' || route.slug === 'rota-ambe-floresta-park') {
+    return 'O Ambé Floresta Park combina a exuberância da floresta amazônica com piscinas naturais de igarapé, gastronomia regional e trilhas ecológicas, oferecendo lazer e descanso em Altamira.';
   }
 
   if (isPindobalRoute(route)) {
