@@ -256,6 +256,28 @@ async function runTests() {
     }
     console.log("✓ Direct /Play access initialized on slide 01 with prev button disabled");
 
+    // Native fullscreen must preserve the active slide, update controls and recover from denial.
+    await page.getByRole("button", { name: "Entrar em tela cheia" }).click();
+    await page.waitForFunction(() => Boolean(document.fullscreenElement));
+    await page.getByRole("button", { name: "Sair da tela cheia" }).waitFor();
+    await page.keyboard.press("ArrowRight");
+    await page.waitForFunction(() => document.querySelector("#slide-2").classList.contains("is-active"));
+    await page.getByRole("button", { name: "Sair da tela cheia" }).focus();
+    await page.keyboard.press("Space");
+    await page.waitForFunction(() => !document.fullscreenElement);
+    if (!page.url().includes("slide-2")) throw new Error("Fullscreen exit lost active slide");
+    await page.evaluate(() => document.dispatchEvent(new Event("fullscreenchange")));
+    await page.getByRole("button", { name: "Entrar em tela cheia" }).waitFor();
+    await page.evaluate(() => { document.documentElement.requestFullscreen = () => Promise.reject(new Error("Denied")); });
+    await page.getByRole("button", { name: "Entrar em tela cheia" }).click();
+    await page.getByText("Não foi possível ativar a tela cheia.", { exact: false }).waitFor();
+    await page.reload();
+    await page.evaluate(() => Object.defineProperty(document, "fullscreenEnabled", { value: false, configurable: true }));
+    await page.getByRole("button", { name: "Entrar em tela cheia" }).click();
+    await page.getByText("Tela cheia indisponível", { exact: false }).waitFor();
+    await page.goto("http://127.0.0.1:8099/Play");
+    console.log("✓ Native fullscreen, keyboard exit, preserved slide, denied and unsupported states");
+
     // 11. Navegação sequencial (próximo e anterior)
     await page.locator("#btn-next").click();
     await page.waitForFunction(() => document.querySelector("#slide-2")?.classList.contains("is-active"));
