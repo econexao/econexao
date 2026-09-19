@@ -275,18 +275,18 @@ async function runTests() {
     }
     console.log("✓ Nav dot click jumped to slide 05");
 
-    // 13. Limite final (Slide 7) e validação do QR Code e CTAs
-    const dot7 = page.locator('.nav-dot[aria-label="Slide 7"]');
-    await dot7.click();
-    await page.waitForFunction(() => document.querySelector("#slide-7")?.classList.contains("is-active"));
+    // 13. Limite final (Slide 8) e validação do QR Code e CTAs
+    const dot8 = page.locator('.nav-dot[aria-label="Slide 8"]');
+    await dot8.click();
+    await page.waitForFunction(() => document.querySelector("#slide-8")?.classList.contains("is-active"));
     const nextBtnDisabled = await page.locator("#btn-next").isDisabled();
     const qrImg = page.locator('.qr-box img');
     await qrImg.waitFor({ state: "visible" });
     const qrAlt = await qrImg.getAttribute("alt");
     if (!nextBtnDisabled || !qrAlt?.includes("app.econexaoturismo.com")) {
-      throw new Error(`Slide 7 end limit / QR code check failed: nextDisabled=${nextBtnDisabled}, qrAlt=${qrAlt}`);
+      throw new Error(`Slide 8 end limit / QR code check failed: nextDisabled=${nextBtnDisabled}, qrAlt=${qrAlt}`);
     }
-    console.log("✓ Slide 07 reached, next button disabled and QR code verified");
+    console.log("✓ Slide 08 reached, next button disabled and QR code verified");
 
     // 14. Navegação por Teclado (ArrowLeft, ArrowRight, Home, End, Escape)
     await page.keyboard.press("Home");
@@ -355,8 +355,66 @@ async function runTests() {
 
     await mobileContext.close();
 
+    // Every slide must remain readable and operable across desktop and narrow phones.
+    const screenshotDir = process.env.PLAY_SCREENSHOT_DIR;
+    if (screenshotDir) fs.mkdirSync(screenshotDir, { recursive: true });
+    for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 320, height: 568 }]) {
+      const context = await browser.newContext({ viewport, reducedMotion: "reduce" });
+      const visual = await context.newPage();
+      const errors = [];
+      visual.on("pageerror", error => errors.push(error.message));
+      visual.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
+      await visual.goto("http://127.0.0.1:8099/Play");
+      if (await visual.locator(".slide").count() !== 8) throw new Error("Expected eight slides");
+      for (let i = 1; i <= 8; i++) {
+        await visual.getByRole("button", { name: `Slide ${i}`, exact: true }).click();
+        const state = await visual.evaluate(async () => {
+          const active = document.querySelector(".slide.is-active");
+          await Promise.all([...active.querySelectorAll("img")].map(img => img.decode()));
+          const background = getComputedStyle(active, "::before").backgroundImage;
+          const url = background.match(/url\(["']?(.*?)["']?\)/)?.[1];
+          if (!url) throw new Error("Missing landscape photograph");
+          const photo = new Image(); photo.src = url; await photo.decode();
+          const nodes = [...active.querySelectorAll("h1,h2,h3,p,li,figure,.qr-box,.cta-buttons")];
+          const clipped = nodes.filter(node => {
+            const box = node.getBoundingClientRect();
+            const slideBox = active.getBoundingClientRect();
+            return box.left < -1 || box.right > innerWidth + 1 || box.bottom > slideBox.bottom + 1;
+          }).map(node => node.tagName);
+          return {
+            overflow: document.documentElement.scrollWidth > innerWidth,
+            clipped,
+            hiddenInteractive: [...document.querySelectorAll('.slide[aria-hidden="true"]')].some(slide => !slide.inert),
+            reduced: getComputedStyle(active).animationName === "none",
+          };
+        });
+        if (state.overflow || state.clipped.length || state.hiddenInteractive || !state.reduced) {
+          throw new Error(`Slide ${i}, ${viewport.width}px: ${JSON.stringify(state)}`);
+        }
+        if (screenshotDir) await visual.screenshot({ path: path.join(screenshotDir, `${viewport.width}-slide-${i}.png`), fullPage: true });
+      }
+      if (errors.length) throw new Error(`Browser errors: ${errors.join("; ")}`);
+      await visual.goto("http://127.0.0.1:8099/Play#slide-6");
+      await visual.getByRole("heading", { name: /Que destino você/ }).waitFor();
+      await visual.getByRole("button", { name: "Slide 2", exact: true }).focus();
+      await visual.keyboard.press("Space");
+      if (await visual.locator("#current-slide-num").textContent() !== "02") throw new Error("Space must activate focused dot");
+      for (const route of ["/play", "/Play/", "/play/"]) {
+        await visual.goto(`http://127.0.0.1:8099${route}`);
+        await visual.getByRole("heading", { level: 1 }).waitFor();
+        const styled = await visual.evaluate(async () => {
+          await document.querySelector("#slide-1 img").decode();
+          return getComputedStyle(document.querySelector(".slide.is-active")).display === "grid"
+            && getComputedStyle(document.querySelector(".slide.is-active"), "::before").backgroundImage !== "none";
+        });
+        if (!styled) throw new Error(`Missing presentation CSS at ${route}`);
+      }
+      console.log(`✓ All eight slides: photos, screenshots, overflow, focus, reduced motion and aliases at ${viewport.width}px`);
+      await context.close();
+    }
+
     console.log("\n========================================================");
-    console.log("TODOS OS TESTES (LANDING + PLAY) FORAM APROVADOS (17/17)");
+    console.log("TODOS OS TESTES (LANDING + PLAY + 32 SLIDE/VIEWPORT CHECKS) FORAM APROVADOS");
     console.log("========================================================");
   } finally {
     await browser.close();
