@@ -1955,6 +1955,14 @@ revisão ou publicação. A execução começa por reconciliar a base atual.
 - **Evidência e limite:** PR #70 integrada por squash em `staging` no SHA `943b11a426d91c87e83140f82e1e6c84ccf6de3b`; workflow `35341124936` passou backend, frontend, drift/advisors, secret scan e Render smoke; deployment Vercel `dpl_FnWnCm5ao4p44gmA352b6djW4Seg` ficou READY e serve o alias canônico. A homologação desktop pública passou rota Pedral, mapa, pins/categorias, modos rota/cidade, quatro origens, traçado, catálogo e modal, mas encontrou HTTP 500 reproduzível no endpoint Google Photo da Praia do Pedral. A causa foi isolada localmente: chave ausente com feature desabilitada lançava `ValueError` durante dependency injection; correção local faz o modo desabilitado falhar como 503 seguro e passou 10 testes direcionados, Ruff/mypy e 849 testes backend. Foto real ainda depende de credencial/flag e novo GO remoto. Mobile, movimento reduzido e vídeo/trace temporal ficaram NOT_VERIFIABLE; nenhuma escrita remota foi executada. O relatório/status e a correção permanecem locais e não foram enviados a `staging`.
 - **Referência:** [Evidência ECO-2709](motion_design/evidence/ECO-2709.md), [PR #70](https://github.com/econexao/econexao/pull/70), [workflow](https://github.com/econexao/econexao/actions/runs/35341124936), [Plano](motion_design/implementation_plan.md), [prompt](motion_design/prompts/ECO-2709.md), [protocolo](motion_design/execution_protocol.md). **Commit publicado:** `943b11a426d91c87e83140f82e1e6c84ccf6de3b`; **registro pós-publicação:** branch local `codex/eco-2709-motion`.
 
+#### ECO-2710 — Apresentação de Slides (Play) da Landing Page
+
+- **Estado / horizonte / alteração:** CONCLUÍDA LOCAL / Landing Page / NOVA.
+- **Dependências ou sucessoras:** Nenhuma dependência bloqueante; escopo isolado em `landing-page/`.
+- **Conclusão / aceite:** Criação da página estática `/Play` com 7 slides narrativos adaptados da landing page, incorporando imagens das rotas oficiais de Altamira/Xingu e Tapajós, botão discreto `▶` no cabeçalho e menu móvel da landing, QR code para `https://app.econexaoturismo.com/` no slide 7, controles de teclado, touch swipe, contador de slides, botão de saída para a landing, sincronização de URL hash para refresh e testes automatizados Playwright adicionados em `test-landing-page.mjs`.
+- **Evidência e limite:** Implementação local no worktree isolado `codex/landing-play`.
+- **Referência:** [Plano de Implementação](../implementation_plan.md).
+
 ## Evidências preservadas e limites desta consolidação
 
 - O status anterior registrava RQ-01/RQ-02/RQ-03 aprovadas localmente; isso foi
