@@ -23,6 +23,7 @@ import { useOptimisticFavoriteRoute } from '../../../src/hooks/useOptimisticFavo
 import { theme } from '../../../src/theme/theme';
 import { makeAccessibleButton } from '../../../src/utils/accessibility';
 import { isPreviewRoute, mergeRoutesWithPreviews } from '../../../src/constants/previewRoutes';
+import { getRegionDisplayName } from '../../../src/components/routes/routeCoverImage';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -37,7 +38,7 @@ export default function HomeScreen() {
   const activeRegion = isAllRegions
     ? null
     : regionsQuery.data?.find((r) => r.id === state.activeRegionId);
-  const regionName = isAllRegions ? 'Todas as regiões' : (activeRegion?.name ?? 'Região');
+  const regionName = isAllRegions ? 'Todas as regiões' : (activeRegion ? getRegionDisplayName(activeRegion) : 'Região');
   const isAltamiraRegion = activeRegion?.slug === 'altamira-xingu';
   const hasNoRegions = regionsQuery.isSuccess && (regionsQuery.data?.length ?? 0) === 0;
 

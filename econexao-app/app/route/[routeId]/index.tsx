@@ -17,6 +17,7 @@ import {
   getRouteCoverImage,
   getRouteDisplayName,
   getRouteDescription,
+  getRouteCity,
 } from '../../../src/components/routes/routeCoverImage';
 import { useRouteAlertsQuery, useRouteDetailQuery } from '../../../src/hooks/queries';
 import { theme, useAppTheme } from '../../../src/theme/theme';
@@ -286,7 +287,7 @@ export default function RouteDetailScreen() {
               <View style={styles.heroOverlay}>
                 <Text style={[styles.title, styles.titleOnImage]}>{displayTitle}</Text>
                 <Text style={[styles.subtitle, styles.subtitleOnImage]}>
-                  {route.city}, {route.state_code}
+                  {getRouteCity(route)}, {route.state_code}
                   {route.is_verified && ' • Rota Verificada'}
                 </Text>
               </View>
@@ -298,7 +299,7 @@ export default function RouteDetailScreen() {
             <View style={styles.heroSection}>
               <Text style={styles.title}>{displayTitle}</Text>
               <Text style={styles.subtitle}>
-                {route.city}, {route.state_code}
+                {getRouteCity(route)}, {route.state_code}
                 {route.is_verified && ' • Rota Verificada'}
               </Text>
             </View>

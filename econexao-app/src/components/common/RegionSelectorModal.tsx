@@ -17,6 +17,7 @@ import { apiClient } from '../../api/client';
 import { makeAccessibleButton } from '../../utils/accessibility';
 import { setStoredVisitorRegion } from '../../utils/regionStorage';
 import { AccessibleModal } from './AccessibleModal';
+import { getRegionDisplayName } from '../routes/routeCoverImage';
 import type { Region } from '../../api/types';
 
 interface RegionSelectorModalProps {
@@ -45,7 +46,7 @@ export const RegionSelectorModal: React.FC<RegionSelectorModalProps> = ({
     onClose();
 
     const announceMsg = region
-      ? `Região alterada para ${region.name}`
+      ? `Região alterada para ${getRegionDisplayName(region)}`
       : 'Região alterada para Todas as regiões';
     AccessibilityInfo.announceForAccessibility(announceMsg);
 
@@ -136,6 +137,7 @@ export const RegionSelectorModal: React.FC<RegionSelectorModalProps> = ({
               {/* Regiões Específicas */}
               {regionsQuery.data?.map((region: Region) => {
                 const isSelected = !isAllSelected && region.id === state.activeRegionId;
+                const regionName = getRegionDisplayName(region);
                 return (
                   <TouchableOpacity
                     key={region.id}
@@ -143,7 +145,7 @@ export const RegionSelectorModal: React.FC<RegionSelectorModalProps> = ({
                     onPress={() => void handleSelectRegion(region)}
                     accessibilityRole="button"
                     accessibilityState={{ selected: isSelected }}
-                    accessibilityLabel={`${region.name}, ${region.state_code}. ${isSelected ? 'Selecionada' : 'Toque para selecionar'}`}
+                    accessibilityLabel={`${regionName}, ${region.state_code}. ${isSelected ? 'Selecionada' : 'Toque para selecionar'}`}
                   >
                     <View style={styles.regionLeftRow}>
                       <Ionicons
@@ -154,7 +156,7 @@ export const RegionSelectorModal: React.FC<RegionSelectorModalProps> = ({
                       />
                       <View style={styles.regionInfo}>
                         <Text style={[styles.regionName, isSelected && styles.regionNameSelected]}>
-                          {region.name}
+                          {regionName}
                         </Text>
                         <Text style={styles.regionState}>{region.state_code}</Text>
                       </View>

@@ -6,6 +6,7 @@ import { theme } from '../../theme/theme';
 import { useApp } from '../../hooks/useApp';
 import { makeAccessibleButton } from '../../utils/accessibility';
 import { useRegionsQuery } from '../../hooks/queries';
+import { getRegionDisplayName } from '../routes/routeCoverImage';
 import { RegionSelectorModal } from './RegionSelectorModal';
 
 interface AppHeaderProps {
@@ -32,7 +33,9 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   const activeRegion = isAllRegions
     ? null
     : regions.data?.find((region) => region.id === state.activeRegionId);
-  const regionLabel = isAllRegions ? 'Todas as regiões' : (activeRegion?.name ?? 'Selecionar região');
+  const regionLabel = isAllRegions
+    ? 'Todas as regiões'
+    : (activeRegion ? getRegionDisplayName(activeRegion) : 'Selecionar região');
 
   const handleBack = () => {
     if (onBackPress) {

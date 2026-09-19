@@ -3,6 +3,8 @@ import type { ImageSourcePropType } from 'react-native';
 type RouteCover = {
   id?: string | null;
   slug?: string | null;
+  title?: string | null;
+  name?: string | null;
   cover_image_url?: string | null;
 };
 
@@ -85,7 +87,8 @@ export const isRaizesXinguRoute = (route: RouteCover) =>
   route.id === 'a17a314a-0000-4000-8000-000000000006' ||
   route.id === 'route-raizes-do-xingu' ||
   route.slug === 'rota-raizes-do-xingu' ||
-  route.slug === 'rota-sitio-raizes-do-xingu';
+  route.slug === 'rota-sitio-raizes-do-xingu' ||
+  Boolean(route.title && (route.title.toLowerCase().includes('raízes') || route.title.toLowerCase().includes('raizes')));
 
 /** Keeps editorial covers bundled with the app while other routes use API media. */
 export const getRouteCoverImage = (route: RouteCover): ImageSourcePropType | undefined => {
@@ -351,3 +354,58 @@ export const getRouteDescription = (
 
   return route.description || route.summary || '';
 };
+
+/**
+ * Returns the standardized municipality / city name for routes, ensuring
+ * Sítio Raízes do Xingu is canonicalized to "Brasil Novo".
+ */
+export const getRouteCity = (
+  route?: (RouteCover & { city?: string | null; slug?: string | null }) | null
+): string => {
+  if (!route) return '';
+  if (
+    isRaizesXinguRoute(route) ||
+    route.slug === 'rota-raizes-do-xingu' ||
+    route.slug === 'rota-sitio-raizes-do-xingu'
+  ) {
+    return 'Brasil Novo';
+  }
+  return route.city ?? '';
+};
+
+/**
+ * Standardizes the display name of tourist regions across selector modals and headers:
+ * - "Região de Altamira / Xingu" -> "Região do Xingu (Altamira)"
+ * - "Santarém e Belterra" / "Santarém / Belterra" -> "Região do Tapajós (Santarém)"
+ */
+export const getRegionDisplayName = (
+  region?: { id?: string | null; slug?: string | null; name?: string | null } | null
+): string => {
+  if (!region) return '';
+  if (
+    region.slug === 'altamira-xingu' ||
+    region.id === 'a17a314a-0000-4000-8000-000000000001' ||
+    region.id === 'reg-altamira-xingu' ||
+    region.name === 'Região de Altamira / Xingu' ||
+    region.name === 'Altamira / Rio Xingu' ||
+    region.name?.includes('Altamira') ||
+    region.name?.includes('Xingu')
+  ) {
+    return 'Região do Xingu (Altamira)';
+  }
+  if (
+    region.slug === 'santarem-belterra' ||
+    region.id === 'reg-santarem-belterra' ||
+    region.name === 'Santarém e Belterra' ||
+    region.name === 'Santarém / Belterra' ||
+    region.name?.includes('Santarém') ||
+    region.name?.includes('Santarem') ||
+    region.name?.includes('Tapajós') ||
+    region.name?.includes('Tapajos') ||
+    region.name?.includes('Belterra')
+  ) {
+    return 'Região do Tapajós (Santarém)';
+  }
+  return region.name ?? '';
+};
+
