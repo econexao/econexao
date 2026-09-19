@@ -1,10 +1,13 @@
 import {
+  getAmbeCoverImage,
+  getMassanoriCoverImage,
   getPedralCoverImage,
   getPindobalCoverImage,
   getRouteCoverImage,
   getRouteDisplayName,
   getRouteDescription,
   getRouteGalleryImages,
+  isAmbeRoute,
   isPedralRoute,
 } from './routeCoverImage';
 
@@ -13,6 +16,11 @@ describe('getRouteDisplayName', () => {
     expect(getRouteDisplayName({ slug: 'rota-pedral', title: 'Rota do Pedral' })).toBe('Balneário Luiz do Pedral');
     expect(getRouteDisplayName({ id: 'a17a314a-0000-4000-8000-000000000002', title: 'Rota do Pedral (Altamira)' })).toBe('Balneário Luiz do Pedral');
     expect(getRouteDisplayName({ title: 'Rota do Pedral' })).toBe('Balneário Luiz do Pedral');
+  });
+
+  it('standardizes Ambé routes to Ambé Floresta Park', () => {
+    expect(getRouteDisplayName({ slug: 'rota-ambe', title: 'Rota Ambé' })).toBe('Ambé Floresta Park');
+    expect(getRouteDisplayName({ id: 'a17a314a-0000-4000-8000-000000000004', title: 'Ambé Floresta Park' })).toBe('Ambé Floresta Park');
   });
 
   it('preserves other route titles as-is', () => {
@@ -41,6 +49,16 @@ describe('getRouteCoverImage', () => {
   it('uses the bundled massanori hero image for Praia do Massanori', () => {
     expect(getRouteCoverImage({ slug: 'rota-massanori' })).toBeDefined();
     expect(getRouteCoverImage({ id: 'a17a314a-0000-4000-8000-000000000003' })).toBeDefined();
+    expect(getMassanoriCoverImage({ slug: 'rota-massanori' })).toBeDefined();
+  });
+
+  it('uses the bundled ambe hero image for Ambé Floresta Park', () => {
+    expect(isAmbeRoute({ slug: 'rota-ambe' })).toBe(true);
+    expect(isAmbeRoute({ id: 'a17a314a-0000-4000-8000-000000000004' })).toBe(true);
+    expect(getRouteCoverImage({ slug: 'rota-ambe' })).toBeDefined();
+    expect(getRouteCoverImage({ id: 'a17a314a-0000-4000-8000-000000000004' })).toBeDefined();
+    expect(getAmbeCoverImage({ slug: 'rota-ambe' })).toBeDefined();
+    expect(getAmbeCoverImage({ slug: 'outra-rota' })).toBeUndefined();
   });
 
   it('provides the bundled image only for Pindobal detail heroes', () => {
@@ -91,6 +109,10 @@ describe('getRouteGalleryImages', () => {
   it('provides the bundled hero image for Praia do Massanori gallery', () => {
     expect(getRouteGalleryImages({ slug: 'rota-massanori' })).toHaveLength(1);
   });
+
+  it('provides the bundled hero image for Ambé Floresta Park gallery', () => {
+    expect(getRouteGalleryImages({ slug: 'rota-ambe' })).toHaveLength(1);
+  });
 });
 
 describe('getRouteDescription', () => {
@@ -104,6 +126,13 @@ describe('getRouteDescription', () => {
   it('returns a brief description under 250 chars for Praia do Massanori', () => {
     const desc = getRouteDescription({ slug: 'rota-massanori' });
     expect(desc).toContain('Massanori');
+    expect(desc.length).toBeLessThanOrEqual(250);
+    expect(desc.length).toBeGreaterThan(20);
+  });
+
+  it('returns a brief description under 250 chars for Ambé Floresta Park', () => {
+    const desc = getRouteDescription({ slug: 'rota-ambe' });
+    expect(desc).toContain('Ambé');
     expect(desc.length).toBeLessThanOrEqual(250);
     expect(desc.length).toBeGreaterThan(20);
   });

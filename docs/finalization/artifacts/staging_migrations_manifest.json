@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "total_migrations": 35,
+  "total_migrations": 36,
   "generated_at": "2026-09-10T23:43:57.208832+00:00",
   "migrations": [
     {
@@ -247,6 +247,13 @@
       "path": "supabase/migrations/20260918193000_massanori_four_origins_route.sql",
       "bytes": 37722,
       "sha256": "83a2e77724ec78bf86d2ee9ca8ee2c160a0641393d65cdbbacf588f1f31b4751"
+    },
+    {
+      "version": "20260918203000",
+      "filename": "20260918203000_ambe_four_origins_route.sql",
+      "path": "supabase/migrations/20260918203000_ambe_four_origins_route.sql",
+      "bytes": 42356,
+      "sha256": "c20f996dcf963c8b6a0238533fda9a58c98a03a4e76a57579fc298e1933c23ce"
     }
   ]
 }
