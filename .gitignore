@@ -44,3 +44,7 @@ Thumbs.db
 
 # Owner-provided Stitch drop folders (canonical copies live in docs/stitch-screens/)
 tela historico rotas/
+
+# Test screenshots
+screenshots/
+landing-page/screenshots/
