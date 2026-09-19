@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "total_migrations": 36,
+  "total_migrations": 37,
   "generated_at": "2026-09-10T23:43:57.208832+00:00",
   "migrations": [
     {
@@ -254,6 +254,13 @@
       "path": "supabase/migrations/20260918203000_ambe_four_origins_route.sql",
       "bytes": 42356,
       "sha256": "c20f996dcf963c8b6a0238533fda9a58c98a03a4e76a57579fc298e1933c23ce"
+    },
+    {
+      "version": "20260919110000",
+      "filename": "20260919110000_queda_dagua_four_origins_route.sql",
+      "path": "supabase/migrations/20260919110000_queda_dagua_four_origins_route.sql",
+      "bytes": 46607,
+      "sha256": "1f5e0f5c9409b65be54bc999bcaa0daf0927003f3680a5074a6a24be870c5836"
     }
   ]
 }

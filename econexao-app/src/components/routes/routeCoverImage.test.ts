@@ -3,12 +3,14 @@ import {
   getMassanoriCoverImage,
   getPedralCoverImage,
   getPindobalCoverImage,
+  getQuedaDaguaCoverImage,
   getRouteCoverImage,
   getRouteDisplayName,
   getRouteDescription,
   getRouteGalleryImages,
   isAmbeRoute,
   isPedralRoute,
+  isQuedaDaguaRoute,
 } from './routeCoverImage';
 
 describe('getRouteDisplayName', () => {
@@ -21,6 +23,11 @@ describe('getRouteDisplayName', () => {
   it('standardizes Ambé routes to Ambé Floresta Park', () => {
     expect(getRouteDisplayName({ slug: 'rota-ambe', title: 'Rota Ambé' })).toBe('Ambé Floresta Park');
     expect(getRouteDisplayName({ id: 'a17a314a-0000-4000-8000-000000000004', title: 'Ambé Floresta Park' })).toBe('Ambé Floresta Park');
+  });
+
+  it('standardizes Queda D\'água routes to Balneário e Pousada Queda D\'água', () => {
+    expect(getRouteDisplayName({ slug: 'rota-queda-dagua', title: 'Rota Queda D\'água' })).toBe('Balneário e Pousada Queda D\'água');
+    expect(getRouteDisplayName({ id: 'a17a314a-0000-4000-8000-000000000005', title: 'Balneário e Pousada Queda D\'água' })).toBe('Balneário e Pousada Queda D\'água');
   });
 
   it('preserves other route titles as-is', () => {
@@ -59,6 +66,15 @@ describe('getRouteCoverImage', () => {
     expect(getRouteCoverImage({ id: 'a17a314a-0000-4000-8000-000000000004' })).toBeDefined();
     expect(getAmbeCoverImage({ slug: 'rota-ambe' })).toBeDefined();
     expect(getAmbeCoverImage({ slug: 'outra-rota' })).toBeUndefined();
+  });
+
+  it('uses the bundled queda dagua hero image for Balneário e Pousada Queda D\'água', () => {
+    expect(isQuedaDaguaRoute({ slug: 'rota-queda-dagua' })).toBe(true);
+    expect(isQuedaDaguaRoute({ id: 'a17a314a-0000-4000-8000-000000000005' })).toBe(true);
+    expect(getRouteCoverImage({ slug: 'rota-queda-dagua' })).toBeDefined();
+    expect(getRouteCoverImage({ id: 'a17a314a-0000-4000-8000-000000000005' })).toBeDefined();
+    expect(getQuedaDaguaCoverImage({ slug: 'rota-queda-dagua' })).toBeDefined();
+    expect(getQuedaDaguaCoverImage({ slug: 'outra-rota' })).toBeUndefined();
   });
 
   it('provides the bundled image only for Pindobal detail heroes', () => {
@@ -113,6 +129,10 @@ describe('getRouteGalleryImages', () => {
   it('provides the bundled hero image for Ambé Floresta Park gallery', () => {
     expect(getRouteGalleryImages({ slug: 'rota-ambe' })).toHaveLength(1);
   });
+
+  it('provides the bundled hero image for Balneário e Pousada Queda D\'água gallery', () => {
+    expect(getRouteGalleryImages({ slug: 'rota-queda-dagua' })).toHaveLength(1);
+  });
 });
 
 describe('getRouteDescription', () => {
@@ -133,6 +153,15 @@ describe('getRouteDescription', () => {
   it('returns a brief description under 250 chars for Ambé Floresta Park', () => {
     const desc = getRouteDescription({ slug: 'rota-ambe' });
     expect(desc).toContain('Ambé');
+    expect(desc.length).toBeLessThanOrEqual(250);
+    expect(desc.length).toBeGreaterThan(20);
+  });
+
+  it('returns a brief description under 250 chars for Balneário e Pousada Queda D\'água', () => {
+    expect(isQuedaDaguaRoute({ slug: 'rota-queda-dagua' })).toBe(true);
+    expect(isQuedaDaguaRoute({ id: 'a17a314a-0000-4000-8000-000000000005' })).toBe(true);
+    const desc = getRouteDescription({ slug: 'rota-queda-dagua' });
+    expect(desc).toContain('Queda D\'água');
     expect(desc.length).toBeLessThanOrEqual(250);
     expect(desc.length).toBeGreaterThan(20);
   });
