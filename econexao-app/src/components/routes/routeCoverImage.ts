@@ -18,6 +18,7 @@ const pindobalCoverImage = require('../../../assets/images/pindobal1.png');
 const pedralCoverImage = require('../../../assets/images/pedral_route_hero.png');
 const massanoriCoverImage = require('../../../assets/images/massanori_route_hero.png');
 const ambeCoverImage = require('../../../assets/images/ambe_route_hero.png');
+const quedaDaguaCoverImage = require('../../../assets/images/queda_dagua_route_hero.png');
 const pindobalGalleryImages = [
   require('../../../assets/images/pindobal1.png'),
   require('../../../assets/images/pindobal2.png'),
@@ -51,6 +52,13 @@ export const isAmbeRoute = (route: RouteCover) =>
   route.slug === 'rota-ambe' ||
   route.slug === 'rota-ambe-floresta-park';
 
+export const isQuedaDaguaRoute = (route: RouteCover) =>
+  route.id === 'a17a314a-0000-4000-8000-000000000005' ||
+  route.id === 'route-queda-dagua' ||
+  route.slug === 'rota-queda-dagua' ||
+  route.slug === 'rota-queda-d-agua' ||
+  route.slug === 'rota-balneario-queda-dagua';
+
 /** Keeps editorial covers bundled with the app while other routes use API media. */
 export const getRouteCoverImage = (route: RouteCover): ImageSourcePropType | undefined => {
   if (isPindobalRoute(route)) {
@@ -64,6 +72,9 @@ export const getRouteCoverImage = (route: RouteCover): ImageSourcePropType | und
   }
   if (isAmbeRoute(route)) {
     return ambeCoverImage;
+  }
+  if (isQuedaDaguaRoute(route)) {
+    return quedaDaguaCoverImage;
   }
   if (
     route.slug === 'rota-alter-do-chao' ||
@@ -105,6 +116,9 @@ export const getMassanoriCoverImage = (route: RouteCover): ImageSourcePropType |
 
 export const getAmbeCoverImage = (route: RouteCover): ImageSourcePropType | undefined =>
   isAmbeRoute(route) ? ambeCoverImage : undefined;
+
+export const getQuedaDaguaCoverImage = (route: RouteCover): ImageSourcePropType | undefined =>
+  isQuedaDaguaRoute(route) ? quedaDaguaCoverImage : undefined;
 
 export const getRouteGalleryImages = (route: RouteGallery) => {
   if (route.gallery?.length) {
@@ -153,6 +167,16 @@ export const getRouteGalleryImages = (route: RouteGallery) => {
     ];
   }
 
+  if (isQuedaDaguaRoute(route)) {
+    return [
+      {
+        key: 'queda-dagua-1',
+        source: quedaDaguaCoverImage as ImageSourcePropType,
+        alt: 'Foto do Balneário e Pousada Queda D\'água',
+      },
+    ];
+  }
+
   return [];
 };
 
@@ -189,6 +213,15 @@ export const getRouteDisplayName = (
   ) {
     return 'Ambé Floresta Park';
   }
+  if (
+    isQuedaDaguaRoute(route) ||
+    route.slug === 'rota-queda-dagua' ||
+    route.slug === 'rota-queda-d-agua' ||
+    route.title === 'Rota Queda D\'água' ||
+    route.title === 'Rota Balneário e Pousada Queda D\'água'
+  ) {
+    return 'Balneário e Pousada Queda D\'água';
+  }
   return route.title ?? '';
 };
 
@@ -211,6 +244,10 @@ export const getRouteDescription = (
 
   if (isAmbeRoute(route) || route.slug === 'rota-ambe' || route.slug === 'rota-ambe-floresta-park') {
     return 'O Ambé Floresta Park combina a exuberância da floresta amazônica com piscinas naturais de igarapé, gastronomia regional e trilhas ecológicas, oferecendo lazer e descanso em Altamira.';
+  }
+
+  if (isQuedaDaguaRoute(route) || route.slug === 'rota-queda-dagua' || route.slug === 'rota-queda-d-agua') {
+    return 'Refúgio ecológico e de lazer em Altamira, o Balneário e Pousada Queda D\'água oferece banho refrescante em águas naturais, estrutura de pousada e contato com a natureza da Amazônia.';
   }
 
   if (isPindobalRoute(route)) {

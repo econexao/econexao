@@ -235,3 +235,64 @@ def test_ambe_corridor_counts():
     assert res["origin_counts"]["aeroporto"] == 146
     assert res["origin_counts"]["terminal_fluvial"] == 169
     assert res["origin_counts"]["centro"] == 174
+
+
+def test_queda_dagua_geometries_integrity():
+    """Verify origins have valid geometry metadata for Balneário e Pousada Queda D'água."""
+    geoms_path = DATA_DIR / "queda_dagua_geometries.json"
+    assert geoms_path.exists(), "queda_dagua_geometries.json must exist"
+
+    with open(geoms_path, encoding="utf-8") as f:
+        geoms = json.load(f)
+
+    expected_origins = {"rodoviaria", "aeroporto", "terminal_fluvial", "centro"}
+    assert expected_origins.issubset(
+        geoms.keys()
+    ), f"Missing origins: {expected_origins - set(geoms.keys())}"
+
+    # Snapped endpoint on BR-230 / vicinal junction
+    snapped_dest_lat = -3.280970
+    snapped_dest_lon = -52.385373
+
+    for code in expected_origins:
+        g = geoms[code]
+        assert g["distance_m"] > 0
+        assert g["duration_s"] > 0
+        coords = g["geojson"]["coordinates"]
+        assert len(coords) > 50
+        assert "bounds" in g
+        b = g["bounds"]
+        assert b["min_lat"] <= b["max_lat"]
+        assert b["min_lon"] <= b["max_lon"]
+        assert g["encoded_polyline"] is not None
+        assert len(g["sha256"]) == 64
+
+        # Verify continuity: no adjacent points further than 1500m apart
+        for (lon1, lat1), (lon2, lat2) in zip(coords, coords[1:], strict=False):
+            step_d = haversine_m(lat1, lon1, lat2, lon2)
+            assert step_d < 1500.0, f"Discontinuity in {code}: {step_d:.1f}m between points"
+
+        # Arrive at common snapped endpoint (within 10m)
+        end_lon, end_lat = coords[-1]
+        dist_to_dest = haversine_m(end_lat, end_lon, snapped_dest_lat, snapped_dest_lon)
+        msg = f"{code} ends at ({end_lat}, {end_lon}), {dist_to_dest:.1f}m from destination"
+        assert dist_to_dest < 10.0, msg
+
+
+def test_queda_dagua_corridor_counts():
+    """Verify corridor calculation for Queda D'água route returns 398 unique actors."""
+    from scripts.apply_altamira_queda_dagua import calculate_queda_dagua_corridor
+
+    csv_path = DATA_DIR / "atores_altamira.csv"
+    geoms_path = DATA_DIR / "queda_dagua_geometries.json"
+
+    res = calculate_queda_dagua_corridor(csv_path, geoms_path, buffer_m=1000.0)
+    assert res["status"] == "dry_run_success"
+    assert res["total_parsed"] == 765
+    assert res["with_coordinates"] == 571
+    assert res["missing_coordinates"] == 194
+    assert res["corridor_actors_count"] == 398
+    assert res["origin_counts"]["rodoviaria"] == 250
+    assert res["origin_counts"]["aeroporto"] == 74
+    assert res["origin_counts"]["terminal_fluvial"] == 357
+    assert res["origin_counts"]["centro"] == 356
