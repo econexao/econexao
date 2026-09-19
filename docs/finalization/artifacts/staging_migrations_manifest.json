@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "total_migrations": 38,
+  "total_migrations": 39,
   "generated_at": "2026-09-10T23:43:57.208832+00:00",
   "migrations": [
     {
@@ -268,6 +268,13 @@
       "path": "supabase/migrations/20260919120000_raizes_xingu_four_origins_route.sql",
       "bytes": 84471,
       "sha256": "45c1f5abfe52a061dd0554884a12d7dcbe5dbcc55ef36b9b83c630a4a0a20002"
+    },
+    {
+      "version": "20260919143000",
+      "filename": "20260919143000_update_region_names_and_brasil_novo.sql",
+      "path": "supabase/migrations/20260919143000_update_region_names_and_brasil_novo.sql",
+      "bytes": 997,
+      "sha256": "c9202a3003c7cb22fada261c7c3fccbd2712cdc1abf1712773f695c6f3bae902"
     }
   ]
 }
