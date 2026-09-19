@@ -4,6 +4,7 @@ import {
   getPedralCoverImage,
   getPindobalCoverImage,
   getQuedaDaguaCoverImage,
+  getRaizesXinguCoverImage,
   getRouteCoverImage,
   getRouteDisplayName,
   getRouteDescription,
@@ -11,6 +12,7 @@ import {
   isAmbeRoute,
   isPedralRoute,
   isQuedaDaguaRoute,
+  isRaizesXinguRoute,
 } from './routeCoverImage';
 
 describe('getRouteDisplayName', () => {
@@ -28,6 +30,11 @@ describe('getRouteDisplayName', () => {
   it('standardizes Queda D\'água routes to Balneário e Pousada Queda D\'água', () => {
     expect(getRouteDisplayName({ slug: 'rota-queda-dagua', title: 'Rota Queda D\'água' })).toBe('Balneário e Pousada Queda D\'água');
     expect(getRouteDisplayName({ id: 'a17a314a-0000-4000-8000-000000000005', title: 'Balneário e Pousada Queda D\'água' })).toBe('Balneário e Pousada Queda D\'água');
+  });
+
+  it('standardizes Raízes do Xingu routes to Sítio Raízes do Xingu', () => {
+    expect(getRouteDisplayName({ slug: 'rota-raizes-do-xingu', title: 'Rota Raízes do Xingu' })).toBe('Sítio Raízes do Xingu');
+    expect(getRouteDisplayName({ id: 'a17a314a-0000-4000-8000-000000000006', title: 'Sítio Raízes do Xingu' })).toBe('Sítio Raízes do Xingu');
   });
 
   it('preserves other route titles as-is', () => {
@@ -75,6 +82,15 @@ describe('getRouteCoverImage', () => {
     expect(getRouteCoverImage({ id: 'a17a314a-0000-4000-8000-000000000005' })).toBeDefined();
     expect(getQuedaDaguaCoverImage({ slug: 'rota-queda-dagua' })).toBeDefined();
     expect(getQuedaDaguaCoverImage({ slug: 'outra-rota' })).toBeUndefined();
+  });
+
+  it('uses the bundled raizes xingu hero image for Sítio Raízes do Xingu', () => {
+    expect(isRaizesXinguRoute({ slug: 'rota-raizes-do-xingu' })).toBe(true);
+    expect(isRaizesXinguRoute({ id: 'a17a314a-0000-4000-8000-000000000006' })).toBe(true);
+    expect(getRouteCoverImage({ slug: 'rota-raizes-do-xingu' })).toBeDefined();
+    expect(getRouteCoverImage({ id: 'a17a314a-0000-4000-8000-000000000006' })).toBeDefined();
+    expect(getRaizesXinguCoverImage({ slug: 'rota-raizes-do-xingu' })).toBeDefined();
+    expect(getRaizesXinguCoverImage({ slug: 'outra-rota' })).toBeUndefined();
   });
 
   it('provides the bundled image only for Pindobal detail heroes', () => {
@@ -133,6 +149,12 @@ describe('getRouteGalleryImages', () => {
   it('provides the bundled hero image for Balneário e Pousada Queda D\'água gallery', () => {
     expect(getRouteGalleryImages({ slug: 'rota-queda-dagua' })).toHaveLength(1);
   });
+
+  it('provides the four bundled editorial photos for Sítio Raízes do Xingu gallery', () => {
+    const gallery = getRouteGalleryImages({ slug: 'rota-raizes-do-xingu' });
+    expect(gallery).toHaveLength(4);
+    expect(gallery[0].alt).toContain('Cachoeira Planaltina');
+  });
 });
 
 describe('getRouteDescription', () => {
@@ -166,6 +188,16 @@ describe('getRouteDescription', () => {
     expect(desc.length).toBeGreaterThan(20);
   });
 
+  it('returns a brief description under 250 chars for Sítio Raízes do Xingu with Cachoeira Planaltina', () => {
+    expect(isRaizesXinguRoute({ slug: 'rota-raizes-do-xingu' })).toBe(true);
+    expect(isRaizesXinguRoute({ id: 'a17a314a-0000-4000-8000-000000000006' })).toBe(true);
+    const desc = getRouteDescription({ slug: 'rota-raizes-do-xingu' });
+    expect(desc).toContain('Raízes do Xingu');
+    expect(desc).toContain('Cachoeira Planaltina');
+    expect(desc.length).toBeLessThanOrEqual(250);
+    expect(desc.length).toBeGreaterThan(20);
+  });
+
   it('returns a brief description under 250 chars for Praia de Pindobal', () => {
     const desc = getRouteDescription({ slug: 'rota-pindobal' });
     expect(desc).toContain('Pindobal');
@@ -185,4 +217,3 @@ describe('getRouteDescription', () => {
     expect(getRouteDescription(null)).toBe('');
   });
 });
-

@@ -1,0 +1,16 @@
+{
+  "status": "dry_run_success",
+  "region": "altamira-xingu",
+  "route": "rota-raizes-do-xingu",
+  "route_id": "a17a314a-0000-4000-8000-000000000006",
+  "total_parsed": 765,
+  "with_coordinates": 571,
+  "missing_coordinates": 194,
+  "corridor_actors_count": 398,
+  "origin_counts": {
+    "rodoviaria": 250,
+    "aeroporto": 74,
+    "terminal_fluvial": 357,
+    "centro": 356
+  }
+}
