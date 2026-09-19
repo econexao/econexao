@@ -1,0 +1,216 @@
+:root { --green-950:#062e29; --mint:#b8dfc6; --gold:#eaca88; --sand:#faf3e5; --white:#fff; --line:rgba(255,255,255,.23); }
+* { box-sizing:border-box; }
+html,body { margin:0; min-height:100%; }
+body { background:#081e1b; color:var(--sand); font-family: 'Segoe UI',system-ui,sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased; }
+a { color:inherit; text-decoration:none; }
+button { font:inherit; color:inherit; cursor:pointer; }
+button,a { -webkit-tap-highlight-color:transparent; }
+:focus-visible { outline:3px solid var(--gold); outline-offset:5px; }
+.skip-link { position:fixed; z-index:50; top:12px; left:12px; padding:12px; background:#062e29; transform:translateY(-200%); }
+.skip-link:focus { transform:none; }
+.presentation-header { height:76px; padding:0 4vw; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); }
+.header-brand { display:flex; align-items:center; gap:12px; font-size:20px; font-weight:700; letter-spacing:-.6px; }
+.header-brand__badge { color:var(--mint); font-size:14px; border:1px solid var(--mint); border-radius:50%; width:38px; height:38px; display:grid; place-items:center; }
+.header-meta { display:flex; align-items:center; gap:28px; }
+.slide-counter { color:var(--mint); font-size:14px; letter-spacing:2px; font-variant-numeric:tabular-nums; }
+.btn-exit { display:flex; align-items:center; gap:10px; min-height:44px; padding:0 12px; font-size:13px; }
+.stage { padding:20px 24px; }
+.slide-deck { width:min(1600px,100%); margin:auto; }
+.slide { position:relative; isolation:isolate; display:none; grid-template-columns:1fr 1fr; align-items:center; gap:5%; min-height:calc(100svh - 182px); padding:clamp(32px,5vw,88px); border-radius:12px; overflow:hidden; background:#123d34; }
+.slide.is-active { display:grid; animation:reveal .4s ease-out; }
+.slide::before { content:""; position:absolute; z-index:-2; inset:0; background-image:var(--landscape); background-size:cover; background-position:center; }
+.slide::after { content:""; position:absolute; z-index:-1; inset:0; background:linear-gradient(90deg,rgba(3,24,20,.96),rgba(3,24,20,.8) 43%,rgba(3,24,20,.12)),linear-gradient(0deg,rgba(3,24,20,.62),transparent 45%); }
+#slide-1 { --landscape:url('assets/images/play/pedral_route_hero.webp'); }
+#slide-2 { --landscape:url('assets/images/play/ambe_02.webp'); }
+#slide-3 { --landscape:url('assets/images/play/pindobal4.webp'); }
+#slide-4 { --landscape:url('assets/images/play/massanori_route_hero.webp'); grid-template-columns:.65fr 1.35fr; padding:36px 4vw; }
+#slide-5 { --landscape:url('assets/images/play/pindobal4.webp'); grid-template-columns:.8fr 1.2fr; }
+#slide-6 { --landscape:url('assets/images/play/raizes_xingu_02.webp'); }
+#slide-7 { --landscape:url('assets/images/play/queda_dagua_route_hero.webp'); }
+#slide-8 { --landscape:url('assets/images/play/pindobal4.webp'); }
+.slide-eyebrow { display:flex; gap:12px; align-items:center; margin-bottom:22px; font-size:13px; font-weight:700; letter-spacing:2.4px; text-transform:uppercase; color:var(--gold); }
+.slide-eyebrow::before { content:""; width:30px; height:1px; background:currentColor; }
+.slide-title { font-family:Georgia,'Times New Roman',serif; font-size:clamp(42px,4.7vw,76px); line-height:1.04; font-weight:400; letter-spacing:-2px; margin:0 0 26px; text-wrap:balance; }
+.slide-title em { color:var(--gold); font-weight:400; }
+.slide-text { font-size:clamp(17px,1.5vw,21px); line-height:1.75; color:#e2e8e1; max-width:480px; margin:0 0 26px; }
+.slide-copy { min-width:0; }
+.slide-visual { min-width:0; position:relative; }
+.photo-caption { display:block; margin-top:20px; color:var(--sand); font-size:13px; letter-spacing:1.3px; text-transform:uppercase; }
+.slide-1-composite { display:flex; align-items:center; justify-content:center; }
+.slide-1-photo { display:none; }
+.slide-1-app-mockup { position:relative; transform:rotate(5deg); }
+.slide-1-app-mockup img { display:block; width:clamp(250px,min(24vw,calc((100svh - 260px)*.46)),350px); border:7px solid #183d34; border-radius:30px; box-shadow:0 24px 70px #0007; }
+.questions-deck { background:rgba(5,32,26,.86); padding:8px 26px; border:1px solid var(--line); border-radius:8px; }
+.q-card { display:flex; gap:22px; align-items:flex-start; padding:26px 0; }
+.q-card+.q-card { border-top:1px solid var(--line); }
+.q-num { font-family:Georgia,serif; font-size:32px; color:var(--gold); line-height:1.1; }
+h3 { margin:0 0 8px; font-size:19px; font-weight:600; letter-spacing:-.3px; }
+.q-info p,.conn-card p,.biz-card p { margin:0; font-size:16px; color:#e2e8e1; line-height:1.65; }
+.connection-cards { display:grid; gap:16px; padding-top:110px; }
+.conn-card { padding:24px 28px; background:rgba(5,32,26,.88); border-left:2px solid var(--gold); }
+.conn-tag { display:block; margin-bottom:12px; color:var(--gold); text-transform:uppercase; letter-spacing:1.7px; font-size:12px; font-weight:700; }
+.app-journey { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); align-items:start; gap:15px; }
+.app-journey figure { margin:0; max-width:260px; }
+.app-journey figure:nth-child(2) { padding-top:16px; }
+.app-journey figure:nth-child(3) { padding-top:32px; }
+.app-journey img { width:100%; display:block; border-radius:16px; border:4px solid #24483b; box-shadow:0 16px 32px #0006; }
+.app-journey figcaption { margin-top:14px; font-size:14px; color:#fff; }
+.app-journey figcaption b { display:block; font-size:12px; color:var(--gold); letter-spacing:1.5px; margin-bottom:3px; }
+.route-gallery { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.route-card-item { position:relative; height:220px; overflow:hidden; border-radius:7px; }
+.route-card-item:nth-child(even) { transform:translateY(20px); }
+.route-card-item img { width:100%; height:100%; object-fit:cover; display:block; }
+.route-card-info { position:absolute; inset:auto 0 0; padding:45px 16px 16px; background:linear-gradient(transparent,rgba(2,21,17,.95)); }
+.route-card-info strong { display:block; font-family:Georgia,serif; font-weight:400; font-size:20px; line-height:1.2; }
+.route-card-info span { font-size:13px; color:#e2e8e1; }
+.altamira-points { display:grid; gap:14px; margin:26px 0 0; padding:0; list-style:none; }
+.altamira-points li { padding-left:16px; border-left:1px solid var(--gold); font-size:16px; color:#e2e8e1; }
+.altamira-points strong { color:var(--gold); display:block; font-size:17px; }
+.altamira-window { min-height:410px; display:flex; align-items:end; justify-content:end; }
+.altamira-window p { max-width:230px; padding:18px 22px; border:1px solid var(--line); background:rgba(3,24,20,.82); font-size:14px; }
+.altamira-window span { display:block; font-family:Georgia,serif; font-size:24px; margin-bottom:6px; }
+.biz-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.biz-card { padding:24px; background:rgba(5,32,26,.9); border:1px solid var(--line); border-radius:6px; }
+.biz-icon { display:block; margin-bottom:20px; color:var(--gold); font-size:14px; letter-spacing:2px; }
+.biz-card h3 { font-family:Georgia,serif; font-weight:400; font-size:23px; }
+.slide-7-container { display:flex; justify-content:center; }
+.qr-box { display:flex; flex-direction:column; align-items:center; gap:14px; padding:32px; color:#123d34; background:var(--sand); border-radius:8px; transform:rotate(-3deg); box-shadow:0 20px 50px #0005; }
+.qr-box img { width:280px; height:280px; }
+.qr-label { font-family:Georgia,serif; font-size:24px; }
+.qr-url { font-size:13px; }
+.cta-buttons { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-top:30px; }
+.btn-primary,.btn-secondary { display:inline-flex; align-items:center; justify-content:center; gap:16px; min-height:48px; padding:13px 20px; border-radius:4px; font-size:13px; font-weight:600; border:1px solid var(--line); }
+.btn-primary { background:var(--gold); color:#122e24; border-color:var(--gold); }
+.btn-secondary { background:#082d25; }
+.btn-primary:hover { background:#f6dda9; }
+.presentation-nav { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:16px; min-height:66px; padding:8px 4vw; }
+.nav-side { display:flex; align-items:center; gap:18px; }
+.nav-side:last-child { justify-content:end; }
+.btn-nav { width:44px; height:44px; border:1px solid var(--line); border-radius:50%; background:transparent; font-size:14px; }
+.btn-nav:hover:not(:disabled) { color:#062e29; background:var(--gold); }
+.btn-nav:disabled { opacity:.3; cursor:default; }
+.nav-indicators { display:flex; gap:0; }
+.nav-dot { display:grid; place-items:center; width:30px; height:44px; padding:0; border:0; background:transparent; }
+.nav-dot::after { content:""; width:5px; height:5px; background:#80968e; border-radius:50%; }
+.nav-dot.is-active::after { width:20px; border-radius:3px; background:var(--gold); }
+.nav-help { font-size:13px; color:#b0c1b9; }
+@keyframes reveal { from { opacity:.4; transform:translateY(6px); } to { opacity:1; transform:none; } }
+@media(min-width:1500px) { .slide { min-height:740px; } }
+@media(max-width:1100px) { .nav-help { display:none; } .slide { gap:30px; padding:38px; } .slide-title { font-size:52px; } .route-card-item { height:190px; } .biz-card { padding:18px; } }
+@media(max-width:760px) {
+ .presentation-header { height:64px; padding:0 20px; } .header-meta { gap:10px; } .header-brand { font-size:17px; gap:8px; } .header-brand__badge { width:30px; height:30px; font-size:12px; }
+ .stage { padding:10px 10px 80px; } .slide,#slide-4,#slide-5 { grid-template-columns:1fr; padding:32px 24px; gap:28px; min-height:calc(100svh - 152px); align-content:start; }
+ .slide::after { background:linear-gradient(180deg,rgba(3,24,20,.88),rgba(3,24,20,.68) 48%,rgba(3,24,20,.28)); }
+ .slide-title { font-size:46px; letter-spacing:-1.5px; margin-bottom:20px; } .slide-eyebrow { font-size:11px; letter-spacing:1.8px; margin-bottom:18px; } .slide-text { font-size:17px; line-height:1.65; margin-bottom:0; }
+ .slide-1-app-mockup img { width:min(260px,100%); } .slide-1-composite { padding:8px 0 20px; }
+ .connection-cards { padding-top:0; } .conn-card { padding:20px; } .questions-deck { padding:0 18px; } .q-card { padding:20px 0; gap:16px; }
+ .app-journey { gap:9px; } .app-journey img { border-width:2px; border-radius:9px; } .app-journey figure:nth-child(2) { padding-top:20px; } .app-journey figure:nth-child(3) { padding-top:40px; } .app-journey figcaption { font-size:13px; }
+ .route-gallery { gap:10px; padding-bottom:20px; } .route-card-item { height:185px; } .route-card-info { padding:35px 12px 12px; } .route-card-info strong { font-size:18px; }
+ .altamira-window { min-height:170px; } .altamira-window p { margin:0; } #slide-6::before { background-position:65% center; }
+ .biz-grid { gap:10px; } .biz-card { padding:16px; } .biz-card h3 { font-size:21px; } .biz-card p { font-size:15px; } .biz-icon { margin-bottom:12px; }
+ .qr-box { padding:24px; margin:10px 0; } .qr-box img { width:min(220px,100%); height:auto; }
+ .presentation-nav { position:fixed; bottom:0; left:0; right:0; z-index:20; background:#081e1b; border-top:1px solid var(--line); padding:8px 14px max(8px,env(safe-area-inset-bottom)); gap:4px; } .nav-dot { width:27px; }
+}
+@media(max-width:360px) { .slide { padding:28px 18px; } .slide-title { font-size:40px; } .nav-dot { width:25px; } .presentation-nav { padding-left:10px; padding-right:10px; } .biz-grid { grid-template-columns:1fr; } .route-card-info strong { font-size:16px; } }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; scroll-behavior:auto!important; transition:none!important; } }
+
+/* Larger product imagery and direct contact for the mapping initiative. */
+.contact-email { display:inline-block; max-width:100%; margin-top:24px; padding:8px 0; color:var(--gold); font-size:19px; text-decoration:underline; text-underline-offset:5px; overflow-wrap:anywhere; }
+#slide-1 { padding-top:36px; padding-bottom:36px; }
+@media(max-width:760px) {
+ .slide-1-app-mockup { width:min(260px,90%); }
+ #slide-4 { padding:32px 24px; }
+ .app-journey { grid-template-columns:1fr; gap:28px; justify-items:center; }
+ .app-journey figure { width:min(260px,100%); max-width:none; }
+ .app-journey figure:nth-child(2),.app-journey figure:nth-child(3) { padding-top:0; }
+ .app-journey figcaption { font-size:16px; }
+ .qr-box { max-width:100%; padding:22px; transform:none; }
+ .qr-label { font-size:23px; }
+ .contact-email { font-size:17px; }
+}
+
+/* Contributions from visitors and local entrepreneurs. */
+.app-address { font-size:18px; }
+.instagram-tag { display:inline-flex; align-items:center; gap:16px; margin-top:22px; padding:10px 0; color:var(--gold); font-size:26px; font-weight:600; text-decoration:underline; text-underline-offset:6px; }
+.business-email { max-width:100%; margin-top:8px; font-size:18px; overflow-wrap:anywhere; }
+.business-showcase { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.business-showcase figure { position:relative; min-width:0; margin:0; height:340px; overflow:hidden; border-radius:8px; }
+.business-showcase figure:nth-child(2) { margin-top:28px; }
+.business-showcase img { display:block; width:100%; height:100%; object-fit:cover; }
+.business-showcase figcaption { position:absolute; inset:auto 0 0; padding:56px 20px 20px; background:linear-gradient(transparent,rgba(2,21,17,.97)); }
+.business-showcase strong { display:block; font:32px Georgia,serif; margin-bottom:6px; }
+.business-showcase span { font-size:15px; }
+.business-invite { margin:24px 0 0; padding:18px 20px; border-left:2px solid var(--gold); background:rgba(5,32,26,.9); font-size:16px; line-height:1.6; }
+.business-invite strong { display:block; color:var(--gold); margin-bottom:5px; }
+@media(max-width:1100px) { .business-showcase figure { height:290px; } .business-showcase figcaption { padding:45px 14px 16px; } }
+@media(max-width:760px) {
+ .business-email { margin-top:24px; font-size:16px; padding:14px; }
+ .app-address { font-size:16px; }
+ .instagram-tag { font-size:24px; }
+ .business-showcase { gap:12px; }
+ .business-showcase figure { height:280px; }
+ .business-showcase strong { font-size:26px; }
+ .business-showcase span { font-size:14px; }
+}
+@media(max-width:360px) { .business-showcase { grid-template-columns:1fr; } .business-showcase figure:nth-child(2) { margin-top:0; } .instagram-tag { font-size:21px; } }
+
+/* Destination spotlight: landscape above, one clear invitation below. */
+#slide-6 { grid-template-columns:1fr 1.12fr; gap:28px 5%; padding:40px 5vw; }
+#slide-6::after { background:rgba(3,24,20,.9); }
+#slide-6 .slide-title { font-size:clamp(42px,4.3vw,68px); }
+#slide-6 .slide-text { margin-bottom:0; }
+.destination-photo { position:relative; margin:0; min-width:0; height:420px; border-radius:8px; overflow:hidden; }
+.destination-photo img { display:block; width:100%; height:100%; object-fit:cover; object-position:center 43%; }
+.destination-photo figcaption { position:absolute; inset:auto 0 0; padding:48px 24px 22px; background:linear-gradient(transparent,rgba(2,21,17,.92)); }
+.destination-photo strong { display:block; font:28px Georgia,serif; }
+.destination-photo span { display:block; margin-top:5px; font-size:14px; }
+.destination-invite { grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:28px; padding-top:24px; border-top:1px solid var(--line); }
+.destination-invite h3 { font:26px Georgia,serif; }
+.destination-invite p { max-width:580px; margin:8px 0 0; font-size:16px; color:#e2e8e1; }
+.destination-invite .instagram-tag { margin:0; flex-shrink:0; font-size:27px; }
+@media(max-width:1100px) { #slide-6 { padding:32px; } .destination-photo { height:390px; } .destination-invite .instagram-tag { font-size:23px; } }
+@media(max-width:760px) {
+ #slide-6 { grid-template-columns:1fr; padding:32px 24px; gap:24px; }
+ #slide-6 .slide-title { font-size:44px; }
+ .destination-photo { height:300px; }
+ .destination-photo strong { font-size:25px; }
+ .destination-invite { display:block; padding-top:22px; }
+ .destination-invite h3 { font-size:25px; }
+ .destination-invite .instagram-tag { margin-top:16px; font-size:24px; }
+}
+@media(max-width:360px) { #slide-6 { padding:28px 18px; } #slide-6 .slide-title { font-size:38px; } .destination-invite .instagram-tag { font-size:21px; } }
+
+/* Overlapping photographs from the app's Raízes do Xingu gallery. */
+.destination-cascade { height:480px; overflow:visible; border-radius:0; }
+.destination-stack { position:relative; height:calc(100% - 62px); margin:0 10px; }
+.destination-stack img { position:absolute; width:52%; height:auto; aspect-ratio:1; object-fit:contain; border:4px solid #eee8d9; border-radius:6px; box-shadow:0 14px 32px #0008; }
+.destination-stack img:nth-child(1) { left:0; top:0; transform:rotate(-7deg); }
+.destination-stack img:nth-child(2) { left:22%; top:9%; transform:rotate(3deg); }
+.destination-stack img:nth-child(3) { left:44%; top:18%; transform:rotate(-3deg); }
+.destination-cascade figcaption { padding:0 10px; background:none; }
+@media(max-width:1100px) and (min-width:761px) { .destination-cascade { height:390px; } }
+@media(max-width:760px) { .destination-cascade { height:330px; } .destination-stack { margin:8px 6px 0; } .destination-stack img { border-width:3px; } }
+@media(max-width:360px) { .destination-cascade { height:290px; } }
+
+.destination-cascade strong { font-size:23px; }
+@media(max-width:760px) { .destination-cascade strong { font-size:20px; } .destination-cascade span { font-size:12px; } }
+
+/* Give the gallery and participation hashtag stronger visual weight. */
+#slide-6 { grid-template-columns:.86fr 1.14fr; gap:24px 3%; padding:34px 4vw; }
+.destination-cascade { height:510px; }
+.destination-stack { margin:0 8px; }
+.destination-stack img { width:62%; }
+.destination-stack img:nth-child(2) { left:17%; top:8%; }
+.destination-stack img:nth-child(3) { left:34%; top:16%; }
+.destination-invite .instagram-tag { padding:20px 24px; border:1px solid #f3d798; border-radius:8px; background:var(--gold); color:#123329; box-shadow:0 10px 28px #0004; font-weight:700; text-decoration:none; }
+.destination-invite .instagram-tag:hover { background:#f6dda9; }
+@media(max-width:1100px) and (min-width:761px) { .destination-cascade { height:440px; } .destination-invite .instagram-tag { padding:18px; font-size:22px; } }
+@media(max-width:760px) {
+ #slide-6 { grid-template-columns:1fr; padding:32px 24px; gap:26px; }
+ .destination-cascade { height:355px; }
+ .destination-stack { margin:0; }
+ .destination-invite .instagram-tag { display:flex; justify-content:center; gap:10px; padding:18px 12px; font-size:23px; }
+}
+@media(max-width:360px) { #slide-6 { padding:28px 18px; } .destination-cascade { height:320px; } .destination-invite .instagram-tag { font-size:20px; } }
+
+.destination-cascade figcaption { z-index:4; max-width:94%; padding:10px 14px; border-radius:4px; background:rgba(5,32,26,.94); }
