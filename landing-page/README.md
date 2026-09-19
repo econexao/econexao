@@ -63,3 +63,9 @@ Terceira revisão editorial: slide 6 recomposto com foto em destaque, texto curt
 Slide 6 final: foco em 'Que destino você colocaria nesse mapa?', com cascata das fotos 02, 04 e 03 da galeria Raízes do Xingu. Novos WebPs 03/04 derivados dos PNGs do app, quality=85/method=6; crédito visual da foto 03 preservado. Card branco do slide 1 removido. Validação local desktop/mobile passou.
 
 Ajuste final do slide 6: cascata ampliada e hashtag em card dourado clicável; legenda com fundo escuro para legibilidade. Checks desktop/mobile passaram.
+
+Publicação visual confirmada em 19/09/2026: PR #94, staging 3118c4e, deploy
+dpl_3HLLC53a11ogsztbjcj3QYzPPmyg. Comparação SHA256 de 19 artefatos passou;
+pipeline staging 35464902454 passou. Smoke público identificou 404 nos aliases
+em minúsculas: com cleanUrls, rewrites devem apontar para /Play sem .html.
+Correção de routing isolada; conteúdo visual e app preservados.
