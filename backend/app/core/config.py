@@ -30,8 +30,13 @@ class Settings(BaseSettings):
         "http://localhost:3000",
         "exp://localhost:8081",
         "https://eco-nexao-v3.vercel.app",
+        "https://econexao-app-staging.vercel.app",
+        "https://econexao-app-staging-git-codex-eco-2608-staging-eco-nexao.vercel.app",
         "https://econexao.app",
         "https://staging.econexao.app",
+        "https://econexaoturismo.com",
+        "https://www.econexaoturismo.com",
+        "https://app.econexaoturismo.com",
     ]
     LOG_LEVEL: str = "INFO"
     DATABASE_ECHO: bool = False
@@ -50,6 +55,12 @@ class Settings(BaseSettings):
     SUPABASE_JWT_AUDIENCE: str = "authenticated"
 
     GOOGLE_PLACES_API_KEY: SecretStr = SecretStr("")
+    FEATURE_GOOGLE_PLACES_SYNC: bool = False
+    GOOGLE_PLACES_TIMEOUT_SECONDS: float = 5.0
+    GOOGLE_PLACES_MAX_RETRIES: int = 2
+    GOOGLE_PLACES_CALL_BUDGET: int = 100
+    GOOGLE_PLACES_CIRCUIT_BREAKER_FAILURES: int = 5
+    GOOGLE_PLACES_CIRCUIT_BREAKER_RESET_SECONDS: float = 60.0
     GBP_CONNECTOR_ENABLED: bool = False
     ROUTING_PROVIDER: Literal["fake_deterministic", "google_routes"] = "fake_deterministic"
     ENABLE_DYNAMIC_ROUTING: bool = False
@@ -75,11 +86,17 @@ class Settings(BaseSettings):
     @field_validator("CORS_ORIGINS", "TRUSTED_PROXIES", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Any) -> Any:
+        origins = v
         if isinstance(v, str):
             if v.startswith("[") and v.endswith("]"):
-                return json.loads(v)
-            return [i.strip() for i in v.split(",") if i.strip()]
-        return v
+                origins = json.loads(v)
+            else:
+                origins = [i.strip() for i in v.split(",") if i.strip()]
+        if isinstance(origins, list) and "*" in origins:
+            raise ValueError(
+                "Wildcard '*' não é permitido em CORS_ORIGINS por política de segurança."
+            )
+        return origins
 
     @field_validator("DATABASE_URL", mode="before")
     @classmethod
@@ -97,6 +114,9 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def validate_deployed_environment(self) -> "Settings":
         """Reject missing or placeholder credentials outside local environments."""
+        canonical_staging_origin = "https://econexao-app-staging.vercel.app"
+        if self.APP_ENV == "staging" and canonical_staging_origin not in self.CORS_ORIGINS:
+            self.CORS_ORIGINS.append(canonical_staging_origin)
         expected_issuer = f"{self.SUPABASE_URL.rstrip('/')}/auth/v1"
         expected_jwks_url = f"{expected_issuer}/.well-known/jwks.json"
         # These values are project identity, not independent configuration. Deriving
@@ -125,6 +145,10 @@ class Settings(BaseSettings):
                 raise ValueError("Roteamento dinâmico ainda não está autorizado em production.")
             if self.ENABLE_DYNAMIC_ROUTING and not self.GOOGLE_ROUTES_API_KEY.get_secret_value():
                 raise ValueError("GOOGLE_ROUTES_API_KEY é obrigatória quando o recurso está ativo.")
+        if self.FEATURE_GOOGLE_PLACES_SYNC and not self.GOOGLE_PLACES_API_KEY.get_secret_value():
+            raise ValueError(
+                "GOOGLE_PLACES_API_KEY é obrigatória quando FEATURE_GOOGLE_PLACES_SYNC está ativo."
+            )
         if self.GOOGLE_ROUTES_MONTHLY_ALERT_AT >= self.GOOGLE_ROUTES_MONTHLY_LIMIT:
             raise ValueError("O alerta mensal deve ocorrer antes do limite mensal.")
         return self

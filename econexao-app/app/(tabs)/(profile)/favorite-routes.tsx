@@ -18,7 +18,7 @@ export default function FavoriteRoutesScreen() {
 
   return (
     <View style={styles.container}>
-      <AppHeader showBack onBackPress={() => router.back()} title="Rotas Salvas" />
+      <AppHeader showBack fallbackHref="/(tabs)/(profile)" title="Rotas Salvas" />
 
       <ScrollView contentContainerStyle={styles.content}>
         {favRoutes.isPending ? (

@@ -1,12 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import MapView, { Marker, Polyline, type LatLng, type Region } from 'react-native-maps';
 
 import { theme } from '../../theme/theme';
 import { MapControls } from './MapControls';
+import { SelectedPinCard } from './SelectedPinCard';
 import {
   SELECTION_PIN_COLOR,
+  USER_LOCATION_PIN_COLOR,
+  filterPinsByDensity,
   getFitCoordinates,
   getGeometryCoordinates,
   getInitialRegion,
@@ -17,6 +20,7 @@ import {
   getItemPinColor,
   getItemPinIcon,
   getSelectionPinAccessibilityLabel,
+  getUserLocationAccessibilityLabel,
 } from './MapAdapter.helpers';
 import type { MapAdapterProps } from './MapAdapter.types';
 import { getCategoryIonicons } from '../catalog/CategoryFilters';
@@ -41,6 +45,10 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   selectedCoordinate,
   onSelectCoordinate,
   selectionPinLabel,
+  userLocation,
+  userLocationLabel,
+  pinCardVariant = 'full',
+  actorSummaries,
 }) => {
   const mapRef = useRef<MapView>(null);
   const [zoomLevel, setZoomLevel] = useState(12);
@@ -51,6 +59,31 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
     [bounds, geometry, items]
   );
   const initialRegion = useMemo(() => getInitialRegion(fitCoordinates), [fitCoordinates]);
+
+  // Map of actor summaries for quick lookup by ID
+  const actorSummariesById = useMemo(() => {
+    const map = new Map<string, NonNullable<MapAdapterProps['actorSummaries']>[0]>();
+    if (actorSummaries) {
+      for (const summary of actorSummaries) {
+        if (summary.id) map.set(summary.id, summary);
+      }
+    }
+    return map;
+  }, [actorSummaries]);
+
+  // Controle de densidade de pins por zoom level sem clusters
+  const renderableItems = useMemo(
+    () => filterPinsByDensity(items, zoomLevel, selectedActorId),
+    [items, zoomLevel, selectedActorId]
+  );
+
+  const boundsSignature = useMemo(() => {
+    if (bounds) return JSON.stringify(bounds);
+    if (geometry?.id) return `geo-${geometry.id}`;
+    return 'initial-load';
+  }, [bounds, geometry?.id]);
+
+  const lastFittedSignatureRef = useRef<string | null>(null);
 
   const recenter = useCallback(() => {
     if (fitCoordinates.length >= 2) {
@@ -65,8 +98,11 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   }, [fitCoordinates, initialRegion]);
 
   useEffect(() => {
-    recenter();
-  }, [recenter]);
+    if (lastFittedSignatureRef.current !== boundsSignature) {
+      lastFittedSignatureRef.current = boundsSignature;
+      recenter();
+    }
+  }, [boundsSignature, recenter]);
 
   const changeZoom = useCallback(async (delta: number) => {
     const nextZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoomLevel + delta));
@@ -79,6 +115,11 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   const selectionPinA11y = useMemo(
     () => getSelectionPinAccessibilityLabel(selectedCoordinate, selectionPinLabel),
     [selectedCoordinate, selectionPinLabel]
+  );
+
+  const userLocationA11y = useMemo(
+    () => getUserLocationAccessibilityLabel(userLocation, userLocationLabel),
+    [userLocation, userLocationLabel]
   );
 
   return (
@@ -107,7 +148,7 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
           />
         )}
 
-        {items.map((item) => {
+        {renderableItems.map((item) => {
           const coordinate = getItemCoordinate(item);
           if (!coordinate) return null;
           const itemId = getItemId(item);
@@ -116,7 +157,41 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
           const color = getItemPinColor(item);
           const icon = getCategoryIonicons(getItemPinIcon(item));
           const a11yLabel = getItemAccessibilityLabel(item, selected);
+          const actorSummary = actorSummariesById.get(itemId);
           if (!color || !icon) return null;
+
+          if (selected && pinCardVariant !== 'none') {
+            const photoUrl = actorSummary?.cover_media?.derivatives?.card ||
+              actorSummary?.cover_media?.url ||
+              actorSummary?.cover_image_url;
+
+            return (
+              <Marker
+                key={itemId}
+                coordinate={coordinate}
+                zIndex={1000}
+                anchor={{ x: 0.5, y: 1.0 }}
+                onPress={() => onSelectActor(itemId)}
+                accessibilityRole="button"
+                accessibilityLabel={a11yLabel}
+                accessibilityState={{ selected: true }}
+              >
+                <SelectedPinCard
+                  actorId={itemId}
+                  name={item.name}
+                  categorySlug={'category_slug' in item ? item.category_slug : undefined}
+                  categoryLabel={categoryLabel}
+                  variant={pinCardVariant}
+                  googleRating={actorSummary?.google_rating}
+                  ratingCount={actorSummary?.rating_count}
+                  photoUrl={photoUrl}
+                  onPressAction={() => onSelectActor(itemId)}
+                />
+              </Marker>
+            );
+          }
+
+          const isHighlightedNative = selected && pinCardVariant === 'none';
 
           return (
             <Marker
@@ -124,25 +199,35 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
               coordinate={coordinate}
               title={item.name}
               description={`Categoria: ${categoryLabel}`}
-              zIndex={selected ? 2 : 1}
+              zIndex={isHighlightedNative ? 1000 : 1}
+              anchor={{ x: 0.5, y: 1.0 }}
               onPress={() => onSelectActor(itemId)}
               accessibilityRole="button"
               accessibilityLabel={a11yLabel}
               accessibilityHint={`Categoria: ${categoryLabel}. Toque para selecionar.`}
-              accessibilityState={{ selected }}
+              accessibilityState={{ selected: isHighlightedNative }}
             >
-              <View
-                style={[
-                  styles.contractPin,
-                  { backgroundColor: color },
-                  selected && styles.contractPinSelected,
-                ]}
-              >
-                <Ionicons name={icon} size={selected ? 22 : 19} color="#FFFFFF" />
+              <View style={[styles.teardropContainer, isHighlightedNative && { transform: [{ scale: 1.18 }] }]}>
+                <View style={[styles.teardropHead, { backgroundColor: color }, isHighlightedNative && { borderWidth: 2.5, borderColor: '#FFFFFF' }]}>
+                  <Ionicons name={icon} size={isHighlightedNative ? 20 : 18} color="#FFFFFF" />
+                </View>
+                <View style={[styles.teardropPoint, { borderTopColor: color }]} />
               </View>
             </Marker>
           );
         })}
+
+        {userLocation && (
+          <Marker
+            coordinate={userLocation}
+            title={userLocationLabel || 'Sua Localização Atual'}
+            description={userLocationA11y}
+            pinColor={USER_LOCATION_PIN_COLOR}
+            zIndex={1500}
+            accessibilityRole="image"
+            accessibilityLabel={userLocationA11y}
+          />
+        )}
 
         {selectedCoordinate && (
           <Marker
@@ -178,6 +263,36 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
 };
 
 const styles = StyleSheet.create({
+  teardropContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 38,
+    height: 46,
+    filter: 'drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.3))' as any,
+  },
+  teardropHead: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
+    zIndex: 2,
+  },
+  teardropPoint: {
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderLeftWidth: 7,
+    borderRightWidth: 7,
+    borderTopWidth: 10,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    marginTop: -4,
+    zIndex: 1,
+  },
   contractPin: {
     width: 44,
     height: 44,
@@ -193,6 +308,22 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     borderWidth: 4,
     borderColor: '#111827',
+  },
+  clusterPin: {
+    minWidth: 46,
+    height: 46,
+    paddingHorizontal: 8,
+    borderRadius: 23,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+    ...theme.shadows.card,
+  },
+  clusterCountText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '700',
   },
   container: {
     width: '100%',

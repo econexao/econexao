@@ -78,13 +78,14 @@ async def test_list_routes_filtered_and_paginated():
 
     repo = TerritorialRepository(mock_db)
     region_id = uuid.uuid4()
-    routes, total = await repo.list_routes(
-        region_id=region_id, q="Test", verified=True, limit=10, offset=0
+    routes, total, has_more = await repo.list_routes(
+        region_id=region_id, q="Test", verified=True, limit=10
     )
 
     assert total == 2
     assert len(routes) == 2
     assert routes[0].title == "Route 1"
+    assert has_more is False
 
 
 @pytest.mark.asyncio
@@ -174,13 +175,25 @@ async def test_list_actor_categories_and_actors():
     # Mock list_route_actors execute
     actor = Actor(id=uuid.uuid4(), name="Restaurante Pindobal", category_id=cat.id)
     mock_exec = MagicMock()
-    mock_exec.all.return_value = [(actor, "culinaria", "Culinária", -2.5, -48.0)]
+    mock_exec.all.return_value = [
+        (
+            actor,
+            "culinaria",
+            "Culinária",
+            "restaurante",
+            "Restaurante & Gastronomia",
+            "utensils",
+            -2.5,
+            -48.0,
+            0,
+        )
+    ]
     mock_db.execute.return_value = mock_exec
     mock_db.scalar.return_value = 1
 
     repo = TerritorialRepository(mock_db)
     cats = await repo.list_actor_categories()
-    actors, total = await repo.list_route_actors(
+    actors, total, has_more = await repo.list_route_actors(
         uuid.uuid4(), q="Pindobal", category_slug="culinaria"
     )
 
@@ -189,9 +202,11 @@ async def test_list_actor_categories_and_actors():
     assert len(actors) == 1
     act, slug, lat, lon = actors[0]
     assert act.name == "Restaurante Pindobal"
+    assert act._transient_type_slug == "restaurante"
     assert slug == "culinaria"
     assert lat == -2.5
     assert lon == -48.0
+    assert has_more is False
 
 
 @pytest.mark.asyncio
@@ -334,7 +349,7 @@ async def test_route_map_payload_fallback_origin_and_bounds():
     service.repo.get_route_by_id = AsyncMock(return_value=route_mock)
     service.repo.get_route_geometry = AsyncMock(return_value=(geom_mock, None))
     # No actors with coords
-    service.repo.list_route_actors = AsyncMock(return_value=([], 0))
+    service.repo.list_route_actors = AsyncMock(return_value=([], 0, False))
     service.repo.list_region_essential_actors = AsyncMock(return_value=[])
     service.repo.get_region_bounds = AsyncMock(return_value=None)
 
@@ -362,6 +377,12 @@ async def test_route_map_payload_pins_and_legend_visual_metadata_and_ordering():
     actor_alim = Actor(
         id=uuid.uuid4(), slug="restaurante-mar", name="Restaurante Mar", category_id=uuid.uuid4()
     )
+    actor_alim._transient_type_slug = "restaurante"
+    actor_alim._transient_type_label = "Restaurante & Gastronomia"
+    actor_alim._transient_type_icon = "utensils"
+    actor_hosp1._transient_type_slug = "pousada_hotel"
+    actor_hosp1._transient_type_label = "Hotel & Pousada"
+    actor_hosp1._transient_type_icon = "bed"
     actor_unknown = Actor(
         id=uuid.uuid4(), slug="outro-local", name="Outro Local", category_id=uuid.uuid4()
     )
@@ -396,6 +417,8 @@ async def test_route_map_payload_pins_and_legend_visual_metadata_and_ordering():
     assert pin_alim.category_label == "Alimentação"
     assert pin_alim.color == "#D97706"
     assert pin_alim.icon == "utensils"
+    assert pin_alim.type_slug == "restaurante"
+    assert pin_alim.type_label == "Restaurante & Gastronomia"
 
     pin_hosp = next(p for p in payload.pins if p.actor_id == actor_hosp1.id)
     assert pin_hosp.category_slug == "hospedagem"
@@ -534,3 +557,43 @@ async def test_route_map_payload_dual_layers_and_city_bounds():
 
     # Check prioritization: actor_both has verified green badge (comes before corridor/city)
     assert payload.pins[0].actor_id == actor_both.id
+
+
+@pytest.mark.asyncio
+async def test_route_map_marks_transport_outside_corridor_as_city_only() -> None:
+    """A transport category does not prove spatial membership in the selected route."""
+    route_id = uuid.uuid4()
+    origin_id = uuid.uuid4()
+    region_id = uuid.uuid4()
+    transport_on_route = Actor(
+        id=uuid.uuid4(), slug="porto-rota", name="Porto na rota", category_id=uuid.uuid4()
+    )
+    municipal_transport = Actor(
+        id=uuid.uuid4(),
+        slug="rodoviaria-cidade",
+        name="Rodoviária municipal",
+        category_id=uuid.uuid4(),
+    )
+    service = TerritorialService(AsyncMock())
+    service.repo.get_route_by_id = AsyncMock(
+        return_value=MagicMock(id=route_id, region_id=region_id, origins=[])
+    )
+    geojson = {"type": "LineString", "coordinates": [[-52.22, -3.26], [-52.21, -3.25]]}
+    service.repo.get_route_geometry = AsyncMock(return_value=(None, geojson))
+    service.repo.find_route_corridor_actors = AsyncMock(
+        return_value=[(transport_on_route, "transporte", -3.25, -52.21, False, 0)]
+    )
+    service.repo.list_region_essential_actors = AsyncMock(
+        return_value=[
+            (transport_on_route, "transporte", -3.25, -52.21),
+            (municipal_transport, "transporte", -3.20, -52.20),
+        ]
+    )
+    service.repo.get_region_bounds = AsyncMock(return_value=None)
+    service.repo.get_buffered_route_bounds = AsyncMock(return_value=None)
+
+    payload = (await service.get_route_map_payload(route_id, origin_id=origin_id)).data
+    pins = {pin.actor_id: pin for pin in payload.pins}
+
+    assert pins[transport_on_route.id].layer == "both"
+    assert pins[municipal_transport.id].layer == "citywide_essential"

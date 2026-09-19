@@ -31,9 +31,7 @@ from app.connectors.routing_connector import (
 logger = logging.getLogger(__name__)
 
 GOOGLE_ROUTES_URL = "https://routes.googleapis.com/directions/v2:computeRoutes"
-GOOGLE_ROUTES_FIELD_MASK = (
-    "routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline"
-)
+GOOGLE_ROUTES_FIELD_MASK = "routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline"
 
 
 @dataclass
@@ -337,6 +335,15 @@ class GoogleRoutesConnector(RoutingConnector):
                     raise RoutingProviderUnavailableError() from exc
 
                 if response.status_code == 429 or response.status_code >= 500:
+                    logger.warning(
+                        "Routing provider returned retryable error",
+                        extra={
+                            "provider": "google_routes",
+                            "result": "provider_error",
+                            "status_code": response.status_code,
+                            "attempt": attempt + 1,
+                        },
+                    )
                     if attempt < self.max_retries:
                         self.metrics.retries += 1
                         await asyncio.sleep(0.1 * (2**attempt))
@@ -345,9 +352,25 @@ class GoogleRoutesConnector(RoutingConnector):
                     self.circuit_breaker.record_failure()
                     raise RoutingProviderUnavailableError()
                 if response.status_code in {400, 404, 422}:
+                    logger.warning(
+                        "Routing provider rejected request",
+                        extra={
+                            "provider": "google_routes",
+                            "result": "provider_rejected",
+                            "status_code": response.status_code,
+                        },
+                    )
                     self.metrics.failures += 1
                     raise RoutingNoRouteFoundError()
                 if response.status_code >= 400:
+                    logger.warning(
+                        "Routing provider returned client error",
+                        extra={
+                            "provider": "google_routes",
+                            "result": "provider_error",
+                            "status_code": response.status_code,
+                        },
+                    )
                     self.metrics.failures += 1
                     raise RoutingProviderUnavailableError()
 

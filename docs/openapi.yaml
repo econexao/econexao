@@ -1,7 +1,8 @@
 openapi: 3.1.0
 info:
   title: ECOnexão API
-  description: API de domínio do aplicativo ECOnexão para turismo sustentável e rotas ecológicas.
+  description: API de domínio do aplicativo ECOnexão para turismo sustentável e rotas
+    ecológicas.
   version: 1.0.0
 paths:
   /api/v1/admin/context:
@@ -9,7 +10,8 @@ paths:
       tags:
       - Admin
       summary: Obter contexto administrativo
-      description: Expose only current editorial access; ordinary/anonymous users are denied.
+      description: Expose only current editorial access; ordinary/anonymous users
+        are denied.
       operationId: get_admin_context_api_v1_admin_context_get
       security:
       - HTTPBearer: []
@@ -1058,7 +1060,8 @@ paths:
                 type: object
                 additionalProperties:
                   type: string
-                title: Response Delete Route Link Api V1 Admin Actors Route Links  Link Id  Delete
+                title: Response Delete Route Link Api V1 Admin Actors Route Links  Link
+                  Id  Delete
         '401':
           description: JWT ausente ou inválido.
           content:
@@ -2058,7 +2061,8 @@ paths:
       tags:
       - Admin Workflow
       summary: Transicionar estado editorial
-      description: Transicionar o estado de um recurso na máquina de estados editorial com validação de publish guard e concorrência.
+      description: Transicionar o estado de um recurso na máquina de estados editorial
+        com validação de publish guard e concorrência.
       operationId: transition_resource_status_api_v1_admin_workflow__resource_type___resource_id__transition_post
       security:
       - HTTPBearer: []
@@ -2111,7 +2115,8 @@ paths:
       tags:
       - Admin Workflow
       summary: Consultar Publish Guard
-      description: Consultar os critérios e elegibilidade do Publish Guard para um recurso.
+      description: Consultar os critérios e elegibilidade do Publish Guard para um
+        recurso.
       operationId: get_publish_guard_status_api_v1_admin_workflow__resource_type___resource_id__publish_guard_get
       security:
       - HTTPBearer: []
@@ -2158,7 +2163,8 @@ paths:
       tags:
       - Admin Workflow
       summary: Listar alertas editoriais
-      description: Listar alertas editoriais ativos ou resolvidos com suporte a filtros de rota e severidade.
+      description: Listar alertas editoriais ativos ou resolvidos com suporte a filtros
+        de rota e severidade.
       operationId: list_editorial_alerts_api_v1_admin_alerts_get
       security:
       - HTTPBearer: []
@@ -2278,7 +2284,8 @@ paths:
       tags:
       - Admin Workflow
       summary: Resolver alerta editorial
-      description: Resolver um alerta editorial ativo fornecendo uma nota explicativa de resolução.
+      description: Resolver um alerta editorial ativo fornecendo uma nota explicativa
+        de resolução.
       operationId: resolve_editorial_alert_api_v1_admin_alerts__alert_id__resolve_post
       security:
       - HTTPBearer: []
@@ -2325,7 +2332,8 @@ paths:
       tags:
       - Admin Workflow
       summary: Listar candidatos de reconciliação
-      description: Listar candidatos a duplicata para revisão humana e reconciliação editorial.
+      description: Listar candidatos a duplicata para revisão humana e reconciliação
+        editorial.
       operationId: list_reconciliation_candidates_api_v1_admin_reconciliation_candidates_get
       security:
       - HTTPBearer: []
@@ -2384,7 +2392,8 @@ paths:
       tags:
       - Admin Workflow
       summary: Decidir reconciliação
-      description: Registrar decisão editorial (accept, reject, merge) sobre candidato de reconciliação com justificativa auditada.
+      description: Registrar decisão editorial (accept, reject, merge) sobre candidato
+        de reconciliação com justificativa auditada.
       operationId: decide_reconciliation_candidate_api_v1_admin_reconciliation__candidate_id__decision_post
       security:
       - HTTPBearer: []
@@ -2615,7 +2624,8 @@ paths:
       tags:
       - Health
       summary: Readiness check
-      description: Retorna status HTTP 200 se dependências de banco de dados e Supabase estiverem prontas.
+      description: Retorna status HTTP 200 se dependências de banco de dados e Supabase
+        estiverem prontas.
       operationId: healthReady
       responses:
         '200':
@@ -2651,7 +2661,8 @@ paths:
       tags:
       - Auth
       summary: Validar token JWT Supabase
-      description: Verifica a validade, emissor, audiência e assinatura assimétrica do token informado.
+      description: Verifica a validade, emissor, audiência e assinatura assimétrica
+        do token informado.
       operationId: verify_auth_token_api_v1_auth_verify_post
       requestBody:
         content:
@@ -2691,7 +2702,8 @@ paths:
       tags:
       - Territorial - Regions
       summary: Bootstrap do aplicativo
-      description: Retorna informações de inicialização do aplicativo, incluindo região ativa e feature flags.
+      description: Retorna informações de inicialização do aplicativo, incluindo região
+        ativa e feature flags.
       operationId: get_bootstrap_api_v1_bootstrap_get
       security:
       - HTTPBearer: []
@@ -2725,7 +2737,8 @@ paths:
       tags:
       - Territorial - Routes
       summary: Listar rotas
-      description: Retorna lista paginada de rotas turísticas ativas com suporte a busca e filtros.
+      description: Retorna lista paginada de rotas turísticas ativas com suporte a
+        busca e filtros.
       operationId: list_routes_api_v1_routes_get
       security:
       - HTTPBearer: []
@@ -2778,9 +2791,9 @@ paths:
           anyOf:
           - type: string
           - type: 'null'
-          description: Cursor de paginação (offset numérico)
+          description: Cursor opaco retornado em meta.next_cursor
           title: Cursor
-        description: Cursor de paginação (offset numérico)
+        description: Cursor opaco retornado em meta.next_cursor
       - name: limit
         in: query
         required: false
@@ -2799,12 +2812,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RouteListEnvelope'
-        '422':
-          description: Validation Error
+        '401':
+          description: Filtro saved exige autenticação.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Filtro ou cursor inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/routes/{route_id}:
     get:
       tags:
@@ -2812,6 +2831,8 @@ paths:
       summary: Detalhes de uma rota
       description: Retorna informações completas e origens de uma rota específica.
       operationId: get_route_detail_api_v1_routes__route_id__get
+      security:
+      - HTTPBearer: []
       parameters:
       - name: route_id
         in: path
@@ -2827,6 +2848,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RouteDetailEnvelope'
+        '404':
+          description: Rota não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: Validation Error
           content:
@@ -2866,7 +2893,8 @@ paths:
       tags:
       - Territorial - Routes
       summary: Geometria de uma rota por origem
-      description: Retorna a geometria GeoJSON e detalhes da rota a partir de uma origem específica.
+      description: Retorna a geometria GeoJSON e detalhes da rota a partir de uma
+        origem específica.
       operationId: get_route_geometry_api_v1_routes__route_id__geometry_get
       parameters:
       - name: route_id
@@ -2931,8 +2959,11 @@ paths:
       tags:
       - Territorial - Routes
       summary: Atores associados a uma rota
-      description: Retorna lista paginada de estabelecimentos e pontos turísticos associados à rota.
+      description: Retorna lista paginada de estabelecimentos e pontos turísticos
+        associados à rota.
       operationId: get_route_actors_api_v1_routes__route_id__actors_get
+      security:
+      - HTTPBearer: []
       parameters:
       - name: route_id
         in: path
@@ -2979,9 +3010,9 @@ paths:
           anyOf:
           - type: string
           - type: 'null'
-          description: Cursor de paginação (offset numérico)
+          description: Cursor opaco retornado em meta.next_cursor
           title: Cursor
-        description: Cursor de paginação (offset numérico)
+        description: Cursor opaco retornado em meta.next_cursor
       - name: limit
         in: query
         required: false
@@ -3000,18 +3031,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActorListEnvelope'
-        '422':
-          description: Validation Error
+        '404':
+          description: Rota não encontrada.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Filtro ou cursor inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/routes/{route_id}/map:
     get:
       tags:
       - Territorial - Routes
       summary: Payload otimizado para renderização do mapa
-      description: Retorna bounds da rota e da cidade, geometria, pins com camada canônica e metadados visuais, além da legenda com contagens dos pins retornados.
+      description: Retorna bounds da rota e da cidade, geometria, pins com camada
+        canônica e metadados visuais, além da legenda com contagens dos pins retornados.
       operationId: get_route_map_payload_api_v1_routes__route_id__map_get
       parameters:
       - name: route_id
@@ -3086,7 +3124,8 @@ paths:
       tags:
       - Territorial - Routes
       summary: Pré-visualização de rota dinâmica
-      description: Calcula trajeto efêmero entre a coordenada do usuário e o destino oficial da rota sem persistência.
+      description: Calcula trajeto efêmero entre a coordenada do usuário e o destino
+        oficial da rota sem persistência.
       operationId: preview_route_api_v1_routes__route_id__preview_post
       parameters:
       - name: route_id
@@ -3144,7 +3183,8 @@ paths:
       tags:
       - Territorial - Actors
       summary: Categorias de atores
-      description: Retorna a taxonomia oficial de categorias de estabelecimentos e atrações.
+      description: Retorna a taxonomia oficial de categorias de estabelecimentos e
+        atrações.
       operationId: list_actor_categories_api_v1_actor_categories_get
       responses:
         '200':
@@ -3160,6 +3200,8 @@ paths:
       summary: Detalhes de um ator
       description: Retorna informações completas de um ator ou estabelecimento específico.
       operationId: get_actor_detail_api_v1_actors__actor_id__get
+      security:
+      - HTTPBearer: []
       parameters:
       - name: actor_id
         in: path
@@ -3175,6 +3217,53 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActorDetailEnvelope'
+        '404':
+          description: Ator não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/actors/{actor_id}/google-photo:
+    get:
+      tags:
+      - Territorial - Actors
+      summary: Foto Google temporária do ator
+      description: Emite um grant opaco a partir de Place Details recente; não expõe
+        URLs Google.
+      operationId: get_actor_google_photo_api_v1_actors__actor_id__google_photo_get
+      parameters:
+      - name: actor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Actor Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GooglePhotoMetadataEnvelope'
+        '404':
+          description: Foto indisponível.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Foto temporariamente indisponível.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: Validation Error
           content:
@@ -3229,7 +3318,8 @@ paths:
       tags:
       - User - Profile & Preferences
       summary: Substituir avatar
-      description: Recebe uma imagem multipart, sanitiza e gera derivados WebP no backend, publicando-os no Supabase Storage sem expor credenciais privilegiadas.
+      description: Recebe uma imagem multipart, sanitiza e gera derivados WebP no
+        backend, publicando-os no Supabase Storage sem expor credenciais privilegiadas.
       operationId: replace_avatar_api_v1_me_avatar_post
       requestBody:
         content:
@@ -3263,7 +3353,8 @@ paths:
       tags:
       - User - Profile & Preferences
       summary: Excluir a conta atual
-      description: Remove avatares, dados de domínio e identidade Auth. É idempotente enquanto o JWT residual ainda for válido.
+      description: Remove avatares, dados de domínio e identidade Auth. É idempotente
+        enquanto o JWT residual ainda for válido.
       operationId: delete_my_account_api_v1_me_account_delete
       responses:
         '200':
@@ -3291,7 +3382,8 @@ paths:
       tags:
       - User - Profile & Preferences
       summary: Preferências do usuário atual
-      description: Retorna as preferências de acessibilidade, região e navegação do usuário.
+      description: Retorna as preferências de acessibilidade, região e navegação do
+        usuário.
       operationId: get_my_preferences_api_v1_me_preferences_get
       responses:
         '200':
@@ -3336,6 +3428,28 @@ paths:
       summary: Rotas salvas pelo usuário atual
       description: Retorna a lista paginada de rotas favoritadas pelo usuário autenticado.
       operationId: get_my_favorite_routes_api_v1_me_favorite_routes_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor opaco retornado em meta.next_cursor
+          title: Cursor
+        description: Cursor opaco retornado em meta.next_cursor
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
       responses:
         '200':
           description: Successful Response
@@ -3343,8 +3457,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RouteListEnvelope'
-      security:
-      - HTTPBearer: []
+        '401':
+          description: Autenticação obrigatória.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Cursor inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/me/favorite-routes/{route_id}:
     put:
       tags:
@@ -3369,6 +3493,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StandardSuccessResponse'
+        '401':
+          description: Autenticação obrigatória.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Rota não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: Validation Error
           content:
@@ -3398,6 +3534,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StandardSuccessResponse'
+        '401':
+          description: Autenticação obrigatória.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: Validation Error
           content:
@@ -3411,6 +3553,28 @@ paths:
       summary: Atores salvos pelo usuário atual
       description: Retorna a lista paginada de atores favoritados pelo usuário autenticado.
       operationId: get_my_favorite_actors_api_v1_me_favorite_actors_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor opaco retornado em meta.next_cursor
+          title: Cursor
+        description: Cursor opaco retornado em meta.next_cursor
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
       responses:
         '200':
           description: Successful Response
@@ -3418,8 +3582,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActorListEnvelope'
-      security:
-      - HTTPBearer: []
+        '401':
+          description: Autenticação obrigatória.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Cursor inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/me/favorite-actors/{actor_id}:
     put:
       tags:
@@ -3444,6 +3618,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StandardSuccessResponse'
+        '401':
+          description: Autenticação obrigatória.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Ator não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: Validation Error
           content:
@@ -3473,6 +3659,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StandardSuccessResponse'
+        '401':
+          description: Autenticação obrigatória.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: Validation Error
           content:
@@ -3484,7 +3676,8 @@ paths:
       tags:
       - User - Profile & Preferences
       summary: Histórico de viagens do usuário
-      description: Retorna o histórico de viagens iniciadas e concluídas pelo usuário autenticado.
+      description: Retorna o histórico de viagens iniciadas e concluídas pelo usuário
+        autenticado.
       operationId: get_my_trips_api_v1_me_trips_get
       responses:
         '200':
@@ -3499,7 +3692,8 @@ paths:
       tags:
       - User - Profile & Preferences
       summary: Iniciar nova viagem
-      description: Cria um novo registro de viagem para o usuário autenticado na rota informada.
+      description: Cria um novo registro de viagem para o usuário autenticado na rota
+        informada.
       operationId: create_trip_api_v1_me_trips_post
       requestBody:
         content:
@@ -3522,6 +3716,147 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - HTTPBearer: []
+  /api/v1/me/trips/{trip_id}/pause:
+    post:
+      tags:
+      - User - Profile & Preferences
+      summary: Pause Trip
+      operationId: pause_trip_api_v1_me_trips__trip_id__pause_post
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripEnvelope'
+      security:
+      - HTTPBearer: []
+  /api/v1/me/trips/{trip_id}/resume:
+    post:
+      tags:
+      - User - Profile & Preferences
+      summary: Resume Trip
+      operationId: resume_trip_api_v1_me_trips__trip_id__resume_post
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripEnvelope'
+      security:
+      - HTTPBearer: []
+  /api/v1/me/trips/{trip_id}/finish:
+    post:
+      tags:
+      - User - Profile & Preferences
+      summary: Finish Trip
+      operationId: finish_trip_api_v1_me_trips__trip_id__finish_post
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripEnvelope'
+      security:
+      - HTTPBearer: []
+  /api/v1/places/photos/{token}/metadata:
+    get:
+      tags:
+      - Google Place Photos
+      summary: Get Place Photo Metadata
+      description: Metadata is intentionally only available after a trusted server-side
+        grant.
+      operationId: get_place_photo_metadata_api_v1_places_photos__token__metadata_get
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GooglePhotoMetadataEnvelope'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/places/photos/{token}:
+    get:
+      tags:
+      - Google Place Photos
+      summary: Get Place Photo
+      operationId: get_place_photo_api_v1_places_photos__token__get
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Token
+      - name: maxHeightPx
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 4800
+          minimum: 1
+          default: 600
+          title: Maxheightpx
+      - name: maxWidthPx
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 4800
+          minimum: 1
+          default: 800
+          title: Maxwidthpx
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Foto indisponível
+        '410':
+          description: Foto expirada
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/content/support:
     get:
       tags:
@@ -3536,6 +3871,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SupportContentEnvelope'
+  /api/v1/newsletter/subscribe:
+    post:
+      tags:
+      - Newsletter
+      summary: Inscrever e-mail no informativo
+      description: Registra um endereço de e-mail na lista de informativos a partir
+        da landing page.
+      operationId: subscribe_newsletter_api_v1_newsletter_subscribe_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewsletterSubscribeRequest'
+        required: true
+      responses:
+        '200':
+          description: Inscrição processada com sucesso (nova ou idempotente).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsletterSubscribeEnvelope'
+        '422':
+          description: Formato de e-mail inválido ou dados de entrada inconsistentes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Limite de requisições excedido. Tente novamente mais tarde.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno do servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     ActorCategoryListEnvelope:
@@ -3699,6 +4073,10 @@ components:
           anyOf:
           - $ref: '#/components/schemas/ResolvedMediaItemSchema'
           - type: 'null'
+        is_favorite:
+          type: boolean
+          title: Is Favorite
+          default: false
         gallery:
           items:
             $ref: '#/components/schemas/ResolvedMediaItemSchema'
@@ -3754,6 +4132,21 @@ components:
         category_label:
           type: string
           title: Category Label
+        type_slug:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type Slug
+        type_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type Label
+        type_icon:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type Icon
         address:
           anyOf:
           - type: string
@@ -3791,6 +4184,10 @@ components:
           anyOf:
           - $ref: '#/components/schemas/ResolvedMediaItemSchema'
           - type: 'null'
+        is_favorite:
+          type: boolean
+          title: Is Favorite
+          default: false
       type: object
       required:
       - category_label
@@ -3932,6 +4329,12 @@ components:
           type: string
           format: uuid
           title: Category Id
+        type_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Type Id
         slug:
           type: string
           maxLength: 150
@@ -4076,6 +4479,16 @@ components:
           anyOf:
           - $ref: '#/components/schemas/AdminCategorySchema'
           - type: 'null'
+        type_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Type Id
+        type:
+          anyOf:
+          - $ref: '#/components/schemas/AdminActorTypeSchema'
+          - type: 'null'
         slug:
           type: string
           title: Slug
@@ -4193,6 +4606,61 @@ components:
       - created_at
       - updated_at
       title: AdminActorSchema
+    AdminActorTypeSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        slug:
+          type: string
+          title: Slug
+        label:
+          type: string
+          title: Label
+        icon:
+          type: string
+          title: Icon
+        sort_order:
+          type: integer
+          title: Sort Order
+        aliases:
+          items:
+            type: string
+          type: array
+          title: Aliases
+        spatial_scope:
+          type: string
+          title: Spatial Scope
+        publication_rule:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Publication Rule
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - category_id
+      - slug
+      - label
+      - icon
+      - sort_order
+      - spatial_scope
+      - created_at
+      - updated_at
+      title: AdminActorTypeSchema
     AdminActorUpdateSchema:
       properties:
         category_id:
@@ -4201,6 +4669,12 @@ components:
             format: uuid
           - type: 'null'
           title: Category Id
+        type_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Type Id
         name:
           anyOf:
           - type: string
@@ -4342,7 +4816,11 @@ components:
           - alimentacao
           - atrativos
           - hospedagem
+          - experiencias
           - artesanato
+          - vida_noturna
+          - comercio
+          - servicos_turisticos
           - transporte
           - saude
           - seguranca
@@ -4518,7 +4996,8 @@ components:
           - type: 'null'
       type: object
       title: AdminContractSchema
-      description: Cross-cutting mutation contract for subsequent administrative CRUD tasks.
+      description: Cross-cutting mutation contract for subsequent administrative CRUD
+        tasks.
     AdminJobReferenceSchema:
       properties:
         job_id:
@@ -5421,7 +5900,8 @@ components:
           - type: string
           - type: 'null'
           title: Expected Version
-          description: Expected ISO string timestamp or version hash for optimistic concurrency
+          description: Expected ISO string timestamp or version hash for optimistic
+            concurrency
       type: object
       title: AdminRouteUpdateSchema
     AdminScopeAccessSchema:
@@ -5451,7 +5931,8 @@ components:
       - roles
       - capabilities
       title: AdminScopeAccessSchema
-      description: Roles and capabilities that are valid together in one authorization scope.
+      description: Roles and capabilities that are valid together in one authorization
+        scope.
     AdminUploadReferenceSchema:
       properties:
         upload_id:
@@ -5600,7 +6081,7 @@ components:
           title: License Code
         image:
           type: string
-          contentMediaType: application/octet-stream
+          format: binary
           title: Image
       type: object
       required:
@@ -5615,7 +6096,7 @@ components:
       properties:
         file:
           type: string
-          contentMediaType: application/octet-stream
+          format: binary
           title: File
           description: Imagem JPEG, PNG ou WebP; máximo 5 MiB
       type: object
@@ -5969,15 +6450,6 @@ components:
       - request_id
       title: ErrorResponse
       description: Standard error response envelope.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     FAQItemSchema:
       properties:
         id:
@@ -5999,6 +6471,69 @@ components:
       - question
       - answer
       title: FAQItemSchema
+    GooglePhotoAttributionSchema:
+      properties:
+        display_name:
+          type: string
+          title: Display Name
+        uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Uri
+      type: object
+      required:
+      - display_name
+      title: GooglePhotoAttributionSchema
+    GooglePhotoMetadataEnvelope:
+      properties:
+        data:
+          $ref: '#/components/schemas/GooglePhotoMetadataSchema'
+      type: object
+      required:
+      - data
+      title: GooglePhotoMetadataEnvelope
+    GooglePhotoMetadataSchema:
+      properties:
+        proxy_url:
+          type: string
+          title: Proxy Url
+        expires_at:
+          type: integer
+          title: Expires At
+        width_px:
+          type: integer
+          title: Width Px
+        height_px:
+          type: integer
+          title: Height Px
+        author_attributions:
+          items:
+            $ref: '#/components/schemas/GooglePhotoAttributionSchema'
+          type: array
+          title: Author Attributions
+        google_maps_uri:
+          type: string
+          title: Google Maps Uri
+      type: object
+      required:
+      - proxy_url
+      - expires_at
+      - width_px
+      - height_px
+      - google_maps_uri
+      title: GooglePhotoMetadataSchema
+      description: Ephemeral photo metadata; deliberately excludes Google resource/photo
+        URLs.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     HealthDatabaseStatus:
       properties:
         status:
@@ -6026,6 +6561,22 @@ components:
           format: date-time
           title: Timestamp
           example: '2026-08-11T15:00:00Z'
+        version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Version
+          example: 1.0.0
+        commit_sha:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Commit Sha
+          example: a1b2c3d4e5
+        database:
+          anyOf:
+          - $ref: '#/components/schemas/HealthDatabaseStatus'
+          - type: 'null'
       type: object
       required:
       - timestamp
@@ -6092,6 +6643,16 @@ components:
         category_label:
           type: string
           title: Category Label
+        type_slug:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type Slug
+        type_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type Label
         color:
           type: string
           title: Color
@@ -6211,27 +6772,6 @@ components:
             format: date-time
           - type: 'null'
           title: Deleted At
-        media_kind:
-          type: string
-          title: Media Kind
-          default: stored
-        external_photo_reference:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: External Photo Reference
-        external_attributions:
-          anyOf:
-          - items: {}
-            type: array
-          - type: 'null'
-          title: External Attributions
-        external_cache_expires_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: External Cache Expires At
         sort_order:
           type: integer
           title: Sort Order
@@ -6509,10 +7049,6 @@ components:
           - type: string
           - type: 'null'
           title: License Code
-        media_kind:
-          type: string
-          title: Media Kind
-          default: stored
         sort_order:
           type: integer
           title: Sort Order
@@ -6690,6 +7226,10 @@ components:
           anyOf:
           - $ref: '#/components/schemas/ResolvedMediaItemSchema'
           - type: 'null'
+        is_favorite:
+          type: boolean
+          title: Is Favorite
+          default: false
         gallery:
           items:
             $ref: '#/components/schemas/ResolvedMediaItemSchema'
@@ -7018,6 +7558,10 @@ components:
           anyOf:
           - $ref: '#/components/schemas/ResolvedMediaItemSchema'
           - type: 'null'
+        is_favorite:
+          type: boolean
+          title: Is Favorite
+          default: false
       type: object
       required:
       - id
@@ -7292,10 +7836,13 @@ components:
           default: false
         text_scale:
           type: number
+          maximum: 3.0
+          minimum: 0.5
           title: Text Scale
           default: 1.0
         locale:
           type: string
+          maxLength: 10
           title: Locale
           default: pt-BR
         created_at:
@@ -7336,11 +7883,14 @@ components:
         text_scale:
           anyOf:
           - type: number
+            maximum: 3.0
+            minimum: 0.5
           - type: 'null'
           title: Text Scale
         locale:
           anyOf:
           - type: string
+            maxLength: 10
           - type: 'null'
           title: Locale
       type: object
@@ -7428,17 +7978,71 @@ components:
         type:
           type: string
           title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
       type: object
       required:
       - loc
       - msg
       - type
       title: ValidationError
+    NewsletterSubscribeRequest:
+      properties:
+        email:
+          type: string
+          maxLength: 255
+          minLength: 3
+          title: Email
+          description: Endereço de e-mail do interessado.
+          example: usuario@exemplo.com
+        source:
+          type: string
+          enum:
+          - landing_page
+          - landing_hero
+          - landing_footer
+          - landing_business
+          title: Source
+          description: Origem ou contexto aprovado da inscrição.
+          default: landing_page
+          example: landing_page
+      type: object
+      required:
+      - email
+      title: NewsletterSubscribeRequest
+      description: Payload for newsletter/leads subscription from landing page.
+      example:
+        email: usuario@exemplo.com
+        source: landing_page
+    NewsletterSubscribeData:
+      properties:
+        status:
+          type: string
+          enum:
+          - subscribed
+          - already_subscribed
+          title: Status
+          description: 'Estado da inscrição: subscribed (nova) ou already_subscribed
+            (já cadastrado).'
+          example: subscribed
+        message:
+          type: string
+          title: Message
+          description: Mensagem informativa em português para exibição segura na interface.
+          example: Inscrição realizada com sucesso! Você receberá nossas novidades.
+      type: object
+      required:
+      - status
+      - message
+      title: NewsletterSubscribeData
+      description: Result data for newsletter subscription.
+    NewsletterSubscribeEnvelope:
+      properties:
+        data:
+          $ref: '#/components/schemas/NewsletterSubscribeData'
+      type: object
+      required:
+      - data
+      title: NewsletterSubscribeEnvelope
+      description: Standard envelope for newsletter subscription response.
   securitySchemes:
     HTTPBearer:
       type: http

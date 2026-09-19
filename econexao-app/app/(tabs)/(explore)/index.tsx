@@ -6,14 +6,15 @@ import {
   TouchableOpacity,
   View,
   ImageBackground,
-  Dimensions,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AppHeader } from '../../../src/components/common/AppHeader';
 import { RegionSelectorModal } from '../../../src/components/common/RegionSelectorModal';
 import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/components/common/UIStateViews';
+import { MotionBlock } from '../../../src/components/common/MotionBlock';
 import { CompactRouteCard } from '../../../src/components/routes/CompactRouteCard';
 import { useApp } from '../../../src/hooks/useApp';
 import { useAuth } from '../../../src/hooks/useAuth';
@@ -21,23 +22,28 @@ import { useRegionsQuery, useRoutesQuery } from '../../../src/hooks/queries';
 import { useOptimisticFavoriteRoute } from '../../../src/hooks/useOptimisticFavoriteRoute';
 import { theme } from '../../../src/theme/theme';
 import { makeAccessibleButton } from '../../../src/utils/accessibility';
-
-const HERO_FULL_BG = require('../../../assets/images/alter_do_chao_hero.jpg');
+import { isPreviewRoute, mergeRoutesWithPreviews } from '../../../src/constants/previewRoutes';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { state } = useApp();
   const { user } = useAuth();
   const [isRegionModalOpen, setIsRegionModalOpen] = useState(false);
 
   const regionsQuery = useRegionsQuery();
 
-  const activeRegionId = state.activeRegionId ?? regionsQuery.data?.[0]?.id;
-  const activeRegion = regionsQuery.data?.find((r) => r.id === activeRegionId);
-  const hasNoRegions = regionsQuery.isSuccess && !activeRegionId;
+  const isAllRegions = !state.activeRegionId || state.activeRegionId === 'all';
+  const activeRegion = isAllRegions
+    ? null
+    : regionsQuery.data?.find((r) => r.id === state.activeRegionId);
+  const regionName = isAllRegions ? 'Todas as regiões' : (activeRegion?.name ?? 'Região');
+  const isAltamiraRegion = activeRegion?.slug === 'altamira-xingu';
+  const hasNoRegions = regionsQuery.isSuccess && (regionsQuery.data?.length ?? 0) === 0;
 
-  const featuredQuery = useRoutesQuery(activeRegionId, { limit: 10 });
-  const savedQuery = useRoutesQuery(activeRegionId, { saved: true }, user?.id);
+  const queryRegionId = isAllRegions ? undefined : state.activeRegionId;
+  const featuredQuery = useRoutesQuery(queryRegionId, { limit: 10 });
+  const savedQuery = useRoutesQuery(queryRegionId, { saved: true }, user?.id);
 
   const { toggleFavorite } = useOptimisticFavoriteRoute();
 
@@ -45,13 +51,11 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.screenContainer}>
-      <AppHeader />
-
       <ImageBackground
-        source={HERO_FULL_BG}
+        source={require('../../../assets/images/econexao-fundo-B.png')}
         style={styles.fullScreenBackground}
-        imageStyle={styles.fullScreenBackgroundImage}
         resizeMode="cover"
+        accessible={false}
       >
         {/* Scrim Overlay contínuo com escurecimento progressivo para legibilidade AAA */}
         <View style={styles.scrimOverlay} />
@@ -60,17 +64,24 @@ export default function HomeScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Espaçamento aéreo do céu da Amazônia (conforme referência visual) */}
-          <View style={styles.heroTopSpacer} />
+          {/* Espaçamento superior com respeito a safe-area para respiro no banner */}
+          <View style={[styles.heroTopSpacer, { height: Math.max(insets.top + 20, 32) }]} />
 
-          {/* Bloco do Hero */}
-          <View style={styles.heroBlock}>
+          {/* Bloco do Hero com MotionBlock */}
+          <MotionBlock style={styles.heroBlock}>
+            <View style={styles.heroLogoContainer}>
+              <Image
+                source={require('../../../assets/images/logo-horizontal.png')}
+                style={styles.heroLogo}
+                resizeMode="contain"
+                accessibilityLabel="ECOnexão Turismo de Experiência"
+                accessible={true}
+              />
+            </View>
+
             <View style={styles.heroTextContainer}>
               <Text style={styles.heroTitle}>
-                Conecte-se{'\n'}à oferta real{'\n'}da Amazônia.
-              </Text>
-              <Text style={styles.heroSubtitle}>
-                Descubra roteiros autênticos e sustentáveis, guiados por quem vive e preserva a floresta.
+                Descubra destinos,{'\n'}viva experiências
               </Text>
             </View>
 
@@ -80,13 +91,17 @@ export default function HomeScreen() {
                 style={styles.regionSelectorPill}
                 onPress={() => setIsRegionModalOpen(true)}
                 {...makeAccessibleButton(
-                  `Região atual: ${activeRegion?.name ?? 'Santarém / Alter do Chão'}`,
+                  `Região atual: ${regionName}`,
                   'Toque para selecionar outra região'
                 )}
               >
-                <Ionicons name="location-sharp" size={17} color={theme.colors.surfaceWhite} />
+                <Ionicons
+                  name={isAllRegions ? 'globe-outline' : 'location-sharp'}
+                  size={17}
+                  color={theme.colors.surfaceWhite}
+                />
                 <Text style={styles.regionPillText} numberOfLines={1}>
-                  {activeRegion?.name ?? 'Santarém / Alter do Chão'}
+                  {regionName}
                 </Text>
                 <Ionicons name="chevron-down" size={16} color={theme.colors.surfaceWhite} />
               </TouchableOpacity>
@@ -101,21 +116,10 @@ export default function HomeScreen() {
                 <Ionicons name="arrow-forward" size={18} color={theme.colors.onPrimary} />
               </TouchableOpacity>
             </View>
-          </View>
+          </MotionBlock>
 
           {/* Seção 1: Rotas em Destaque */}
           <View style={styles.carouselSection}>
-            <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitleOnImage}>Rotas em Destaque</Text>
-              <TouchableOpacity
-                onPress={() => router.push('/(tabs)/(routes)')}
-                style={styles.seeAllLink}
-                {...makeAccessibleButton('Ver todas as rotas em destaque')}
-              >
-                <Text style={styles.seeAllTextOnImage}>Ver todas</Text>
-                <Ionicons name="chevron-forward" size={15} color="rgba(255, 255, 255, 0.85)" />
-              </TouchableOpacity>
-            </View>
 
             {regionsQuery.isPending ? (
               <View style={styles.stateWrapper}>
@@ -135,32 +139,33 @@ export default function HomeScreen() {
                   message="O ambiente ainda não possui regiões cadastradas."
                 />
               </View>
-            ) : featuredQuery.isPending ? (
+            ) : (featuredQuery.isPending && !featuredQuery.data) ? (
               <View style={styles.stateWrapper}>
                 <LoadingView message="Carregando rotas em destaque..." />
               </View>
-            ) : featuredQuery.isError ? (
+            ) : featuredQuery.isError && !featuredQuery.data ? (
               <View style={styles.stateWrapper}>
                 <ErrorStateView
                   message="Não foi possível carregar as rotas em destaque."
                   onRetry={() => void featuredQuery.refetch()}
                 />
               </View>
-            ) : featuredQuery.data?.data.length ? (
+            ) : mergeRoutesWithPreviews(featuredQuery.data?.data ?? [], { isAltamiraRegion }).length ? (
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.carouselScroll}
               >
-                {featuredQuery.data.data.map((route) => {
-                  const isFav = savedRouteIds.has(route.id);
+                {mergeRoutesWithPreviews(featuredQuery.data?.data ?? [], { isAltamiraRegion }).map((route) => {
+                  const isPreview = isPreviewRoute(route);
+                  const isFav = (route as typeof route & { is_favorite?: boolean }).is_favorite ?? savedRouteIds.has(route.id);
                   return (
                     <CompactRouteCard
                       key={route.id}
                       route={route}
                       isFavorite={isFav}
-                      onPress={() => router.push(`/route/${route.id}`)}
-                      onToggleFavorite={() => toggleFavorite(route.id, isFav)}
+                      onPress={isPreview ? undefined : () => router.push(`/route/${route.id}`)}
+                      onToggleFavorite={isPreview ? undefined : () => toggleFavorite(route, isFav)}
                     />
                   );
                 })}
@@ -232,7 +237,7 @@ export default function HomeScreen() {
                     route={route}
                     isFavorite={true}
                     onPress={() => router.push(`/route/${route.id}`)}
-                    onToggleFavorite={() => toggleFavorite(route.id, true)}
+                    onToggleFavorite={() => toggleFavorite(route, true)}
                   />
                 ))}
               </ScrollView>
@@ -266,10 +271,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  fullScreenBackgroundImage: {
-    width: '100%',
-    height: '100%',
-  },
   scrimOverlay: {
     position: 'absolute',
     top: 0,
@@ -282,12 +283,23 @@ const styles = StyleSheet.create({
     paddingBottom: 72,
   },
   heroTopSpacer: {
-    height: 110,
+    height: 24,
   },
   heroBlock: {
     paddingHorizontal: theme.spacing.marginMobile,
-    gap: 20,
+    gap: 16,
     marginBottom: 36,
+  },
+  heroLogoContainer: {
+    alignItems: 'flex-start',
+    marginBottom: 16,
+    width: '100%',
+    maxWidth: 340,
+    position: 'relative',
+  },
+  heroLogo: {
+    width: '100%',
+    height: 110,
   },
   heroTextContainer: {
     gap: 10,
@@ -314,7 +326,7 @@ const styles = StyleSheet.create({
   },
   heroControls: {
     gap: 14,
-    marginTop: 6,
+    marginTop: 16,
   },
   regionSelectorPill: {
     flexDirection: 'row',

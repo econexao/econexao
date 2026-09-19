@@ -43,9 +43,7 @@ async def verify() -> int:
             before = await counts(session)
         try:
             async with factory() as session:
-                await run_seed_pindobal_apply(
-                    DEFAULT_SNAPSHOT_DIR, session, fail_after="route"
-                )
+                await run_seed_pindobal_apply(DEFAULT_SNAPSHOT_DIR, session, fail_after="route")
         except RuntimeError as exc:
             if "induzida" not in str(exc):
                 raise

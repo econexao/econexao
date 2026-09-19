@@ -1,0 +1,23 @@
+{
+  "status": "dry_run_success",
+  "region": "altamira-xingu",
+  "route": "rota-pedral",
+  "total_parsed": 765,
+  "with_coordinates": 571,
+  "missing_coordinates": 194,
+  "corridor_actors_count": 497,
+  "citywide_essential_count": 116,
+  "categories": {
+    "outros": 15,
+    "atrativos": 221,
+    "servicos_turisticos": 85,
+    "alimentacao": 194,
+    "transporte": 49,
+    "seguranca": 13,
+    "hospedagem": 60,
+    "vida_noturna": 5,
+    "comercio": 17,
+    "saude": 103,
+    "experiencias": 3
+  }
+}

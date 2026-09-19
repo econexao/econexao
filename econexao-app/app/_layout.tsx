@@ -12,6 +12,7 @@ import {
 } from '@expo-google-fonts/hanken-grotesk';
 import { AppContextProvider } from '../src/state/AppContext';
 import { LoadingView, ErrorStateView } from '../src/components/common/UIStateViews';
+import { SignedOutScreen } from '../src/components/auth/SignedOutScreen';
 import { theme } from '../src/theme/theme';
 import { AuthContext, AuthProvider } from '../src/auth/AuthProvider';
 import { ServerStateProvider } from '../src/api/ServerStateProvider';
@@ -30,6 +31,10 @@ function LayoutContent() {
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="route/[routeId]/index" options={{ headerShown: false }} />
+        <Stack.Screen name="route/[routeId]/map" options={{ headerShown: false }} />
+        <Stack.Screen name="route/[routeId]/catalog" options={{ headerShown: false }} />
+        <Stack.Screen name="actor/[actorId]" options={{ headerShown: false }} />
         <Stack.Screen
           name="admin/index"
           options={{ headerShown: false, title: 'Painel Editorial' }}
@@ -44,14 +49,14 @@ function AuthGate({ children }: React.PropsWithChildren) {
   if (!auth || auth.status === 'initializing') {
     return <LoadingView message="Criando uma sessão segura..." />;
   }
-  if (auth.status === 'error' || auth.status === 'signed_out') {
+  if (auth.status === 'signed_out') {
+    return <SignedOutScreen onContinueAsGuest={auth.retry} />;
+  }
+  if (auth.status === 'error') {
     return (
       <ErrorStateView
-        message={
-          auth.status === 'signed_out'
-            ? 'Sua sessão foi encerrada. Tente novamente para criar uma nova sessão.'
-            : auth.error?.message ?? 'Não foi possível iniciar sua sessão.'
-        }
+        title="Erro de Conexão"
+        message={auth.error?.message ?? 'Não foi possível iniciar sua sessão. Verifique sua conexão e tente novamente.'}
         onRetry={auth.retry}
       />
     );

@@ -208,6 +208,49 @@ async def test_routing_service_preview_route_success() -> None:
 
 
 @pytest.mark.asyncio
+async def test_dynamic_preview_marks_transport_outside_corridor_as_city_only() -> None:
+    """Dynamic previews must not leak city transport pins into the route camera."""
+    region_id = uuid.uuid4()
+    route_id = uuid.uuid4()
+    transport_on_route = MagicMock()
+    transport_on_route.id = uuid.uuid4()
+    transport_on_route.name = "Terminal da rota"
+    transport_on_route.is_featured = False
+    transport_on_route.green_badge_status = "none"
+    transport_on_route.sort_order = 0
+    municipal_transport = MagicMock()
+    municipal_transport.id = uuid.uuid4()
+    municipal_transport.name = "Rodoviária municipal"
+    municipal_transport.is_featured = False
+    municipal_transport.green_badge_status = "none"
+    municipal_transport.sort_order = 0
+
+    service = RoutingService(db=AsyncMock(), connector=FakeRoutingConnector(steps=4))
+    service._get_route_anchor_coordinate = AsyncMock(
+        return_value=Coordinate(latitude=-3.255088, longitude=-52.2194072)
+    )
+    service.routing_repo.get_active_route_region_id = AsyncMock(return_value=region_id)
+    service.territorial_repo.find_corridor_actors_by_geometry = AsyncMock(
+        return_value=[(transport_on_route, "transporte", -3.255, -52.219)]
+    )
+    service.territorial_repo.list_region_essential_actors = AsyncMock(
+        return_value=[
+            (transport_on_route, "transporte", -3.255, -52.219),
+            (municipal_transport, "transporte", -3.205, -52.208),
+        ]
+    )
+    service.territorial_repo.get_region_bounds = AsyncMock(return_value=None)
+
+    envelope = await service.preview_route(
+        route_id, RoutePreviewRequest(latitude=-3.20, longitude=-52.20, travel_mode="DRIVE")
+    )
+    pins = {pin.actor_id: pin for pin in envelope.data.pins}
+
+    assert pins[transport_on_route.id].layer == "both"
+    assert pins[municipal_transport.id].layer == "citywide_essential"
+
+
+@pytest.mark.asyncio
 async def test_routing_service_multi_region_isolation() -> None:
     """RoutingService filters corridor actors strictly by the route region."""
     region_a_id = uuid.uuid4()
@@ -298,9 +341,7 @@ async def test_routing_service_uses_common_official_geometry_endpoint_as_destina
     service.territorial_repo.list_region_essential_actors = AsyncMock(return_value=[])
     service.territorial_repo.get_region_bounds = AsyncMock(return_value=None)
 
-    await service.preview_route(
-        route_id, RoutePreviewRequest(latitude=-2.44, longitude=-54.70)
-    )
+    await service.preview_route(route_id, RoutePreviewRequest(latitude=-2.44, longitude=-54.70))
 
     assert connector.calculate_route.await_args.kwargs["destination"] == Coordinate(
         latitude=-2.558521, longitude=-54.978506
@@ -312,9 +353,7 @@ async def test_routing_service_rejects_missing_or_divergent_official_destination
     service = RoutingService(db=AsyncMock(), connector=AsyncMock())
     service.routing_repo.get_active_route_region_id = AsyncMock(return_value=uuid.uuid4())
     for endpoints in ([], [(-2.558521, -54.978506), (-2.50, -54.90)]):
-        service.routing_repo.list_official_destination_endpoints = AsyncMock(
-            return_value=endpoints
-        )
+        service.routing_repo.list_official_destination_endpoints = AsyncMock(return_value=endpoints)
         with pytest.raises(RouteDestinationMissingError):
             await service.preview_route(
                 uuid.uuid4(), RoutePreviewRequest(latitude=-2.44, longitude=-54.70)
@@ -329,9 +368,7 @@ async def test_routing_service_preview_route_not_found() -> None:
     service.routing_repo.get_active_route_region_id = AsyncMock(return_value=None)
     route_id = uuid.uuid4()
     with pytest.raises(RouteNotFoundError):
-        await service.preview_route(
-            route_id, RoutePreviewRequest(latitude=-2.44, longitude=-54.70)
-        )
+        await service.preview_route(route_id, RoutePreviewRequest(latitude=-2.44, longitude=-54.70))
 
 
 @pytest.mark.asyncio
@@ -493,9 +530,7 @@ def test_api_route_preview_422_invalid_coordinates() -> None:
         (RoutingTimeoutError(), 504, "ROUTING_TIMEOUT"),
     ],
 )
-def test_api_route_preview_typed_safe_errors(
-    error: Exception, status_code: int, code: str
-) -> None:
+def test_api_route_preview_typed_safe_errors(error: Exception, status_code: int, code: str) -> None:
     secret_lat = -2.4412345
     secret_lng = -54.7098765
     mock_service = AsyncMock(spec=RoutingService)
@@ -565,15 +600,13 @@ def test_api_route_preview_rate_limit_is_ten_per_minute() -> None:
     route_id = uuid.uuid4()
     mock_service = AsyncMock(spec=RoutingService)
     mock_service.preview_route.return_value = RoutePreviewEnvelope(
-            data=RoutePreviewDataSchema(
-                route_id=route_id,
-                provider="fake_deterministic",
+        data=RoutePreviewDataSchema(
+            route_id=route_id,
+            provider="fake_deterministic",
             distance_m=1,
             duration_s=1,
             geojson={"type": "LineString", "coordinates": [[-54.70, -2.44], [-54.71, -2.45]]},
-            bounds=RouteBoundsSchema(
-                min_lat=-2.45, max_lat=-2.44, min_lng=-54.71, max_lng=-54.70
-            ),
+            bounds=RouteBoundsSchema(min_lat=-2.45, max_lat=-2.44, min_lng=-54.71, max_lng=-54.70),
         )
     )
     app.dependency_overrides[get_routing_service] = lambda: mock_service

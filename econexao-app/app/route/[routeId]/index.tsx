@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert, ActivityIndicator, AccessibilityInfo } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert, ActivityIndicator, AccessibilityInfo, Image } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
-
 import { AppHeader } from '../../../src/components/common/AppHeader';
 import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/components/common/UIStateViews';
 import { LocalCatalogPreview } from '../../../src/components/routes/LocalCatalogPreview';
 import { OriginSelector, MY_LOCATION_ORIGIN_ID, CHOOSE_ON_MAP_ORIGIN_ID } from '../../../src/components/routes/OriginSelector';
 import { RouteMapPreview } from '../../../src/components/routes/RouteMapPreview';
+import { RouteGallery } from '../../../src/components/routes/RouteGallery';
+import { MotionBlock } from '../../../src/components/common/MotionBlock';
+import { GoogleRoutesMapNotice } from '../../../src/components/routes/GoogleRoutesMapNotice';
+import {
+  getPindobalCoverImage,
+  getPedralCoverImage,
+  getRouteCoverImage,
+  getRouteDisplayName,
+  getRouteDescription,
+} from '../../../src/components/routes/routeCoverImage';
 import { useRouteAlertsQuery, useRouteDetailQuery } from '../../../src/hooks/queries';
 import { theme, useAppTheme } from '../../../src/theme/theme';
 
@@ -69,7 +78,12 @@ export default function RouteDetailScreen() {
 
   const isCustomLocation = isDynamicRoutingEnabled && (originId === MY_LOCATION_ORIGIN_ID || originId === CHOOSE_ON_MAP_ORIGIN_ID || Boolean(previewData));
   const requestedOriginExists = detail.data?.origins.some((origin) => origin.id === originId);
-  const effectiveOrigin = isCustomLocation ? originId : (requestedOriginExists ? originId : detail.data?.origins[0]?.id);
+  const defaultOrigin = detail.data?.origins.find((o) => {
+    const code = ('code' in o && o.code ? o.code : o.id || '').toLowerCase();
+    const name = (o.name || '').toLowerCase();
+    return code.includes('rodoviaria') || name.includes('rodoviária') || name.includes('rodoviaria');
+  }) || detail.data?.origins[0];
+  const effectiveOrigin = isCustomLocation ? originId : (requestedOriginExists ? originId : defaultOrigin?.id);
 
   useEffect(() => {
     setOriginId(initialOriginId);
@@ -77,25 +91,23 @@ export default function RouteDetailScreen() {
     if (initialOriginId && initialOriginId !== MY_LOCATION_ORIGIN_ID && initialOriginId !== CHOOSE_ON_MAP_ORIGIN_ID) {
       lastValidOriginIdRef.current = initialOriginId;
     }
-  }, [initialOriginId, routeId]);
 
-  // Read ephemeral preview transferred from map screen via memory cache
-  useEffect(() => {
-    if (!isDynamicRoutingEnabled || !queryClient || !routeId) return;
-    const ephemeralKey = queryKeys.routes.ephemeralPreview(routeId);
-    const cachedData = queryClient.getQueryData<{
-      previewData: RoutePreviewData;
-      originType: string;
-    }>(ephemeralKey);
+    if (isDynamicRoutingEnabled && queryClient && routeId) {
+      const ephemeralKey = queryKeys.routes.ephemeralPreview(routeId);
+      const cachedData = queryClient.getQueryData<{
+        previewData: RoutePreviewData;
+        originType: string;
+      }>(ephemeralKey);
 
-    if (cachedData?.previewData) {
-      setPreviewData(cachedData.previewData);
-      setOriginId(cachedData.originType || CHOOSE_ON_MAP_ORIGIN_ID);
-      AccessibilityInfo.announceForAccessibility('Trajeto sugerido a partir do ponto escolhido no mapa carregado.');
-      // Consume/clear ephemeral preview so subsequent back/focus operations don't re-trigger
-      queryClient.removeQueries({ queryKey: ephemeralKey });
+      if (cachedData?.previewData) {
+        setPreviewData(cachedData.previewData);
+        setOriginId(cachedData.originType || CHOOSE_ON_MAP_ORIGIN_ID);
+        AccessibilityInfo.announceForAccessibility('Trajeto sugerido a partir do ponto escolhido no mapa carregado.');
+        // Consume/clear ephemeral preview so subsequent back/focus operations don't re-trigger
+        queryClient.removeQueries({ queryKey: ephemeralKey });
+      }
     }
-  }, [queryClient, routeId, isDynamicRoutingEnabled]);
+  }, [initialOriginId, routeId, isDynamicRoutingEnabled]);
 
   const alerts = useRouteAlertsQuery(routeId);
 
@@ -123,8 +135,8 @@ export default function RouteDetailScreen() {
       setOriginId(originType);
       AccessibilityInfo.announceForAccessibility('Trajeto sugerido a partir do ponto escolhido carregado com sucesso.');
     } catch {
-      // Fallback to previous valid origin or first origin
-      const fallbackOrigin = lastValidOriginIdRef.current || detail.data?.origins[0]?.id;
+      // Fallback to previous valid origin or default origin (Rodoviária)
+      const fallbackOrigin = lastValidOriginIdRef.current || defaultOrigin?.id;
       setOriginId(fallbackOrigin);
       setPreviewData(null);
       AccessibilityInfo.announceForAccessibility('Não foi possível calcular o trajeto sugerido.');
@@ -192,10 +204,23 @@ export default function RouteDetailScreen() {
     );
   }
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/(routes)');
+    }
+  };
+
   if (detail.isError) {
     return (
       <View style={styles.container}>
-        <AppHeader showBack onBackPress={() => router.back()} title="Detalhes da Rota" />
+        <AppHeader
+          showBack
+          fallbackHref="/(tabs)/(routes)"
+          onBackPress={handleBack}
+          title="Detalhes da Rota"
+        />
         <ErrorStateView
           title="Erro ao carregar rota"
           message="Não foi possível carregar as informações desta rota."
@@ -206,8 +231,10 @@ export default function RouteDetailScreen() {
   }
 
   const route = detail.data;
+  const routeHeroImage = getPindobalCoverImage(route) || getPedralCoverImage(route) || getRouteCoverImage(route);
+  const isGoogleRoutesPreview = previewData?.provider === 'google_routes';
 
-  const customGeometry: RouteGeometry | null = previewData
+  const customGeometry: RouteGeometry | null = previewData && !isGoogleRoutesPreview
     ? {
         id: originId || MY_LOCATION_ORIGIN_ID,
         route_origin_id: originId || MY_LOCATION_ORIGIN_ID,
@@ -220,34 +247,78 @@ export default function RouteDetailScreen() {
     : null;
 
   const customBounds: MapBounds | null = previewData?.bounds ?? null;
+  const originSelector = route.origins && route.origins.length > 0 ? (
+    <OriginSelector
+      origins={route.origins}
+      selectedOriginId={effectiveOrigin}
+      onSelectOrigin={handleSelectOrigin}
+      onSelectCurrentLocation={handleSelectCurrentLocation}
+      onStartSelectOnMap={handleStartSelectOnMap}
+      isLoadingLocation={isPreviewLoading}
+      enableDynamicRouting={isDynamicRoutingEnabled}
+    />
+  ) : null;
+
+  const displayTitle = route ? getRouteDisplayName(route) : '';
+  const routeDescription = route ? getRouteDescription(route) : '';
 
   return (
     <View style={styles.container}>
-      <AppHeader showBack onBackPress={() => router.back()} title={route.title} />
+      <AppHeader
+        showBack
+        fallbackHref="/(tabs)/(routes)"
+        onBackPress={handleBack}
+        title={displayTitle}
+      />
 
       <ScrollView contentContainerStyle={styles.content}>
+        <MotionBlock staggerIndex={0}>
         {/* Header Hero Section */}
-        <View style={styles.heroSection}>
-          <Text style={styles.title}>{route.title}</Text>
-          <Text style={styles.subtitle}>
-            {route.city}, {route.state_code}
-            {route.is_verified && ' • Rota Verificada'}
-          </Text>
-          <Text style={styles.description}>{route.description ?? route.summary}</Text>
-        </View>
-
-        {/* Origin Selector */}
-        {route.origins && route.origins.length > 0 && (
-          <OriginSelector
-            origins={route.origins}
-            selectedOriginId={effectiveOrigin}
-            onSelectOrigin={handleSelectOrigin}
-            onSelectCurrentLocation={handleSelectCurrentLocation}
-            onStartSelectOnMap={handleStartSelectOnMap}
-            isLoadingLocation={isPreviewLoading}
-            enableDynamicRouting={isDynamicRoutingEnabled}
-          />
+        {routeHeroImage ? (
+          <View style={styles.pindobalHeroStack}>
+            <View style={[styles.heroSection, styles.heroSectionWithImage]}>
+              <Image
+                source={routeHeroImage}
+                style={styles.heroImage}
+                resizeMode="cover"
+                accessible={false}
+              />
+              <View style={styles.heroOverlay}>
+                <Text style={[styles.title, styles.titleOnImage]}>{displayTitle}</Text>
+                <Text style={[styles.subtitle, styles.subtitleOnImage]}>
+                  {route.city}, {route.state_code}
+                  {route.is_verified && ' • Rota Verificada'}
+                </Text>
+              </View>
+            </View>
+            {originSelector ? <View style={styles.originSelectorOverlay}>{originSelector}</View> : null}
+          </View>
+        ) : (
+          <>
+            <View style={styles.heroSection}>
+              <Text style={styles.title}>{displayTitle}</Text>
+              <Text style={styles.subtitle}>
+                {route.city}, {route.state_code}
+                {route.is_verified && ' • Rota Verificada'}
+              </Text>
+            </View>
+            {originSelector}
+          </>
         )}
+
+        <RouteGallery route={route} />
+
+        {/* Breve Descrição sobre o Local */}
+        {routeDescription ? (
+          <View style={styles.descriptionCard} accessible accessibilityLabel="Sobre o local">
+            <View style={styles.descriptionHeaderRow}>
+              <Ionicons name="information-circle-outline" size={18} color={theme.colors.brandForest} />
+              <Text style={styles.descriptionHeading}>Sobre o local</Text>
+            </View>
+            <Text style={styles.descriptionBody}>{routeDescription}</Text>
+          </View>
+        ) : null}
+
 
         {/* Dynamic preview notice banner */}
         {isCustomLocation && (
@@ -266,25 +337,32 @@ export default function RouteDetailScreen() {
           </View>
         )}
 
-        <RouteMapPreview
-          routeId={routeId}
-          originId={isCustomLocation ? undefined : effectiveOrigin}
-          customGeometry={customGeometry}
-          customBounds={customBounds}
-          customPins={isCustomLocation ? previewData?.pins : undefined}
-          customLegend={isCustomLocation ? previewData?.legend : undefined}
-          customCityBounds={isCustomLocation ? previewData?.city_bounds : undefined}
-          isCustomLocation={isCustomLocation}
-          onExpand={(selectedActorId) => {
-            if (isCustomLocation && previewData && queryClient) {
-              queryClient.setQueryData(queryKeys.routes.ephemeralPreview(routeId), {
-                previewData,
-                originType: originId || MY_LOCATION_ORIGIN_ID,
-              });
-            }
-            router.push(routePath(routeId, 'map', isCustomLocation ? undefined : effectiveOrigin, selectedActorId ?? actorId));
-          }}
-        />
+        {isGoogleRoutesPreview && previewData ? (
+          <GoogleRoutesMapNotice
+            distanceMeters={previewData.distance_m}
+            durationSeconds={previewData.duration_s}
+          />
+        ) : (
+          <RouteMapPreview
+            routeId={routeId}
+            originId={isCustomLocation ? undefined : effectiveOrigin}
+            customGeometry={customGeometry}
+            customBounds={customBounds}
+            customPins={isCustomLocation ? previewData?.pins : undefined}
+            customLegend={isCustomLocation ? previewData?.legend : undefined}
+            customCityBounds={isCustomLocation ? previewData?.city_bounds : undefined}
+            isCustomLocation={isCustomLocation}
+            onExpand={(selectedActorId) => {
+              if (isCustomLocation && previewData && queryClient) {
+                queryClient.setQueryData(queryKeys.routes.ephemeralPreview(routeId), {
+                  previewData,
+                  originType: originId || MY_LOCATION_ORIGIN_ID,
+                });
+              }
+              router.push(routePath(routeId, 'map', isCustomLocation ? undefined : effectiveOrigin, selectedActorId ?? actorId));
+            }}
+          />
+        )}
 
         <LocalCatalogPreview
           routeId={routeId}
@@ -298,33 +376,47 @@ export default function RouteDetailScreen() {
         />
 
         {/* Start Trip CTA */}
-        <TouchableOpacity
+        <View
           style={[
-            styles.startTripButton,
+            styles.startTripCard,
             {
               backgroundColor: theme.colors.brandForest,
               borderColor: theme.isHighContrast ? theme.colors.brandDeep : 'transparent',
               borderWidth: theme.isHighContrast ? 2 : 0,
             },
           ]}
-          onPress={handleStartTrip}
-          disabled={isStartingTrip}
-          {...makeAccessibleButton(
-            'Registrar início de viagem nesta rota',
-            'Inicia a viagem e registra o passeio no histórico do seu perfil'
-          )}
         >
-          {isStartingTrip ? (
-            <ActivityIndicator size="small" color={theme.colors.surfaceWhite} />
-          ) : (
-            <>
-              <Ionicons name="play-circle-outline" size={20} color={theme.colors.surfaceWhite} />
-              <Text style={[styles.startTripText, { color: theme.colors.surfaceWhite }]}>
-                Registrar Início de Viagem
-              </Text>
-            </>
-          )}
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.startTripButton}
+            onPress={handleStartTrip}
+            disabled={isStartingTrip}
+            {...makeAccessibleButton(
+              'Registrar início de viagem nesta rota',
+              'Inicia a viagem e registra o passeio no histórico do seu perfil'
+            )}
+          >
+            {isStartingTrip ? (
+              <ActivityIndicator size="small" color={theme.colors.surfaceWhite} />
+            ) : (
+              <>
+              <View style={styles.tripIconBox}>
+                <Ionicons name="navigate-outline" size={21} color={theme.colors.surfaceWhite} />
+              </View>
+              <View style={styles.tripCopy}>
+                <Text style={[styles.startTripText, { color: theme.colors.surfaceWhite }]}>Registrar Início da Viagem</Text>
+                <Text style={styles.startTripSubtext}>Ativar registro em tempo real</Text>
+              </View>
+              </>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.tripArrow}
+            onPress={() => router.push('/(tabs)/(profile)/trips')}
+            {...makeAccessibleButton('Abrir histórico de rotas', 'Abre o histórico de viagens do perfil')}
+          >
+            <Ionicons name="arrow-forward" size={18} color={theme.colors.surfaceWhite} />
+          </TouchableOpacity>
+        </View>
 
         {/* Route Alerts Section */}
         <View style={styles.section}>
@@ -374,6 +466,7 @@ export default function RouteDetailScreen() {
           )}
         </View>
 
+        </MotionBlock>
       </ScrollView>
     </View>
   );
@@ -389,11 +482,79 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
     overflow: 'hidden',
     padding: theme.spacing.marginMobile,
-    paddingBottom: 32,
-    gap: 16,
+    paddingBottom: 36,
+    gap: 24,
   },
   heroSection: {
     gap: 4,
+  },
+  heroSectionWithImage: {
+    height: 320,
+    borderRadius: 24,
+    backgroundColor: theme.colors.surfaceBackground,
+    overflow: 'hidden',
+  },
+  heroImage: {
+    borderRadius: 24,
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+  },
+  heroOverlay: {
+    gap: 4,
+    padding: theme.spacing.marginMobile,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  pindobalHeroStack: {
+    position: 'relative',
+    marginBottom: 8,
+  },
+  originSelectorOverlay: {
+    marginTop: -72,
+    paddingHorizontal: 16,
+    zIndex: 1,
+  },
+  titleOnImage: {
+    color: theme.colors.surfaceWhite,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 6,
+  },
+  subtitleOnImage: {
+    color: 'rgba(255, 255, 255, 0.95)',
+    textShadowColor: 'rgba(0, 0, 0, 0.70)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 5,
+  },
+  descriptionCard: {
+    gap: 8,
+    backgroundColor: theme.colors.surfaceContainerLow,
+    padding: 16,
+    borderRadius: theme.radii.lg,
+    borderWidth: 1,
+    borderColor: theme.colors.outlineVariant,
+  },
+  descriptionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  descriptionHeading: {
+    ...theme.typography.labelMd,
+    color: theme.colors.brandForest,
+    fontWeight: '700',
+  },
+  descriptionBody: {
+    ...theme.typography.bodyMd,
+    color: theme.colors.onSurface,
+    lineHeight: 22,
+  },
+  descriptionOnImage: {
+    color: 'rgba(255, 255, 255, 0.94)',
+    textShadowColor: 'rgba(0, 0, 0, 0.55)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   title: {
     ...theme.typography.headlineLg,
@@ -443,19 +604,46 @@ const styles = StyleSheet.create({
     ...theme.typography.headlineSm,
     color: theme.colors.brandForest,
   },
-  startTripButton: {
+  startTripCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 14,
-    borderRadius: theme.radii.full,
-    gap: 8,
+    padding: 8,
+    minHeight: 72,
+    borderRadius: theme.radii.lg,
     marginVertical: 4,
     ...theme.shadows.card,
+  },
+  startTripButton: {
+    flex: 1,
+    minHeight: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 4,
   },
   startTripText: {
     ...theme.typography.labelMd,
     fontWeight: '700',
+  },
+  startTripSubtext: { ...theme.typography.bodySm, color: 'rgba(255,255,255,0.78)', fontSize: 11 },
+  tripIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.24)',
+  },
+  tripCopy: { flex: 1, gap: 2 },
+  tripArrow: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   alertsContainer: {
     gap: 8,

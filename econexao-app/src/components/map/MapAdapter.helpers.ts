@@ -1,5 +1,5 @@
 import type { MapBounds, RouteGeometry } from '../../api/types';
-import type { FlexiblePinItem, MapCoordinate } from './MapAdapter.types';
+import type { FlexiblePinItem, MapCoordinate, MapRenderableItem } from './MapAdapter.types';
 
 const isFiniteCoordinate = (latitude: unknown, longitude: unknown): boolean =>
   typeof latitude === 'number' &&
@@ -53,9 +53,46 @@ export const filterPinsByModeAndCategory = <T extends FlexiblePinItem>(
 };
 
 export const SELECTION_PIN_COLOR = '#EA580C';
+export const USER_LOCATION_PIN_COLOR = '#0284C7';
 
 export const CONTRACT_PIN_ICONS = [
-  'utensils', 'compass', 'bed', 'palette', 'bus', 'heart-pulse', 'cross', 'shield', 'help-circle',
+  'anchor',
+  'bed',
+  'beer',
+  'bicycle',
+  'bike',
+  'boat',
+  'briefcase',
+  'bus',
+  'car',
+  'church',
+  'coffee',
+  'compass',
+  'cross',
+  'fitness',
+  'fuel',
+  'heart-pulse',
+  'help-circle',
+  'home',
+  'landmark',
+  'medkit',
+  'mountain',
+  'music',
+  'musical-notes',
+  'palette',
+  'pill',
+  'plane',
+  'scale',
+  'shield',
+  'shield-check',
+  'ship',
+  'shopping-cart',
+  'store',
+  'sun',
+  'trees',
+  'umbrella',
+  'utensils',
+  'waves',
 ] as const;
 
 export const isContractPinColor = (value: unknown): value is string =>
@@ -76,6 +113,44 @@ export const getSelectionPinAccessibilityLabel = (
   return `${base}: ${formatCoordinateDisplay(coord)}. Arraste para reposicionar.`;
 };
 
+export const getUserLocationAccessibilityLabel = (
+  coord?: MapCoordinate | null,
+  customLabel?: string
+): string => {
+  const base = customLabel || 'Sua localização atual';
+  if (!coord) return base;
+  return `${base}: ${formatCoordinateDisplay(coord)}.`;
+};
+
+export const isCoordinateWithinBounds = (
+  coord: MapCoordinate | null | undefined,
+  bounds: MapBounds | null | undefined,
+  marginDegrees = 0.05
+): boolean => {
+  if (!coord || !bounds) return false;
+  if (
+    !isFiniteCoordinate(coord.latitude, coord.longitude) ||
+    !isFiniteCoordinate(bounds.min_lat, bounds.min_lng) ||
+    !isFiniteCoordinate(bounds.max_lat, bounds.max_lng) ||
+    bounds.min_lat > bounds.max_lat ||
+    bounds.min_lng > bounds.max_lng
+  ) {
+    return false;
+  }
+
+  const minLat = bounds.min_lat - marginDegrees;
+  const maxLat = bounds.max_lat + marginDegrees;
+  const minLng = bounds.min_lng - marginDegrees;
+  const maxLng = bounds.max_lng + marginDegrees;
+
+  return (
+    coord.latitude >= minLat &&
+    coord.latitude <= maxLat &&
+    coord.longitude >= minLng &&
+    coord.longitude <= maxLng
+  );
+};
+
 export const getItemPinColor = (item: FlexiblePinItem): string | null =>
   'color' in item && isContractPinColor(item.color) ? item.color : null;
 
@@ -83,6 +158,13 @@ export const getItemPinIcon = (item: FlexiblePinItem): string | null =>
   'icon' in item && isContractPinIcon(item.icon) ? item.icon : null;
 
 export const getItemCategoryLabel = (item: FlexiblePinItem): string => {
+  if (
+    'type_label' in item &&
+    typeof item.type_label === 'string' &&
+    item.type_label.trim().length > 0
+  ) {
+    return item.type_label;
+  }
   if (
     'category_label' in item &&
     typeof item.category_label === 'string' &&
@@ -210,3 +292,114 @@ export const getInitialRegion = (
     longitudeDelta: Math.max((maxLongitude - minLongitude) * 1.25, 0.01),
   };
 };
+
+/**
+ * Prioridade de renderização estável por relevância de categoria em caso de colisão.
+ */
+const CATEGORY_VISUAL_PRIORITY: Record<string, number> = {
+  atrativos: 10,
+  alimentacao: 9,
+  hospedagem: 8,
+  experiencias: 8,
+  artesanato: 7,
+  vida_noturna: 7,
+  comercio: 6,
+  servicos_turisticos: 6,
+  transporte: 5,
+  saude: 4,
+  seguranca: 3,
+  outros: 1,
+};
+
+/**
+ * Controla a densidade e colisões visuais de pins no mapa sem agrupamentos numéricos (clusters).
+ * - Pins são exibidos individualmente com sua cor e ícone de categoria (ADR 0010).
+ * - O item selecionado (selectedActorId) SEMPRE é incluído e destacado com máxima prioridade.
+ * - Conforme o zoom aumenta, mais pontos são revelados.
+ * - Coordenadas geográficas reais são estritamente preservadas (sem offsets ou distorções).
+ */
+export const filterPinsByDensity = (
+  items: FlexiblePinItem[],
+  zoomLevel: number,
+  selectedActorId?: string | null
+): MapRenderableItem[] => {
+  if (items.length === 0) return [];
+
+  // Em zoom alto (>= 15), todos os pins válidos são renderizados diretamente com suas coordenadas reais
+  if (zoomLevel >= 15) {
+    return items.filter((item) => getItemCoordinate(item) !== null);
+  }
+
+  // Raio de colisão em pixels na tela convertido para graus no zoom atual
+  // Zoom baixo: raio maior (reduz sobreposição visual e poluição)
+  // Zoom alto: raio menor (revela mais pontos)
+  const pixelCollisionRadius = Math.max(18, 42 - (zoomLevel - 10) * 4);
+  const radiusDeg = (pixelCollisionRadius * 360) / (256 * Math.pow(2, Math.min(zoomLevel, 18)));
+
+  const validItems: { item: FlexiblePinItem; coord: MapCoordinate; isSelected: boolean; priority: number }[] = [];
+  let selectedEntry: { item: FlexiblePinItem; coord: MapCoordinate } | null = null;
+
+  for (let idx = 0; idx < items.length; idx++) {
+    const item = items[idx];
+    const coord = getItemCoordinate(item);
+    if (!coord) continue;
+
+    const isSelected = Boolean(
+      selectedActorId &&
+        (getItemId(item) === selectedActorId ||
+          ('actor_id' in item && item.actor_id === selectedActorId))
+    );
+
+    const categorySlug = getItemCategory(item);
+    const catPriority = CATEGORY_VISUAL_PRIORITY[categorySlug] || 2;
+    // Score de prioridade: selecionado = 10000, verificado/destaque = 100, categoria = 1..10, ordem de entrada estável
+    const isVerified = 'verification_status' in item && item.verification_status === 'verified';
+    const isFeatured = 'is_featured' in item && (item as any).is_featured === true;
+    const priority = (isSelected ? 10000 : 0) + (isFeatured ? 200 : 0) + (isVerified ? 100 : 0) + catPriority * 10 - idx * 0.001;
+
+    if (isSelected) {
+      selectedEntry = { item, coord };
+    }
+
+    validItems.push({ item, coord, isSelected, priority });
+  }
+
+  // Ordenar candidatos por prioridade decrescente para que itens mais relevantes ganhem o espaço visual
+  validItems.sort((a, b) => b.priority - a.priority);
+
+  const acceptedPins: FlexiblePinItem[] = [];
+  const acceptedCoords: MapCoordinate[] = [];
+
+  // Se houver item selecionado, garantir como primeiro aceito
+  if (selectedEntry) {
+    acceptedPins.push(selectedEntry.item);
+    acceptedCoords.push(selectedEntry.coord);
+  }
+
+  for (const candidate of validItems) {
+    if (candidate.isSelected) continue; // Já incluído
+
+    let collides = false;
+    for (const acceptedCoord of acceptedCoords) {
+      const dLat = candidate.coord.latitude - acceptedCoord.latitude;
+      const dLng = candidate.coord.longitude - acceptedCoord.longitude;
+      const dist = Math.sqrt(dLat * dLat + dLng * dLng);
+      if (dist < radiusDeg) {
+        collides = true;
+        break;
+      }
+    }
+
+    if (!collides) {
+      acceptedPins.push(candidate.item);
+      acceptedCoords.push(candidate.coord);
+    }
+  }
+
+  return acceptedPins;
+};
+
+/**
+ * @deprecated Mantido para compatibilidade retroativa. Delegado para filterPinsByDensity.
+ */
+export const clusterPins = filterPinsByDensity;

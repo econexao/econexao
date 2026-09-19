@@ -62,7 +62,7 @@ export default function AccessibilityPreferencesScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.surfaceBackground }]}>
-      <AppHeader showBack onBackPress={() => router.back()} title="Acessibilidade" />
+      <AppHeader showBack fallbackHref="/(tabs)/(profile)" title="Acessibilidade" />
 
       <ScrollView contentContainerStyle={styles.content}>
         <Text

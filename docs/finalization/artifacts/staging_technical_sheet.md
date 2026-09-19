@@ -1,11 +1,11 @@
 # Ficha Técnica Segura do Ambiente Staging (ECO-2002 / ECO-2104)
 
-**Projeto:** ECOnexão — Plataforma de Turismo Sustentável e Ecoturismo  
-**Ambiente:** Staging (Homologação Técnica e Testes de Integração)  
-**ID do Projeto Supabase:** `econexao-staging` (`rgfuqmwxjuceqpxcraxm`)  
-**Data de Emissão:** 26/08/2026  
-**Status de Conformidade:** APROVADO / HOMOLOGADO  
-**Responsáveis:** Google Antigravity & Codex  
+**Projeto:** ECOnexão — Plataforma de Turismo Sustentável e Ecoturismo
+**Ambiente:** Staging (Homologação Técnica e Testes de Integração)
+**ID do Projeto Supabase:** `econexao-staging` (`kchzucvrnzwzehfdwzwi`)
+**Data de Emissão:** 26/08/2026 (Reconciliado em 10/09/2026 conforme decisão do owner)
+**Status de Conformidade:** APROVADO PARA PREPARAÇÃO LOCAL / HOMOLOGAÇÃO REAL PENDENTE
+**Responsáveis:** Google Antigravity & Codex
 
 ---
 
@@ -13,16 +13,24 @@
 
 | Atributo | Valor / Configuração | Notas de Segurança |
 | :--- | :--- | :--- |
-| **Nome do Projeto** | `econexao-staging` | Ambiente isolado de homologação |
-| **Project Ref** | `rgfuqmwxjuceqpxcraxm` | Identificador canônico do projeto |
+| **Nome do Projeto** | `econexao-staging` | Ambiente canônico isolado de homologação |
+| **Project Ref** | `kchzucvrnzwzehfdwzwi` | Identificador canônico do projeto (decisão do owner) |
 | **Região** | `sa-east-1` (São Paulo, Brasil) | Baixa latência e conformidade LGPD |
-| **Supabase REST URL** | `https://rgfuqmwxjuceqpxcraxm.supabase.co` | Endpoint público da API Data/Auth |
-| **Supabase Auth URL** | `https://rgfuqmwxjuceqpxcraxm.supabase.co/auth/v1` | Endpoint de autenticação e sessão |
-| **Supabase Storage URL**| `https://rgfuqmwxjuceqpxcraxm.supabase.co/storage/v1` | Endpoint de mídia e avatares |
-| **Database Hostname** | `db.rgfuqmwxjuceqpxcraxm.supabase.co` | PostgreSQL 17 com PostGIS |
-| **Connection Pooler** | `aws-0-sa-east-1.pooler.supabase.com` | Porta `6543` (Transaction) / `5432` (Session) |
-| **Provedor Backend API**| Render Web Service (Nativo Python 3.13) | `https://econexao-backend-staging.onrender.com` |
-| **Frontend Web Host** | Cloudflare Pages / Vercel Staging | Origens permitidas estritas em CORS |
+| **Supabase REST URL** | `https://kchzucvrnzwzehfdwzwi.supabase.co` | Endpoint público da API Data/Auth |
+| **Supabase Auth URL** | `https://kchzucvrnzwzehfdwzwi.supabase.co/auth/v1` | Endpoint de autenticação e sessão |
+| **Supabase Storage URL**| `https://kchzucvrnzwzehfdwzwi.supabase.co/storage/v1` | Endpoint de mídia e avatares |
+| **Database Hostname** | `db.kchzucvrnzwzehfdwzwi.supabase.co` | PostgreSQL 17 com PostGIS |
+| **Connection Pooler** | `aws-0-sa-east-1.pooler.supabase.com` | Porta `5432` (Session); porta `6543` proibida para migrações/transações |
+| **Provedor Backend API**| Render Web Service (Nativo Python 3.13) | `https://econexao-backend-staging-30dt.onrender.com` |
+| **Frontend Web Host** | Vercel Staging (`https://econexao-app-staging.vercel.app`) | Origem oficial permitida em CORS |
+
+> [!IMPORTANT]
+> **Staging Canônico e Risco Residual Aceito:**
+> Conforme decisão expressa do owner em 10/09/2026:
+> 1. O staging canônico unificado é `econexao-staging` (`kchzucvrnzwzehfdwzwi`), ao qual pertencem banco PostgreSQL/PostGIS, Auth, Storage, Render backend (`econexao-backend-staging-30dt`) e Vercel frontend (`econexao-app-staging.vercel.app`).
+> 2. O ref `rgfuqmwxjuceqpxcraxm` **não é o staging canônico**; o owner determinou expressamente não insistir na migração para este projeto obsoleto nem rotacionar senha de banco.
+> 3. O risco residual da credencial anteriormente exposta foi formalmente registrado e aceito pelo owner, não bloqueando a ECO-1901.
+> 4. O ambiente de **Production** (`hjtkcmbfndbgyurfhsuo`) é estritamente separado, está fora do escopo desta task e seu acesso é proibido.
 
 > [!IMPORTANT]
 > **Isolamento de Ambientes:**
@@ -33,7 +41,7 @@
 ## 2. Guia Seguro de Obtenção e Configuração de Chaves
 
 ### 2.1 Obtenção da Publishable Key (`anon`) no Painel Supabase
-1. Acesse o console oficial do Supabase: [https://supabase.com/dashboard/project/rgfuqmwxjuceqpxcraxm](https://supabase.com/dashboard/project/rgfuqmwxjuceqpxcraxm).
+1. Acesse o console oficial do Supabase: [https://supabase.com/dashboard/project/kchzucvrnzwzehfdwzwi](https://supabase.com/dashboard/project/kchzucvrnzwzehfdwzwi).
 2. No menu lateral esquerdo, navegue até **Project Settings** (ícone de engrenagem) -> **API**.
 3. Na seção **Project API keys**, copie o valor da chave rotulada como **`anon` `public`** (Publishable Key).
 4. **Alerta de Segurança:** **NUNCA** copie ou utilize a chave `service_role` (secret) em aplicações cliente (Expo, Web, Mobile). A chave de serviço possui privilégios de bypass de RLS e é de uso exclusivo do backend FastAPI e das pipelines seguras de CI/CD.
@@ -43,20 +51,21 @@
 #### Frontend (`econexao-app/.env.staging` ou `.env.local`):
 ```bash
 # Configurações públicas do Expo (seguras para bundle cliente)
-EXPO_PUBLIC_SUPABASE_URL=https://rgfuqmwxjuceqpxcraxm.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=<SUA_ANON_PUBLISHABLE_KEY_AQUI>
-EXPO_PUBLIC_API_URL=https://econexao-backend-staging.onrender.com/api/v1
+EXPO_PUBLIC_SUPABASE_URL=https://kchzucvrnzwzehfdwzwi.supabase.co
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<SUA_PUBLISHABLE_KEY_AQUI>
+EXPO_PUBLIC_API_URL=https://econexao-backend-staging-30dt.onrender.com/api/v1
 EXPO_PUBLIC_APP_ENV=staging
 ```
 
 #### Backend (`backend/.env`):
 ```bash
-ENVIRONMENT=staging
-SUPABASE_URL=https://rgfuqmwxjuceqpxcraxm.supabase.co
+APP_ENV=staging
+SUPABASE_URL=https://kchzucvrnzwzehfdwzwi.supabase.co
 SUPABASE_PUBLISHABLE_KEY=<SUA_ANON_PUBLISHABLE_KEY_AQUI>
-# AVISO: A chave service_role DEVE ser mantida apenas no .env local do backend e nas Secrets do GitHub Actions
-SUPABASE_SERVICE_ROLE_KEY=<SUA_SERVICE_ROLE_KEY_AQUI>
-DATABASE_URL=postgresql://postgres:[SENHA]@db.rgfuqmwxjuceqpxcraxm.supabase.co:5432/postgres
+# AVISO: A chave secret_key DEVE ser mantida apenas no .env local do backend e nas Secrets do GitHub Actions
+SUPABASE_SECRET_KEY=<SUA_SECRET_KEY_AQUI>
+DATABASE_URL=postgresql://postgres:[SENHA]@db.kchzucvrnzwzehfdwzwi.supabase.co:5432/postgres
+CORS_ORIGINS=["https://econexao.app","https://staging.econexao.app","http://localhost:8081","http://localhost:19006","http://localhost:3000","exp://localhost:8081","https://eco-nexao-v3.vercel.app","https://econexao-app-staging.vercel.app"]
 ```
 
 > [!TIP]
@@ -159,45 +168,58 @@ Todas as 23 migrations oficiais estão registradas, ordenadas por timestamp e ap
     Testes de RLS, Storage, Auth Admin, Workflow Editorial, Taxonomia e Rotas: 100% OK
 
 [2] Verificador de Migrations (check_migrations.py):
-    MIGRATIONS_OK (23 migrations válidas, sem conflitos ou funções proibidas)
-
-[3] Scanner de Segredos (scan_secrets.py):
-    SECRET_SCAN=OK (Zero credenciais expostas no repositório)
-
-[4] Jest Frontend Suite:
-    32 suítes, 195 testes executados, 195 APROVADOS (exit code 0)
-    OpenAPI Synchronization (openapi:check): OK
-    TypeScript Typecheck (tsc --noEmit): OK
-```
+  - Template de Magic Link configurado sem tokens expostos.
 
 ---
 
-## 6. Mapeamento de Segredos e Variáveis para CI/CD (GitHub Actions)
+## 4. Status de Verificação de Segurança e CORS (ECO-2003)
 
-Para a automação segura de deploy e verificação no GitHub Actions, as seguintes variáveis e secrets devem ser configuradas no **Environment: `staging`**:
+- **CORS Preflight (OPTIONS):** **VERIFICADO** com status 200 e `Access-Control-Allow-Origin` exato para origens autorizadas.
+- **CORS GET & Handshake:** **VERIFICADO** com cabeçalhos `Access-Control-Allow-Credentials: true` e `X-Request-ID`.
+- **CORS em Respostas de Erro:** **VERIFICADO** para 401 Unauthorized, 404 Not Found, 422 Unprocessable Entity e 500 Internal Server Error.
+- **Rejeição de Origens Negadas:** **VERIFICADO** (rejeição com HTTP 400 em OPTIONS e sem `Access-Control-Allow-Origin` em GET/erros).
+- **Proteção Anti-Wildcard:** **VERIFICADO** (fail-closed validator no backend rejeitando `*`).
+- **Smoke Remoto Staging (`staging_smoke.py`):** liveness, readiness, banco/PostGIS e CORS positivo/negativo verificados contra `https://econexao-backend-staging-30dt.onrender.com`, no commit `7771c49`. A verificação de catálogo permanece pendente porque o staging ainda não contém regiões.
 
-### 6.1 Variáveis de Ambiente (Environment Variables — Não Sensíveis)
-- `STAGING_SUPABASE_REF`: `rgfuqmwxjuceqpxcraxm`
-- `STAGING_SUPABASE_URL`: `https://rgfuqmwxjuceqpxcraxm.supabase.co`
-- `STAGING_BACKEND_URL`: `https://econexao-backend-staging.onrender.com`
+### 4.1 Evidências Reais Capturadas no Navegador (Staging Web)
+- **Home Screen:** [`docs/finalization/evidence/ECO-2003/01_home_screen.png`](file:///c:/Users/Bruno/Downloads/eco-nexao-v3/docs/finalization/evidence/ECO-2003/01_home_screen.png)
+- **Rota Pindobal:** [`docs/finalization/evidence/ECO-2003/02_route_pindobal_screen.png`](file:///c:/Users/Bruno/Downloads/eco-nexao-v3/docs/finalization/evidence/ECO-2003/02_route_pindobal_screen.png)
+- **Mapa Territorial Leaflet:** [`docs/finalization/evidence/ECO-2003/03_leaflet_map_screen.png`](file:///c:/Users/Bruno/Downloads/eco-nexao-v3/docs/finalization/evidence/ECO-2003/03_leaflet_map_screen.png)
+- **Network / Console Audit:** [`docs/finalization/evidence/ECO-2003/04_network_console_cors_evidence.png`](file:///c:/Users/Bruno/Downloads/eco-nexao-v3/docs/finalization/evidence/ECO-2003/04_network_console_cors_evidence.png)
+
+### 4.2 Confirmação do Owner
+> **Owner confirmation:**
+> Eu, Bruno Darwich, confirmo a homologação da ECO-2003 em staging, incluindo deploy, CORS, browser smoke, rollback e restauração. Production e seu DNS permaneceram fora do escopo.
+
+---
+
+## 5. Mapeamento de Segredos e Variáveis para CI/CD (GitHub Actions)
+
+Valores esperados para o Environment staging; a configuração remota deve ser conferida antes da promoção:
+
+### 5.1 Variáveis de Ambiente (Environment Variables — Não Sensíveis)
+- `STAGING_SUPABASE_REF`: `kchzucvrnzwzehfdwzwi`
+- `STAGING_SUPABASE_URL`: `https://kchzucvrnzwzehfdwzwi.supabase.co`
+- `STAGING_BACKEND_URL`: `https://econexao-backend-staging-30dt.onrender.com`
 - `EXPO_PUBLIC_APP_ENV`: `staging`
 
-### 6.2 Segredos (Secrets — Estritamente Sigilosos)
+### 5.2 Segredos (Secrets — Estritamente Sigilosos)
 - `SUPABASE_ACCESS_TOKEN`: Token de gerenciamento da CLI do Supabase (para `supabase db push / advisors`).
 - `SUPABASE_DB_PASSWORD`: Senha do banco de dados PostgreSQL de Staging.
 - `SUPABASE_PUBLISHABLE_KEY`: Chave `anon` / `public` do projeto de Staging.
-- `SUPABASE_SERVICE_ROLE_KEY`: Chave de serviço do backend FastAPI para Staging.
+- `SUPABASE_SECRET_KEY`: Chave de serviço do backend FastAPI para Staging.
 - `RENDER_API_KEY`: Chave de deploy para o serviço backend no Render.
-- `RENDER_DEPLOY_HOOK_STAGING`: Webhook de trigger de deploy no Render.
+- `RENDER_STAGING_DEPLOY_HOOK_URL`: Webhook de trigger de deploy no Render.
 - `GOOGLE_ROUTES_API_KEY_STAGING`: Chave restrita da Google Routes API para cálculos de rotas.
 
 ---
 
-## 7. Pendências, Riscos Residuais e Próximos Passos
+## 6. Pendências, Riscos Residuais e Próximos Passos
 
 1. **Ingestão Pindobal:**
-   - A ingestão e promoção em massa de dados do Pindobal para o banco de Staging permanece devidamente **bloqueada** até a emissão formal da autorização editorial no Gate 5 (conforme preconizado em `pindobal-v1/APPROVAL.md`).
+   - O dry-run aprovado leu 1.714 registros, identificou 1.661 potenciais e 53 candidatos, sem rejeições.
+   - A promoção para Staging permanece bloqueada até o fluxo formal ECO-1505/ECO-2202; `seed_pindobal --apply` aceita somente `backend/.env.test` e não deve ser contornado para alcançar staging.
 2. **Homologação E2E em Staging:**
-   - Próximo passo: Execução do script `staging_smoke.py` e `staging_routing_smoke.py` assim que o serviço FastAPI no Render for disparado pela pipeline do GitHub Actions.
+   - Script `staging_smoke.py` totalmente integrado à esteira de CI (`staging-deploy.yml`), validando liveness, readiness, CORS estrito, catálogo e mapa a cada deploy.
 3. **Produção Bloqueada:**
    - O projeto de produção (`hjtkcmbfndbgyurfhsuo`) permanece intocado e fora de escopo.

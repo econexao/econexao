@@ -10,6 +10,8 @@ export type FlexiblePinItem =
       segment?: string;
       category_slug?: string;
       category_label?: string;
+      type_slug?: string;
+      type_label?: string;
       color?: string;
       icon?: string;
       actor_id?: string;
@@ -25,6 +27,7 @@ export interface MapCoordinate {
 
 export type GeoBounds = MapBounds;
 export type MapViewMode = 'route' | 'city';
+export type MapRenderableItem = FlexiblePinItem;
 
 export interface MapAdapterProps {
   /** @deprecated Real adapters use map tiles rather than a raster source. */
@@ -44,4 +47,21 @@ export interface MapAdapterProps {
   selectedCoordinate?: MapCoordinate | null;
   onSelectCoordinate?: (coord: MapCoordinate) => void;
   selectionPinLabel?: string;
+  userLocation?: MapCoordinate | null;
+  userLocationLabel?: string;
+  pinCardVariant?: 'full' | 'simple' | 'none';
+  actorSummaries?: Array<{
+    id: string;
+    name?: string;
+    google_rating?: number | null;
+    rating_count?: number | null;
+    verification_status?: string | null;
+    address?: string | null;
+    cover_image_url?: string | null;
+    cover_media?: {
+      url?: string | null;
+      derivatives?: { card?: string | null; thumbnail?: string | null } | null;
+      alt_text?: string | null;
+    } | null;
+  }>;
 }

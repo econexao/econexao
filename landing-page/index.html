@@ -15,6 +15,7 @@
       content="Rotas, praias e negócios locais em um só lugar."
     />
     <meta property="og:image" content="assets/images/alter3.png" />
+    <meta name="econexao-api-base-url" content="https://econexao-backend-production.onrender.com" />
     <link rel="icon" href="assets/brand/logo-econexao-transparent.png" type="image/png" />
     <title>ECOnexão — Descubra destinos. Viva experiências.</title>
 
@@ -285,6 +286,33 @@
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
+      }
+
+      .nav__play {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.35rem;
+        height: 2.35rem;
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        border-radius: 50%;
+        color: var(--white);
+        background: rgba(255, 255, 255, 0.12);
+        font-size: 0.85rem;
+        line-height: 1;
+        backdrop-filter: blur(8px);
+        transition:
+          transform 180ms ease,
+          background-color 180ms ease,
+          border-color 180ms ease,
+          color 180ms ease;
+      }
+
+      .nav__play:hover {
+        color: var(--green-950);
+        background: var(--gold);
+        border-color: var(--gold);
+        transform: scale(1.08);
       }
 
       .menu-button {
@@ -943,6 +971,18 @@
         display: block;
       }
 
+      .form-status.is-error {
+        border-color: rgba(240, 140, 140, 0.45);
+        color: #ffd4d4;
+        background: rgba(180, 40, 40, 0.15);
+      }
+
+      .button:disabled,
+      .signup-form input:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+      }
+
       /* Footer */
       .site-footer {
         color: rgba(255, 255, 255, 0.7);
@@ -1058,6 +1098,28 @@
         .nav__cta {
           margin-top: 0.3rem;
           text-align: center;
+        }
+
+        .nav__play {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 0.4rem;
+          padding: 0.85rem 1rem;
+          width: 100%;
+          height: auto;
+          min-height: 2.9rem;
+          border-radius: 999px;
+          border: 1px solid rgba(227, 189, 105, 0.45);
+          background: rgba(227, 189, 105, 0.16);
+          color: var(--gold);
+          font-size: 1.15rem;
+          font-weight: 700;
+        }
+
+        .nav__play:hover {
+          background: var(--gold);
+          color: var(--green-950);
         }
 
         .hero {
@@ -1259,6 +1321,7 @@
           <a href="#destinos">Destinos</a>
           <a href="#negocios">Negócios locais</a>
           <a class="nav__cta" href="#informativo">Receber informativo</a>
+          <a class="nav__play" href="Play" aria-label="Ver apresentação de slides do ECOnexão" title="Apresentação de slides"><span aria-hidden="true">▶</span></a>
         </div>
       </nav>
     </header>
@@ -1290,8 +1353,8 @@
               <img
                 src="assets/screens/app-home.png"
                 alt="Tela inicial do aplicativo ECOnexão com destinos e rotas da Amazônia"
-                width="575"
-                height="1600"
+                width="391"
+                height="849"
                 fetchpriority="high"
               />
             </div>
@@ -1529,6 +1592,7 @@
       const menuLinks = document.querySelectorAll(".nav__links a");
       const form = document.querySelector("#signup-form");
       const emailInput = document.querySelector("#email");
+      const submitButton = form ? form.querySelector("button[type='submit']") : null;
       const formStatus = document.querySelector("#form-status");
 
       function closeMenu() {
@@ -1554,30 +1618,132 @@
         if (window.innerWidth > 760) closeMenu();
       });
 
-      form.addEventListener("submit", (event) => {
-        event.preventDefault();
-        formStatus.classList.remove("is-visible");
+      function getApiBaseUrl() {
+        if (window.ECONEXAO_API_BASE_URL && typeof window.ECONEXAO_API_BASE_URL === "string") {
+          return window.ECONEXAO_API_BASE_URL.replace(/\/+$/, "");
+        }
+        const metaApi = document.querySelector('meta[name="econexao-api-base-url"]');
+        if (metaApi && metaApi.content && metaApi.content.trim()) {
+          return metaApi.content.trim().replace(/\/+$/, "");
+        }
+        const hostname = window.location.hostname;
+        if (hostname === "localhost" || hostname === "127.0.0.1") {
+          return "http://localhost:8000";
+        }
+        if (
+          hostname === "www.econexaoturismo.com" ||
+          hostname === "econexaoturismo.com" ||
+          hostname === "eco-nexao-v3.vercel.app" ||
+          hostname.includes("staging") ||
+          hostname.includes("vercel.app")
+        ) {
+          return "https://econexao-backend-production.onrender.com";
+        }
+        return "";
+      }
 
-        if (!emailInput.validity.valid) {
+      function setStatus(message, isError = false) {
+        formStatus.textContent = message;
+        formStatus.classList.remove("is-error");
+        if (isError) {
+          formStatus.classList.add("is-error");
+        }
+        formStatus.classList.add("is-visible");
+      }
+
+      function clearStatus() {
+        formStatus.classList.remove("is-visible", "is-error");
+        formStatus.textContent = "";
+        emailInput.removeAttribute("aria-invalid");
+      }
+
+      function setLoading(isLoading) {
+        if (!submitButton) return;
+        if (isLoading) {
+          submitButton.disabled = true;
+          emailInput.disabled = true;
+          submitButton.setAttribute("aria-busy", "true");
+          submitButton.dataset.originalHtml = submitButton.innerHTML;
+          submitButton.textContent = "Enviando...";
+        } else {
+          submitButton.disabled = false;
+          emailInput.disabled = false;
+          submitButton.removeAttribute("aria-busy");
+          if (submitButton.dataset.originalHtml) {
+            submitButton.innerHTML = submitButton.dataset.originalHtml;
+          }
+        }
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        clearStatus();
+
+        const rawEmail = emailInput.value || "";
+        const trimmedEmail = rawEmail.trim();
+
+        if (!trimmedEmail || !emailInput.validity.valid) {
           emailInput.setAttribute("aria-invalid", "true");
-          formStatus.textContent = "Digite um e-mail válido para continuar.";
-          formStatus.classList.add("is-visible");
+          setStatus("Digite um e-mail válido para continuar.", true);
           emailInput.focus();
           return;
         }
 
-        emailInput.removeAttribute("aria-invalid");
-        formStatus.textContent = "Tudo certo! Seu interesse foi registrado.";
-        formStatus.classList.add("is-visible");
-        form.reset();
+        const apiBaseUrl = getApiBaseUrl();
+        if (!apiBaseUrl) {
+          setStatus("Configuração de API indisponível no momento. Tente novamente mais tarde.", true);
+          return;
+        }
+
+        setLoading(true);
+
+        const endpoint = `${apiBaseUrl}/api/v1/newsletter/subscribe`;
+
+        try {
+          const controller = new AbortController();
+          // Render Free may take up to 50s to wake from inactivity.
+          const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+          const response = await fetch(endpoint, {
+
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: trimmedEmail,
+              source: "landing_page",
+            }),
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+
+          const payload = await response.json().catch(() => null);
+
+          if (response.ok && payload && payload.data) {
+            setStatus(payload.data.message || "Tudo certo! Seu interesse foi registrado.", false);
+            form.reset();
+          } else if (response.status === 422) {
+            emailInput.setAttribute("aria-invalid", "true");
+            setStatus("Digite um e-mail válido para continuar.", true);
+            emailInput.focus();
+          } else if (response.status === 429) {
+            setStatus("Muitas tentativas em pouco tempo. Aguarde um momento e tente novamente.", true);
+          } else {
+            setStatus("Não foi possível registrar seu e-mail no momento. Tente novamente em instantes.", true);
+          }
+        } catch (err) {
+          setStatus("Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.", true);
+        } finally {
+          setLoading(false);
+        }
       });
 
       emailInput.addEventListener("input", () => {
-        emailInput.removeAttribute("aria-invalid");
-        formStatus.classList.remove("is-visible");
+        clearStatus();
       });
 
-      document.querySelector("#current-year").textContent = new Date().getFullYear();
     </script>
   </body>
 </html>

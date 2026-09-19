@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -15,13 +15,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { AppHeader } from '../../src/components/common/AppHeader';
 import { Badge } from '../../src/components/common/Badge';
 import { EmptyStateView, ErrorStateView, LoadingView } from '../../src/components/common/UIStateViews';
+import { GooglePlacePhoto } from '../../src/components/common/GooglePlacePhoto';
 import { useActorDetailQuery } from '../../src/hooks/queries';
 import { useMyFavoriteActorsQuery } from '../../src/hooks/queries';
 import { useOptimisticFavoriteActor } from '../../src/hooks/useOptimisticFavoriteActor';
 import { useAuth } from '../../src/hooks/useAuth';
 import { theme } from '../../src/theme/theme';
 import { makeAccessibleButton } from '../../src/utils/accessibility';
+import { useReducedMotion } from '../../src/hooks/useReducedMotion';
 import type { ActorSummary } from '../../src/api/types';
+import { MotionBlock } from '../../src/components/common/MotionBlock';
 
 export default function ActorDetailScreen() {
   const router = useRouter();
@@ -31,6 +34,12 @@ export default function ActorDetailScreen() {
   }>();
 
   const actorQuery = useActorDetailQuery(actorId);
+  const galleryRef = useRef<ScrollView>(null);
+  const [galleryScrollX, setGalleryScrollX] = useState(0);
+  const [galleryContentWidth, setGalleryContentWidth] = useState(0);
+  const [galleryContainerWidth, setGalleryContainerWidth] = useState(0);
+  const [loadedGalleryImages, setLoadedGalleryImages] = useState<Record<string, boolean>>({});
+  const reducedMotion = useReducedMotion();
   const { user } = useAuth();
   const favoriteActorsQuery = useMyFavoriteActorsQuery(user?.id);
   const { toggleFavorite, isPending: isFavPending } = useOptimisticFavoriteActor();
@@ -82,10 +91,23 @@ export default function ActorDetailScreen() {
     openExternalLink(url, 'mapa');
   };
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/(routes)');
+    }
+  };
+
   if (actorQuery.isPending) {
     return (
       <View style={styles.container}>
-        <AppHeader showBack onBackPress={() => router.back()} title="Detalhe do Ator" />
+        <AppHeader
+          showBack
+          fallbackHref="/(tabs)/(routes)"
+          onBackPress={handleBack}
+          title="Detalhe do Ator"
+        />
         <LoadingView message="Carregando detalhes do estabelecimento..." />
       </View>
     );
@@ -94,7 +116,12 @@ export default function ActorDetailScreen() {
   if (actorQuery.isError || !actor) {
     return (
       <View style={styles.container}>
-        <AppHeader showBack onBackPress={() => router.back()} title="Detalhe do Ator" />
+        <AppHeader
+          showBack
+          fallbackHref="/(tabs)/(routes)"
+          onBackPress={handleBack}
+          title="Detalhe do Ator"
+        />
         <ErrorStateView
           title="Ator não encontrado"
           message="Não foi possível carregar as informações deste estabelecimento."
@@ -105,14 +132,16 @@ export default function ActorDetailScreen() {
   }
 
   const greenSeal = actor.green_badge_status === 'verified';
-  const categoryLabel = actor.category.label;
-  const isFavorite = favoriteActorsQuery.data?.some((favorite) => favorite.id === actor.id) ?? false;
+  const categoryLabel = actor.category?.label || (actor as any).category_label || (actor as any).category_slug || 'Geral';
+  const categorySlug = actor.category?.slug || (actor as any).category_slug || 'outros';
+  const isFavorite = actor.is_favorite
+    || (favoriteActorsQuery.data?.some((favorite) => favorite.id === actor.id) ?? false);
   const actorSummary: ActorSummary = {
     id: actor.id,
     slug: actor.slug,
     name: actor.name,
-    category_slug: actor.category.slug,
-    category_label: actor.category.label,
+    category_slug: categorySlug,
+    category_label: categoryLabel,
     address: actor.address,
     latitude: actor.latitude,
     longitude: actor.longitude,
@@ -121,14 +150,21 @@ export default function ActorDetailScreen() {
     google_rating: actor.google_rating,
     cover_image_url: actor.cover_image_url,
     cover_media: actor.cover_media,
+    is_favorite: isFavorite,
   };
   const coverImageUrl = actor.cover_media?.url ?? actor.cover_image_url;
 
   return (
     <View style={styles.container}>
-      <AppHeader showBack onBackPress={() => router.back()} title={actor.name} />
+      <AppHeader
+        showBack
+        fallbackHref="/(tabs)/(routes)"
+        onBackPress={handleBack}
+        title={actor.name}
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <MotionBlock staggerIndex={0}>
         {/* Cover / Image Banner */}
         <View style={styles.bannerContainer}>
           {coverImageUrl ? (
@@ -138,6 +174,8 @@ export default function ActorDetailScreen() {
               resizeMode="cover"
               accessibilityLabel={actor.cover_media?.alt_text ?? `Imagem de ${actor.name}`}
             />
+          ) : actor.id ? (
+            <GooglePlacePhoto actorId={actor.id} alt={`Foto de ${actor.name}`} />
           ) : (
             <View style={styles.bannerPlaceholder} accessibilityLabel="Imagem não disponível">
               <Ionicons name="storefront-outline" size={48} color={theme.colors.brandSage} />
@@ -147,7 +185,7 @@ export default function ActorDetailScreen() {
             <View style={styles.badgeRow}>
               {greenSeal && <Badge type="greenSeal" label="Selo Verde Consciente" />}
               {actor.verification_status === 'verified' && (
-                <Badge type="verified" label="Verificado SEMTUR" />
+                <Badge type="semturInventory" label="Inventário SEMTUR" />
               )}
             </View>
 
@@ -172,7 +210,18 @@ export default function ActorDetailScreen() {
 
         {/* Main Info */}
         <View style={styles.cardSection}>
-          <Text style={styles.categoryTag}>{categoryLabel.toUpperCase()}</Text>
+          <View style={styles.categoryRatingRow}>
+            <Text style={styles.categoryTag}>{categoryLabel.toUpperCase()}</Text>
+            {actor.google_rating != null && (
+              <View style={styles.ratingBadge}>
+                <Ionicons name="star" size={14} color={theme.colors.brandSun} />
+                <Text style={styles.ratingText}>
+                  {actor.google_rating.toFixed(1)} Google
+                  {actor.google_review_count ? ` (${actor.google_review_count})` : ''}
+                </Text>
+              </View>
+            )}
+          </View>
           <Text style={styles.title}>{actor.name}</Text>
 
           <View style={styles.locationRow}>
@@ -187,6 +236,79 @@ export default function ActorDetailScreen() {
             <Text style={styles.description}>{actor.description}</Text>
           )}
         </View>
+
+        {/* SEMTUR Institutional Provenance Note (ADR 0014 §2.6) */}
+        {actor.verification_status === 'verified' && (
+          <View
+            style={styles.semturSection}
+            accessible
+            accessibilityRole="text"
+            accessibilityLabel="Origem dos dados: Inventário SEMTUR"
+          >
+            <View style={styles.semturHeader}>
+              <Ionicons name="bookmark-outline" size={16} color="#334155" />
+              <Text style={styles.semturTitle}>Inventário SEMTUR</Text>
+            </View>
+            <Text style={styles.semturDescription}>
+              Este estabelecimento consta no Inventário Turístico divulgado pela Secretaria Municipal de Turismo de Santarém (SEMTUR). As informações refletem o registro público catalogado e estão sujeitas a alterações pelos responsáveis.
+            </Text>
+          </View>
+        )}
+
+        {/* Media Gallery */}
+        {Boolean(actor.gallery && actor.gallery.length > 0) && (
+          <View style={styles.cardSection}>
+            <View style={styles.galleryHeader}>
+              <Text style={styles.sectionTitle}>Galeria de Fotos</Text>
+              {(actor.gallery?.length ?? 0) > 1 && (
+                <View style={styles.galleryControls}>
+                  <TouchableOpacity
+                    disabled={galleryScrollX <= 4}
+                    onPress={() => galleryRef.current?.scrollTo({ x: Math.max(0, galleryScrollX - 220), animated: !reducedMotion })}
+                    style={[styles.galleryControl, galleryScrollX <= 4 && styles.galleryControlDisabled]}
+                    {...makeAccessibleButton('Foto anterior do ator', 'Mostra as fotos anteriores', galleryScrollX <= 4)}
+                  ><Ionicons name="chevron-back" size={18} color={galleryScrollX > 4 ? theme.colors.brandDeep : theme.colors.outlineVariant} /></TouchableOpacity>
+                  <TouchableOpacity
+                    disabled={galleryScrollX >= Math.max(0, galleryContentWidth - galleryContainerWidth - 4)}
+                    onPress={() => galleryRef.current?.scrollTo({ x: Math.min(Math.max(0, galleryContentWidth - galleryContainerWidth), galleryScrollX + 220), animated: !reducedMotion })}
+                    style={[styles.galleryControl, galleryScrollX >= Math.max(0, galleryContentWidth - galleryContainerWidth - 4) && styles.galleryControlDisabled]}
+                    {...makeAccessibleButton('Próxima foto do ator', 'Mostra as próximas fotos', galleryScrollX >= Math.max(0, galleryContentWidth - galleryContainerWidth - 4))}
+                  ><Ionicons name="chevron-forward" size={18} color={galleryScrollX < galleryContentWidth - galleryContainerWidth - 4 ? theme.colors.brandDeep : theme.colors.outlineVariant} /></TouchableOpacity>
+                </View>
+              )}
+            </View>
+            <ScrollView
+              ref={galleryRef}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.galleryScroller}
+              onScroll={(event) => setGalleryScrollX(event.nativeEvent.contentOffset.x)}
+              onLayout={(event) => setGalleryContainerWidth(event.nativeEvent.layout.width)}
+              onContentSizeChange={(width) => setGalleryContentWidth(width)}
+              scrollEventThrottle={16}
+              accessibilityLabel={`Galeria com ${actor.gallery!.length} fotos de ${actor.name}`}
+            >
+              {actor.gallery!.map((item, index) => (
+                <View key={item.url || index} style={styles.galleryItem}>
+                  <Image
+                    source={{ uri: item.derivatives?.card ?? item.url }}
+                    resizeMode="cover"
+                    onLoad={() => setLoadedGalleryImages((current) => ({ ...current, [item.url || String(index)]: true }))}
+                    onError={() => setLoadedGalleryImages((current) => ({ ...current, [item.url || String(index)]: true }))}
+                    style={[styles.galleryImage, loadedGalleryImages[item.url || String(index)] && styles.galleryImageLoaded]}
+                    accessible
+                    accessibilityLabel={item.alt_text || `Foto ${index + 1} de ${actor.name}`}
+                  />
+                  {item.credit ? (
+                    <Text style={styles.galleryCredit} numberOfLines={1}>
+                      Foto: {item.credit}
+                    </Text>
+                  ) : null}
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
 
         {/* Action Buttons / Contacts (ECO-1005) */}
         <View style={styles.cardSection}>
@@ -235,11 +357,11 @@ export default function ActorDetailScreen() {
               <TouchableOpacity
                 style={[styles.contactChip, styles.mapChip]}
                 onPress={handleOpenMap}
-                {...makeAccessibleButton('Ver no mapa externo')}
+                {...makeAccessibleButton('Abrir no Google Maps', 'Ver localização no aplicativo do Google Maps')}
               >
                 <Ionicons name="map-outline" size={18} color={theme.colors.surfaceWhite} />
                 <Text style={[styles.contactChipText, styles.mapChipText]} numberOfLines={1}>
-                  Abrir no Mapa
+                  Abrir no Google Maps
                 </Text>
               </TouchableOpacity>
             )}
@@ -247,8 +369,9 @@ export default function ActorDetailScreen() {
         </View>
 
         {actor.cover_media?.credit ? (
-          <Text style={styles.mediaCredit}>Crédito da imagem: {actor.cover_media.credit}</Text>
+          <Text style={styles.mediaCredit}>Crédito da imagem principal: {actor.cover_media.credit}</Text>
         ) : null}
+        </MotionBlock>
       </ScrollView>
     </View>
   );
@@ -311,12 +434,32 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(117, 155, 113, 0.15)',
     ...theme.shadows.card,
   },
+  categoryRatingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  ratingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#FEF3C7',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: theme.radii.full,
+  },
+  ratingText: {
+    ...theme.typography.labelSm,
+    color: '#92400E',
+    fontWeight: '700',
+    fontSize: 12,
+  },
   categoryTag: {
     ...theme.typography.labelSm,
     color: theme.colors.brandForest,
     fontWeight: '700',
     letterSpacing: 0.5,
-    marginBottom: 4,
   },
   title: {
     ...theme.typography.headlineMd,
@@ -338,6 +481,61 @@ const styles = StyleSheet.create({
     ...theme.typography.bodyMd,
     color: theme.colors.onSurface,
     lineHeight: 22,
+  },
+  semturSection: {
+    backgroundColor: '#F8FAFC',
+    marginTop: 12,
+    marginHorizontal: theme.spacing.marginMobile,
+    padding: 14,
+    borderRadius: theme.radii.xl,
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    gap: 6,
+  },
+  semturHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  semturTitle: {
+    ...theme.typography.labelMd,
+    color: '#334155',
+    fontWeight: '700',
+  },
+  semturDescription: {
+    ...theme.typography.bodySm,
+    color: '#475569',
+    lineHeight: 18,
+    fontSize: 12,
+  },
+  galleryHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  galleryControls: { flexDirection: 'row', gap: 6 },
+  galleryControl: { width: 36, height: 36, borderRadius: theme.radii.full, borderWidth: 1, borderColor: theme.colors.outlineVariant, backgroundColor: theme.colors.surfaceWhite, alignItems: 'center', justifyContent: 'center' },
+  galleryControlDisabled: { opacity: 0.4 },
+  galleryScroller: {
+    paddingVertical: 6,
+    gap: 12,
+  },
+  galleryItem: {
+    width: 220,
+    backgroundColor: theme.colors.surfaceContainerLow,
+    borderRadius: theme.radii.lg,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(117, 155, 113, 0.15)',
+  },
+  galleryImage: {
+    width: '100%',
+    height: 140,
+    opacity: 0.35,
+  },
+  galleryImageLoaded: { opacity: 1 },
+  galleryCredit: {
+    ...theme.typography.labelSm,
+    color: theme.colors.onSurfaceVariant,
+    fontSize: 11,
+    padding: 6,
+    backgroundColor: theme.colors.surfaceWhite,
   },
   sectionTitle: {
     ...theme.typography.headlineSm,

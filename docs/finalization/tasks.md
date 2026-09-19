@@ -1,9 +1,18 @@
-# Backlog ativo de finalização
+# Registro histórico de tasks de finalização
+
+Status: `SUPERSEDED` como backlog ativo. A fonte ativa local de estado e trabalho
+aberto é [`../project_status.md`](../project_status.md). Este arquivo preserva os
+aceites, dependências e evidências históricas para reconciliação.
 
 Convenções: `P0/P1/P2`; tamanho `S/M/L`; estados conforme `README.md`. Todas as
 tasks exigem `git status`, mini-brief, preservação de alterações alheias, nenhum
 segredo em output e handoff de `ai_coordination.md`. Comandos Supabase devem ser
 descobertos com `supabase --help`; production nunca é usada sem aprovação.
+
+> **Referência histórica, sem fila ativa.** Todas as tarefas, inclusive concluídas,
+> alteradas e adiadas, são acompanhadas em [project_status.md](../project_status.md).
+> Os aceites abaixo ajudam a execução, mas seus estados/dependências antigos não
+> substituem o documento único nem as decisões atuais da versão Web.
 
 ## Marco 13 — Baseline e decisões
 
@@ -858,6 +867,7 @@ descobertos com `supabase --help`; production nunca é usada sem aprovação.
 
 - **Resultado / prioridade / tamanho / executor:** public staging endpoint; P0; M;
   Codex + owner.
+- **Status:** `VERIFIED`
 - **Dependências/ADRs:** ECO-2002, ECO-1306.
 - **Contexto/leitura:** provider/domain decision, CORS/config/deep links.
 - **Arquivos:** hosting/DNS docs/config/CORS tests; no production DNS.
@@ -869,13 +879,23 @@ descobertos com `supabase --help`; production nunca é usada sem aprovação.
   works, health/build version visible; browser smoke and curl/Invoke-WebRequest.
 - **Evidência/riscos/rollback/DoD:** URLs/cert report; DNS risk; rollback record/config;
   DoD with owner confirmation.
+- **Evidências reais capturadas em staging:**
+  - Home Desktop (Chromium 1280x800): `docs/finalization/evidence/ECO-2003/01_home_screen_desktop_chromium.png`
+  - Home Mobile (WebKit real 390x844): `docs/finalization/evidence/ECO-2003/02_home_screen_mobile_webkit.png`
+  - Home: `docs/finalization/evidence/ECO-2003/01_home_screen.png`
+  - Rota Pindobal: `docs/finalization/evidence/ECO-2003/02_route_pindobal_screen.png`
+  - Mapa Leaflet: `docs/finalization/evidence/ECO-2003/03_leaflet_map_screen.png`
+  - Network/Console: `docs/finalization/evidence/ECO-2003/04_network_console_cors_evidence.png`
+- **Confirmação do Owner:**
+  > Owner confirmation:
+  > Eu, Bruno Darwich, confirmo a homologação da ECO-2003 em staging, incluindo deploy, CORS, browser smoke, rollback e restauração. Production e seu DNS permaneceram fora do escopo.
 - **Prompt de execução:**
   ```text
   Execute ECO-2003 only for staging with approved domains. Configure HTTPS, exact
   CORS, headers and web artifact; never use wildcard or expose backend secrets.
   Prove allowed/denied origins and rollback. Do not touch production DNS.
   ```
-- **Entrega:** Gate 4 partial.
+- **Entrega:** Gate 4 partial (`VERIFIED`).
 
 ### ECO-2004 — Observability, rate limits, runbooks and cost guards
 
@@ -899,6 +919,42 @@ descobertos com `supabase --help`; production nunca é usada sem aprovação.
   Deliver usable runbooks and rollback; do not configure production yet.
   ```
 - **Entrega:** completes Gate 4.
+
+### ECO-2005 — Promoção segura da fatia Pindobal para staging
+
+- **Resultado / prioridade / tamanho / executor:** runner local seguro e governança de promoção para staging; P0; M; Antigravity.
+- **Status:** `APPROVED FOR LOCAL IMPLEMENTATION ONLY`
+- **Dependências / ADRs:** ECO-1505 (pacote imutável Pindobal v1), ECO-2002/2003 (staging baseline homologado); ADRs 0002, 0005, 0006, 0014.
+- **Contexto e leitura:** `docs/finalization/artifacts/pindobal-v1/*`, `docs/data/pindobal_data_contract.md`, `docs/finalization/artifacts/staging_technical_sheet.md`, `docs/runbooks/staging_promotion_runbook.md`.
+- **Arquivos esperados:** `backend/app/ingestion/staging_promotion_runner.py`, `backend/app/ingestion/pindobal_repository.py`, `backend/tests/test_staging_promotion_runner.py`, `docs/finalization/artifacts/staging_migrations_manifest.json`, `docs/runbooks/staging_promotion_runbook.md`.
+- **Permitido / proibido:**
+  - Permitido: preflight read-only offline, target guard fail-closed restrito ao project ref de staging `kchzucvrnzwzehfdwzwi`, verificação offline de hashes do pacote Pindobal, dry-run local com `teste-rota` e assert das contagens canônicas (1.714 lidos, 1.661 criáveis, 53 candidatos no dry-run, 0 rejeições, 0 Place IDs inventados; métricas do reconciliador registradas separadamente: 89 matches, 57 candidatos fuzzy), conferência local da integridade das 25 migrations SQL contra o manifesto canônico único extraído de `origin/staging` (verificação remota de drift e Supabase advisors diferida para o preflight da Fase 2), exclusão mútua com `pg_try_advisory_xact_lock` sob arquitetura de Unit of Work com transação única proprietária e helper contra uso acidental, separação de persistência atômica no repositório (`persist_in_transaction`), e confirmação humana dupla.
+  - Proibido: qualquer escrita remota ou apply nesta fase local; qualquer acesso, conexão, menção ou caminho para targets fora da allowlist unária de staging (`kchzucvrnzwzehfdwzwi`), sendo produção reservada estritamente à ECO-2202 no Marco 22; execução de `seed_pindobal --apply` (cuja proteção de test permanece intocada); chamadas externas a Google Places/GBP/OSRM; e inventar Place IDs.
+- **Passos:**
+  1. Implementar target guard fail-closed restrito exclusivamente a `kchzucvrnzwzehfdwzwi`.
+  2. Implementar preflight offline com verificação de manifesto (9 arquivos) e dry-run validando contagens canônicas exatas.
+  3. Implementar verificação local determinística de integridade das 25 migrations existentes contra a fonte única normativa `staging_migrations_manifest.json` com validação estrutural; prever checagem remota de drift e Supabase advisors como etapa read-only pré-escrita da Fase 2.
+  4. Implementar protocolo de dupla confirmação humana (`kchzucvrnzwzehfdwzwi` + `[y/N]`), garantindo que nenhuma conexão de escrita seja aberta antes do GO.
+  5. Implementar controle de concorrência com `pg_try_advisory_xact_lock` sob arquitetura de Unit of Work com transação única proprietária, refatorando `PindobalPersistenceRepository` para separar o boundary transacional de `persist_in_transaction`.
+  6. Estabelecer que o Gate 4 não deve ser declarado concluído apenas pela carga de dados; a promoção remota (Fase 2) exige novo GO formal e explícito do Human Owner.
+- **Aceite / testes / comandos:**
+  - `python -m pytest tests/test_staging_promotion_runner.py` (suíte de testes unitários passando).
+  - `python -m app.ingestion.staging_promotion_runner --snapshot-dir "C:\Users\Bruno\Downloads\teste-rota" --non-interactive` (status `phase1_success`, `remote_write_performed: false`).
+  - Scanner de segredos limpo (`python scripts/scan_secrets.py` -> `SECRET_SCAN=OK`).
+  - Verificação de que produção e `seed_pindobal.py` permanecem blindados.
+- **Evidência / riscos / rollback / DoD:**
+  - Relatório JSON de preflight redigido e assinado;
+  - Risco de lock bloqueante mitigado com `pg_try_advisory_xact_lock` não bloqueante;
+  - Rollback de schema aponta exclusivamente para PITR/snapshot comprovado do Supabase staging; rollback de dados é puramente lógico (`status = draft`/`unpublished`), sem deleção cega;
+  - DoD: Runner validado localmente, test suite verde, zero mutação remota, documentação sincronizada.
+- **Prompt de execução:**
+  ```text
+  Execute exclusivamente a Fase 1 da ECO-2005. Desenvolva e teste localmente o runner
+  seguro de promoção Pindobal para staging com target guard kchzucvrnzwzehfdwzwi,
+  confirmação humana dupla, pg_try_advisory_xact_lock e assert das contagens canônicas.
+  Não realize nenhuma escrita remota, não toque em production e não execute seed_pindobal --apply.
+  ```
+- **Entrega:** habilita Fase 2 (carga de staging sob GO explícito do Owner) e desbloqueia pré-condições de dados para Gate 3 e ECO-2101.
 
 ## Marco 21 — QA, segurança, conformidade e homologação
 

@@ -63,8 +63,10 @@ SCHEMA_NAMES = {
     "AdminUploadReferenceSchema": "AdminUploadReferenceSchema",
     "AdminContextDataSchema": "AdminContextDataSchema",
     "AdminContextEnvelope": "AdminContextEnvelope",
+    "NewsletterSubscribeRequest": "NewsletterSubscribeRequest",
+    "NewsletterSubscribeData": "NewsletterSubscribeData",
+    "NewsletterSubscribeEnvelope": "NewsletterSubscribeEnvelope",
 }
-
 
 
 def _parameters(operation: dict[str, Any]) -> set[tuple[str, str, bool]]:
@@ -207,9 +209,9 @@ def test_route_map_contract_uses_canonical_layers_bounds_and_error_envelopes() -
         canonical_schema = canonical_operation["responses"][status_code]["content"][
             "application/json"
         ]["schema"]
-        runtime_schema = runtime_operation["responses"][status_code]["content"][
-            "application/json"
-        ]["schema"]
+        runtime_schema = runtime_operation["responses"][status_code]["content"]["application/json"][
+            "schema"
+        ]
         assert _ref_name(canonical_schema) == "ErrorResponse"
         assert _ref_name(runtime_schema) == "ErrorResponse"
 
@@ -232,9 +234,7 @@ def test_routing_preview_contract_is_drive_only_with_typed_errors() -> None:
         operation = document["paths"][path]["post"]
         assert expected_errors.issubset(operation["responses"])
         for status_code in expected_errors:
-            schema = operation["responses"][status_code]["content"]["application/json"][
-                "schema"
-            ]
+            schema = operation["responses"][status_code]["content"]["application/json"]["schema"]
             assert _ref_name(schema) == "ErrorResponse"
         travel_mode = document["components"]["schemas"]["RoutePreviewRequest"]["properties"][
             "travel_mode"

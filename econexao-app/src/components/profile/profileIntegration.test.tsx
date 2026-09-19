@@ -254,18 +254,27 @@ describe('Marco 11 — Integration Tests', () => {
     expect(tree.toJSON()).toBeTruthy();
   });
 
-  it('TripsHistoryScreen renders trip history items', async () => {
+  it('TripsHistoryScreen renders the Stitch history layout and filters trips by status', async () => {
     (useMyTripsQuery as jest.Mock).mockReturnValue({
       data: [
         {
           id: 'trip-1',
+          route_id: 'route-1',
           route_title: 'Trilha do Jamaraquá',
           status: 'completed',
           created_at: '2026-08-10T10:00:00Z',
         },
+        {
+          id: 'trip-2',
+          route_id: 'route-2',
+          route_title: 'Pindobal',
+          status: 'active',
+          created_at: '2026-09-14T10:00:00Z',
+        },
       ],
       isPending: false,
       isError: false,
+      refetch: jest.fn(),
     });
 
     let tree!: renderer.ReactTestRenderer;
@@ -273,7 +282,18 @@ describe('Marco 11 — Integration Tests', () => {
       tree = renderer.create(<TripsHistoryScreen />);
     });
 
-    expect(tree.toJSON()).toBeTruthy();
+    expect(JSON.stringify(tree.toJSON())).toContain('Trilha do Jamaraquá');
+    expect(JSON.stringify(tree.toJSON())).toContain('Pindobal');
+    expect(tree.root.findByProps({ accessibilityLabel: 'Todas, 2' }).props.accessibilityState).toEqual({ selected: true });
+
+    await act(async () => {
+      tree.root.findByProps({ accessibilityLabel: 'Concluídas, 1' }).props.onPress();
+    });
+
+    const completedView = JSON.stringify(tree.toJSON());
+    expect(completedView).toContain('Trilha do Jamaraquá');
+    expect(completedView).not.toContain('Pindobal');
+    expect(tree.root.findByProps({ accessibilityLabel: 'Concluídas, 1' }).props.accessibilityState).toEqual({ selected: true });
   });
 
   it('AccessibilityPreferencesScreen renders preference options', async () => {
@@ -289,6 +309,74 @@ describe('Marco 11 — Integration Tests', () => {
     });
 
     expect(tree.toJSON()).toBeTruthy();
+  });
+
+  it('exibe nome e avatar da conta Google via user_metadata e oculta o banner guest quando autenticado', async () => {
+    (useAuth as jest.Mock).mockReturnValue({
+      user: {
+        id: 'google-user-123',
+        email: 'turista.google@exemplo.com',
+        is_anonymous: false,
+        user_metadata: {
+          full_name: 'Turista da Amazônia',
+          avatar_url: 'https://lh3.googleusercontent.com/a/foto-perfil-google.jpg',
+        },
+      },
+      signOut: jest.fn(),
+    });
+    // Perfil remoto ainda sem nome e sem avatar no backend
+    (useMyProfileQuery as jest.Mock).mockReturnValue({ data: null, isPending: false });
+
+    let tree!: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(renderProfile());
+    });
+
+    const rendered = JSON.stringify(tree.toJSON());
+    // Nome do Google é exibido no cabeçalho
+    expect(rendered).toContain('Turista da Amazônia');
+    // Avatar da conta Google é renderizado
+    expect(rendered).toContain('https://lh3.googleusercontent.com/a/foto-perfil-google.jpg');
+    // E-mail da conta autenticada é exibido no papel
+    expect(rendered).toContain('turista.google@exemplo.com');
+    // Banner de visitante é ocultado para usuário autenticado
+    expect(rendered).not.toContain('Salvar Favoritos');
+  });
+
+  it('exibe botões Encerrar Sessão e Excluir Conta somente para usuário autenticado', async () => {
+    (useAuth as jest.Mock).mockReturnValue({
+      user: { id: 'auth-user-1', email: 'logado@econexao.org', is_anonymous: false },
+      signOut: jest.fn(),
+    });
+    (useMyProfileQuery as jest.Mock).mockReturnValue({ data: { name: 'Usuário Logado' }, isPending: false });
+
+    let tree!: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(renderProfile());
+    });
+
+    const rendered = JSON.stringify(tree.toJSON());
+    expect(rendered).toContain('Encerrar Sessão');
+    expect(rendered).toContain('Excluir Conta');
+    expect(rendered).not.toContain('Entrar na Minha Conta');
+  });
+
+  it('oculta botões de logout e exclusão de conta para visitante e exibe Entrar na Minha Conta', async () => {
+    (useAuth as jest.Mock).mockReturnValue({
+      user: { id: 'guest-user-1', is_anonymous: true },
+      signOut: jest.fn(),
+    });
+    (useMyProfileQuery as jest.Mock).mockReturnValue({ data: null, isPending: false });
+
+    let tree!: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(renderProfile());
+    });
+
+    const rendered = JSON.stringify(tree.toJSON());
+    expect(rendered).not.toContain('Encerrar Sessão');
+    expect(rendered).not.toContain('Excluir Conta');
+    expect(rendered).toContain('Entrar na Minha Conta');
   });
 
   it('SupportScreen renders contacts and FAQ from query', async () => {

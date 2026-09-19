@@ -72,12 +72,17 @@ def validate_staging_project_ref(
             "SUPABASE_PROJECT_REF must be exactly 20 lowercase alphanumeric characters."
         )
 
-    if expected_staging_ref:
-        exp = expected_staging_ref.strip().lower()
-        if exp and ref != exp:
-            raise ValueError(
-                f"SUPABASE_PROJECT_REF '{ref}' does not match EXPECTED_STAGING_PROJECT_REF '{exp}'."
-            )
+    exp = (expected_staging_ref or "").strip().lower()
+    if not exp:
+        raise ValueError("EXPECTED_STAGING_PROJECT_REF is missing; staging identity is required.")
+    if not PROJECT_REF_PATTERN.fullmatch(exp):
+        raise ValueError(
+            "EXPECTED_STAGING_PROJECT_REF must be exactly 20 lowercase alphanumeric characters."
+        )
+    if ref != exp:
+        raise ValueError(
+            f"SUPABASE_PROJECT_REF '{ref}' does not match EXPECTED_STAGING_PROJECT_REF '{exp}'."
+        )
 
     if dev_ref and ref == dev_ref.strip().lower():
         raise ValueError("Staging SUPABASE_PROJECT_REF collides with development project ref.")
@@ -140,11 +145,10 @@ def check_migration_drift(
     args = [
         "npx",
         "--yes",
-        "supabase",
+        "supabase@2.113.0",
         "migration",
         "list",
-        "--project-ref",
-        project_ref,
+        "--linked",
         "--password",
         db_password,
     ]
@@ -194,6 +198,33 @@ def check_migration_drift(
     return True, output, unapplied
 
 
+def link_staging_project(
+    project_ref: str,
+    db_password: str,
+    access_token: str,
+) -> tuple[bool, str]:
+    """Establish the runner-local IPv4 database link for the validated staging project."""
+    secrets = [db_password, access_token]
+    code, output = run_cli_command(
+        [
+            "npx",
+            "--yes",
+            "supabase@2.113.0",
+            "link",
+            "--project-ref",
+            project_ref,
+            "--password",
+            db_password,
+        ],
+        env_vars={"SUPABASE_ACCESS_TOKEN": access_token},
+        secrets_to_redact=secrets,
+        timeout_seconds=120.0,
+    )
+    if code != 0:
+        return False, f"supabase link failed (exit {code}):\n{output}"
+    return True, output
+
+
 def check_supabase_advisors(
     project_ref: str,
     db_password: str,
@@ -205,12 +236,10 @@ def check_supabase_advisors(
     args = [
         "npx",
         "--yes",
-        "supabase",
+        "supabase@2.113.0",
         "db",
         "advisors",
         "--linked",
-        "--project-ref",
-        project_ref,
         "--type",
         "all",
         "--fail-on",
@@ -240,20 +269,21 @@ def apply_staging_migrations(
     args = [
         "npx",
         "--yes",
-        "supabase",
+        "supabase@2.113.0",
         "db",
         "push",
-        "--project-ref",
-        project_ref,
+        "--linked",
         "--password",
         db_password,
+        "--include-all",
+        "--yes",
     ]
 
     code, output = run_cli_command(
         args,
         env_vars=env_vars,
         secrets_to_redact=secrets,
-        timeout_seconds=180.0,
+        timeout_seconds=600.0,  # 10 min — seed migrations with hundreds of rows need more time
     )
     if code != 0:
         return False, f"supabase db push failed (exit {code}):\n{output}"
@@ -317,7 +347,31 @@ def run_gate(
         print(f"[GATE][ERROR] Project ref validation failed: {err}")
         return 1
 
-    # 3. Migration Drift Inspection
+    # 3. Establish an IPv4-capable link only after target isolation is validated.
+    # GitHub-hosted runners do not support direct IPv6 connections to Supabase.
+    print("[GATE] Linking the validated staging project for IPv4 database access...")
+    linked, link_output = link_staging_project(
+        project_ref=valid_ref,
+        db_password=db_password,
+        access_token=access_token,
+    )
+    if not linked:
+        print(f"[GATE][ERROR] Staging project link failed:\n{link_output}")
+        return 1
+
+    if apply_migrations:
+        print("[GATE] Applying pending migrations to staging (authorized)...")
+        apply_ok, apply_output = apply_staging_migrations(
+            project_ref=valid_ref,
+            db_password=db_password,
+            access_token=access_token,
+        )
+        if not apply_ok:
+            print(f"[GATE][ERROR] Staging migration apply failed:\n{apply_output}")
+            return 1
+        print("[GATE] Migrations successfully applied to staging.")
+
+    # 4. Migration Drift Inspection
     print("[GATE] Checking remote migration list and drift status...")
     ok, list_output, unapplied = check_migration_drift(
         project_ref=valid_ref,
@@ -334,17 +388,6 @@ def run_gate(
             print("[GATE][ERROR] Migration apply is not authorized for this run.")
             print("[GATE][ERROR] Re-run with explicit authorization to promote migrations.")
             return 1
-
-        print("[GATE] Applying migrations to staging (authorized)...")
-        apply_ok, apply_output = apply_staging_migrations(
-            project_ref=valid_ref,
-            db_password=db_password,
-            access_token=access_token,
-        )
-        if not apply_ok:
-            print(f"[GATE][ERROR] Staging migration apply failed:\n{apply_output}")
-            return 1
-        print("[GATE] Migrations successfully applied to staging.")
     else:
         print("[GATE] Staging database schema is in sync (zero unapplied migrations).")
 

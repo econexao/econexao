@@ -1,10 +1,13 @@
 """Service layer for user domain logic (ECO-0604, ECO-0605)."""
 
 import uuid
+from datetime import datetime
+from typing import Any, cast
 
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.pagination import decode_cursor, encode_cursor
 from app.repositories.user_repository import UserRepository
 from app.schemas.envelopes import (
     ActorListEnvelope,
@@ -110,9 +113,15 @@ class UserService:
         return UserPreferencesEnvelope(data=schema)
 
     async def get_favorite_routes(
-        self, user_id: uuid.UUID, limit: int = 20, offset: int = 0
+        self, user_id: uuid.UUID, limit: int = 20, cursor: str | None = None
     ) -> RouteListEnvelope:
-        routes, total = await self.repo.get_favorite_routes(user_id, limit=limit, offset=offset)
+        decoded = decode_cursor(cursor, "favorite_routes", 2)
+        after = None
+        if decoded:
+            after = (datetime.fromisoformat(str(decoded[0])), uuid.UUID(str(decoded[1])))
+        routes, total, has_more = await self.repo.get_favorite_routes(
+            user_id, limit=limit, after=after
+        )
         summaries = [
             RouteSummarySchema(
                 id=r.id,
@@ -124,10 +133,19 @@ class UserService:
                 status=r.status,
                 is_verified=r.is_verified,
                 best_season=r.best_season,
+                is_favorite=True,
             )
             for r in routes
         ]
-        next_cursor = str(offset + limit) if (offset + limit) < total else None
+        last = routes[-1] if routes else None
+        next_cursor = (
+            encode_cursor(
+                "favorite_routes",
+                [cast(Any, last)._transient_favorite_created_at.isoformat(), str(last.id)],
+            )
+            if has_more and last
+            else None
+        )
         meta = PaginationMeta(total=total, limit=limit, next_cursor=next_cursor)
         return RouteListEnvelope(data=summaries, meta=meta)
 
@@ -149,10 +167,14 @@ class UserService:
         return StandardSuccessResponse(success=True)
 
     async def get_favorite_actors(
-        self, user_id: uuid.UUID, limit: int = 20, offset: int = 0
+        self, user_id: uuid.UUID, limit: int = 20, cursor: str | None = None
     ) -> ActorListEnvelope:
-        actors_data, total = await self.repo.get_favorite_actors(
-            user_id, limit=limit, offset=offset
+        decoded = decode_cursor(cursor, "favorite_actors", 2)
+        after = None
+        if decoded:
+            after = (datetime.fromisoformat(str(decoded[0])), uuid.UUID(str(decoded[1])))
+        actors_data, total, has_more = await self.repo.get_favorite_actors(
+            user_id, limit=limit, after=after
         )
         summaries = [
             ActorSummarySchema(
@@ -169,10 +191,19 @@ class UserService:
                 google_rating=float(actor.google_rating)
                 if actor.google_rating is not None
                 else None,
+                is_favorite=True,
             )
             for actor, cat_slug, lat, lon in actors_data
         ]
-        next_cursor = str(offset + limit) if (offset + limit) < total else None
+        last = actors_data[-1][0] if actors_data else None
+        next_cursor = (
+            encode_cursor(
+                "favorite_actors",
+                [cast(Any, last)._transient_favorite_created_at.isoformat(), str(last.id)],
+            )
+            if has_more and last
+            else None
+        )
         meta = PaginationMeta(total=total, limit=limit, next_cursor=next_cursor)
         return ActorListEnvelope(data=summaries, meta=meta)
 
@@ -196,17 +227,19 @@ class UserService:
     async def get_trips(self, user_id: uuid.UUID) -> TripListEnvelope:
         trips = await self.repo.get_trips(user_id)
         data = [
-            TripSchema.model_validate({
-                "id": str(t.id),
-                "user_id": str(t.user_id),
-                "route_id": str(t.route_id),
-                "started_at": t.started_at.isoformat() if t.started_at else None,
-                "completed_at": t.completed_at.isoformat() if t.completed_at else None,
-                "status": t.status,
-                "created_at": t.created_at.isoformat() if t.created_at else None,
-                "updated_at": t.updated_at.isoformat() if t.updated_at else None,
-                "route_title": t.route.title if t.route else None,
-            })
+            TripSchema.model_validate(
+                {
+                    "id": str(t.id),
+                    "user_id": str(t.user_id),
+                    "route_id": str(t.route_id),
+                    "started_at": t.started_at.isoformat() if t.started_at else None,
+                    "completed_at": t.completed_at.isoformat() if t.completed_at else None,
+                    "status": t.status,
+                    "created_at": t.created_at.isoformat() if t.created_at else None,
+                    "updated_at": t.updated_at.isoformat() if t.updated_at else None,
+                    "route_title": t.route.title if t.route else None,
+                }
+            )
             for t in trips
         ]
         return TripListEnvelope(data=data)
@@ -230,3 +263,38 @@ class UserService:
             "route_title": trip.route.title if trip.route else None,
         }
         return TripEnvelope(data=TripSchema.model_validate(data))
+
+    async def transition_trip(
+        self, user_id: uuid.UUID, trip_id: uuid.UUID, target_status: str
+    ) -> TripEnvelope:
+        allowed = {
+            "paused": {"in_progress"},
+            "in_progress": {"paused"},
+            "completed": {"in_progress", "paused"},
+        }
+        trip = await self.repo.get_trip(user_id=user_id, trip_id=trip_id)
+        if not trip:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Viagem não encontrada."
+            )
+        if trip.status != target_status and trip.status not in allowed.get(target_status, set()):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT, detail="Transição de viagem inválida."
+            )
+        trip = await self.repo.transition_trip(user_id, trip_id, target_status)
+        assert trip is not None
+        return TripEnvelope(data=TripSchema.model_validate(self._trip_data(trip)))
+
+    @staticmethod
+    def _trip_data(trip: Any) -> dict[str, Any]:
+        return {
+            "id": str(trip.id),
+            "user_id": str(trip.user_id),
+            "route_id": str(trip.route_id),
+            "started_at": trip.started_at.isoformat() if trip.started_at else None,
+            "completed_at": trip.completed_at.isoformat() if trip.completed_at else None,
+            "status": trip.status,
+            "created_at": trip.created_at.isoformat() if trip.created_at else None,
+            "updated_at": trip.updated_at.isoformat() if trip.updated_at else None,
+            "route_title": trip.route.title if trip.route else None,
+        }

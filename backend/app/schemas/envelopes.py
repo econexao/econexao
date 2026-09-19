@@ -73,8 +73,27 @@ class ResolvedMediaItemSchema(SchemaBase):
     alt_text: str | None = None
     credit: str | None = None
     license_code: str | None = None
-    media_kind: str = "stored"
     sort_order: int = 0
+
+
+class GooglePhotoAttributionSchema(SchemaBase):
+    display_name: str
+    uri: str | None = None
+
+
+class GooglePhotoMetadataSchema(SchemaBase):
+    """Ephemeral photo metadata; deliberately excludes Google resource/photo URLs."""
+
+    proxy_url: str
+    expires_at: int
+    width_px: int
+    height_px: int
+    author_attributions: list[GooglePhotoAttributionSchema] = Field(default_factory=list)
+    google_maps_uri: str
+
+
+class GooglePhotoMetadataEnvelope(SchemaBase):
+    data: GooglePhotoMetadataSchema
 
 
 class RouteSummarySchema(SchemaBase):
@@ -95,6 +114,7 @@ class RouteSummarySchema(SchemaBase):
     best_season: str | None = None
     cover_image_url: str | None = None
     cover_media: ResolvedMediaItemSchema | None = None
+    is_favorite: bool = False
 
 
 class RouteListEnvelope(SchemaBase):
@@ -153,6 +173,7 @@ class RouteDetailSchema(SchemaBase):
     payment_info: str | None = None
     cover_image_url: str | None = None
     cover_media: ResolvedMediaItemSchema | None = None
+    is_favorite: bool = False
     gallery: list[ResolvedMediaItemSchema] = Field(default_factory=list)
     origins: list[RouteOriginSchema] = Field(default_factory=list)
 
@@ -201,6 +222,8 @@ class MapPinSchema(SchemaBase):
     name: str
     category_slug: str
     category_label: str
+    type_slug: str | None = None
+    type_label: str | None = None
     color: str
     icon: str
     latitude: float
@@ -360,6 +383,9 @@ class ActorSummarySchema(SchemaBase):
     name: str
     category_slug: str
     category_label: str
+    type_slug: str | None = None
+    type_label: str | None = None
+    type_icon: str | None = None
     address: str | None = None
     latitude: float | None = None
     longitude: float | None = None
@@ -368,6 +394,7 @@ class ActorSummarySchema(SchemaBase):
     google_rating: float | None = None
     cover_image_url: str | None = None
     cover_media: ResolvedMediaItemSchema | None = None
+    is_favorite: bool = False
 
 
 class ActorListEnvelope(SchemaBase):
@@ -416,6 +443,7 @@ class ActorDetailSchema(SchemaBase):
     google_review_count: int | None = None
     cover_image_url: str | None = None
     cover_media: ResolvedMediaItemSchema | None = None
+    is_favorite: bool = False
     gallery: list[ResolvedMediaItemSchema] = Field(default_factory=list)
     accessibility_features: list[dict[str, Any]] = Field(default_factory=list)
 

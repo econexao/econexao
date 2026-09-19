@@ -107,9 +107,7 @@ def scan_repository(root: Path) -> list[Finding]:
 def _walk_repository_files(root: Path) -> list[Path]:
     paths: list[Path] = []
     for directory, subdirectories, filenames in os.walk(root, topdown=True):
-        subdirectories[:] = [
-            name for name in subdirectories if name not in EXCLUDED_DIRECTORIES
-        ]
+        subdirectories[:] = [name for name in subdirectories if name not in EXCLUDED_DIRECTORIES]
         for filename in filenames:
             paths.append(Path(directory) / filename)
     return paths

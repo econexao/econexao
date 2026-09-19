@@ -127,22 +127,26 @@ Limitação crítica: o CSV final não preserva `place_id`, apesar de o coletor 
 
 Conforme o ADR 0010 aceito, o mapeamento versionado em código/fixture usa exatamente:
 
-- `hospedagem`: pousada, hotel, hostel, área de camping e casa de temporada;
-- `alimentacao`: restaurante, alimentação, bar, café, barraca de praia e lanchonete;
-- `transporte`: táxi/mototáxi, porto/catraia, ônibus, transfer e demais aliases aceitos;
-- `artesanato`: artesanato, biojoias, souvenirs e comunidade tradicional com vendas;
-- `atrativos`: atrativo natural, praia, trilha, ponto turístico, igreja histórica e mirante;
-- `saude`: hospital, UPA, UBS, posto de saúde, farmácia, pronto atendimento e clínica;
-- `seguranca`: polícia, delegacia, bombeiros e guarda municipal;
-- `outros`: serviços gerais, comércio não classificado, indefinido e qualquer valor desconhecido.
+- `alimentacao`: restaurante, alimentação, café, barraca de praia e lanchonete;
+- `atrativos`: atrativo natural, praia fluvial, trilha, ponto turístico, igreja histórica, serra/mirante e balneário;
+- `hospedagem`: hotel, pousada, hostel, área de camping e casa de temporada;
+- `artesanato`: artesanato local, biojoias, souvenirs e produção comunitária;
+- `comercio`: comércio local, mercado, mercadinho, feira livre e lojas;
+- `experiencias`: experiências, passeios de barco, vivências comunitárias e trilhas guiadas;
+- `vida_noturna`: bar, pub, vida noturna, cervejaria e eventos culturais;
+- `servicos_turisticos`: agência de turismo, receptivo, guias de turismo e locação de equipamentos;
+- `transporte`: aeroporto, porto/catraia, rodoviária, táxi, posto de combustível e locadora;
+- `saude`: hospital, UPA, UBS, posto de saúde e farmácia;
+- `seguranca`: polícia, delegacia, bombeiros, guarda municipal e conselho tutelar;
+- `outros`: serviços públicos, cartórios, serviços para eventos, indefinido e triagem editorial.
 
-As oito categorias são públicas. Em particular, `outros` é publicado como pin cinza e
+As 12 categorias são públicas. Em particular, `outros` é publicado como pin cinza e
 chip de filtro, permanecendo também disponível para triagem editorial. O importador
 nunca força categoria desconhecida para `atrativos`, `saude` ou `seguranca`.
 
 O escopo espacial aceito no ADR 0011 é `route_corridor` para alimentação, atrativos,
-hospedagem, artesanato e outros; `citywide_essential` para saúde e segurança; e `both`
-para transporte.
+hospedagem, artesanato, experiências, vida noturna e outros; `citywide_essential` para
+saúde e segurança; e `both` para transporte, comércio e serviços turísticos.
 
 ## 10. Deduplicação
 

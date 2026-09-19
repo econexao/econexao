@@ -1,20 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { AppHeader } from '../../../src/components/common/AppHeader';
 import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/components/common/UIStateViews';
-import { FilterChip } from '../../../src/components/common/FilterChip';
-import { SearchInput } from '../../../src/components/common/SearchInput';
 import { RouteCard } from '../../../src/components/routes/RouteCard';
 import { useApp } from '../../../src/hooks/useApp';
 import { useAuth } from '../../../src/hooks/useAuth';
-import { useInfiniteRoutesQuery, useRegionsQuery, useRoutesQuery } from '../../../src/hooks/queries';
+import { flattenUniquePages, useInfiniteRoutesQuery, useRegionsQuery, useRoutesQuery } from '../../../src/hooks/queries';
 import { useOptimisticFavoriteRoute } from '../../../src/hooks/useOptimisticFavoriteRoute';
 import { theme } from '../../../src/theme/theme';
 import type { RouteSummary } from '../../../src/api/types';
-
-type FilterType = 'all' | 'saved' | 'verified';
+import { isPreviewRoute, mergeRoutesWithPreviews } from '../../../src/constants/previewRoutes';
+import { MotionBlock } from '../../../src/components/common/MotionBlock';
 
 export default function RoutesScreen() {
   const router = useRouter();
@@ -22,73 +20,33 @@ export default function RoutesScreen() {
   const { user } = useAuth();
   const regionsQuery = useRegionsQuery();
 
-  const [filter, setFilter] = useState<FilterType>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const isAllRegions = !state.activeRegionId || state.activeRegionId === 'all';
+  const activeRegion = isAllRegions
+    ? null
+    : regionsQuery.data?.find((r) => r.id === state.activeRegionId);
+  const isAltamiraRegion = activeRegion?.slug === 'altamira-xingu';
+  const hasNoRegions = regionsQuery.isSuccess && (regionsQuery.data?.length ?? 0) === 0;
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchQuery);
-    }, 350);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  const activeRegionId = state.activeRegionId ?? regionsQuery.data?.[0]?.id;
-  const hasNoRegions = regionsQuery.isSuccess && !activeRegionId;
+  const queryRegionId = isAllRegions ? undefined : state.activeRegionId;
 
   const routesQuery = useInfiniteRoutesQuery(
-    activeRegionId,
-    {
-      q: debouncedSearch || undefined,
-      saved: filter === 'saved' || undefined,
-      verified: filter === 'verified' || undefined,
-    },
+    queryRegionId,
+    {},
     user?.id
   );
 
-  const savedRoutesQuery = useRoutesQuery(activeRegionId, { saved: true }, user?.id);
+  const savedRoutesQuery = useRoutesQuery(queryRegionId, { saved: true }, user?.id);
   const { toggleFavorite } = useOptimisticFavoriteRoute();
 
-  const savedRouteIds = new Set(savedRoutesQuery.data?.data.map((r) => r.id));
-  const allRoutes: RouteSummary[] = routesQuery.data?.pages.flatMap((page) => page.data) ?? [];
-
-  const handleResetFilters = () => {
-    setSearchQuery('');
-    setDebouncedSearch('');
-    setFilter('all');
-  };
+  const savedRouteIds = new Set(savedRoutesQuery.data?.data?.map((r) => r.id));
+  const allRoutes: RouteSummary[] = flattenUniquePages(routesQuery.data?.pages);
+  const displayRoutes: RouteSummary[] = mergeRoutesWithPreviews(allRoutes, { isAltamiraRegion });
 
   return (
     <View style={styles.container}>
       <AppHeader />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Rotas da Região</Text>
-
-        <SearchInput
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onClear={() => setSearchQuery('')}
-          placeholder="Buscar por nome ou município..."
-        />
-
-        <View style={styles.filters}>
-          <FilterChip
-            label="Todas"
-            isSelected={filter === 'all'}
-            onPress={() => setFilter('all')}
-          />
-          <FilterChip
-            label="Salvas"
-            isSelected={filter === 'saved'}
-            onPress={() => setFilter('saved')}
-          />
-          <FilterChip
-            label="Verificadas"
-            isSelected={filter === 'verified'}
-            onPress={() => setFilter('verified')}
-          />
-        </View>
-
+        <MotionBlock staggerIndex={0}>
         {regionsQuery.isPending ? (
           <LoadingView message="Carregando regiões..." />
         ) : regionsQuery.isError ? (
@@ -101,24 +59,27 @@ export default function RoutesScreen() {
             title="Nenhuma região disponível"
             message="O ambiente ainda não possui regiões cadastradas."
           />
-        ) : routesQuery.isPending ? (
+        ) : routesQuery.isPending && displayRoutes.length === 0 ? (
           <LoadingView message="Carregando rotas..." />
-        ) : routesQuery.isError ? (
+        ) : routesQuery.isError && displayRoutes.length === 0 ? (
           <ErrorStateView
             message="Não foi possível carregar a lista de rotas."
             onRetry={() => void routesQuery.refetch()}
           />
-        ) : allRoutes.length > 0 ? (
+        ) : displayRoutes.length > 0 ? (
           <>
-            {allRoutes.map((route) => {
-              const isFav = savedRouteIds.has(route.id);
+            {displayRoutes.map((route) => {
+              const isPreview = isPreviewRoute(route);
+              const isFav =
+                (route as RouteSummary & { is_favorite?: boolean }).is_favorite ??
+                savedRouteIds.has(route.id);
               return (
                 <RouteCard
                   key={route.id}
                   route={route}
                   isFavorite={isFav}
-                  onPress={() => router.push(`/route/${route.id}`)}
-                  onToggleFavorite={() => toggleFavorite(route.id, isFav)}
+                  onPress={isPreview ? undefined : () => router.push(`/route/${route.id}`)}
+                  onToggleFavorite={isPreview ? undefined : () => toggleFavorite(route, isFav)}
                 />
               );
             })}
@@ -130,6 +91,7 @@ export default function RoutesScreen() {
                 disabled={routesQuery.isFetchingNextPage}
                 accessibilityRole="button"
                 accessibilityLabel="Carregar mais rotas"
+                accessibilityState={{ disabled: routesQuery.isFetchingNextPage, busy: routesQuery.isFetchingNextPage }}
               >
                 {routesQuery.isFetchingNextPage ? (
                   <ActivityIndicator size="small" color="#059669" />
@@ -138,14 +100,17 @@ export default function RoutesScreen() {
                 )}
               </TouchableOpacity>
             )}
+            {routesQuery.isError && (
+              <ErrorStateView message="Não foi possível carregar mais rotas." onRetry={() => void routesQuery.fetchNextPage()} />
+            )}
           </>
         ) : (
           <EmptyStateView
             title="Nenhuma rota encontrada"
-            message="Não encontramos rotas com os filtros selecionados."
-            onReset={searchQuery || filter !== 'all' ? handleResetFilters : undefined}
+            message="Não há rotas cadastradas para a região selecionada."
           />
         )}
+        </MotionBlock>
       </ScrollView>
     </View>
   );
@@ -160,15 +125,6 @@ const styles = StyleSheet.create({
     padding: theme.spacing.marginMobile,
     gap: 16,
     paddingBottom: 40,
-  },
-  title: {
-    ...theme.typography.headlineLg,
-    color: theme.colors.brandDeep,
-  },
-  filters: {
-    flexDirection: 'row',
-    gap: 8,
-    flexWrap: 'wrap',
   },
   loadMoreButton: {
     backgroundColor: '#FFFFFF',
@@ -185,4 +141,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-

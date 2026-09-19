@@ -6,6 +6,7 @@ on:
       - "docs/openapi.yaml"
       - "backend/**"
       - "econexao-app/**"
+      - "landing-page/**"
       - ".github/workflows/frontend-contract.yml"
   push:
     branches: [main, master]
@@ -13,6 +14,7 @@ on:
       - "docs/openapi.yaml"
       - "backend/**"
       - "econexao-app/**"
+      - "landing-page/**"
       - ".github/workflows/frontend-contract.yml"
 
 permissions:

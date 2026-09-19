@@ -1035,6 +1035,40 @@ Justificativa e evidências:
   - Frontend: `openapi:check` exit 0, TypeScript `tsc --noEmit` exit 0, Jest 32/32 suítes (195 testes) exit 0.
 - **Estado:** `VERIFIED`.
 
+### Handoff ECO-2003 (Revalidação Staging Browser) — Staging Web, HTTPS, CORS & Browser Smoke (07/09/2026)
+
+- **Task:** ECO-2003 — Staging web, HTTPS, domínios, CORS e browser smoke.
+- **Executor/branch/worktree:** Google Antigravity / `codex/eco-2003-validation` no worktree isolado (`.worktrees/eco-2003-validation`) sobre `origin/staging` (`c9fcb1f`).
+- **Resultado observável:**
+  - **HTTPS & Headers de Segurança:**
+    - Frontend Vercel (`https://econexao-app-staging.vercel.app`): `HTTP 200 OK`, `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`.
+    - Backend Render (`https://econexao-backend-staging-30dt.onrender.com`): `HTTP 200 OK`, `Strict-Transport-Security: max-age=31536000; includeSubDomains`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`.
+  - **CORS e Isolamento de Origem:**
+    - Preflight `OPTIONS` e `GET` com origem autorizada (`https://econexao-app-staging.vercel.app`): `HTTP 200 OK`, `Access-Control-Allow-Origin: https://econexao-app-staging.vercel.app`, `Access-Control-Allow-Credentials: true`.
+    - Respostas de erro (ex.: 404): cabeçalho CORS preservado para origem autorizada.
+    - Rejeição fail-closed para origem não autorizada (`https://evil.com`): `HTTP 400 Bad Request` no preflight e sem cabeçalhos `Access-Control-Allow-Origin`.
+  - **Liveness, Readiness e Contrato Territorial:**
+    - Liveness (`/api/v1/health/live`): `HTTP 200 OK`.
+    - Readiness (`/api/v1/health/ready`): `HTTP 200 OK` (commit: `c9fcb1f`, database: `ok`, postgis: `True`).
+    - Descoberta dinâmica de regiões e rotas (`/api/v1/routes/d437d9db-e5be-465b-9f8a-07ce64229305/map`): contrato de mapa verificado (200 pins, 5 categorias reconciliadas).
+  - **Deep Linking e Universal Links:**
+    - Android (`/.well-known/assetlinks.json`): `HTTP 200 OK`.
+    - iOS (`/.well-known/apple-app-site-association`): `HTTP 200 OK`.
+  - **Browser Smoke Real (Playwright):**
+    - Desktop Chromium (`1280x800`): `HTTP 200 OK`, 0 erros de console, 0 requisições com falha, título "ECOnexão".
+    - Mobile WebKit (`390x844` - iPhone Safari WebKit engine real): `HTTP 200 OK`, 0 erros de console, 0 requisições com falha, título "ECOnexão".
+- **Evidências capturadas:**
+  - Desktop Chromium: `docs/finalization/evidence/ECO-2003/01_home_screen_desktop_chromium.png`
+  - Mobile WebKit: `docs/finalization/evidence/ECO-2003/02_home_screen_mobile_webkit.png`
+  - Script reproduzível: `econexao-app/scripts/validate-staging-browser-eco2003.mjs`
+- **Verificações e Testes Locais:**
+  - Backend pytest (CORS, security headers, smoke): 79/79 testes aprovados (Exit code: 0).
+  - Frontend contract e typecheck (`openapi:check` e `typecheck`): 0 erros (Exit code: 0).
+  - Frontend Jest: 41/41 suítes, 257/257 testes aprovados (Exit code: 0).
+- **Estado:** `VERIFIED`.
+- **Ações remotas executadas:** Nenhuma (sem deploy, sem migration, sem push/merge, sem alteração de DNS ou segredos de produção).
+- **Próxima task desbloqueada:** ECO-2004 — Observabilidade, rate limits, runbooks e cost guards.
+
 
 
 

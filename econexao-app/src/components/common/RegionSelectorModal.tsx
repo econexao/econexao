@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useRef, useContext } from 'react';
 import {
-  Modal,
   View,
   Text,
   StyleSheet,
@@ -12,43 +11,64 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme/theme';
 import { useApp } from '../../hooks/useApp';
+import { AuthContext } from '../../auth/AuthProvider';
 import { useRegionsQuery } from '../../hooks/queries';
 import { apiClient } from '../../api/client';
 import { makeAccessibleButton } from '../../utils/accessibility';
+import { setStoredVisitorRegion } from '../../utils/regionStorage';
+import { AccessibleModal } from './AccessibleModal';
 import type { Region } from '../../api/types';
 
 interface RegionSelectorModalProps {
   visible: boolean;
   onClose: () => void;
+  returnFocusRef?: React.RefObject<any>;
 }
 
 export const RegionSelectorModal: React.FC<RegionSelectorModalProps> = ({
   visible,
   onClose,
+  returnFocusRef,
 }) => {
   const { state, dispatch } = useApp();
+  const auth = useContext(AuthContext);
+  const user = auth?.user;
   const regionsQuery = useRegionsQuery();
+  const closeButtonRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
 
-  const handleSelectRegion = async (region: Region) => {
-    dispatch({ type: 'SET_ACTIVE_REGION', payload: region.id });
+  const isAllSelected = !state.activeRegionId || state.activeRegionId === 'all';
+
+  const handleSelectRegion = async (region: Region | null) => {
+    const regionId = region?.id ?? null;
+    dispatch({ type: 'SET_ACTIVE_REGION', payload: regionId });
+    await setStoredVisitorRegion(regionId);
     onClose();
-    AccessibilityInfo.announceForAccessibility(`Região alterada para ${region.name}`);
 
-    try {
-      await apiClient.updateMyPreferences({ active_region_id: region.id });
-    } catch {
-      AccessibilityInfo.announceForAccessibility('Não foi possível salvar a preferência de região no servidor.');
+    const announceMsg = region
+      ? `Região alterada para ${region.name}`
+      : 'Região alterada para Todas as regiões';
+    AccessibilityInfo.announceForAccessibility(announceMsg);
+
+    if (user?.id) {
+      try {
+        await apiClient.updateMyPreferences({ active_region_id: regionId });
+      } catch {
+        AccessibilityInfo.announceForAccessibility(
+          'Não foi possível salvar a preferência de região no servidor.'
+        );
+      }
     }
   };
 
   return (
-    <Modal
+    <AccessibleModal
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={onClose}
-      accessibilityViewIsModal
-      aria-modal
+      onClose={onClose}
+      initialFocusRef={closeButtonRef}
+      returnFocusRef={returnFocusRef}
+      accessibilityLabel="Seletor de região"
     >
       <View style={styles.backdrop}>
         <View style={styles.modalContainer}>
@@ -58,6 +78,7 @@ export const RegionSelectorModal: React.FC<RegionSelectorModalProps> = ({
               <Text style={styles.title}>Selecionar Região</Text>
             </View>
             <TouchableOpacity
+              ref={closeButtonRef}
               style={styles.closeButton}
               onPress={onClose}
               {...makeAccessibleButton('Fechar', 'Fecha o seletor de região')}
@@ -84,8 +105,37 @@ export const RegionSelectorModal: React.FC<RegionSelectorModalProps> = ({
             </View>
           ) : (
             <ScrollView contentContainerStyle={styles.listContent}>
-              {regionsQuery.data?.map((region) => {
-                const isSelected = region.id === state.activeRegionId;
+              {/* Opção Canônica: Todas as Regiões */}
+              <TouchableOpacity
+                key="all-regions"
+                style={[styles.regionOption, isAllSelected && styles.regionOptionSelected]}
+                onPress={() => void handleSelectRegion(null)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: isAllSelected }}
+                accessibilityLabel={`Todas as regiões. Visão consolidada de todas as rotas. ${isAllSelected ? 'Selecionada' : 'Toque para selecionar'}`}
+              >
+                <View style={styles.regionLeftRow}>
+                  <Ionicons
+                    name="globe-outline"
+                    size={22}
+                    color={isAllSelected ? theme.colors.brandForest : theme.colors.brandSage}
+                    style={styles.optionIcon}
+                  />
+                  <View style={styles.regionInfo}>
+                    <Text style={[styles.regionName, isAllSelected && styles.regionNameSelected]}>
+                      Todas as regiões
+                    </Text>
+                    <Text style={styles.regionState}>Todas as rotas disponíveis</Text>
+                  </View>
+                </View>
+                {isAllSelected && (
+                  <Ionicons name="checkmark-circle" size={22} color={theme.colors.brandForest} />
+                )}
+              </TouchableOpacity>
+
+              {/* Regiões Específicas */}
+              {regionsQuery.data?.map((region: Region) => {
+                const isSelected = !isAllSelected && region.id === state.activeRegionId;
                 return (
                   <TouchableOpacity
                     key={region.id}
@@ -95,11 +145,19 @@ export const RegionSelectorModal: React.FC<RegionSelectorModalProps> = ({
                     accessibilityState={{ selected: isSelected }}
                     accessibilityLabel={`${region.name}, ${region.state_code}. ${isSelected ? 'Selecionada' : 'Toque para selecionar'}`}
                   >
-                    <View style={styles.regionInfo}>
-                      <Text style={[styles.regionName, isSelected && styles.regionNameSelected]}>
-                        {region.name}
-                      </Text>
-                      <Text style={styles.regionState}>{region.state_code}</Text>
+                    <View style={styles.regionLeftRow}>
+                      <Ionicons
+                        name="location-outline"
+                        size={22}
+                        color={isSelected ? theme.colors.brandForest : theme.colors.brandSage}
+                        style={styles.optionIcon}
+                      />
+                      <View style={styles.regionInfo}>
+                        <Text style={[styles.regionName, isSelected && styles.regionNameSelected]}>
+                          {region.name}
+                        </Text>
+                        <Text style={styles.regionState}>{region.state_code}</Text>
+                      </View>
                     </View>
                     {isSelected && (
                       <Ionicons name="checkmark-circle" size={22} color={theme.colors.brandForest} />
@@ -111,7 +169,7 @@ export const RegionSelectorModal: React.FC<RegionSelectorModalProps> = ({
           )}
         </View>
       </View>
-    </Modal>
+    </AccessibleModal>
   );
 };
 
@@ -199,6 +257,15 @@ const styles = StyleSheet.create({
   regionOptionSelected: {
     backgroundColor: theme.colors.secondaryContainer,
     borderColor: theme.colors.brandForest,
+  },
+  regionLeftRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: 12,
+  },
+  optionIcon: {
+    marginRight: 2,
   },
   regionInfo: {
     flex: 1,

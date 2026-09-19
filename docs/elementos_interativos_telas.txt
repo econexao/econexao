@@ -13,7 +13,7 @@ Data da Catalogação: 11/08/2026
    * Localização: Presente no topo de todas as telas principais.
    * Elementos Interativos:
      - Botão "Voltar" (Ícone de Seta para a esquerda):
-       • Ação: Retorna para a tela/menu anterior na pilha de navegação.
+       • Ação: Retorna para a tela/menu anterior na pilha de navegação (`router.canGoBack() ? router.back() : router.replace(fallbackHref)`). Quando acessado diretamente via link ou sem histórico na pilha, executa fallback inteligente (ex: para a listagem de rotas ou tela inicial).
        • Acessibilidade: Rótulo "Voltar", dica "Retorna à tela anterior".
      - Chip de Seleção de Região ("Região Santarém & Belterra / Alter do Chão"):
        • Ação atual: Alterna diretamente, em modo de demonstração, entre "Santarém & Belterra" e "Alter do Chão".
@@ -28,13 +28,16 @@ Data da Catalogação: 11/08/2026
 
 [1.2] BARRA DE NAVEGAÇÃO INFERIOR (Bottom Tab Bar)
    * Localização: Rodapé fixo das telas principais ((tabs)/_layout.tsx).
+   * Safe Area & Responsividade:
+     - Altura e padding inferior dinâmicos via `useSafeAreaInsets` (`height: 76 + insets.bottom`, `paddingTop: 6`, `paddingBottom: Math.max(insets.bottom, 10)`).
+     - Previne corte dos ícones e textos ("Inicial", "Rotas", "Perfil") em dispositivos móveis com barra de navegação por gestos (Android/iOS) ou navegadores móveis.
    * Elementos Interativos (Abas):
      - Aba "Inicial" (Ícone de Casa / Home):
-       • Ação: Navega para a Tela de Início / Hero.
+       • Ação: Navega para a Tela de Início / Hero. Ao ser tocada (mesmo quando sub-telas de rota ou de exploração estão abertas), redefine e restaura a pilha para a raiz da tela Inicial (`index`).
      - Aba "Rotas" (Ícone de Bússola / Compass):
-       • Ação: Navega para a Listagem de Rotas da Região.
+       • Ação: Navega para a Listagem de Rotas da Região. Ao ser tocada, restaura a pilha para a listagem principal de rotas (`index`).
      - Aba "Perfil" (Ícone de Usuário / Person):
-       • Ação: Navega para o Perfil do Usuário e Painel de Acessibilidade.
+       • Ação: Navega para o Perfil do Usuário e Painel de Acessibilidade. Ao ser tocada, restaura a pilha para o início do perfil (`index`).
    * Indicadores de Status:
      - Realce de Aba Ativa: Cor verde floresta (#1C4807 / #33601E) e preenchimento de ícone quando a aba está selecionada.
      - Inativa: Cor de contorno suave (#72796C).
@@ -118,36 +121,68 @@ Data da Catalogação: 11/08/2026
      - Cards detalhados com imagem de capa, cidade/estado, título da rota, extensão em km, contagem de atores comunitários.
 
 -------------------------------------------------------------------------------
-4. TELA 3: PERFIL DO USUÁRIO & ACESSIBILIDADE ((tabs)/profile.tsx)
+4. TELA 3: PERFIL DO USUÁRIO & ACESSIBILIDADE ((tabs)/(profile)/index.tsx)
 -------------------------------------------------------------------------------
 
-[4.1] CARTÃO DE IDENTIFICAÇÃO DO USUÁRIO
+[4.1] BANNER DE CONVIDADO / SALVAR FAVORITOS COM GOOGLE (Exibido para sessão anônima)
    * Elementos Interativos:
-     - Foto de Perfil / Avatar: Abre o seletor e envia a nova imagem do usuário.
-     - Ícone de lápis: Abre a edição das informações do perfil.
+     - Botão "Salvar" (com logo do Google):
+       • Ação: Abre o modal de autenticação/vinculação (`AuthModal`), permitindo salvar a conta e dados favoritados permanentemente.
+   * Indicadores de Status & Badges:
+     - Badge "100% Grátis": Destaque de gratuidade e incentivo à permanência.
+     - Ícone de Brilho / Sparkles: Destaque visual temático.
    * Conteúdos Exibidos:
-     - Nome do perfil remoto; na sessão anônima sem nome, exibe "Visitante".
-     - Tipo de sessão ou e-mail e localização quando cadastrada.
-     - Foto de Perfil com borda verde temática.
+     - Título: "Salvar Favoritos".
+     - Subtítulo: "Vincule com Google e não perca dados".
+     - Fundo em gradiente verde floresta profundo (#1C3B0F a #33601E).
 
-[4.2] IMPACTO E SELOS PESSOAIS
+[4.2] CARTÃO DE IDENTIFICAÇÃO DO USUÁRIO
+   * Elementos Interativos:
+     - Foto de Perfil / Avatar (com badge de câmera):
+       • Ação: Abre o seletor de imagens da galeria e realiza o upload seguro do avatar para o Supabase Storage.
+     - Botão de Lápis / Editar:
+       • Ação: Abre o modal de edição de nome e localização (`EditProfileModal`).
+   * Conteúdos Exibidos:
+     - Nome do perfil ou do Google; na sessão anônima sem nome, exibe "Visitante".
+     - Indicador com ponto verde de status da sessão ("Sessão Convidado • Modo Anônimo" ou e-mail autenticado).
+     - Localização cadastrada quando existente (com ícone de pin).
+     - Foto de Perfil com borda verde temática e indicador de câmera.
+
+[4.3] IMPACTO E SELOS PESSOAIS
    * Não exibidos nem registrados, conforme ADR 0009.
    * Viagens e visitas permanecem disponíveis como histórico factual no menu do perfil.
 
-[4.3] MENU DE PREFERÊNCIAS & ACESSIBILIDADE
-   * Elementos com Aparência Interativa:
-     - Itens de Menu renderizados como áreas tocáveis, porém ainda sem ação de toque implementada:
-       • "Rotas Salvas": Exibe a contagem de rotas favoritadas.
-       • "Atores & Empreendimentos Favoritos": Exibe a contagem de atores favoritados.
-       • "Histórico de Viagens Sustentáveis": Exibe o total de rotas concluídas.
-       • "Modo Leitor de Tela & Alto Contraste": Exibe o status "Ativo".
-       • "Configurações Regionais": Exibe a região atual.
-       • "Suporte & Operação Editorial": Exibe o status "Ajuda".
-     - Observação: Os itens possuem semântica visual e rótulo de botão, mas não navegam nem alteram configurações na implementação atual.
-   * Indicadores de Status:
-     - Badges com Contadores Numéricos (ex: número de rotas e atores salvos).
-     - Textos de Status ("Ativo", "Santarém & Belterra", "Ajuda").
-     - Ícones Chevron (setas para a direita) sugerindo navegação visualmente, embora as ações ainda não estejam implementadas.
+[4.4] MENU DE PREFERÊNCIAS & MINHA CONTA (GRID 2 COLUNAS)
+   * Estrutura & Layout: Grade moderna com 2 colunas e 6 cartões interativos compactos com ícones temáticos coloridos e setas de direcionamento:
+     1. "Rotas Salvas" (Ícone Marcador verde esmeralda): Navega para `/(tabs)/(profile)/favorite-routes` (trilhas offline).
+     2. "Atores Favoritos" (Ícone Coração rosa): Navega para `/(tabs)/(profile)/favorite-actors` (guias e pontos salvos).
+     3. "Histórico" (Ícone Bússola âmbar): Navega para `/(tabs)/(profile)/trips` (passeios feitos).
+     4. "Acessibilidade" (Ícone Pessoa teal): Navega para `/(tabs)/(profile)/accessibility` (áudio e contraste).
+     5. "Ajuda & Suporte" (Ícone Ajuda azul céu): Navega para `/(tabs)/(profile)/support` (dúvidas e SAC).
+     6. "Termos & Dados" (Ícone Escudo verde folha): Navega para `/(tabs)/(profile)/legal` (políticas LGPD).
+
+[4.5] HISTÓRICO DE VIAGENS
+   * Estrutura & Layout: Tela editorial com chips de filtro "Todas", "Ativas" e
+     "Concluídas", contagem derivada do retorno real da API e cartões de viagem.
+   * Conteúdos preservados: título da rota, data de criação, status e vínculo com
+     a rota quando `route_id` está disponível. Dados ilustrativos ausentes de
+     `TripSchema` não são exibidos como se fossem reais.
+   * Elementos Interativos:
+     - Chips filtram localmente a lista já carregada e anunciam a contagem para
+       tecnologias assistivas.
+     - Card abre os detalhes da rota quando existe `route_id`.
+     - Viagem ativa pode ser pausada ou finalizada; viagem pausada pode ser
+       retomada ou finalizada. As ações mantêm anúncio de sucesso e erro/retry.
+   * Estados: loading e erro com retry permanecem explícitos; lista ou filtro
+     vazio exibe orientação própria sem remover os demais filtros.
+
+[4.6] AÇÕES DE CONTA & RODAPÉ INSTITUCIONAL
+   * Elementos Interativos:
+     - Botão "Encerrar Sessão" (Logout): Limpa o cache da sessão e desloga o usuário.
+     - Botão "Excluir Conta" (LGPD): Fundo vermelho suave, abre o modal de exclusão permanente de conta (`AccountDeletionModal`).
+   * Conteúdos Exibidos:
+     - Texto institucional: "ECOnexão Sustentável v2.4 • Amazônia Viva".
+
 
 -------------------------------------------------------------------------------
 5. TELA 4: DETALHES DA ROTA (/route/[routeId]/index.tsx)
@@ -155,7 +190,7 @@ Data da Catalogação: 11/08/2026
 
 [5.1] HERO DA ROTA & CABEÇALHO
    * Elementos Interativos:
-     - Botão "Voltar" no Header: Retorna à lista de rotas.
+     - Botão "Voltar" no Header: Retorna à tela anterior na pilha de navegação, com fallback seguro para a listagem de rotas (`/(tabs)/(routes)`) caso não haja histórico (ex: acesso direto por URL/refresh no navegador).
    * Indicadores de Status:
      - Tag de Localização (Ícone de Pin + Texto de Cidade/Estado).
      - Badge "km Total" e Badge de Origem Selecionada.

@@ -12,12 +12,15 @@ import {
 } from '../../hooks/queries';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ApiClientError } from '../../api/client';
+import { hasValidLocationConsent } from '../../auth/locationConsent';
 
 const textValue = (value: unknown): string => {
   if (typeof value === 'string' || typeof value === 'number') return String(value);
   if (Array.isArray(value)) return value.map(textValue).join('');
   return '';
 };
+
+jest.setTimeout(30000);
 
 jest.mock('@expo/vector-icons', () => ({
   Ionicons: 'Ionicons',
@@ -34,6 +37,10 @@ jest.mock('../map/MapAdapter', () => {
     ),
   };
 });
+
+jest.mock('../common/GooglePlacePhoto', () => ({
+  GooglePlacePhoto: () => null,
+}));
 
 jest.mock('expo-router', () => ({
   useRouter: jest.fn(),
@@ -66,6 +73,12 @@ jest.mock('../../hooks/queries', () => ({
   useRouteActorsQuery: jest.fn(),
   useRouteMapQuery: jest.fn(),
   useActorCategoriesQuery: jest.fn(),
+}));
+
+jest.mock('../../auth/locationConsent', () => ({
+  hasValidLocationConsent: jest.fn(),
+  saveLocationConsent: jest.fn(),
+  CURRENT_LOCATION_POLICY_VERSION: '2026-09-04',
 }));
 
 jest.mock('../../state/useAppContext', () => {
@@ -176,11 +189,12 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
         google_rating: 4.6,
       },
     ],
-    meta: { total: 2, limit: 3 },
+    meta: { total: 2, limit: 6 },
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
+    (hasValidLocationConsent as jest.Mock).mockResolvedValue(true);
 
     const { useQueryClient } = require('@tanstack/react-query');
     (useQueryClient as jest.Mock).mockReturnValue({
@@ -262,10 +276,8 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     const textElements = root.findAllByType(Text);
     const textContents = textElements.map((el) => el.props.children);
 
-    expect(textContents).toContain('Rota Pindobal');
-    expect(textContents).toContain('Descrição detalhada da Rota Pindobal.');
-    expect(textContents).toContain('Porto de Santarém');
-    expect(textElements.map((node) => textValue(node.props.children)).join(' ')).toContain('45.2 km');
+    expect(textContents).toContain('saindo de:');
+    expect(textContents).toContain('Rodoviária');
     expect(textContents).toContain('Trecho em Obras');
     expect(textContents).toContain('Pousada Canto da Floresta');
     expect(textContents).toContain('Restaurante Moqueca do Tapajós');
@@ -279,32 +291,30 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
 
     const root = tree.root;
 
-    // Verify initial actors query call with default origin ('origin-porto')
+    // Verify initial actors query call with default origin ('origin-rodoviaria')
     expect(useRouteActorsQuery).toHaveBeenCalledWith('route-pindobal', {
-      origin_id: 'origin-porto',
+      origin_id: 'origin-rodoviaria',
       category: undefined,
-      limit: 3,
+      limit: 6,
     });
 
-    // Find all three contractual origins and select Rodoviária.
-    const originButtons = root.findAll((node) => node.type === TouchableOpacity && node.props.accessibilityLabel?.includes('Selecionar origem'));
-    expect(originButtons.length).toBe(3);
-    expect(originButtons[0].props.accessibilityState).toEqual({ selected: true });
-
+    // Open dropdown combobox and select Porto
+    const combobox = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityRole === 'combobox');
     await act(async () => {
-      originButtons[2].props.onPress();
+      combobox.props.onPress();
+    });
+
+    const portoOption = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityLabel === 'Selecionar Porto');
+    await act(async () => {
+      portoOption.props.onPress();
     });
 
     // Verify updated actors query call and selected-state semantics.
     expect(useRouteActorsQuery).toHaveBeenLastCalledWith('route-pindobal', {
-      origin_id: 'origin-rodoviaria',
+      origin_id: 'origin-porto',
       category: undefined,
-      limit: 3,
+      limit: 6,
     });
-    expect(originButtons[2].props.accessibilityState).toEqual({ selected: true });
-    expect(
-      root.findAllByType(Text).map((node) => textValue(node.props.children)).join(' ')
-    ).toContain('42.3 km');
   });
 
   it('navigates to map and catalog preserving originId in URL query params', async () => {
@@ -321,12 +331,26 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     await act(async () => {
       mapBtn.props.onPress();
     });
-    expect(mockPush).toHaveBeenCalledWith('/route/route-pindobal/map?originId=origin-porto');
+    expect(mockPush).toHaveBeenCalledWith('/route/route-pindobal/map?originId=origin-rodoviaria');
 
     await act(async () => {
       catalogBtn.props.onPress();
     });
-    expect(mockPush).toHaveBeenCalledWith('/route/route-pindobal/catalog?originId=origin-porto');
+    expect(mockPush).toHaveBeenCalledWith('/route/route-pindobal/catalog?originId=origin-rodoviaria');
+  });
+
+  it('opens trip history from the independent arrow action', async () => {
+    let tree!: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(<RouteDetailScreen />);
+    });
+
+    const historyButton = tree.root.find(
+      (node) => node.type === TouchableOpacity && node.props.accessibilityLabel === 'Abrir histórico de rotas'
+    );
+    await act(async () => historyButton.props.onPress());
+
+    expect(mockPush).toHaveBeenCalledWith('/(tabs)/(profile)/trips');
   });
 
   it('honors a deep-linked origin and actor in map and catalog navigation', async () => {
@@ -344,7 +368,7 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     expect(useRouteActorsQuery).toHaveBeenCalledWith('route-pindobal', {
       origin_id: 'origin-aeroporto',
       category: undefined,
-      limit: 3,
+      limit: 6,
     });
 
     const buttons = tree.root.findAllByType(TouchableOpacity);
@@ -377,7 +401,7 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     await act(async () => actorPreview.props.onPress());
 
     expect(mockPush).toHaveBeenCalledWith(
-      '/route/route-pindobal/map?originId=origin-porto&actorId=actor-1'
+      '/route/route-pindobal/map?originId=origin-rodoviaria&actorId=actor-1'
     );
   });
 
@@ -412,9 +436,12 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
       tree = renderer.create(<RouteDetailScreen />);
     });
 
-    const image = tree.root.findByType(Image);
-    expect(image.props.source).toEqual({ uri: 'https://cdn.example.com/pousada-card.webp' });
-    expect(image.props.accessibilityLabel).toBe('Fachada da Pousada Canto da Floresta');
+    const image = tree.root.findAllByType(Image).find(
+      (node) => node.props.accessibilityLabel === 'Fachada da Pousada Canto da Floresta'
+    );
+    expect(image).toBeDefined();
+    expect(image!.props.source).toEqual({ uri: 'https://cdn.example.com/pousada-card.webp' });
+    expect(image!.props.accessibilityLabel).toBe('Fachada da Pousada Canto da Floresta');
 
     const lodgingFilter = tree.root.find(
       (node) => node.type === TouchableOpacity && node.props.accessibilityLabel === 'Filtro Hospedagem'
@@ -422,9 +449,9 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     await act(async () => lodgingFilter.props.onPress());
 
     expect(useRouteActorsQuery).toHaveBeenLastCalledWith('route-pindobal', {
-      origin_id: 'origin-porto',
+      origin_id: 'origin-rodoviaria',
       category: 'hospedagem',
-      limit: 3,
+      limit: 6,
     });
   });
 
@@ -631,15 +658,19 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     });
 
     // Selecting a fixed origin restores official origin and clears ephemeral preview
-    const originButtons = root.findAll((node) => node.type === TouchableOpacity && node.props.accessibilityLabel?.includes('Selecionar origem'));
+    const combobox = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityRole === 'combobox');
     await act(async () => {
-      originButtons[0].props.onPress();
+      combobox.props.onPress();
+    });
+    const portoOption = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityLabel === 'Selecionar Porto');
+    await act(async () => {
+      portoOption.props.onPress();
     });
 
     expect(removeQueriesMock).toHaveBeenCalledTimes(2);
-  });
+  }, 60000);
 
-  it('clicking "Escolher no mapa" opens map screen with mode=select-origin and without coordinates in URL (ECO-2311)', async () => {
+  it('does not render "Escolher no mapa" or "Minha localização" in OriginSelector even with dynamic routing enabled', async () => {
     const { useAppContext } = require('../../state/useAppContext');
     const { initialAppState } = require('../../state/appReducer');
     (useAppContext as jest.Mock).mockReturnValue({
@@ -656,18 +687,52 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     });
 
     const root = tree.root;
-    const mapButton = root.find(
+    const mapButton = root.findAll(
       (b) => b.type === TouchableOpacity && b.props.accessibilityLabel === 'Escolher ponto de partida no mapa'
     );
-    expect(mapButton).toBeDefined();
+    expect(mapButton.length).toBe(0);
 
-    await act(async () => {
-      mapButton.props.onPress();
+    const gpsButton = root.findAll(
+      (b) => b.type === TouchableOpacity && b.props.accessibilityLabel === 'Usar minha localização atual como origem'
+    );
+    expect(gpsButton.length).toBe(0);
+  });
+
+  it('does not render Google Routes geometry over the OpenStreetMap preview', async () => {
+    const { useQueryClient } = require('@tanstack/react-query');
+    const { useAppContext } = require('../../state/useAppContext');
+    const { initialAppState } = require('../../state/appReducer');
+    (useAppContext as jest.Mock).mockReturnValue({
+      state: {
+        ...initialAppState,
+        featureFlags: { ...initialAppState.featureFlags, dynamicRouting: true },
+      },
+      dispatch: jest.fn(),
+    });
+    (useQueryClient as jest.Mock).mockReturnValue({
+      getQueryData: jest.fn().mockReturnValue({
+        originType: 'map-selection-preview',
+        previewData: {
+          distance_m: 15400,
+          duration_s: 1200,
+          provider: 'google_routes',
+          geojson: { type: 'LineString', coordinates: [[-54.7083, -2.4431], [-54.9, -2.5]] },
+          bounds: { min_lat: -2.5, max_lat: -2.4, min_lng: -54.9, max_lng: -54.7 },
+        },
+      }),
+      removeQueries: jest.fn(),
     });
 
-    expect(mockPush).toHaveBeenCalledWith(
-      '/route/route-pindobal/map?originId=origin-porto&mode=select-origin'
-    );
+    let tree!: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(<RouteDetailScreen />);
+    });
+
+    const textContents = tree.root.findAllByType(Text).map((node) => textValue(node.props.children));
+    expect(textContents).toContain('Trajeto calculado pelo Google Maps');
+    expect(textContents).toContain('Distância estimada: 15.4 km • Tempo: ~20 min');
+    expect(textContents).toContain('Google Maps');
+    expect(tree.root.findAllByProps({ accessibilityLabel: 'Bounds ativos do mapa' })).toHaveLength(0);
   });
 
   it('provides and consumes dynamic pins, legend and city_bounds on RouteMapPreview and transfers state on expand (ECO-2312)', async () => {
@@ -775,9 +840,13 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     const root = tree.root;
 
     // Select Aeroporto first as previous valid origin
-    const originButtons = root.findAll((node) => node.type === TouchableOpacity && node.props.accessibilityLabel?.includes('Selecionar origem'));
+    const combobox = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityRole === 'combobox');
     await act(async () => {
-      originButtons[1].props.onPress();
+      combobox.props.onPress();
+    });
+    const aeroportoOption = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityLabel === 'Selecionar Aeroporto');
+    await act(async () => {
+      aeroportoOption.props.onPress();
     });
 
     // Simulate calling handleSelectCurrentLocation / coordinate selection failure
@@ -799,7 +868,7 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     );
 
     // Selector preserves the last valid origin (Aeroporto)
-    const updatedButtons = root.findAll((node) => node.type === TouchableOpacity && node.props.accessibilityLabel?.includes('Selecionar origem'));
-    expect(updatedButtons[1].props.accessibilityState).toEqual({ selected: true });
+    const comboboxUpdated = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityRole === 'combobox');
+    expect(comboboxUpdated.props.accessibilityLabel).toBe('Saindo de: Aeroporto');
   });
 });

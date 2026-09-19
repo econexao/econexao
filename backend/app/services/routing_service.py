@@ -11,6 +11,7 @@ from app.connectors.routing_connector import (
 )
 from app.core.config import settings
 from app.core.taxonomy import get_canonical_category
+from app.ingestion.altamira_importer import ROTA_PEDRAL_ID
 from app.repositories.routing import RoutingRepository
 from app.repositories.territorial import TerritorialRepository
 from app.schemas.envelopes import (
@@ -45,6 +46,8 @@ class RoutingService:
         self.territorial_repo = TerritorialRepository(self.db)
 
     async def _get_route_anchor_coordinate(self, route_id: uuid.UUID) -> Coordinate | None:
+        if route_id == ROTA_PEDRAL_ID:
+            return Coordinate(latitude=-3.255088, longitude=-52.2194072)
         endpoints = await self.routing_repo.list_official_destination_endpoints(route_id)
         if not endpoints:
             return None
@@ -85,9 +88,7 @@ class RoutingService:
         )
         if result.provider not in {"fake_deterministic", "google_routes"}:
             raise RoutingProviderUnavailableError("Provider retornou identificador não aprovado.")
-        approved_provider = cast(
-            Literal["fake_deterministic", "google_routes"], result.provider
-        )
+        approved_provider = cast(Literal["fake_deterministic", "google_routes"], result.provider)
 
         if result.bounds:
             bounds = RouteBoundsSchema(
@@ -133,7 +134,10 @@ class RoutingService:
         for actor, cat_slug, lat, lon in essential_actors_data:
             if actor.id not in combined_actors:
                 layer = str(get_canonical_category(cat_slug)["spatial_scope"])
-                combined_actors[actor.id] = (actor, cat_slug, lat, lon, layer)
+                # Regional transport is eligible for the city layer, but only the
+                # corridor query establishes membership in a dynamic preview route.
+                rendered_layer = "citywide_essential" if layer == "both" else layer
+                combined_actors[actor.id] = (actor, cat_slug, lat, lon, rendered_layer)
 
         # Deterministic sorting: is_featured DESC, green_badge_status DESC,
         # sort_order ASC, name ASC, id ASC

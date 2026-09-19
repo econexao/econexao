@@ -21,16 +21,66 @@ export const getCategoryIonicons = (
       return 'compass-outline';
     case 'bed':
       return 'bed-outline';
+    case 'beer':
+      return 'beer-outline';
+    case 'coffee':
+      return 'cafe-outline';
+    case 'shopping-cart':
+    case 'cart':
+      return 'cart-outline';
+    case 'store':
+    case 'storefront':
+      return 'storefront-outline';
+    case 'trees':
+      return 'leaf-outline';
+    case 'sun':
+      return 'sunny-outline';
+    case 'waves':
+      return 'water-outline';
+    case 'mountain':
+    case 'trail-sign':
+      return 'trail-sign-outline';
+    case 'landmark':
+      return 'business-outline';
+    case 'church':
+      return 'home-outline';
+    case 'umbrella':
+      return 'umbrella-outline';
+    case 'home':
+      return 'home-outline';
     case 'palette':
       return 'color-palette-outline';
     case 'bus':
       return 'bus-outline';
+    case 'plane':
+      return 'airplane-outline';
+    case 'anchor':
+    case 'ship':
+    case 'boat':
+      return 'boat-outline';
+    case 'music':
+    case 'musical-notes':
+      return 'musical-notes-outline';
+    case 'bicycle':
+    case 'bike':
+      return 'bicycle-outline';
+    case 'fuel':
+      return 'car-outline';
+    case 'car':
+      return 'car-outline';
+    case 'briefcase':
+      return 'briefcase-outline';
     case 'heart-pulse':
     case 'cross':
     case 'medkit':
       return 'heart-outline';
+    case 'pill':
+      return 'medical-outline';
     case 'shield':
+    case 'shield-check':
       return 'shield-checkmark-outline';
+    case 'scale':
+      return 'scale-outline';
     case 'help-circle':
       return 'help-circle-outline';
     default:
@@ -43,6 +93,7 @@ export const CategoryFilters: React.FC<CategoryFiltersProps> = ({
   onSelectCategory,
   categories,
 }) => {
+  const categoryList = Array.isArray(categories) ? categories : [];
   return (
     <ScrollView
       style={styles.scroller}
@@ -56,7 +107,7 @@ export const CategoryFilters: React.FC<CategoryFiltersProps> = ({
         onPress={() => onSelectCategory('')}
         icon="apps-outline"
       />
-      {categories.map((cat) => {
+      {categoryList.map((cat) => {
         const slug = 'category_slug' in cat ? cat.category_slug : cat.slug;
         const label = 'count' in cat ? `${cat.label} (${cat.count})` : cat.label;
         return (

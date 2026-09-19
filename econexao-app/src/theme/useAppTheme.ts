@@ -5,6 +5,7 @@ import { typography as defaultTypography } from './typography';
 import { spacing } from './spacing';
 import { radii } from './radii';
 import { shadows } from './shadows';
+import { motion } from './motion';
 import { useAppContext } from '../state/useAppContext';
 
 export type AppThemeColors = Record<keyof typeof defaultColors, string>;
@@ -71,6 +72,7 @@ export function useAppTheme() {
       spacing,
       radii,
       shadows,
+      motion,
       isHighContrast: highContrast,
       textScale: textScale || 1.0,
       screenReaderMode,

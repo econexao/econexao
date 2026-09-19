@@ -16,6 +16,7 @@ from scripts.staging_migration_gate import (
     check_migration_drift,
     check_supabase_advisors,
     extract_project_ref_from_url,
+    link_staging_project,
     main,
     run_cli_command,
     run_gate,
@@ -65,6 +66,18 @@ def test_run_gate_fails_closed_on_missing_or_whitespace_secrets(
         assert label in captured
 
 
+def test_run_gate_fails_closed_without_expected_staging_identity(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A valid-looking target cannot reach link without an independent identity."""
+    with patch("scripts.staging_migration_gate.link_staging_project") as mock_link:
+        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN)
+
+    assert code == 1
+    mock_link.assert_not_called()
+    assert "EXPECTED_STAGING_PROJECT_REF is missing" in capsys.readouterr().out
+
+
 # ==============================================================================
 # 2. VALIDAÇÃO DE PROJECT REF E ISOLAMENTO DE AMBIENTES
 # ==============================================================================
@@ -88,8 +101,33 @@ def test_extract_project_ref_from_url() -> None:
 
 def test_validate_staging_project_ref_valid() -> None:
     """Valid 20-character alphanumeric ref is accepted and lowercased."""
-    assert validate_staging_project_ref("abcdefghijklmnopqrst") == "abcdefghijklmnopqrst"
-    assert validate_staging_project_ref("  abcdefghijklmnopqrst  ") == "abcdefghijklmnopqrst"
+    assert (
+        validate_staging_project_ref(
+            "abcdefghijklmnopqrst", expected_staging_ref="abcdefghijklmnopqrst"
+        )
+        == "abcdefghijklmnopqrst"
+    )
+    assert (
+        validate_staging_project_ref(
+            "  abcdefghijklmnopqrst  ", expected_staging_ref=" abcdefghijklmnopqrst "
+        )
+        == "abcdefghijklmnopqrst"
+    )
+
+
+@pytest.mark.parametrize("expected_ref", [None, "", "   "])
+def test_validate_staging_project_ref_requires_independent_expected_identity(
+    expected_ref: str | None,
+) -> None:
+    """A syntactically valid target cannot pass without an independent expected ref."""
+    with pytest.raises(ValueError, match="EXPECTED_STAGING_PROJECT_REF is missing"):
+        validate_staging_project_ref(VALID_REF, expected_staging_ref=expected_ref)
+
+
+def test_validate_staging_project_ref_rejects_invalid_expected_identity() -> None:
+    """The expected identity is validated before it can authorize a target."""
+    with pytest.raises(ValueError, match="EXPECTED_STAGING_PROJECT_REF must be exactly 20"):
+        validate_staging_project_ref(VALID_REF, expected_staging_ref="invalid")
 
 
 def test_validate_staging_project_ref_expected_match() -> None:
@@ -131,7 +169,7 @@ def test_validate_staging_project_ref_invalid_formats_and_markers(
 ) -> None:
     """Validate that invalid lengths, formats, and placeholder markers are rejected."""
     with pytest.raises(ValueError, match=error_match):
-        validate_staging_project_ref(invalid_ref)
+        validate_staging_project_ref(invalid_ref, expected_staging_ref=VALID_REF)
 
 
 def test_validate_staging_project_ref_prevents_collisions() -> None:
@@ -142,15 +180,29 @@ def test_validate_staging_project_ref_prevents_collisions() -> None:
 
     # Dev collision
     with pytest.raises(ValueError, match="development"):
-        validate_staging_project_ref("abcdefghijklmnopqrst", dev_ref=dev_ref, test_ref=test_ref)
+        validate_staging_project_ref(
+            "abcdefghijklmnopqrst",
+            expected_staging_ref="abcdefghijklmnopqrst",
+            dev_ref=dev_ref,
+            test_ref=test_ref,
+        )
 
     # Test collision
     with pytest.raises(ValueError, match="test"):
-        validate_staging_project_ref("zyxwvutsrqponmlkjihg", dev_ref=dev_ref, test_ref=test_ref)
+        validate_staging_project_ref(
+            "zyxwvutsrqponmlkjihg",
+            expected_staging_ref="zyxwvutsrqponmlkjihg",
+            dev_ref=dev_ref,
+            test_ref=test_ref,
+        )
 
     # Prod collision
     with pytest.raises(ValueError, match="production"):
-        validate_staging_project_ref("0123456789abcdefghij", prod_ref=prod_ref)
+        validate_staging_project_ref(
+            "0123456789abcdefghij",
+            expected_staging_ref="0123456789abcdefghij",
+            prod_ref=prod_ref,
+        )
 
 
 # ==============================================================================
@@ -252,6 +304,30 @@ def test_check_migration_drift_handles_cli_error() -> None:
         assert unapplied == []
 
 
+def test_link_staging_project_uses_pinned_cli_and_redacts_secrets() -> None:
+    """The CI link is staging-only, uses the pinned CLI and never exposes credentials."""
+    with patch(
+        "scripts.staging_migration_gate.run_cli_command", return_value=(0, "Linked project")
+    ) as mock_cli:
+        ok, output = link_staging_project(VALID_REF, VALID_PASS, VALID_TOKEN)
+
+    assert ok is True
+    assert output == "Linked project"
+    args = mock_cli.call_args.args[0]
+    assert args[:4] == ["npx", "--yes", "supabase@2.113.0", "link"]
+    assert "--project-ref" in args
+    assert "--password" in args
+
+
+def test_link_staging_project_fails_closed_on_cli_error() -> None:
+    with patch(
+        "scripts.staging_migration_gate.run_cli_command", return_value=(1, "connection failed")
+    ):
+        ok, output = link_staging_project(VALID_REF, VALID_PASS, VALID_TOKEN)
+    assert ok is False
+    assert "supabase link failed" in output
+
+
 def test_run_gate_drift_detected_without_apply_authorization_fails() -> None:
     """If unapplied migrations exist and apply_migrations=False, gate fails closed."""
     with (
@@ -259,10 +335,17 @@ def test_run_gate_drift_detected_without_apply_authorization_fails() -> None:
             "scripts.staging_migration_gate.check_migration_drift",
             return_value=(True, "drift", ["20260826000001"]),
         ),
+        patch("scripts.staging_migration_gate.link_staging_project", return_value=(True, "linked")),
         patch("scripts.staging_migration_gate.apply_staging_migrations") as mock_apply,
         patch("scripts.staging_migration_gate.check_supabase_advisors") as mock_advisors,
     ):
-        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN, apply_migrations=False)
+        code = run_gate(
+            VALID_REF,
+            VALID_PASS,
+            VALID_TOKEN,
+            expected_staging_ref=VALID_REF,
+            apply_migrations=False,
+        )
         assert code == 1
         mock_apply.assert_not_called()
         mock_advisors.assert_not_called()
@@ -275,13 +358,20 @@ def test_run_gate_drift_detected_with_apply_authorization_apply_fails() -> None:
             "scripts.staging_migration_gate.check_migration_drift",
             return_value=(True, "drift", ["20260826000001"]),
         ),
+        patch("scripts.staging_migration_gate.link_staging_project", return_value=(True, "linked")),
         patch(
             "scripts.staging_migration_gate.apply_staging_migrations",
             return_value=(False, "Failed to apply migration"),
         ),
         patch("scripts.staging_migration_gate.check_supabase_advisors") as mock_advisors,
     ):
-        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN, apply_migrations=True)
+        code = run_gate(
+            VALID_REF,
+            VALID_PASS,
+            VALID_TOKEN,
+            expected_staging_ref=VALID_REF,
+            apply_migrations=True,
+        )
         assert code == 1
         mock_advisors.assert_not_called()
 
@@ -293,6 +383,7 @@ def test_run_gate_drift_detected_with_apply_authorization_success() -> None:
             "scripts.staging_migration_gate.check_migration_drift",
             return_value=(True, "drift", ["20260826000001"]),
         ),
+        patch("scripts.staging_migration_gate.link_staging_project", return_value=(True, "linked")),
         patch(
             "scripts.staging_migration_gate.apply_staging_migrations",
             return_value=(True, "All applied"),
@@ -302,7 +393,13 @@ def test_run_gate_drift_detected_with_apply_authorization_success() -> None:
             return_value=(True, "No issues"),
         ),
     ):
-        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN, apply_migrations=True)
+        code = run_gate(
+            VALID_REF,
+            VALID_PASS,
+            VALID_TOKEN,
+            expected_staging_ref=VALID_REF,
+            apply_migrations=True,
+        )
         assert code == 0
 
 
@@ -369,12 +466,19 @@ def test_run_gate_fails_when_advisors_fail() -> None:
             "scripts.staging_migration_gate.check_migration_drift",
             return_value=(True, "in sync", []),
         ),
+        patch("scripts.staging_migration_gate.link_staging_project", return_value=(True, "linked")),
         patch(
             "scripts.staging_migration_gate.check_supabase_advisors",
             return_value=(False, "RLS violation"),
         ),
     ):
-        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN, apply_migrations=False)
+        code = run_gate(
+            VALID_REF,
+            VALID_PASS,
+            VALID_TOKEN,
+            expected_staging_ref=VALID_REF,
+            apply_migrations=False,
+        )
         assert code == 1
 
 
@@ -451,9 +555,10 @@ def test_run_gate_short_circuit_on_drift_check_failure() -> None:
             "scripts.staging_migration_gate.check_migration_drift",
             return_value=(False, "CLI crashed", []),
         ),
+        patch("scripts.staging_migration_gate.link_staging_project", return_value=(True, "linked")),
         patch("scripts.staging_migration_gate.check_supabase_advisors") as mock_advisors,
     ):
-        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN)
+        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN, expected_staging_ref=VALID_REF)
         assert code == 1
         mock_advisors.assert_not_called()
 
@@ -465,11 +570,18 @@ def test_run_gate_returns_zero_only_when_all_steps_succeed() -> None:
             "scripts.staging_migration_gate.check_migration_drift",
             return_value=(True, "in sync", []),
         ) as mock_drift,
+        patch("scripts.staging_migration_gate.link_staging_project", return_value=(True, "linked")),
         patch(
             "scripts.staging_migration_gate.check_supabase_advisors", return_value=(True, "clean")
         ) as mock_advisors,
     ):
-        code = run_gate(VALID_REF, VALID_PASS, VALID_TOKEN, apply_migrations=False)
+        code = run_gate(
+            VALID_REF,
+            VALID_PASS,
+            VALID_TOKEN,
+            expected_staging_ref=VALID_REF,
+            apply_migrations=False,
+        )
         assert code == 0
         mock_drift.assert_called_once()
         mock_advisors.assert_called_once()
@@ -505,4 +617,3 @@ def test_main_cli_entrypoint_orchestration(monkeypatch: pytest.MonkeyPatch) -> N
         access_token=VALID_TOKEN,
         apply_migrations=True,
     )
-

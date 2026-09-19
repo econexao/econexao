@@ -7,6 +7,7 @@ from typing import Any, cast
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
+from app.core.pagination import decode_cursor, encode_cursor
 from app.core.taxonomy import get_canonical_category
 from app.repositories.territorial import TerritorialRepository
 from app.schemas.envelopes import (
@@ -134,20 +135,25 @@ class TerritorialService:
         user_id: uuid.UUID | None = None,
         verified: bool | None = None,
         limit: int = 20,
-        offset: int = 0,
+        cursor: str | None = None,
     ) -> RouteListEnvelope:
-        routes, total = await self.repo.list_routes(
+        decoded = decode_cursor(cursor, "routes", 2)
+        after = (str(decoded[0]), uuid.UUID(str(decoded[1]))) if decoded else None
+        routes, total, has_more = await self.repo.list_routes(
             region_id=region_id,
             q=q,
             saved=saved,
             user_id=user_id,
             verified=verified,
             limit=limit,
-            offset=offset,
+            after=after,
         )
 
         route_ids = [r.id for r in routes]
         covers = await self.media_resolver.batch_resolve_covers_for_owners("route", route_ids)
+        favorite_ids = (
+            await self.repo.get_favorite_route_ids(user_id, route_ids) if user_id else set()
+        )
 
         summaries = [
             RouteSummarySchema(
@@ -162,16 +168,23 @@ class TerritorialService:
                 best_season=r.best_season,
                 cover_image_url=covers[r.id].url if r.id in covers else None,
                 cover_media=covers.get(r.id),
+                is_favorite=r.id in favorite_ids,
             )
             for r in routes
         ]
 
-        next_cursor = str(offset + limit) if (offset + limit) < total else None
+        next_cursor = (
+            encode_cursor("routes", [routes[-1].title, str(routes[-1].id)])
+            if has_more and routes
+            else None
+        )
         meta = PaginationMeta(total=total, limit=limit, next_cursor=next_cursor)
 
         return RouteListEnvelope(data=summaries, meta=meta)
 
-    async def get_route_detail(self, route_id: uuid.UUID) -> RouteDetailEnvelope | None:
+    async def get_route_detail(
+        self, route_id: uuid.UUID, user_id: uuid.UUID | None = None
+    ) -> RouteDetailEnvelope | None:
         route = await self.repo.get_route_by_id(route_id)
         if not route:
             return None
@@ -194,6 +207,9 @@ class TerritorialService:
             "route", route.id
         )
 
+        favorite_ids = (
+            await self.repo.get_favorite_route_ids(user_id, [route.id]) if user_id else set()
+        )
         detail = RouteDetailSchema(
             id=route.id,
             slug=route.slug,
@@ -210,6 +226,7 @@ class TerritorialService:
             payment_info=route.payment_info,
             cover_image_url=cover_item.url if cover_item else None,
             cover_media=cover_item,
+            is_favorite=route.id in favorite_ids,
             gallery=gallery_items,
             origins=origins,
         )
@@ -299,6 +316,8 @@ class TerritorialService:
             # Fallback to first origin if geometry is missing
             selected_origin_id = route.origins[0].id
 
+        route_buffer_m = settings.ROUTE_CORRIDOR_BUFFER_METERS
+
         corridor_actors_data: list[tuple[Any, str, float | None, float | None, bool, int]] = []
         if geojson_obj is not None and layer in (None, "route_corridor", "both"):
             corridor_actors_data = await self.repo.find_route_corridor_actors(
@@ -307,7 +326,7 @@ class TerritorialService:
                 route_id=route_id,
                 origin_id=selected_origin_id,
                 category_slug=category,
-                buffer_m=settings.ROUTE_CORRIDOR_BUFFER_METERS,
+                buffer_m=route_buffer_m,
                 limit=settings.STATIC_MAP_MAX_PINS,
             )
 
@@ -332,13 +351,35 @@ class TerritorialService:
             actor_layer = str(get_canonical_category(cat_slug)["spatial_scope"])
             if layer is None or layer == actor_layer:
                 combined_actors[actor.id] = (
-                    actor, cat_slug, lat, lon, actor_layer, is_featured, sort_order
+                    actor,
+                    cat_slug,
+                    lat,
+                    lon,
+                    actor_layer,
+                    is_featured,
+                    sort_order,
                 )
 
         for actor, cat_slug, lat, lon in essential_actors_data:
             actor_layer = str(get_canonical_category(cat_slug)["spatial_scope"])
-            if actor.id not in combined_actors and (layer is None or layer == actor_layer):
-                combined_actors[actor.id] = (actor, cat_slug, lat, lon, actor_layer, False, 0)
+            if (
+                actor.id not in combined_actors
+                and (layer is None or layer == actor_layer)
+            ):
+                # A `both` category is not proof that this particular actor is in the
+                # selected geometry. This branch contains only city-wide actors that
+                # were absent from the PostGIS corridor query, so it must stay out of
+                # the route camera while remaining available in "Ver cidade".
+                rendered_layer = "citywide_essential" if actor_layer == "both" else actor_layer
+                combined_actors[actor.id] = (
+                    actor,
+                    cat_slug,
+                    lat,
+                    lon,
+                    rendered_layer,
+                    False,
+                    0,
+                )
 
         # Deterministic sorting: is_featured DESC, green_badge_status DESC, sort_order ASC, name ASC
         def get_priority_key(
@@ -371,8 +412,10 @@ class TerritorialService:
                         name=actor.name,
                         category_slug=canonical_slug,
                         category_label=canonical_cat["label"],
+                        type_slug=getattr(actor, "_transient_type_slug", None),
+                        type_label=getattr(actor, "_transient_type_label", None),
                         color=canonical_cat["color"],
-                        icon=canonical_cat["icon"],
+                        icon=getattr(actor, "_transient_type_icon", None) or canonical_cat["icon"],
                         latitude=lat,
                         longitude=lon,
                         layer=actor_layer,  # type: ignore[arg-type]
@@ -401,9 +444,7 @@ class TerritorialService:
         # route_bounds strictly derived from geometry or corridor pins
         bounds: dict[str, float] | None = None
         if geojson_obj is not None:
-            bounds = await self.repo.get_buffered_route_bounds(
-                geojson_obj, settings.ROUTE_CORRIDOR_BUFFER_METERS
-            )
+            bounds = await self.repo.get_buffered_route_bounds(geojson_obj, route_buffer_m)
         elif geom and geom.bounds:
             raw_bounds = geom.bounds
             min_lng = raw_bounds.get("min_lng", raw_bounds.get("min_lon"))
@@ -500,23 +541,29 @@ class TerritorialService:
         category_slug: str | None = None,
         origin_id: uuid.UUID | None = None,
         limit: int = 20,
-        offset: int = 0,
+        cursor: str | None = None,
+        user_id: uuid.UUID | None = None,
     ) -> ActorListEnvelope | None:
         route = await self.repo.get_route_by_id(route_id)
         if not route:
             return None
 
-        actors_data, total = await self.repo.list_route_actors(
+        decoded = decode_cursor(cursor, "route_actors", 3)
+        after = (int(decoded[0]), str(decoded[1]), uuid.UUID(str(decoded[2]))) if decoded else None
+        actors_data, total, has_more = await self.repo.list_route_actors(
             route_id=route_id,
             q=q,
             category_slug=category_slug,
             origin_id=origin_id,
             limit=limit,
-            offset=offset,
+            after=after,
         )
 
         actor_ids = [actor.id for actor, _, _, _ in actors_data]
         covers = await self.media_resolver.batch_resolve_covers_for_owners("actor", actor_ids)
+        favorite_ids = (
+            await self.repo.get_favorite_actor_ids(user_id, actor_ids) if user_id else set()
+        )
 
         summaries = [
             ActorSummarySchema(
@@ -525,6 +572,9 @@ class TerritorialService:
                 name=actor.name,
                 category_slug=cat_slug,
                 category_label=getattr(actor, "_transient_cat_label", cat_slug),
+                type_slug=getattr(actor, "_transient_type_slug", None),
+                type_label=getattr(actor, "_transient_type_label", None),
+                type_icon=getattr(actor, "_transient_type_icon", None),
                 address=actor.address,
                 latitude=lat,
                 longitude=lon,
@@ -535,16 +585,31 @@ class TerritorialService:
                 else None,
                 cover_image_url=covers[actor.id].url if actor.id in covers else None,
                 cover_media=covers.get(actor.id),
+                is_favorite=actor.id in favorite_ids,
             )
             for actor, cat_slug, lat, lon in actors_data
         ]
 
-        next_cursor = str(offset + limit) if (offset + limit) < total else None
+        last_actor = actors_data[-1][0] if actors_data else None
+        next_cursor = (
+            encode_cursor(
+                "route_actors",
+                [
+                    cast(Any, last_actor)._transient_route_sort_order,
+                    last_actor.name,
+                    str(last_actor.id),
+                ],
+            )
+            if has_more and last_actor
+            else None
+        )
         meta = PaginationMeta(total=total, limit=limit, next_cursor=next_cursor)
 
         return ActorListEnvelope(data=summaries, meta=meta)
 
-    async def get_actor_detail(self, actor_id: uuid.UUID) -> ActorDetailEnvelope | None:
+    async def get_actor_detail(
+        self, actor_id: uuid.UUID, user_id: uuid.UUID | None = None
+    ) -> ActorDetailEnvelope | None:
         actor, lat, lon, features, google_place_id = await self.repo.get_actor_by_id(actor_id)
         if not actor:
             return None
@@ -562,6 +627,9 @@ class TerritorialService:
             "actor", actor.id
         )
 
+        favorite_ids = (
+            await self.repo.get_favorite_actor_ids(user_id, [actor.id]) if user_id else set()
+        )
         detail = ActorDetailSchema(
             id=actor.id,
             slug=actor.slug,
@@ -587,6 +655,7 @@ class TerritorialService:
             google_review_count=actor.google_review_count,
             cover_image_url=cover_item.url if cover_item else None,
             cover_media=cover_item,
+            is_favorite=actor.id in favorite_ids,
             gallery=gallery_items,
             accessibility_features=features,
         )

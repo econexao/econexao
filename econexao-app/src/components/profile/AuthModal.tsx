@@ -1,48 +1,157 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  AccessibilityInfo,
   ActivityIndicator,
-  Modal,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import * as Linking from 'expo-linking';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useAuth } from '../../hooks/useAuth';
 import { theme } from '../../theme/theme';
 import { makeAccessibleButton } from '../../utils/accessibility';
+import { AccessibleModal } from '../common/AccessibleModal';
 
 interface AuthModalProps {
   visible: boolean;
   onClose: () => void;
+  returnFocusRef?: React.RefObject<any>;
+  initialMode?: AuthMode;
 }
 
 type AuthMode = 'link' | 'signin' | 'signup' | 'recovery';
 
-export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
-  const { user, linkAccount, signInWithPassword, signUp, resetPassword } = useAuth();
-  const isAnonymous = user?.is_anonymous ?? true;
+export const AuthModal: React.FC<AuthModalProps> = ({
+  visible,
+  onClose,
+  returnFocusRef,
+  initialMode,
+}) => {
+  const {
+    user,
+    linkAccount,
+    signInWithPassword,
+    signUp,
+    resetPassword,
+    signInWithGoogle,
+    linkGoogleAccount,
+    isIdentityConflictError,
+    clearGuestFavoritesSnapshot,
+  } = useAuth();
+  const isAnonymous = user ? (user.is_anonymous === true && !user.email) : true;
+  const closeButtonRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
 
-  const [mode, setMode] = useState<AuthMode>(isAnonymous ? 'link' : 'signin');
+  const [mode, setMode] = useState<AuthMode>(initialMode ?? (isAnonymous ? 'link' : 'signin'));
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isConflictDetected, setIsConflictDetected] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (visible) {
+      setMode(initialMode ?? (isAnonymous ? 'link' : 'signin'));
+      setErrorMessage(null);
+      setSuccessMessage(null);
+      setIsConflictDetected(false);
+    }
+  }, [visible, initialMode, isAnonymous]);
 
   const resetState = () => {
     setEmail('');
     setPassword('');
     setErrorMessage(null);
     setSuccessMessage(null);
+    setIsConflictDetected(false);
     setIsLoading(false);
+    setIsGoogleLoading(false);
   };
 
   const handleClose = () => {
     resetState();
     onClose();
+  };
+
+  const handleGoogleAuth = async () => {
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setIsConflictDetected(false);
+    setIsGoogleLoading(true);
+
+    try {
+      AccessibilityInfo.announceForAccessibility(
+        mode === 'link' ? 'Iniciando vinculação com o Google...' : 'Iniciando login com o Google...'
+      );
+
+      let result: { url?: string };
+      if (mode === 'link') {
+        result = await linkGoogleAccount();
+        setSuccessMessage('Redirecionando para vincular com o Google...');
+        AccessibilityInfo.announceForAccessibility('Redirecionando para vincular com o Google.');
+      } else {
+        result = await signInWithGoogle();
+        setSuccessMessage('Redirecionando para login com o Google...');
+        AccessibilityInfo.announceForAccessibility('Redirecionando para login com o Google.');
+      }
+
+      if (result?.url) {
+        if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location?.assign) {
+          window.location.assign(result.url);
+        } else if (result.url) {
+          await Linking.openURL(result.url);
+        }
+      }
+    } catch (err: any) {
+      if (isIdentityConflictError(err)) {
+        setIsConflictDetected(true);
+        setErrorMessage(
+          'Esta conta Google já possui cadastro no ECOnexão. Conforme a política de privacidade, os dados desta sessão de visitante não serão vinculados à conta antiga.'
+        );
+        AccessibilityInfo.announceForAccessibility('Conta existente detectada.');
+      } else if (err?.message?.includes('cancel') || err?.message?.includes('denied')) {
+        setErrorMessage('Autenticação com o Google cancelada.');
+        AccessibilityInfo.announceForAccessibility('Autenticação com o Google cancelada.');
+      } else {
+        const msg = err?.message || 'Falha na autenticação com o Google. Tente novamente.';
+        setErrorMessage(msg);
+        AccessibilityInfo.announceForAccessibility(msg);
+      }
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handleSwitchToExistingAccount = async () => {
+    await clearGuestFavoritesSnapshot();
+    setIsConflictDetected(false);
+    setErrorMessage(null);
+    setIsGoogleLoading(true);
+
+    try {
+      AccessibilityInfo.announceForAccessibility('Entrando na conta existente com o Google...');
+      const result = await signInWithGoogle();
+      setSuccessMessage('Entrando na sua conta Google existente...');
+      if (result?.url) {
+        if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location?.assign) {
+          window.location.assign(result.url);
+        } else if (result.url) {
+          await Linking.openURL(result.url);
+        }
+      }
+    } catch (err: any) {
+      const msg = err?.message || 'Falha ao entrar na conta existente com o Google.';
+      setErrorMessage(msg);
+      AccessibilityInfo.announceForAccessibility(msg);
+    } finally {
+      setIsGoogleLoading(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -93,7 +202,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={handleClose}>
+    <AccessibleModal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onClose={handleClose}
+      initialFocusRef={closeButtonRef}
+      returnFocusRef={returnFocusRef}
+      accessibilityLabel="Autenticação e cadastro ECOnexão"
+    >
       <View style={styles.overlay}>
         <View style={styles.card}>
           <View style={styles.header}>
@@ -114,6 +231,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
               </Text>
             </View>
             <TouchableOpacity
+              ref={closeButtonRef}
               onPress={handleClose}
               style={styles.closeButton}
               {...makeAccessibleButton('Fechar modal de autenticação')}
@@ -179,17 +297,78 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
           )}
 
           {errorMessage && (
-            <View style={styles.errorContainer}>
+            <View style={styles.errorContainer} accessibilityRole="alert">
               <Ionicons name="alert-circle" size={18} color="#991B1B" />
               <Text style={styles.errorText}>{errorMessage}</Text>
             </View>
           )}
 
+          {isConflictDetected && (
+            <TouchableOpacity
+              style={styles.conflictActionButton}
+              onPress={handleSwitchToExistingAccount}
+              disabled={isGoogleLoading}
+              {...makeAccessibleButton(
+                'Fazer login na conta existente',
+                'Descarta os dados temporários de visitante e entra na conta Google existente'
+              )}
+              accessibilityState={{ busy: isGoogleLoading, disabled: isGoogleLoading }}
+            >
+              <Text style={styles.conflictActionText}>Fazer Login na Conta Existente</Text>
+            </TouchableOpacity>
+          )}
+
           {successMessage && (
-            <View style={styles.successContainer}>
+            <View style={styles.successContainer} accessibilityRole="alert">
               <Ionicons name="checkmark-circle" size={18} color="#065F46" />
               <Text style={styles.successText}>{successMessage}</Text>
             </View>
+          )}
+
+          {mode !== 'recovery' && (
+            <>
+              <TouchableOpacity
+                style={[
+                  styles.googleButton,
+                  (isGoogleLoading || isLoading) && styles.googleButtonDisabled,
+                ]}
+                onPress={handleGoogleAuth}
+                disabled={isGoogleLoading || isLoading}
+                {...makeAccessibleButton(
+                  mode === 'link'
+                    ? 'Salvar conta com o Google'
+                    : mode === 'signup'
+                    ? 'Cadastrar com o Google'
+                    : 'Entrar com o Google',
+                  'Inicia fluxo seguro de autenticação com sua conta Google'
+                )}
+                accessibilityState={{
+                  busy: isGoogleLoading,
+                  disabled: isGoogleLoading || isLoading,
+                }}
+              >
+                {isGoogleLoading ? (
+                  <ActivityIndicator size="small" color={theme.colors.brandForest} />
+                ) : (
+                  <View style={styles.googleButtonContent}>
+                    <Ionicons name="logo-google" size={18} color="#EA4335" />
+                    <Text style={styles.googleButtonText}>
+                      {mode === 'link'
+                        ? 'Salvar com o Google'
+                        : mode === 'signup'
+                        ? 'Cadastrar com o Google'
+                        : 'Entrar com o Google'}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+
+              <View style={styles.dividerRow}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>ou continue com e-mail</Text>
+                <View style={styles.dividerLine} />
+              </View>
+            </>
           )}
 
           <View style={styles.form}>
@@ -276,7 +455,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
           </View>
         </View>
       </View>
-    </Modal>
+    </AccessibleModal>
   );
 };
 
@@ -374,6 +553,60 @@ const styles = StyleSheet.create({
     color: '#065F46',
     fontSize: 13,
     flex: 1,
+  },
+  conflictActionButton: {
+    backgroundColor: '#FEF3C7',
+    borderWidth: 1,
+    borderColor: '#F59E0B',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: theme.radii.md,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  conflictActionText: {
+    color: '#92400E',
+    fontWeight: '700',
+    fontSize: 13,
+  },
+  googleButton: {
+    backgroundColor: theme.colors.surfaceWhite,
+    borderWidth: 1.5,
+    borderColor: 'rgba(117, 155, 113, 0.35)',
+    borderRadius: theme.radii.md,
+    paddingVertical: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+    ...theme.shadows.card,
+  },
+  googleButtonDisabled: {
+    opacity: 0.6,
+  },
+  googleButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  googleButtonText: {
+    color: theme.colors.brandDeep,
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+    gap: 10,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(117, 155, 113, 0.2)',
+  },
+  dividerText: {
+    fontSize: 12,
+    color: theme.colors.onSurfaceVariant,
   },
   form: {
     gap: 12,

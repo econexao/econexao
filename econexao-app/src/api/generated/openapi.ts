@@ -821,6 +821,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/actors/{actor_id}/google-photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Foto Google temporária do ator
+         * @description Emite um grant opaco a partir de Place Details recente; não expõe URLs Google.
+         */
+        get: operations["get_actor_google_photo_api_v1_actors__actor_id__google_photo_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -1021,6 +1041,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/trips/{trip_id}/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pause Trip */
+        post: operations["pause_trip_api_v1_me_trips__trip_id__pause_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/trips/{trip_id}/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resume Trip */
+        post: operations["resume_trip_api_v1_me_trips__trip_id__resume_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/trips/{trip_id}/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Finish Trip */
+        post: operations["finish_trip_api_v1_me_trips__trip_id__finish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/places/photos/{token}/metadata": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Place Photo Metadata
+         * @description Metadata is intentionally only available after a trusted server-side grant.
+         */
+        get: operations["get_place_photo_metadata_api_v1_places_photos__token__metadata_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/places/photos/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Place Photo */
+        get: operations["get_place_photo_api_v1_places_photos__token__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/content/support": {
         parameters: {
             query?: never;
@@ -1035,6 +1143,26 @@ export interface paths {
         get: operations["get_support_content_api_v1_content_support_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/newsletter/subscribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Inscrever e-mail no informativo
+         * @description Registra um endereço de e-mail na lista de informativos a partir da landing page.
+         */
+        post: operations["subscribe_newsletter_api_v1_newsletter_subscribe_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1134,6 +1262,11 @@ export interface components {
             /** Cover Image Url */
             cover_image_url?: string | null;
             cover_media?: components["schemas"]["ResolvedMediaItemSchema"] | null;
+            /**
+             * Is Favorite
+             * @default false
+             */
+            is_favorite: boolean;
             /** Gallery */
             gallery?: components["schemas"]["ResolvedMediaItemSchema"][];
             /** Accessibility Features */
@@ -1162,6 +1295,12 @@ export interface components {
             category_slug: string;
             /** Category Label */
             category_label: string;
+            /** Type Slug */
+            type_slug?: string | null;
+            /** Type Label */
+            type_label?: string | null;
+            /** Type Icon */
+            type_icon?: string | null;
             /** Address */
             address?: string | null;
             /** Latitude */
@@ -1183,6 +1322,11 @@ export interface components {
             /** Cover Image Url */
             cover_image_url?: string | null;
             cover_media?: components["schemas"]["ResolvedMediaItemSchema"] | null;
+            /**
+             * Is Favorite
+             * @default false
+             */
+            is_favorite: boolean;
         };
         /**
          * AdminAccessSchema
@@ -1259,6 +1403,8 @@ export interface components {
              * Format: uuid
              */
             category_id: string;
+            /** Type Id */
+            type_id?: string | null;
             /** Slug */
             slug: string;
             /** Name */
@@ -1327,6 +1473,9 @@ export interface components {
              */
             category_id: string;
             category?: components["schemas"]["AdminCategorySchema"] | null;
+            /** Type Id */
+            type_id?: string | null;
+            type?: components["schemas"]["AdminActorTypeSchema"] | null;
             /** Slug */
             slug: string;
             /** Name */
@@ -1382,10 +1531,49 @@ export interface components {
             /** Deleted At */
             deleted_at?: string | null;
         };
+        /** AdminActorTypeSchema */
+        AdminActorTypeSchema: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Category Id
+             * Format: uuid
+             */
+            category_id: string;
+            /** Slug */
+            slug: string;
+            /** Label */
+            label: string;
+            /** Icon */
+            icon: string;
+            /** Sort Order */
+            sort_order: number;
+            /** Aliases */
+            aliases?: string[];
+            /** Spatial Scope */
+            spatial_scope: string;
+            /** Publication Rule */
+            publication_rule?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
         /** AdminActorUpdateSchema */
         AdminActorUpdateSchema: {
             /** Category Id */
             category_id?: string | null;
+            /** Type Id */
+            type_id?: string | null;
             /** Name */
             name?: string | null;
             /** Description */
@@ -1443,7 +1631,7 @@ export interface components {
              * Slug
              * @enum {string}
              */
-            slug: "alimentacao" | "atrativos" | "hospedagem" | "artesanato" | "transporte" | "saude" | "seguranca" | "outros";
+            slug: "alimentacao" | "atrativos" | "hospedagem" | "experiencias" | "artesanato" | "vida_noturna" | "comercio" | "servicos_turisticos" | "transporte" | "saude" | "seguranca" | "outros";
             /** Label */
             label: string;
             /** Icon */
@@ -2132,13 +2320,17 @@ export interface components {
              * @enum {string}
              */
             license_code: "CC-BY-4.0" | "SEMTUR_INSTITUTIONAL" | "PROPRIETARY";
-            /** Image */
+            /**
+             * Image
+             * Format: binary
+             */
             image: string;
         };
         /** Body_replace_avatar_api_v1_me_avatar_post */
         Body_replace_avatar_api_v1_me_avatar_post: {
             /**
              * File
+             * Format: binary
              * @description Imagem JPEG, PNG ou WebP; máximo 5 MiB
              */
             file: string;
@@ -2352,11 +2544,6 @@ export interface components {
              */
             request_id: string;
         };
-        /** HTTPValidationError */
-        HTTPValidationError: {
-            /** Detail */
-            detail?: components["schemas"]["ValidationError"][];
-        };
         /** FAQItemSchema */
         FAQItemSchema: {
             /** Id */
@@ -2370,6 +2557,40 @@ export interface components {
              * @default Geral
              */
             category: string;
+        };
+        /** GooglePhotoAttributionSchema */
+        GooglePhotoAttributionSchema: {
+            /** Display Name */
+            display_name: string;
+            /** Uri */
+            uri?: string | null;
+        };
+        /** GooglePhotoMetadataEnvelope */
+        GooglePhotoMetadataEnvelope: {
+            data: components["schemas"]["GooglePhotoMetadataSchema"];
+        };
+        /**
+         * GooglePhotoMetadataSchema
+         * @description Ephemeral photo metadata; deliberately excludes Google resource/photo URLs.
+         */
+        GooglePhotoMetadataSchema: {
+            /** Proxy Url */
+            proxy_url: string;
+            /** Expires At */
+            expires_at: number;
+            /** Width Px */
+            width_px: number;
+            /** Height Px */
+            height_px: number;
+            /** Author Attributions */
+            author_attributions?: components["schemas"]["GooglePhotoAttributionSchema"][];
+            /** Google Maps Uri */
+            google_maps_uri: string;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
         };
         /**
          * HealthDatabaseStatus
@@ -2406,6 +2627,17 @@ export interface components {
              * @example 2026-08-11T15:00:00Z
              */
             timestamp: string;
+            /**
+             * Version
+             * @example 1.0.0
+             */
+            version?: string | null;
+            /**
+             * Commit Sha
+             * @example a1b2c3d4e5
+             */
+            commit_sha?: string | null;
+            database?: components["schemas"]["HealthDatabaseStatus"] | null;
         };
         /** HelpLinkSchema */
         HelpLinkSchema: {
@@ -2447,6 +2679,10 @@ export interface components {
             category_slug: string;
             /** Category Label */
             category_label: string;
+            /** Type Slug */
+            type_slug?: string | null;
+            /** Type Label */
+            type_label?: string | null;
             /** Color */
             color: string;
             /** Icon */
@@ -2513,17 +2749,6 @@ export interface components {
             rejected_reason?: string | null;
             /** Deleted At */
             deleted_at?: string | null;
-            /**
-             * Media Kind
-             * @default stored
-             */
-            media_kind: string;
-            /** External Photo Reference */
-            external_photo_reference?: string | null;
-            /** External Attributions */
-            external_attributions?: unknown[] | null;
-            /** External Cache Expires At */
-            external_cache_expires_at?: string | null;
             /**
              * Sort Order
              * @default 0
@@ -2704,11 +2929,6 @@ export interface components {
             /** License Code */
             license_code?: string | null;
             /**
-             * Media Kind
-             * @default stored
-             */
-            media_kind: string;
-            /**
              * Sort Order
              * @default 0
              */
@@ -2814,6 +3034,11 @@ export interface components {
             /** Cover Image Url */
             cover_image_url?: string | null;
             cover_media?: components["schemas"]["ResolvedMediaItemSchema"] | null;
+            /**
+             * Is Favorite
+             * @default false
+             */
+            is_favorite: boolean;
             /** Gallery */
             gallery?: components["schemas"]["ResolvedMediaItemSchema"][];
             /** Origins */
@@ -3006,6 +3231,11 @@ export interface components {
             /** Cover Image Url */
             cover_image_url?: string | null;
             cover_media?: components["schemas"]["ResolvedMediaItemSchema"] | null;
+            /**
+             * Is Favorite
+             * @default false
+             */
+            is_favorite: boolean;
         };
         /** StandardSuccessData */
         StandardSuccessData: {
@@ -3243,10 +3473,56 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
-            /** Input */
-            input?: unknown;
-            /** Context */
-            ctx?: Record<string, never>;
+        };
+        /**
+         * NewsletterSubscribeRequest
+         * @description Payload for newsletter/leads subscription from landing page.
+         * @example {
+         *       "email": "usuario@exemplo.com",
+         *       "source": "landing_page"
+         *     }
+         */
+        NewsletterSubscribeRequest: {
+            /**
+             * Email
+             * @description Endereço de e-mail do interessado.
+             * @example usuario@exemplo.com
+             */
+            email: string;
+            /**
+             * Source
+             * @description Origem ou contexto aprovado da inscrição.
+             * @default landing_page
+             * @example landing_page
+             * @enum {string}
+             */
+            source: "landing_page" | "landing_hero" | "landing_footer" | "landing_business";
+        };
+        /**
+         * NewsletterSubscribeData
+         * @description Result data for newsletter subscription.
+         */
+        NewsletterSubscribeData: {
+            /**
+             * Status
+             * @description Estado da inscrição: subscribed (nova) ou already_subscribed (já cadastrado).
+             * @example subscribed
+             * @enum {string}
+             */
+            status: "subscribed" | "already_subscribed";
+            /**
+             * Message
+             * @description Mensagem informativa em português para exibição segura na interface.
+             * @example Inscrição realizada com sucesso! Você receberá nossas novidades.
+             */
+            message: string;
+        };
+        /**
+         * NewsletterSubscribeEnvelope
+         * @description Standard envelope for newsletter subscription response.
+         */
+        NewsletterSubscribeEnvelope: {
+            data: components["schemas"]["NewsletterSubscribeData"];
         };
     };
     responses: never;
@@ -5913,7 +6189,7 @@ export interface operations {
                 saved?: boolean | null;
                 /** @description Filtrar rotas verificadas com selo */
                 verified?: boolean | null;
-                /** @description Cursor de paginação (offset numérico) */
+                /** @description Cursor opaco retornado em meta.next_cursor */
                 cursor?: string | null;
                 /** @description Quantidade máxima de itens */
                 limit?: number;
@@ -5933,13 +6209,22 @@ export interface operations {
                     "application/json": components["schemas"]["RouteListEnvelope"];
                 };
             };
-            /** @description Validation Error */
+            /** @description Filtro saved exige autenticação. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Filtro ou cursor inválido. */
             422: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -5962,6 +6247,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RouteDetailEnvelope"];
+                };
+            };
+            /** @description Rota não encontrada. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Validation Error */
@@ -6080,7 +6374,7 @@ export interface operations {
                 category?: string | null;
                 /** @description UUID da origem */
                 origin_id?: string | null;
-                /** @description Cursor de paginação (offset numérico) */
+                /** @description Cursor opaco retornado em meta.next_cursor */
                 cursor?: string | null;
                 /** @description Quantidade máxima de itens */
                 limit?: number;
@@ -6102,13 +6396,22 @@ export interface operations {
                     "application/json": components["schemas"]["ActorListEnvelope"];
                 };
             };
-            /** @description Validation Error */
+            /** @description Rota não encontrada. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Filtro ou cursor inválido. */
             422: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -6280,6 +6583,15 @@ export interface operations {
                     "application/json": components["schemas"]["ActorDetailEnvelope"];
                 };
             };
+            /** @description Ator não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Validation Error */
             422: {
                 headers: {
@@ -6287,6 +6599,55 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_actor_google_photo_api_v1_actors__actor_id__google_photo_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                actor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GooglePhotoMetadataEnvelope"];
+                };
+            };
+            /** @description Foto indisponível. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Foto temporariamente indisponível. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -6479,7 +6840,11 @@ export interface operations {
     };
     get_my_favorite_routes_api_v1_me_favorite_routes_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Cursor opaco retornado em meta.next_cursor */
+                cursor?: string | null;
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -6493,6 +6858,24 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RouteListEnvelope"];
+                };
+            };
+            /** @description Autenticação obrigatória. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Cursor inválido. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -6515,6 +6898,24 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StandardSuccessResponse"];
+                };
+            };
+            /** @description Autenticação obrigatória. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Rota não encontrada. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Validation Error */
@@ -6548,6 +6949,15 @@ export interface operations {
                     "application/json": components["schemas"]["StandardSuccessResponse"];
                 };
             };
+            /** @description Autenticação obrigatória. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Validation Error */
             422: {
                 headers: {
@@ -6561,7 +6971,11 @@ export interface operations {
     };
     get_my_favorite_actors_api_v1_me_favorite_actors_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Cursor opaco retornado em meta.next_cursor */
+                cursor?: string | null;
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -6575,6 +6989,24 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ActorListEnvelope"];
+                };
+            };
+            /** @description Autenticação obrigatória. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Cursor inválido. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -6597,6 +7029,24 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StandardSuccessResponse"];
+                };
+            };
+            /** @description Autenticação obrigatória. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Ator não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Validation Error */
@@ -6628,6 +7078,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StandardSuccessResponse"];
+                };
+            };
+            /** @description Autenticação obrigatória. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Validation Error */
@@ -6694,6 +7153,151 @@ export interface operations {
             };
         };
     };
+    pause_trip_api_v1_me_trips__trip_id__pause_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripEnvelope"];
+                };
+            };
+        };
+    };
+    resume_trip_api_v1_me_trips__trip_id__resume_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripEnvelope"];
+                };
+            };
+        };
+    };
+    finish_trip_api_v1_me_trips__trip_id__finish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripEnvelope"];
+                };
+            };
+        };
+    };
+    get_place_photo_metadata_api_v1_places_photos__token__metadata_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GooglePhotoMetadataEnvelope"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_place_photo_api_v1_places_photos__token__get: {
+        parameters: {
+            query?: {
+                maxHeightPx?: number;
+                maxWidthPx?: number;
+            };
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Foto indisponível */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Foto expirada */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_support_content_api_v1_content_support_get: {
         parameters: {
             query?: never;
@@ -6710,6 +7314,57 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SupportContentEnvelope"];
+                };
+            };
+        };
+    };
+    subscribe_newsletter_api_v1_newsletter_subscribe_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewsletterSubscribeRequest"];
+            };
+        };
+        responses: {
+            /** @description Inscrição processada com sucesso (nova ou idempotente). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NewsletterSubscribeEnvelope"];
+                };
+            };
+            /** @description Formato de e-mail inválido ou dados de entrada inconsistentes. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Limite de requisições excedido. Tente novamente mais tarde. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Erro interno do servidor. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };

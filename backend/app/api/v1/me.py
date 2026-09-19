@@ -3,9 +3,10 @@
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 
 from app.api.v1.auth import AuthUser, get_current_user, get_current_user_allow_deleted
+from app.core.pagination import InvalidCursorError
 from app.schemas.envelopes import (
     ActorListEnvelope,
     AvatarUploadResponseData,
@@ -35,7 +36,6 @@ router = APIRouter(prefix="/me", tags=["User - Profile & Preferences"])
 UserServiceDep = Annotated[UserService, Depends(get_user_service)]
 AvatarLifecycleDep = Annotated[AvatarLifecycleService, Depends(get_avatar_lifecycle_service)]
 AccountLifecycleDep = Annotated[AccountLifecycleService, Depends(get_account_lifecycle_service)]
-
 
 
 @router.get(
@@ -139,11 +139,8 @@ async def delete_my_account(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)
         ) from exc
     return StandardSuccessResponse(
-        data=StandardSuccessData(
-            success=True, message="Conta excluída permanentemente."
-        )
+        data=StandardSuccessData(success=True, message="Conta excluída permanentemente.")
     )
-
 
 
 @router.get(
@@ -178,12 +175,25 @@ async def update_my_preferences(
     response_model=RouteListEnvelope,
     summary="Rotas salvas pelo usuário atual",
     description="Retorna a lista paginada de rotas favoritadas pelo usuário autenticado.",
+    responses={
+        401: {"model": ErrorResponse, "description": "Autenticação obrigatória."},
+        422: {"model": ErrorResponse, "description": "Cursor inválido."},
+    },
 )
 async def get_my_favorite_routes(
     current_user: Annotated[AuthUser, Depends(get_current_user)],
     service: UserServiceDep,
+    cursor: Annotated[
+        str | None, Query(description="Cursor opaco retornado em meta.next_cursor")
+    ] = None,
+    limit: Annotated[int, Query(ge=1, le=100)] = 20,
 ) -> RouteListEnvelope:
-    return await service.get_favorite_routes(user_id=current_user.id)
+    try:
+        return await service.get_favorite_routes(
+            user_id=current_user.id, cursor=cursor, limit=limit
+        )
+    except (InvalidCursorError, ValueError):
+        raise HTTPException(status_code=422, detail="Cursor de paginação inválido.") from None
 
 
 @router.put(
@@ -191,6 +201,10 @@ async def get_my_favorite_routes(
     response_model=StandardSuccessResponse,
     summary="Salvar rota como favorita (Idempotente)",
     description="Adiciona a rota aos favoritos do usuário de forma idempotente.",
+    responses={
+        401: {"model": ErrorResponse, "description": "Autenticação obrigatória."},
+        404: {"model": ErrorResponse, "description": "Rota não encontrada."},
+    },
 )
 async def add_favorite_route(
     route_id: uuid.UUID,
@@ -205,6 +219,7 @@ async def add_favorite_route(
     response_model=StandardSuccessResponse,
     summary="Remover rota dos favoritos (Idempotente)",
     description="Remove a rota dos favoritos do usuário de forma idempotente.",
+    responses={401: {"model": ErrorResponse, "description": "Autenticação obrigatória."}},
 )
 async def remove_favorite_route(
     route_id: uuid.UUID,
@@ -219,12 +234,25 @@ async def remove_favorite_route(
     response_model=ActorListEnvelope,
     summary="Atores salvos pelo usuário atual",
     description="Retorna a lista paginada de atores favoritados pelo usuário autenticado.",
+    responses={
+        401: {"model": ErrorResponse, "description": "Autenticação obrigatória."},
+        422: {"model": ErrorResponse, "description": "Cursor inválido."},
+    },
 )
 async def get_my_favorite_actors(
     current_user: Annotated[AuthUser, Depends(get_current_user)],
     service: UserServiceDep,
+    cursor: Annotated[
+        str | None, Query(description="Cursor opaco retornado em meta.next_cursor")
+    ] = None,
+    limit: Annotated[int, Query(ge=1, le=100)] = 20,
 ) -> ActorListEnvelope:
-    return await service.get_favorite_actors(user_id=current_user.id)
+    try:
+        return await service.get_favorite_actors(
+            user_id=current_user.id, cursor=cursor, limit=limit
+        )
+    except (InvalidCursorError, ValueError):
+        raise HTTPException(status_code=422, detail="Cursor de paginação inválido.") from None
 
 
 @router.put(
@@ -232,6 +260,10 @@ async def get_my_favorite_actors(
     response_model=StandardSuccessResponse,
     summary="Salvar ator como favorito (Idempotente)",
     description="Adiciona o ator aos favoritos do usuário de forma idempotente.",
+    responses={
+        401: {"model": ErrorResponse, "description": "Autenticação obrigatória."},
+        404: {"model": ErrorResponse, "description": "Ator não encontrado."},
+    },
 )
 async def add_favorite_actor(
     actor_id: uuid.UUID,
@@ -246,6 +278,7 @@ async def add_favorite_actor(
     response_model=StandardSuccessResponse,
     summary="Remover ator dos favoritos (Idempotente)",
     description="Remove o ator dos favoritos do usuário de forma idempotente.",
+    responses={401: {"model": ErrorResponse, "description": "Autenticação obrigatória."}},
 )
 async def remove_favorite_actor(
     actor_id: uuid.UUID,
@@ -281,3 +314,30 @@ async def create_trip(
     service: UserServiceDep,
 ) -> TripEnvelope:
     return await service.create_trip(user_id=current_user.id, route_id=trip_data.route_id)
+
+
+@router.post("/trips/{trip_id}/pause", response_model=TripEnvelope)
+async def pause_trip(
+    trip_id: uuid.UUID,
+    current_user: Annotated[AuthUser, Depends(get_current_user)],
+    service: UserServiceDep,
+) -> TripEnvelope:
+    return await service.transition_trip(current_user.id, trip_id, "paused")
+
+
+@router.post("/trips/{trip_id}/resume", response_model=TripEnvelope)
+async def resume_trip(
+    trip_id: uuid.UUID,
+    current_user: Annotated[AuthUser, Depends(get_current_user)],
+    service: UserServiceDep,
+) -> TripEnvelope:
+    return await service.transition_trip(current_user.id, trip_id, "in_progress")
+
+
+@router.post("/trips/{trip_id}/finish", response_model=TripEnvelope)
+async def finish_trip(
+    trip_id: uuid.UUID,
+    current_user: Annotated[AuthUser, Depends(get_current_user)],
+    service: UserServiceDep,
+) -> TripEnvelope:
+    return await service.transition_trip(current_user.id, trip_id, "completed")

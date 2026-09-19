@@ -1,0 +1,1442 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Apresentação interativa do ECOnexão — Conectando visitantes, rotas naturais e negócios locais da Amazônia."
+    />
+    <meta name="theme-color" content="#062e29" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="ECOnexão — Apresentação Play" />
+    <meta
+      property="og:description"
+      content="Conheça a proposta, rotas e funcionamento do ECOnexão em 7 slides."
+    />
+    <meta property="og:image" content="assets/images/pedral_route_hero.png" />
+    <link rel="icon" href="assets/brand/logo-econexao-transparent.png" type="image/png" />
+    <title>ECOnexão — Apresentação de Slides (Play)</title>
+
+    <style>
+      :root {
+        --ink: #0b2622;
+        --ink-soft: #45615b;
+        --ink-light: #708c86;
+        --green-950: #062e29;
+        --green-900: #0a3c35;
+        --green-800: #105347;
+        --green-700: #14705e;
+        --mint: #a8dbc3;
+        --sand: #f4e9d4;
+        --gold: #e3bd69;
+        --gold-soft: #f7e8c3;
+        --cream: #fbf8f0;
+        --white: #ffffff;
+        --card-bg: rgba(255, 255, 255, 0.95);
+        --line: rgba(11, 38, 34, 0.12);
+        --line-light: rgba(255, 255, 255, 0.18);
+        --shadow-lg: 0 24px 60px rgba(4, 35, 30, 0.22);
+        --shadow-md: 0 12px 32px rgba(4, 35, 30, 0.12);
+        --radius-xl: 1.75rem;
+        --radius-lg: 1.25rem;
+        --radius-md: 0.85rem;
+        --radius-pill: 999px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        background: var(--green-950);
+        color: var(--white);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        overflow: hidden;
+        user-select: none;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button {
+        font: inherit;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: inherit;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      :focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+      }
+
+      /* Skip Link */
+      .skip-link {
+        position: fixed;
+        z-index: 100;
+        top: 0.75rem;
+        left: 0.75rem;
+        padding: 0.7rem 1.2rem;
+        border-radius: var(--radius-pill);
+        color: var(--white);
+        background: var(--green-700);
+        transform: translateY(-200%);
+        transition: transform 180ms ease;
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      /* Top Header */
+      .presentation-header {
+        position: relative;
+        z-index: 20;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.9rem 1.5rem;
+        border-bottom: 1px solid var(--line-light);
+        background: rgba(6, 46, 41, 0.85);
+        backdrop-filter: blur(12px);
+      }
+
+      .header-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.65rem;
+        font-size: 1.15rem;
+        font-weight: 760;
+        letter-spacing: -0.03em;
+        color: var(--white);
+        transition: opacity 180ms ease;
+      }
+
+      .header-brand:hover {
+        opacity: 0.88;
+      }
+
+      .header-brand__badge {
+        display: grid;
+        width: 1.85rem;
+        height: 1.85rem;
+        place-items: center;
+        border-radius: 50%;
+        color: var(--green-950);
+        background: var(--mint);
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: -0.06em;
+      }
+
+      .header-meta {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+      }
+
+      .slide-counter {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.85rem;
+        border: 1px solid var(--line-light);
+        border-radius: var(--radius-pill);
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 0.84rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: var(--mint);
+      }
+
+      .btn-exit {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.45rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: var(--radius-pill);
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--white);
+        font-size: 0.84rem;
+        font-weight: 680;
+        transition:
+          background-color 180ms ease,
+          border-color 180ms ease,
+          transform 180ms ease;
+      }
+
+      .btn-exit:hover {
+        background: rgba(255, 255, 255, 0.18);
+        border-color: rgba(255, 255, 255, 0.45);
+        transform: translateY(-1px);
+      }
+
+      /* Stage / Main Slides Area */
+      .stage {
+        position: relative;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        overflow: hidden;
+      }
+
+      .slide-deck {
+        position: relative;
+        width: min(1160px, 100%);
+        height: 100%;
+        max-height: 640px;
+        display: flex;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        grid-template-columns: 1fr 1.05fr;
+        gap: 2.2rem;
+        align-items: center;
+        padding: 2.5rem 3rem;
+        border: 1px solid var(--line-light);
+        border-radius: var(--radius-xl);
+        background:
+          radial-gradient(ellipse at top left, rgba(20, 112, 94, 0.4) 0%, transparent 60%),
+          linear-gradient(145deg, rgba(10, 60, 53, 0.95) 0%, rgba(6, 46, 41, 0.98) 100%);
+        box-shadow: var(--shadow-lg);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(16px) scale(0.985);
+        transition:
+          opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
+          transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+          visibility 320ms ease;
+      }
+
+      .slide.is-active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0) scale(1);
+      }
+
+      /* Slide Typography & Content */
+      .slide-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin: 0 0 0.85rem;
+        color: var(--gold);
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .slide-eyebrow::before {
+        width: 1.5rem;
+        height: 2px;
+        background: currentColor;
+        content: "";
+      }
+
+      .slide-title {
+        margin: 0 0 1rem;
+        font-size: clamp(2rem, 3.8vw, 3rem);
+        font-weight: 650;
+        line-height: 1.1;
+        letter-spacing: -0.04em;
+        color: var(--white);
+      }
+
+      .slide-text {
+        margin: 0 0 1.5rem;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: clamp(0.98rem, 1.4vw, 1.15rem);
+        line-height: 1.55;
+      }
+
+      /* Slide Visuals / Right Columns */
+      .slide-visual {
+        position: relative;
+        height: 100%;
+        max-height: 520px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .visual-cover {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 320px;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: var(--shadow-md);
+      }
+
+      .visual-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .visual-badge {
+        position: absolute;
+        bottom: 1rem;
+        left: 1rem;
+        right: 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-md);
+        background: rgba(6, 46, 41, 0.88);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        font-size: 0.86rem;
+        font-weight: 600;
+        color: var(--sand);
+      }
+
+      /* Slide 1 Specific: Hero Composite */
+      .slide-1-composite {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .slide-1-photo {
+        height: 100%;
+        max-height: 480px;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .slide-1-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .slide-1-app-mockup {
+        height: 100%;
+        max-height: 480px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .slide-1-app-mockup img {
+        max-height: 450px;
+        width: auto;
+        border-radius: 1.8rem;
+        border: 3px solid rgba(255, 255, 255, 0.35);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+      }
+
+      /* Slide 2 Specific: Cards Grid */
+      .questions-deck {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+        width: 100%;
+      }
+
+      .q-card {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        padding: 1.1rem 1.4rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.07);
+        backdrop-filter: blur(8px);
+      }
+
+      .q-num {
+        display: grid;
+        width: 2.4rem;
+        height: 2.4rem;
+        flex-shrink: 0;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--gold);
+        color: var(--green-950);
+        font-weight: 900;
+        font-size: 0.95rem;
+      }
+
+      .q-info h3 {
+        margin: 0 0 0.2rem;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--white);
+      }
+
+      .q-info p {
+        margin: 0;
+        font-size: 0.88rem;
+        color: rgba(255, 255, 255, 0.78);
+      }
+
+      /* Slide 3 Specific: Two Column Benefits */
+      .connection-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        width: 100%;
+      }
+
+      .conn-card {
+        padding: 1.3rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .conn-tag {
+        display: inline-block;
+        margin-bottom: 0.75rem;
+        padding: 0.25rem 0.65rem;
+        border-radius: var(--radius-pill);
+        background: var(--mint);
+        color: var(--green-950);
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .conn-card h3 {
+        margin: 0 0 0.5rem;
+        font-size: 1.15rem;
+        color: var(--white);
+      }
+
+      .conn-card p {
+        margin: 0;
+        font-size: 0.86rem;
+        line-height: 1.45;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      /* Slide 4 Specific: Journey Steps */
+      .steps-flow {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        width: 100%;
+      }
+
+      .step-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.1rem;
+        padding: 1rem 1.3rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .step-badge {
+        display: grid;
+        width: 2.2rem;
+        height: 2.2rem;
+        place-items: center;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: var(--mint);
+        color: var(--green-950);
+        font-weight: 900;
+        font-size: 0.88rem;
+      }
+
+      .step-content h3 {
+        margin: 0 0 0.15rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--white);
+      }
+
+      .step-content p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.78);
+      }
+
+      /* Slide 5 Specific: Route Gallery */
+      .route-gallery {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.9rem;
+        width: 100%;
+        height: 100%;
+      }
+
+      .route-card-item {
+        position: relative;
+        height: 210px;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .route-card-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 300ms ease;
+      }
+
+      .route-card-item:hover img {
+        transform: scale(1.04);
+      }
+
+      .route-card-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 0.6rem 0.8rem;
+        background: linear-gradient(0deg, rgba(6, 46, 41, 0.94) 0%, transparent 100%);
+        color: var(--white);
+      }
+
+      .route-card-info strong {
+        display: block;
+        font-size: 0.88rem;
+        color: var(--sand);
+      }
+
+      .route-card-info span {
+        font-size: 0.72rem;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      /* Slide 6 Specific: Local Businesses */
+      .biz-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        width: 100%;
+      }
+
+      .biz-card {
+        padding: 1.2rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .biz-icon {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+        display: inline-block;
+      }
+
+      .biz-card h3 {
+        margin: 0 0 0.35rem;
+        font-size: 1.05rem;
+        color: var(--gold);
+      }
+
+      .biz-card p {
+        margin: 0;
+        font-size: 0.84rem;
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.4;
+      }
+
+      /* Slide 7 Specific: Final CTA & QR Code */
+      .slide-7-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 1rem 0;
+        width: 100%;
+      }
+
+      .qr-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.4rem 1.8rem;
+        border-radius: var(--radius-lg);
+        background: var(--white);
+        color: var(--green-950);
+        box-shadow: var(--shadow-md);
+        border: 2px solid var(--gold);
+        margin-bottom: 1.2rem;
+      }
+
+      .qr-box img,
+      .qr-box svg {
+        width: 170px;
+        height: 170px;
+        display: block;
+      }
+
+      .qr-label {
+        font-size: 0.86rem;
+        font-weight: 750;
+        letter-spacing: -0.01em;
+        color: var(--green-900);
+      }
+
+      .qr-url {
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: var(--green-700);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .cta-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+        margin-top: 1rem;
+      }
+
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        padding: 0.85rem 1.6rem;
+        border-radius: var(--radius-pill);
+        background: var(--gold);
+        color: var(--green-950);
+        font-weight: 780;
+        font-size: 0.96rem;
+        transition:
+          transform 180ms ease,
+          background-color 180ms ease,
+          box-shadow 180ms ease;
+      }
+
+      .btn-primary:hover {
+        background: #ebd18c;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(227, 189, 105, 0.3);
+      }
+
+      .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.85rem 1.4rem;
+        border-radius: var(--radius-pill);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--white);
+        font-weight: 680;
+        font-size: 0.96rem;
+        transition:
+          transform 180ms ease,
+          background-color 180ms ease;
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      /* Bottom Navigation Controls (Sutil) */
+      .presentation-nav {
+        position: relative;
+        z-index: 20;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.8rem 1.5rem;
+        border-top: 1px solid var(--line-light);
+        background: rgba(6, 46, 41, 0.85);
+        backdrop-filter: blur(12px);
+      }
+
+      .nav-side {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      .btn-nav {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--white);
+        font-size: 0.95rem;
+        transition:
+          background-color 180ms ease,
+          border-color 180ms ease,
+          transform 180ms ease;
+      }
+
+      .btn-nav:hover:not(:disabled) {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: var(--green-950);
+        transform: scale(1.08);
+      }
+
+      .btn-nav:disabled {
+        opacity: 0.25;
+        cursor: not-allowed;
+      }
+
+      .nav-indicators {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      .nav-dot {
+        position: relative;
+        width: 0.75rem;
+        height: 0.75rem;
+        padding: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        cursor: pointer;
+        transition:
+          background-color 220ms ease,
+          transform 220ms ease,
+          width 220ms ease;
+      }
+
+      .nav-dot:hover {
+        background: rgba(255, 255, 255, 0.65);
+      }
+
+      .nav-dot.is-active {
+        width: 1.8rem;
+        border-radius: var(--radius-pill);
+        background: var(--gold);
+      }
+
+      .nav-help {
+        font-size: 0.76rem;
+        color: rgba(255, 255, 255, 0.55);
+        font-weight: 500;
+      }
+
+      /* Responsive Layouts */
+      @media (max-width: 960px) {
+        body {
+          overflow-y: auto;
+        }
+
+        .stage {
+          padding: 1rem;
+          min-height: auto;
+        }
+
+        .slide-deck {
+          max-height: none;
+          min-height: calc(100vh - 140px);
+        }
+
+        .slide {
+          position: relative;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          padding: 1.5rem;
+          border-radius: var(--radius-lg);
+          display: none;
+          transform: none;
+        }
+
+        .slide.is-active {
+          display: grid;
+        }
+
+        .slide-1-composite {
+          grid-template-columns: 1fr;
+        }
+
+        .slide-1-app-mockup {
+          display: none;
+        }
+
+        .connection-cards,
+        .route-gallery,
+        .biz-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .route-card-item {
+          height: 160px;
+        }
+
+        .nav-help {
+          display: none;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+
+        .slide {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#slide-stage">Pular para os slides</a>
+
+    <!-- Top Bar -->
+    <header class="presentation-header" role="banner">
+      <a class="header-brand" href="/" aria-label="ECOnexão — Início">
+        <span class="header-brand__badge" aria-hidden="true">ECO</span>
+        <span>ECOnexão</span>
+      </a>
+
+      <div class="header-meta">
+        <div class="slide-counter" id="slide-counter" aria-live="polite" aria-atomic="true">
+          <span id="current-slide-num">01</span> / <span>07</span>
+        </div>
+        <a class="btn-exit" href="/" aria-label="Sair da apresentação e voltar para o site">
+          <span aria-hidden="true">✕</span>
+          <span>Sair</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Presentation Stage -->
+    <main class="stage" id="slide-stage" tabindex="0" aria-label="Apresentação de slides do ECOnexão">
+      <div class="slide-deck">
+        <!-- Slide 1: Proposta de Valor -->
+        <section
+          class="slide is-active"
+          id="slide-1"
+          role="region"
+          aria-roledescription="slide"
+          aria-label="Slide 1 de 7: Proposta de valor do ECOnexão"
+        >
+          <div class="slide-copy">
+            <span class="slide-eyebrow">Apresentação Oficial</span>
+            <h1 class="slide-title">Descubra destinos. Viva experiências.</h1>
+            <p class="slide-text">
+              O ecossistema que conecta viajantes, rotas naturais e negócios locais de Santarém,
+              Belterra e Altamira/Xingu em uma experiência simples, rica e gratuita.
+            </p>
+            <div class="cta-buttons">
+              <button type="button" class="btn-primary" onclick="goToSlide(2)">
+                <span>Começar Apresentação</span>
+                <span aria-hidden="true">→</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="slide-visual">
+            <div class="slide-1-composite">
+              <div class="slide-1-photo">
+                <img
+                  src="assets/images/pedral_route_hero.png"
+                  alt="Praia do Pedral no Rio Xingu com formações rochosas e águas cristalinas"
+                />
+              </div>
+              <div class="slide-1-app-mockup">
+                <img
+                  src="assets/screens/app-home.png"
+                  alt="Aplicativo móvel ECOnexão com catálogo de rotas e destinos"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 2: O Problema -->
+        <section
+          class="slide"
+          id="slide-2"
+          role="region"
+          aria-roledescription="slide"
+          aria-label="Slide 2 de 7: O problema e o desafio do turismo regional"
+          aria-hidden="true"
+        >
+          <div class="slide-copy">
+            <span class="slide-eyebrow">Descoberta Integrada</span>
+            <h2 class="slide-title">Menos procura. Mais descoberta.</h2>
+            <p class="slide-text">
+              Informações espalhadas geram insegurança para o visitante e deixam pequenos
+              empreendedores invisíveis. O ECOnexão organiza o que importa em três respostas claras:
+            </p>
+          </div>
+
+          <div class="slide-visual">
+            <div class="questions-deck">
+              <div class="q-card">
+                <span class="q-num" aria-hidden="true">01</span>
+                <div class="q-info">
+                  <h3>Para onde ir?</h3>
+                  <p>Praias de rio, balneários, florestas e refúgios ecológicos mapeados com rigor.</p>
+                </div>
+              </div>
+              <div class="q-card">
+                <span class="q-num" aria-hidden="true">02</span>
+                <div class="q-info">
+                  <h3>Como chegar?</h3>
+                  <p>Traçados a partir do aeroporto, porto ou rodoviária com tempo e distâncias reais.</p>
+                </div>
+              </div>
+              <div class="q-card">
+                <span class="q-num" aria-hidden="true">03</span>
+                <div class="q-info">
+                  <h3>O que encontrar?</h3>
+                  <p>Serviços locais, gastronomia regional, pousadas e condutores confiáveis.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 3: Conexão Pessoas & Negócios -->
+        <section
+          class="slide"
+          id="slide-3"
+          role="region"
+          aria-roledescription="slide"
+          aria-label="Slide 3 de 7: Conexões que fortalecem o território"
+          aria-hidden="true"
+        >
+          <div class="slide-copy">
+            <span class="slide-eyebrow">Impacto Territorial</span>
+            <h2 class="slide-title">Conexões que valorizam a região.</h2>
+            <p class="slide-text">
+              Uma ponte direta entre quem viaja em busca de autenticidade e quem vive e cuida da
+              floresta e dos rios da Amazônia.
+            </p>
+          </div>
+
+          <div class="slide-visual">
+            <div class="connection-cards">
+              <article class="conn-card">
+                <span class="conn-tag">Para quem viaja</span>
+                <h3>Autonomia e Segurança</h3>
+                <p>
+                  Rotas verificadas, pontos de interesse georreferenciados e navegação acessível
+                  tanto no celular quanto no computador.
+                </p>
+              </article>
+              <article class="conn-card">
+                <span class="conn-tag">Para quem empreende</span>
+                <h3>Visibilidade Direta</h3>
+                <p>
+                  Presença digital gratuita para balneários familiares, restaurantes e guias, sem
+                  comissões ou barreiras de entrada.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 4: Como Funciona -->
+        <section
+          class="slide"
+          id="slide-4"
+          role="region"
+          aria-roledescription="slide"
+          aria-label="Slide 4 de 7: Como o ECOnexão funciona passo a passo"
+          aria-hidden="true"
+        >
+          <div class="slide-copy">
+            <span class="slide-eyebrow">Jornada Intuitiva</span>
+            <h2 class="slide-title">Simples do início ao fim.</h2>
+            <p class="slide-text">
+              A experiência foi desenhada para eliminar atritos antes, durante e depois de cada
+              viagem pela região.
+            </p>
+          </div>
+
+          <div class="slide-visual">
+            <div class="steps-flow">
+              <div class="step-item">
+                <span class="step-badge" aria-hidden="true">1</span>
+                <div class="step-content">
+                  <h3>Escolha sua saída</h3>
+                  <p>Inicie a rota a partir do aeroporto, rodoviária ou porto mais próximo.</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <span class="step-badge" aria-hidden="true">2</span>
+                <div class="step-content">
+                  <h3>Trace o caminho</h3>
+                  <p>Visualize o itinerário completo com trajetos terrestres e fluviais calculados.</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <span class="step-badge" aria-hidden="true">3</span>
+                <div class="step-content">
+                  <h3>Descubra ao redor</h3>
+                  <p>Acesse paradas gastronômicas, pontos de apoio e serviços verificados.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 5: Destinos e Rotas -->
+        <section
+          class="slide"
+          id="slide-5"
+          role="region"
+          aria-roledescription="slide"
+          aria-label="Slide 5 de 7: Rotas naturais do Xingu e Tapajós"
+          aria-hidden="true"
+        >
+          <div class="slide-copy">
+            <span class="slide-eyebrow">Rotas Mapeadas</span>
+            <h2 class="slide-title">Do Tapajós ao Xingu.</h2>
+            <p class="slide-text">
+              Paisagens exuberantes, banhos de rio, trilhas na floresta e vivências comunitárias
+              catalogadas com fotos reais e dados precisos.
+            </p>
+          </div>
+
+          <div class="slide-visual">
+            <div class="route-gallery">
+              <div class="route-card-item">
+                <img src="assets/images/pedral_route_hero.png" alt="Praia do Pedral — Altamira" />
+                <div class="route-card-info">
+                  <strong>Praia do Pedral</strong>
+                  <span>Altamira / Xingu</span>
+                </div>
+              </div>
+              <div class="route-card-item">
+                <img src="assets/images/ambe_route_hero.png" alt="Ambé Floresta Park — Altamira" />
+                <div class="route-card-info">
+                  <strong>Ambé Floresta Park</strong>
+                  <span>Trilhas & Ecoturismo</span>
+                </div>
+              </div>
+              <div class="route-card-item">
+                <img
+                  src="assets/images/queda_dagua_route_hero.png"
+                  alt="Balneário Queda D'água — Altamira"
+                />
+                <div class="route-card-info">
+                  <strong>Balneário Queda D'água</strong>
+                  <span>Balneário & Pousada</span>
+                </div>
+              </div>
+              <div class="route-card-item">
+                <img
+                  src="assets/images/raizes_xingu_route_hero.png"
+                  alt="Sítio Raízes do Xingu — Altamira"
+                />
+                <div class="route-card-info">
+                  <strong>Sítio Raízes do Xingu</strong>
+                  <span>Vivência Ribeirinha</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 6: Negócios Locais -->
+        <section
+          class="slide"
+          id="slide-6"
+          role="region"
+          aria-roledescription="slide"
+          aria-label="Slide 6 de 7: Valorização dos negócios locais"
+          aria-hidden="true"
+        >
+          <div class="slide-copy">
+            <span class="slide-eyebrow">Economia Local</span>
+            <h2 class="slide-title">Visibilidade para quem move o turismo.</h2>
+            <p class="slide-text">
+              Conectamos o turista aos sabores e talentos do território, incentivando o consumo
+              consciente e a valorização cultural.
+            </p>
+          </div>
+
+          <div class="slide-visual">
+            <div class="biz-grid">
+              <div class="biz-card">
+                <span class="biz-icon" aria-hidden="true">🐟</span>
+                <h3>Gastronomia Típica</h3>
+                <p>Charutinho frito, peixes da Amazônia e pratos com temperos regionais.</p>
+              </div>
+              <div class="biz-card">
+                <span class="biz-icon" aria-hidden="true">🏡</span>
+                <h3>Hospedagem Acolhedora</h3>
+                <p>Pousadas rústicas, chalés na floresta e balneários familiares.</p>
+              </div>
+              <div class="biz-card">
+                <span class="biz-icon" aria-hidden="true">🚣</span>
+                <h3>Condutores e Guias</h3>
+                <p>Passeios de barco e trilhas guiadas por quem conhece cada detalhe do rio.</p>
+              </div>
+              <div class="biz-card">
+                <span class="biz-icon" aria-hidden="true">📞</span>
+                <h3>Contato Direto</h3>
+                <p>Comunicação sem intermediários para reservas e informações rápidas.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 7: Convite Final & QR Code -->
+        <section
+          class="slide"
+          id="slide-7"
+          role="region"
+          aria-roledescription="slide"
+          aria-label="Slide 7 de 7: Acesse o aplicativo ECOnexão"
+          aria-hidden="true"
+        >
+          <div class="slide-copy">
+            <span class="slide-eyebrow">Explore Agora</span>
+            <h2 class="slide-title">Comece sua jornada no ECOnexão.</h2>
+            <p class="slide-text">
+              O aplicativo já está disponível para você navegar pelas rotas do Tapajós e Xingu.
+              Aponte a câmera do seu celular ou acesse pelo navegador.
+            </p>
+            <div class="cta-buttons">
+              <a
+                class="btn-primary"
+                href="https://app.econexaoturismo.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>Explorar Rotas no App</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+              <a class="btn-secondary" href="/">
+                <span>Voltar ao Site</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="slide-visual">
+            <div class="slide-7-container">
+              <div class="qr-box" aria-label="QR Code para o aplicativo ECOnexão">
+                <img
+                  src="assets/images/qr-code-app.svg"
+                  alt="QR Code direcionando para https://app.econexaoturismo.com/"
+                  width="170"
+                  height="170"
+                />
+                <span class="qr-label">Acesse o Web App</span>
+                <span class="qr-url">app.econexaoturismo.com</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation Controls -->
+    <footer class="presentation-nav" role="navigation" aria-label="Controles da apresentação">
+      <div class="nav-side">
+        <button
+          type="button"
+          class="btn-nav"
+          id="btn-prev"
+          aria-label="Slide anterior"
+          onclick="prevSlide()"
+          disabled
+        >
+          <span aria-hidden="true">◀</span>
+        </button>
+      </div>
+
+      <div class="nav-indicators" id="nav-dots" role="tablist" aria-label="Indicadores de slides">
+        <button
+          type="button"
+          class="nav-dot is-active"
+          role="tab"
+          aria-selected="true"
+          aria-controls="slide-1"
+          aria-label="Slide 1"
+          onclick="goToSlide(1)"
+        ></button>
+        <button
+          type="button"
+          class="nav-dot"
+          role="tab"
+          aria-selected="false"
+          aria-controls="slide-2"
+          aria-label="Slide 2"
+          onclick="goToSlide(2)"
+        ></button>
+        <button
+          type="button"
+          class="nav-dot"
+          role="tab"
+          aria-selected="false"
+          aria-controls="slide-3"
+          aria-label="Slide 3"
+          onclick="goToSlide(3)"
+        ></button>
+        <button
+          type="button"
+          class="nav-dot"
+          role="tab"
+          aria-selected="false"
+          aria-controls="slide-4"
+          aria-label="Slide 4"
+          onclick="goToSlide(4)"
+        ></button>
+        <button
+          type="button"
+          class="nav-dot"
+          role="tab"
+          aria-selected="false"
+          aria-controls="slide-5"
+          aria-label="Slide 5"
+          onclick="goToSlide(5)"
+        ></button>
+        <button
+          type="button"
+          class="nav-dot"
+          role="tab"
+          aria-selected="false"
+          aria-controls="slide-6"
+          aria-label="Slide 6"
+          onclick="goToSlide(6)"
+        ></button>
+        <button
+          type="button"
+          class="nav-dot"
+          role="tab"
+          aria-selected="false"
+          aria-controls="slide-7"
+          aria-label="Slide 7"
+          onclick="goToSlide(7)"
+        ></button>
+      </div>
+
+      <div class="nav-side">
+        <span class="nav-help" aria-hidden="true">Use as setas ◀ ▶ do teclado</span>
+        <button
+          type="button"
+          class="btn-nav"
+          id="btn-next"
+          aria-label="Próximo slide"
+          onclick="nextSlide()"
+        >
+          <span aria-hidden="true">▶</span>
+        </button>
+      </div>
+    </footer>
+
+    <script>
+      const TOTAL_SLIDES = 7;
+      let currentSlide = 1;
+
+      function parseSlideFromUrl() {
+        const hashMatch = window.location.hash.match(/^#slide-(\d+)$/i);
+        if (hashMatch) {
+          const num = parseInt(hashMatch[1], 10);
+          if (num >= 1 && num <= TOTAL_SLIDES) {
+            return num;
+          }
+        }
+        const params = new URLSearchParams(window.location.search);
+        const slideParam = parseInt(params.get("slide"), 10);
+        if (slideParam >= 1 && slideParam <= TOTAL_SLIDES) {
+          return slideParam;
+        }
+        return 1;
+      }
+
+      function goToSlide(targetSlide) {
+        if (targetSlide < 1 || targetSlide > TOTAL_SLIDES || targetSlide === currentSlide) {
+          if (targetSlide >= 1 && targetSlide <= TOTAL_SLIDES) {
+            renderSlide(targetSlide);
+          }
+          return;
+        }
+        renderSlide(targetSlide);
+      }
+
+      function renderSlide(targetSlide) {
+        currentSlide = targetSlide;
+
+        // Update slides visibility
+        for (let i = 1; i <= TOTAL_SLIDES; i++) {
+          const slideEl = document.getElementById(`slide-${i}`);
+          const dotEl = document.querySelectorAll(".nav-dot")[i - 1];
+
+          if (i === currentSlide) {
+            slideEl.classList.add("is-active");
+            slideEl.removeAttribute("aria-hidden");
+            if (dotEl) {
+              dotEl.classList.add("is-active");
+              dotEl.setAttribute("aria-selected", "true");
+            }
+          } else {
+            slideEl.classList.remove("is-active");
+            slideEl.setAttribute("aria-hidden", "true");
+            if (dotEl) {
+              dotEl.classList.remove("is-active");
+              dotEl.setAttribute("aria-selected", "false");
+            }
+          }
+        }
+
+        // Update counter
+        const counterEl = document.getElementById("current-slide-num");
+        if (counterEl) {
+          counterEl.textContent = String(currentSlide).padStart(2, "0");
+        }
+
+        // Update navigation buttons state
+        const btnPrev = document.getElementById("btn-prev");
+        const btnNext = document.getElementById("btn-next");
+        if (btnPrev) btnPrev.disabled = currentSlide === 1;
+        if (btnNext) btnNext.disabled = currentSlide === TOTAL_SLIDES;
+
+        // Synchronize URL Hash without page jump
+        if (history.replaceState) {
+          history.replaceState(null, "", `#slide-${currentSlide}`);
+        } else {
+          window.location.hash = `slide-${currentSlide}`;
+        }
+      }
+
+      function nextSlide() {
+        if (currentSlide < TOTAL_SLIDES) {
+          goToSlide(currentSlide + 1);
+        }
+      }
+
+      function prevSlide() {
+        if (currentSlide > 1) {
+          goToSlide(currentSlide - 1);
+        }
+      }
+
+      // Keyboard navigation
+      window.addEventListener("keydown", (e) => {
+        if (e.defaultPrevented) return;
+
+        switch (e.key) {
+          case "ArrowRight":
+          case "PageDown":
+          case " ":
+            e.preventDefault();
+            nextSlide();
+            break;
+          case "ArrowLeft":
+          case "PageUp":
+            e.preventDefault();
+            prevSlide();
+            break;
+          case "Home":
+            e.preventDefault();
+            goToSlide(1);
+            break;
+          case "End":
+            e.preventDefault();
+            goToSlide(TOTAL_SLIDES);
+            break;
+          case "Escape":
+            window.location.href = "/";
+            break;
+        }
+      });
+
+      // Touch / Swipe Navigation
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      window.addEventListener(
+        "touchstart",
+        (e) => {
+          if (e.touches && e.touches.length === 1) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+          }
+        },
+        { passive: true }
+      );
+
+      window.addEventListener(
+        "touchend",
+        (e) => {
+          if (e.changedTouches && e.changedTouches.length === 1) {
+            const deltaX = e.changedTouches[0].clientX - touchStartX;
+            const deltaY = e.changedTouches[0].clientY - touchStartY;
+
+            // Check if horizontal swipe exceeds threshold and is more horizontal than vertical
+            if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+              if (deltaX < 0) {
+                nextSlide();
+              } else {
+                prevSlide();
+              }
+            }
+          }
+        },
+        { passive: true }
+      );
+
+      // Handle popstate/hashchange
+      window.addEventListener("hashchange", () => {
+        const slideFromHash = parseSlideFromUrl();
+        if (slideFromHash !== currentSlide) {
+          renderSlide(slideFromHash);
+        }
+      });
+
+      // Initialize on DOM load
+      document.addEventListener("DOMContentLoaded", () => {
+        const initialSlide = parseSlideFromUrl();
+        renderSlide(initialSlide);
+      });
+    </script>
+  </body>
+</html>

@@ -24,17 +24,16 @@ async def rejected(connection: AsyncConnection, statement: str, values: dict[str
         if not isinstance(exc, DBAPIError):
             return False
         original = exc.orig
-        return (
-            getattr(original, "sqlstate", None) == "23514"
-            and getattr(getattr(original, "diag", None), "constraint_name", "")
-            in {
-                "media_assets_checksum_sha256_check",
-                "media_assets_dimensions_check",
-                "media_assets_processing_result_check",
-                "media_assets_quarantine_check",
-                "media_assets_storage_mode_check",
-            }
-        )
+        return getattr(original, "sqlstate", None) == "23514" and getattr(
+            getattr(original, "diag", None), "constraint_name", ""
+        ) in {
+            "media_assets_checksum_sha256_check",
+            "media_assets_dimensions_check",
+            "media_assets_license_code_check",
+            "media_assets_processing_result_check",
+            "media_assets_quarantine_check",
+            "media_assets_storage_mode_check",
+        }
     await savepoint.rollback()
     return False
 
@@ -52,12 +51,12 @@ async def verify_constraints(connection: AsyncConnection) -> dict[str, bool]:
         "processing_status, checksum_sha256, width_px, height_px, processed_at, derivatives) "
         "values ('route', :owner_id, :storage_key, 'image/webp', 'Vista da rota', "
         "'SEMTUR', 'SEMTUR_INSTITUTIONAL', 'ready', :checksum, 1200, 800, now(), "
-        "'{\"thumb\": {\"storage_key\": \"thumb.webp\", \"checksum_sha256\": "
-        "\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}, "
-        "\"card\": {\"storage_key\": \"card.webp\", \"checksum_sha256\": "
-        "\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"}, "
-        "\"hero\": {\"storage_key\": \"hero.webp\", \"checksum_sha256\": "
-        "\"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\"}}'::jsonb) "
+        '\'{"thumb": {"storage_key": "thumb.webp", "checksum_sha256": '
+        '"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}, '
+        '"card": {"storage_key": "card.webp", "checksum_sha256": '
+        '"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"}, '
+        '"hero": {"storage_key": "hero.webp", "checksum_sha256": '
+        '"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}}\'::jsonb) '
         "returning id"
     )
     media_id = (await connection.execute(text(ready_statement), base)).scalar_one()
@@ -98,12 +97,12 @@ async def verify_constraints(connection: AsyncConnection) -> dict[str, bool]:
     ready_without_derivatives = await rejected(
         connection,
         ready_statement.replace(
-            "'{\"thumb\": {\"storage_key\": \"thumb.webp\", \"checksum_sha256\": "
-            "\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}, "
-            "\"card\": {\"storage_key\": \"card.webp\", \"checksum_sha256\": "
-            "\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"}, "
-            "\"hero\": {\"storage_key\": \"hero.webp\", \"checksum_sha256\": "
-            "\"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\"}}'::jsonb",
+            '\'{"thumb": {"storage_key": "thumb.webp", "checksum_sha256": '
+            '"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}, '
+            '"card": {"storage_key": "card.webp", "checksum_sha256": '
+            '"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"}, '
+            '"hero": {"storage_key": "hero.webp", "checksum_sha256": '
+            '"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}}\'::jsonb',
             "'{}'::jsonb",
         ),
         {**base, "storage_key": f"routes/{owner_id}/without-derivatives.webp"},
@@ -111,49 +110,30 @@ async def verify_constraints(connection: AsyncConnection) -> dict[str, bool]:
     ready_with_empty_derivatives = await rejected(
         connection,
         ready_statement.replace(
-            "'{\"thumb\": {\"storage_key\": \"thumb.webp\", \"checksum_sha256\": "
-            "\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}, "
-            "\"card\": {\"storage_key\": \"card.webp\", \"checksum_sha256\": "
-            "\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"}, "
-            "\"hero\": {\"storage_key\": \"hero.webp\", \"checksum_sha256\": "
-            "\"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\"}}'::jsonb",
-            "'{\"thumb\": {}, \"card\": {}, \"hero\": {}}'::jsonb",
+            '\'{"thumb": {"storage_key": "thumb.webp", "checksum_sha256": '
+            '"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}, '
+            '"card": {"storage_key": "card.webp", "checksum_sha256": '
+            '"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"}, '
+            '"hero": {"storage_key": "hero.webp", "checksum_sha256": '
+            '"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}}\'::jsonb',
+            '\'{"thumb": {}, "card": {}, "hero": {}}\'::jsonb',
         ),
         {**base, "storage_key": f"routes/{owner_id}/empty-derivatives.webp"},
     )
-    google_proxy_id = (
+    legacy_columns = (
         await connection.execute(
             text(
-                "insert into app_private.media_assets "
-                "(owner_type, owner_id, mime_type, alt_text, credit, license_code, media_kind, "
-                "processing_status, processed_at, external_photo_reference, "
-                "external_attributions, external_cache_expires_at) values "
-                "('actor', :owner_id, 'image/webp', 'Foto do estabelecimento', 'Google', "
-                "'GOOGLE_PLACES_PROXY', 'google_proxy', 'ready', now(), 'places/photo/ref', "
-                "'[{\"displayName\": \"Autor\"}]'::jsonb, now() + interval '29 days') "
-                "returning id"
-            ),
-            {"owner_id": owner_id},
+                "select count(*) from information_schema.columns "
+                "where table_schema = 'app_private' and table_name = 'media_assets' "
+                "and column_name = any(array['media_kind', 'external_photo_reference', "
+                "'external_attributions', 'external_cache_expires_at'])"
+            )
         )
     ).scalar_one()
-    google_with_storage = await rejected(
+    google_license_rejected = await rejected(
         connection,
-        "insert into app_private.media_assets "
-        "(owner_type, owner_id, storage_key, mime_type, license_code, media_kind, "
-        "external_photo_reference, external_attributions, external_cache_expires_at) values "
-        "('actor', :owner_id, 'forbidden.webp', 'image/webp', 'GOOGLE_PLACES_PROXY', "
-        "'google_proxy', 'ref', '[{\"displayName\": \"Autor\"}]'::jsonb, "
-        "now() + interval '1 day')",
-        {"owner_id": owner_id},
-    )
-    google_expired = await rejected(
-        connection,
-        "insert into app_private.media_assets "
-        "(owner_type, owner_id, mime_type, license_code, media_kind, "
-        "external_photo_reference, external_attributions, external_cache_expires_at) values "
-        "('actor', :owner_id, 'image/webp', 'GOOGLE_PLACES_PROXY', 'google_proxy', 'ref', "
-        "'[{\"displayName\": \"Autor\"}]'::jsonb, now() - interval '1 day')",
-        {"owner_id": owner_id},
+        ready_statement.replace("'SEMTUR_INSTITUTIONAL'", "'GOOGLE_PLACES_PROXY'"),
+        {**base, "storage_key": f"routes/{owner_id}/google-license.webp"},
     )
     return {
         "ready accepted": media_id is not None,
@@ -164,9 +144,8 @@ async def verify_constraints(connection: AsyncConnection) -> dict[str, bool]:
         "ready without alt rejected": ready_without_alt,
         "ready without derivatives rejected": ready_without_derivatives,
         "ready with empty derivative objects rejected": ready_with_empty_derivatives,
-        "google proxy accepted without stored binary": google_proxy_id is not None,
-        "google proxy with stored binary rejected": google_with_storage,
-        "expired google proxy rejected": google_expired,
+        "legacy Google proxy columns removed": legacy_columns == 0,
+        "Google proxy license rejected": google_license_rejected,
     }
 
 

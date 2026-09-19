@@ -36,7 +36,7 @@ equivalente indicado.
 - [x] Confirmar se `econexao` e `econexao-teste` são development/test (Aprovado reuso dos dois projetos existentes).
 - [ ] Criar/autorizar projetos Supabase separados para staging e production (Adiado para Marco 20 e Release).
 - [x] Nomear quem pode ser admin, editor, reviewer e publisher (Proprietário do projeto nomeado provisoriamente).
-- [x] Escolher provedor/região do FastAPI e aprovar orçamento mensal/limites (ADR 0005 Cloud Run aceito; deploy adiado; zero gasto agora).
+- [x] Escolher provedor/região do FastAPI e aprovar orçamento mensal/limites (ADR 0005 Render Native Python aceito; deploy adiado; zero gasto agora).
 - [ ] Definir domínios da API, web e links universais (Adiado para antes da ECO-1905).
 - [ ] Confirmar contas Apple Developer, Google Play Console e Expo/EAS, inclusive proprietário legal e método de pagamento (A cadastrar/confirmar antes dos builds de homologação).
 - [x] Aprovar nome provisório do app (`ECOnexão`), mantendo slug `econexao-app` e deixando pacotes nativos para definição institucional.

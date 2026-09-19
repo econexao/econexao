@@ -5,10 +5,11 @@ import { theme } from '../../theme/theme';
 import type { RouteSummary } from '../../api/types';
 import { Badge } from '../common/Badge';
 import { makeAccessibleButton } from '../../utils/accessibility';
+import { getRouteCoverImage, getRouteDisplayName } from './routeCoverImage';
 
 interface RouteCardProps {
   route: RouteSummary;
-  onPress: () => void;
+  onPress?: () => void;
   onToggleFavorite?: () => void;
   isFavorite?: boolean;
 }
@@ -19,23 +20,33 @@ export const RouteCard: React.FC<RouteCardProps> = ({
   onToggleFavorite,
   isFavorite = false,
 }) => {
+  const coverImage = getRouteCoverImage(route);
+  const displayTitle = getRouteDisplayName(route);
+
   return (
     <View style={styles.card}>
       <Pressable
         style={styles.cardPressable}
         onPress={onPress}
-        {...makeAccessibleButton(
-          `Rota ${route.title}`,
-          `${route.city}, ${route.state_code}. Toque para ver os detalhes.`
-        )}
+        disabled={!onPress}
+        accessibilityRole={onPress ? 'button' : 'none'}
+        {...(onPress
+          ? makeAccessibleButton(
+              `Rota ${displayTitle}`,
+              `${route.city}, ${route.state_code}. Toque para ver os detalhes.`
+            )
+          : {
+              accessible: true,
+              accessibilityLabel: `Rota ${displayTitle}, ${route.city}, ${route.state_code}`,
+            })}
       >
         <View style={styles.imageContainer}>
-          {route.cover_image_url ? (
+          {coverImage ? (
             <Image
-              source={{ uri: route.cover_image_url }}
+              source={coverImage}
               style={styles.image}
               resizeMode="cover"
-              accessibilityLabel={`Imagem da rota ${route.title}`}
+              accessibilityLabel={`Imagem da rota ${displayTitle}`}
             />
           ) : (
             <View style={styles.imagePlaceholder} accessibilityLabel="Imagem da rota não disponível">
@@ -55,8 +66,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
                 {route.city}, {route.state_code}
               </Text>
             </View>
-            <Text style={styles.title}>{route.title}</Text>
-            {route.summary ? <Text style={styles.metaText} numberOfLines={2}>{route.summary}</Text> : null}
+            <Text style={styles.title}>{displayTitle}</Text>
           </View>
         </View>
       </Pressable>

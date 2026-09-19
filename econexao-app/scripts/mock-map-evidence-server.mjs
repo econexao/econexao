@@ -2,23 +2,40 @@ import http from 'node:http';
 
 const routeId = 'route-pindobal';
 const originId = 'origin-porto';
+const port = Number(process.env.PORT || 8000);
 
 const pins = [
   {
     id: 'pin-restaurante', actor_id: 'actor-restaurante', name: 'Restaurante da Praia',
     category_slug: 'alimentacao', category_label: 'Alimentação', color: '#D97706',
+    type_slug: 'restaurante', type_label: 'Restaurante & Gastronomia',
     icon: 'utensils', latitude: -2.548, longitude: -54.934,
     distance_from_origin_m: 8200, layer: 'route_corridor',
   },
   {
     id: 'pin-pousada', actor_id: 'actor-pousada', name: 'Pousada Pindobal',
     category_slug: 'hospedagem', category_label: 'Hospedagem', color: '#2563EB',
+    type_slug: 'pousada_hotel', type_label: 'Hotel & Pousada',
     icon: 'bed', latitude: -2.575, longitude: -54.952,
     distance_from_origin_m: 12100, layer: 'route_corridor',
   },
   {
+    id: 'pin-posto', actor_id: 'actor-posto', name: 'Posto Tapajós',
+    category_slug: 'transporte', category_label: 'Transporte', color: '#0891B2',
+    type_slug: 'posto_combustivel', type_label: 'Posto de Combustível',
+    icon: 'fuel', latitude: -2.515, longitude: -54.875,
+    distance_from_origin_m: 6100, layer: 'both',
+  },
+  {
+    id: 'pin-farmacia', actor_id: 'actor-farmacia', name: 'Farmácia Alter',
+    category_slug: 'saude', category_label: 'Saúde', color: '#DC2626',
+    type_slug: 'farmacia', type_label: 'Farmácia & Drogaria',
+    icon: 'pill', latitude: -2.505, longitude: -54.855,
+    distance_from_origin_m: 5700, layer: 'both',
+  },
+  {
     id: 'pin-terminal', actor_id: 'actor-terminal', name: 'Terminal Rodoviário',
-    category_slug: 'transporte', category_label: 'Transporte', color: '#7C3AED',
+    category_slug: 'transporte', category_label: 'Transporte', color: '#0891B2',
     icon: 'bus', latitude: -2.443, longitude: -54.708,
     distance_from_origin_m: 900, layer: 'both',
   },
@@ -39,7 +56,7 @@ const pins = [
 const legend = [
   ['alimentacao', 'Alimentação', '#D97706', 'utensils'],
   ['hospedagem', 'Hospedagem', '#2563EB', 'bed'],
-  ['transporte', 'Transporte', '#7C3AED', 'bus'],
+  ['transporte', 'Transporte', '#0891B2', 'bus'],
   ['saude', 'Saúde', '#DC2626', 'heart-pulse'],
   ['seguranca', 'Segurança', '#1D4ED8', 'shield'],
 ].map(([category_slug, label, color, icon], sort_order) => ({
@@ -76,6 +93,9 @@ const actorPayload = {
     name: pin.name,
     category_slug: pin.category_slug,
     category_label: pin.category_label,
+    type_slug: pin.type_slug,
+    type_label: pin.type_label,
+    type_icon: pin.icon,
     address: pin.layer === 'citywide_essential' ? 'Centro de Santarém, PA' : 'Rota Pindobal, PA',
   })),
   meta: { total: pins.length, limit: 20, next_cursor: null },
@@ -105,6 +125,6 @@ const server = http.createServer((request, response) => {
   response.end(JSON.stringify({ error: { code: 'NOT_FOUND', message: 'Fixture endpoint not found.' } }));
 });
 
-server.listen(8000, '127.0.0.1', () => {
-  process.stdout.write('Map evidence fixture API listening at http://127.0.0.1:8000\n');
+server.listen(port, '127.0.0.1', () => {
+  process.stdout.write(`Map evidence fixture API listening at http://127.0.0.1:${port}\n`);
 });
