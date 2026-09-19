@@ -11,8 +11,8 @@ const CANONICAL_CATEGORIES = [
 ];
 
 const MOCK_REGIONS = [
-  { id: 'reg-santarem-belterra', name: 'Santarém / Belterra', state_code: 'PA', is_active: true },
-  { id: 'reg-altamira-xingu', name: 'Altamira / Rio Xingu', state_code: 'PA', is_active: true },
+  { id: 'reg-santarem-belterra', name: 'Região do Tapajós (Santarém)', state_code: 'PA', is_active: true },
+  { id: 'reg-altamira-xingu', name: 'Região do Xingu (Altamira)', state_code: 'PA', is_active: true },
 ];
 
 const MOCK_ROUTES = [

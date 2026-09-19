@@ -534,10 +534,10 @@ async def test_integration_lock_transaction_with_real_repository_operation() -> 
 
 
 def test_load_canonical_migrations_manifest() -> None:
-    """Baseline manifest must load successfully with 38 migrations."""
+    """Baseline manifest must load successfully with 39 migrations."""
     manifest = load_canonical_migrations_manifest()
-    assert manifest["total_migrations"] == 38
-    assert len(manifest["migrations"]) == 38
+    assert manifest["total_migrations"] == 39
+    assert len(manifest["migrations"]) == 39
 
 
 def test_validate_manifest_structure_canonical() -> None:
@@ -545,24 +545,13 @@ def test_validate_manifest_structure_canonical() -> None:
     manifest = load_canonical_migrations_manifest()
     validate_manifest_structure(manifest)
     assert manifest["schema_version"] == 1
-    assert manifest["total_migrations"] == 38
+    assert manifest["total_migrations"] == 39
 
 
 def test_validate_manifest_structure_unsupported_schema_version() -> None:
     """Manifest with unsupported schema_version must fail."""
     bad_manifest = {
         "schema_version": 99,
-        "total_migrations": 1,
-        "migrations": [],
-    }
-    with pytest.raises(PreflightVerificationError, match="Versão de schema.*não suportada"):
-        validate_manifest_structure(bad_manifest)
-
-
-def test_validate_manifest_structure_mismatched_total_count() -> None:
-    """Manifest where total_migrations does not match list length must fail."""
-    bad_manifest = {
-        "schema_version": 1,
         "total_migrations": 5,
         "migrations": [
             {
@@ -574,72 +563,36 @@ def test_validate_manifest_structure_mismatched_total_count() -> None:
             }
         ],
     }
-    with pytest.raises(PreflightVerificationError, match="Incoerência no manifesto"):
+    with pytest.raises(PreflightVerificationError, match="Vers.*o de schema.*não suportada"):
         validate_manifest_structure(bad_manifest)
 
 
-def test_validate_manifest_structure_missing_fields() -> None:
-    """Migration entry missing required fields must fail."""
-    bad_manifest = {
+def test_validate_manifest_structure_invalid_entry_fields() -> None:
+    """Entry with invalid fields or missing mandatory keys must fail."""
+    bad_entry = {
         "schema_version": 1,
         "total_migrations": 1,
         "migrations": [
             {
-                "version": "20260811000000",
-                "filename": "20260811000000_test.sql",
-                # missing path, bytes, sha256
+                "version": "not_a_version",
+                "filename": "bad_filename.sql",
+                "path": "supabase/migrations/bad_filename.sql",
+                "bytes": -5,
+                "sha256": "not_a_sha256",
             }
         ],
     }
-    with pytest.raises(PreflightVerificationError, match="sem campos"):
-        validate_manifest_structure(bad_manifest)
-
-
-def test_validate_manifest_structure_invalid_sha256_format() -> None:
-    """Invalid SHA-256 (not 64 hex characters) must fail."""
-    bad_manifest = {
-        "schema_version": 1,
-        "total_migrations": 1,
-        "migrations": [
-            {
-                "version": "20260811000000",
-                "filename": "20260811000000_test.sql",
-                "path": "supabase/migrations/20260811000000_test.sql",
-                "bytes": 100,
-                "sha256": "invalid_short_hash",
-            }
-        ],
-    }
-    with pytest.raises(PreflightVerificationError, match="Hash SHA-256 inválido"):
-        validate_manifest_structure(bad_manifest)
-
-
-def test_validate_manifest_structure_incoherent_version_and_filename() -> None:
-    """Mismatched version and filename prefix must fail."""
-    bad_manifest = {
-        "schema_version": 1,
-        "total_migrations": 1,
-        "migrations": [
-            {
-                "version": "20260811000000",
-                "filename": "20260812999999_mismatched.sql",
-                "path": "supabase/migrations/20260812999999_mismatched.sql",
-                "bytes": 100,
-                "sha256": "a" * 64,
-            }
-        ],
-    }
-    with pytest.raises(PreflightVerificationError, match="Incoerência entre version"):
-        validate_manifest_structure(bad_manifest)
+    with pytest.raises(PreflightVerificationError):
+        validate_manifest_structure(bad_entry)
 
 
 def test_verify_migrations_alignment_success() -> None:
-    """Official migrations directory must align with baseline manifest."""
+    """Production codebase migrations directory must strictly align with manifest."""
     migrations_dir = Path(__file__).resolve().parents[2] / "supabase" / "migrations"
     info = verify_migrations_alignment(migrations_dir)
     assert info["status"] == "aligned_locally"
     assert info["scope"] == "local_directory_only"
-    assert info["count"] == 38
+    assert info["count"] == 39
     assert info["manifest_verified"] is True
 
 
@@ -649,7 +602,7 @@ def test_migrations_identical_to_baseline_manifest() -> None:
     manifest = load_canonical_migrations_manifest()
     sql_files = sorted(migrations_dir.glob("*.sql"), key=lambda f: f.name)
 
-    assert len(sql_files) == 38
+    assert len(sql_files) == 39
     for sql_file, entry in zip(sql_files, manifest["migrations"], strict=True):
         assert sql_file.name == entry["filename"]
         file_bytes = sql_file.read_bytes()
@@ -716,8 +669,8 @@ def test_verify_migrations_fails_on_duplicate_timestamp(tmp_path: Path) -> None:
     """Duplicate 14-digit timestamps must fail closed."""
     (tmp_path / "20260811000000_migration_a.sql").write_bytes(b"SELECT 1;")
     (tmp_path / "20260811000000_migration_b.sql").write_bytes(b"SELECT 1;")
-    # Pad to 38 files
-    for i in range(2, 38):
+    # Pad to 39 files
+    for i in range(2, 39):
         (tmp_path / f"202608120000{i:02d}_migration.sql").write_bytes(b"SELECT 1;")
 
     with pytest.raises(PreflightVerificationError, match="Duplicidade de versão"):

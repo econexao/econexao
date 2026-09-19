@@ -17,8 +17,23 @@ type RouteGallery = RouteCover & {
 const pindobalCoverImage = require('../../../assets/images/pindobal1.png');
 const pedralCoverImage = require('../../../assets/images/pedral_route_hero.png');
 const massanoriCoverImage = require('../../../assets/images/massanori_route_hero.png');
+const massanoriGalleryImages = [
+  require('../../../assets/images/massanori_route_hero.png'),
+  require('../../../assets/images/massanori_02.png'),
+  require('../../../assets/images/massanori_03.png'),
+];
 const ambeCoverImage = require('../../../assets/images/ambe_route_hero.png');
+const ambeGalleryImages = [
+  require('../../../assets/images/ambe_route_hero.png'),
+  require('../../../assets/images/ambe_02.png'),
+  require('../../../assets/images/ambe_03.png'),
+];
 const quedaDaguaCoverImage = require('../../../assets/images/queda_dagua_route_hero.png');
+const quedaDaguaGalleryImages = [
+  require('../../../assets/images/queda_dagua_route_hero.png'),
+  require('../../../assets/images/queda_dagua_02.png'),
+  require('../../../assets/images/queda_dagua_03.png'),
+];
 const raizesXinguCoverImage = require('../../../assets/images/raizes_xingu_route_hero.png');
 const raizesXinguGalleryImages = [
   require('../../../assets/images/raizes_xingu_route_hero.png'),
@@ -167,33 +182,27 @@ export const getRouteGalleryImages = (route: RouteGallery) => {
   }
 
   if (isMassanoriRoute(route)) {
-    return [
-      {
-        key: 'massanori-1',
-        source: massanoriCoverImage as ImageSourcePropType,
-        alt: 'Foto da Praia do Massanori e Rio Xingu',
-      },
-    ];
+    return massanoriGalleryImages.map((source, index) => ({
+      key: `massanori-${index + 1}`,
+      source: source as ImageSourcePropType,
+      alt: `Foto ${index + 1} da Praia do Massanori e Rio Xingu`,
+    }));
   }
 
   if (isAmbeRoute(route)) {
-    return [
-      {
-        key: 'ambe-1',
-        source: ambeCoverImage as ImageSourcePropType,
-        alt: 'Foto do Ambé Floresta Park e igarapé natural',
-      },
-    ];
+    return ambeGalleryImages.map((source, index) => ({
+      key: `ambe-${index + 1}`,
+      source: source as ImageSourcePropType,
+      alt: `Foto ${index + 1} do Ambé Floresta Park e igarapé natural`,
+    }));
   }
 
   if (isQuedaDaguaRoute(route)) {
-    return [
-      {
-        key: 'queda-dagua-1',
-        source: quedaDaguaCoverImage as ImageSourcePropType,
-        alt: 'Foto do Balneário e Pousada Queda D\'água',
-      },
-    ];
+    return quedaDaguaGalleryImages.map((source, index) => ({
+      key: `queda-dagua-${index + 1}`,
+      source: source as ImageSourcePropType,
+      alt: `Foto ${index + 1} do Balneário e Pousada Queda D'água`,
+    }));
   }
 
   if (isRaizesXinguRoute(route)) {
@@ -304,7 +313,7 @@ export const getRouteDescription = (
   }
 
   if (isRaizesXinguRoute(route) || route.slug === 'rota-raizes-do-xingu' || route.slug === 'rota-sitio-raizes-do-xingu') {
-    return 'Refúgio ecológico em Altamira, o Sítio Raízes do Xingu abriga a espetacular Cachoeira Planaltina, proporcionando banho em águas cristalinas, trilhas na floresta e vivência na Amazônia.';
+    return 'Refúgio ecológico em Brasil Novo, o Sítio Raízes do Xingu abriga a espetacular Cachoeira Planaltina, proporcionando banho em águas cristalinas, trilhas na floresta e vivência na Amazônia.';
   }
 
   if (isPindobalRoute(route)) {

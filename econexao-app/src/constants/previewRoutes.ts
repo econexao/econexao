@@ -99,7 +99,14 @@ export function mergeRoutesWithPreviews(
 
   // If no option was explicitly passed, check if routes are strictly Altamira without Santarém/Belterra
   const hasAltamira = apiRoutes.some(
-    (r) => r.slug === 'rota-pedral' || r.city?.toLowerCase() === 'altamira'
+    (r) =>
+      r.slug === 'rota-pedral' ||
+      r.slug === 'rota-massanori' ||
+      r.slug === 'rota-ambe' ||
+      r.slug === 'rota-queda-dagua' ||
+      r.slug === 'rota-raizes-do-xingu' ||
+      r.city?.toLowerCase() === 'altamira' ||
+      r.city?.toLowerCase() === 'brasil novo'
   );
   const hasSantarem = apiRoutes.some(
     (r) =>
