@@ -19,6 +19,13 @@ const pedralCoverImage = require('../../../assets/images/pedral_route_hero.png')
 const massanoriCoverImage = require('../../../assets/images/massanori_route_hero.png');
 const ambeCoverImage = require('../../../assets/images/ambe_route_hero.png');
 const quedaDaguaCoverImage = require('../../../assets/images/queda_dagua_route_hero.png');
+const raizesXinguCoverImage = require('../../../assets/images/raizes_xingu_route_hero.png');
+const raizesXinguGalleryImages = [
+  require('../../../assets/images/raizes_xingu_route_hero.png'),
+  require('../../../assets/images/raizes_xingu_02.png'),
+  require('../../../assets/images/raizes_xingu_03.png'),
+  require('../../../assets/images/raizes_xingu_04.png'),
+];
 const pindobalGalleryImages = [
   require('../../../assets/images/pindobal1.png'),
   require('../../../assets/images/pindobal2.png'),
@@ -59,6 +66,12 @@ export const isQuedaDaguaRoute = (route: RouteCover) =>
   route.slug === 'rota-queda-d-agua' ||
   route.slug === 'rota-balneario-queda-dagua';
 
+export const isRaizesXinguRoute = (route: RouteCover) =>
+  route.id === 'a17a314a-0000-4000-8000-000000000006' ||
+  route.id === 'route-raizes-do-xingu' ||
+  route.slug === 'rota-raizes-do-xingu' ||
+  route.slug === 'rota-sitio-raizes-do-xingu';
+
 /** Keeps editorial covers bundled with the app while other routes use API media. */
 export const getRouteCoverImage = (route: RouteCover): ImageSourcePropType | undefined => {
   if (isPindobalRoute(route)) {
@@ -75,6 +88,9 @@ export const getRouteCoverImage = (route: RouteCover): ImageSourcePropType | und
   }
   if (isQuedaDaguaRoute(route)) {
     return quedaDaguaCoverImage;
+  }
+  if (isRaizesXinguRoute(route)) {
+    return raizesXinguCoverImage;
   }
   if (
     route.slug === 'rota-alter-do-chao' ||
@@ -119,6 +135,9 @@ export const getAmbeCoverImage = (route: RouteCover): ImageSourcePropType | unde
 
 export const getQuedaDaguaCoverImage = (route: RouteCover): ImageSourcePropType | undefined =>
   isQuedaDaguaRoute(route) ? quedaDaguaCoverImage : undefined;
+
+export const getRaizesXinguCoverImage = (route: RouteCover): ImageSourcePropType | undefined =>
+  isRaizesXinguRoute(route) ? raizesXinguCoverImage : undefined;
 
 export const getRouteGalleryImages = (route: RouteGallery) => {
   if (route.gallery?.length) {
@@ -177,6 +196,14 @@ export const getRouteGalleryImages = (route: RouteGallery) => {
     ];
   }
 
+  if (isRaizesXinguRoute(route)) {
+    return raizesXinguGalleryImages.map((source, index) => ({
+      key: `raizes-xingu-${index + 1}`,
+      source: source as ImageSourcePropType,
+      alt: `Foto ${index + 1} do Sítio Raízes do Xingu e Cachoeira Planaltina`,
+    }));
+  }
+
   return [];
 };
 
@@ -222,12 +249,21 @@ export const getRouteDisplayName = (
   ) {
     return 'Balneário e Pousada Queda D\'água';
   }
+  if (
+    isRaizesXinguRoute(route) ||
+    route.slug === 'rota-raizes-do-xingu' ||
+    route.slug === 'rota-sitio-raizes-do-xingu' ||
+    route.title === 'Rota Raízes do Xingu' ||
+    route.title === 'Rota Sítio Raízes do Xingu'
+  ) {
+    return 'Sítio Raízes do Xingu';
+  }
   return route.title ?? '';
 };
 
 /**
  * Returns a curated, concise location description (max 250 characters)
- * for destination routes like Pedral, Massanori and Pindobal.
+ * for destination routes like Pedral, Massanori, Ambé, Queda D'água, Raízes do Xingu and Pindobal.
  */
 export const getRouteDescription = (
   route?: (RouteCover & { description?: string | null; summary?: string | null }) | null
@@ -248,6 +284,10 @@ export const getRouteDescription = (
 
   if (isQuedaDaguaRoute(route) || route.slug === 'rota-queda-dagua' || route.slug === 'rota-queda-d-agua') {
     return 'Refúgio ecológico e de lazer em Altamira, o Balneário e Pousada Queda D\'água oferece banho refrescante em águas naturais, estrutura de pousada e contato com a natureza da Amazônia.';
+  }
+
+  if (isRaizesXinguRoute(route) || route.slug === 'rota-raizes-do-xingu' || route.slug === 'rota-sitio-raizes-do-xingu') {
+    return 'Refúgio ecológico em Altamira, o Sítio Raízes do Xingu abriga a espetacular Cachoeira Planaltina, proporcionando banho em águas cristalinas, trilhas na floresta e vivência na Amazônia.';
   }
 
   if (isPindobalRoute(route)) {
@@ -285,5 +325,3 @@ export const getRouteDescription = (
 
   return route.description || route.summary || '';
 };
-
-
