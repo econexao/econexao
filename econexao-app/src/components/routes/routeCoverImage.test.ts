@@ -139,16 +139,22 @@ describe('getRouteGalleryImages', () => {
     expect(getRouteGalleryImages({ slug: 'rota-pedral' })).toHaveLength(1);
   });
 
-  it('provides the bundled hero image for Praia do Massanori gallery', () => {
-    expect(getRouteGalleryImages({ slug: 'rota-massanori' })).toHaveLength(1);
+  it('provides the three bundled editorial photos for Praia do Massanori gallery', () => {
+    const gallery = getRouteGalleryImages({ slug: 'rota-massanori' });
+    expect(gallery).toHaveLength(3);
+    expect(gallery[0].alt).toContain('Praia do Massanori');
   });
 
-  it('provides the bundled hero image for Ambé Floresta Park gallery', () => {
-    expect(getRouteGalleryImages({ slug: 'rota-ambe' })).toHaveLength(1);
+  it('provides the three bundled editorial photos for Ambé Floresta Park gallery', () => {
+    const gallery = getRouteGalleryImages({ slug: 'rota-ambe' });
+    expect(gallery).toHaveLength(3);
+    expect(gallery[0].alt).toContain('Ambé Floresta Park');
   });
 
-  it('provides the bundled hero image for Balneário e Pousada Queda D\'água gallery', () => {
-    expect(getRouteGalleryImages({ slug: 'rota-queda-dagua' })).toHaveLength(1);
+  it('provides the three bundled editorial photos for Balneário e Pousada Queda D\'água gallery', () => {
+    const gallery = getRouteGalleryImages({ slug: 'rota-queda-dagua' });
+    expect(gallery).toHaveLength(3);
+    expect(gallery[0].alt).toContain('Queda D\'água');
   });
 
   it('provides the four bundled editorial photos for Sítio Raízes do Xingu gallery', () => {
@@ -194,6 +200,7 @@ describe('getRouteDescription', () => {
     expect(isRaizesXinguRoute({ id: 'a17a314a-0000-4000-8000-000000000006' })).toBe(true);
     const desc = getRouteDescription({ slug: 'rota-raizes-do-xingu' });
     expect(desc).toContain('Raízes do Xingu');
+    expect(desc).toContain('Brasil Novo');
     expect(desc).toContain('Cachoeira Planaltina');
     expect(desc.length).toBeLessThanOrEqual(250);
     expect(desc.length).toBeGreaterThan(20);
@@ -237,11 +244,14 @@ describe('getRoutePhotoCount', () => {
     expect(getRoutePhotoCount({ slug: 'rota-raizes-do-xingu' })).toBe(4);
   });
 
+  it('returns 3 for Massanori, Ambé, and Queda D\'água galleries', () => {
+    expect(getRoutePhotoCount({ slug: 'rota-massanori' })).toBe(3);
+    expect(getRoutePhotoCount({ slug: 'rota-ambe' })).toBe(3);
+    expect(getRoutePhotoCount({ slug: 'rota-queda-dagua' })).toBe(3);
+  });
+
   it('returns 1 for bundled single-photo routes', () => {
     expect(getRoutePhotoCount({ slug: 'rota-pedral' })).toBe(1);
-    expect(getRoutePhotoCount({ slug: 'rota-massanori' })).toBe(1);
-    expect(getRoutePhotoCount({ slug: 'rota-ambe' })).toBe(1);
-    expect(getRoutePhotoCount({ slug: 'rota-queda-dagua' })).toBe(1);
   });
 
   it('returns 1 for preview routes with bundled cover images', () => {

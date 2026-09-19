@@ -172,7 +172,7 @@ class SEMTURPersistenceRepository:
                 region = Region(
                     id=uuid.uuid4(),
                     slug="santarem-belterra",
-                    name="Santarém e Belterra",
+                    name="Região do Tapajós (Santarém)",
                     state_code="PA",
                     center=WKTElement("POINT(-54.978506 -2.558521)", srid=4326),
                     is_active=True,
