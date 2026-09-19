@@ -4,9 +4,13 @@
   "buildCommand": null,
   "outputDirectory": ".",
   "rewrites": [
-    { "source": "/Play", "destination": "/Play.html" },
-    { "source": "/play", "destination": "/Play.html" },
-    { "source": "/Play/", "destination": "/Play.html" },
-    { "source": "/play/", "destination": "/Play.html" }
+    {
+      "source": "/play",
+      "destination": "/Play"
+    },
+    {
+      "source": "/play/",
+      "destination": "/Play"
+    }
   ]
 }
