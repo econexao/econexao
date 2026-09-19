@@ -266,8 +266,8 @@
       "version": "20260919120000",
       "filename": "20260919120000_raizes_xingu_four_origins_route.sql",
       "path": "supabase/migrations/20260919120000_raizes_xingu_four_origins_route.sql",
-      "bytes": 84773,
-      "sha256": "a2d78b9c01cbab9a36cf7c69cd5be5e4b2d530abccbe7d1de98ad35dc0c6602f"
+      "bytes": 84471,
+      "sha256": "45c1f5abfe52a061dd0554884a12d7dcbe5dbcc55ef36b9b83c630a4a0a20002"
     }
   ]
 }
