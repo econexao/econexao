@@ -2,5 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "buildCommand": null,
-  "outputDirectory": "."
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/Play", "destination": "/Play.html" },
+    { "source": "/play", "destination": "/Play.html" },
+    { "source": "/Play/", "destination": "/Play.html" },
+    { "source": "/play/", "destination": "/Play.html" }
+  ]
 }

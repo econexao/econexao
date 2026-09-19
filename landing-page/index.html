@@ -15,13 +15,8 @@
       content="Rotas, praias e negócios locais em um só lugar."
     />
     <meta property="og:image" content="assets/images/alter3.png" />
-<<<<<<< HEAD
     <meta name="econexao-api-base-url" content="https://econexao-backend-production.onrender.com" />
     <link rel="icon" href="assets/brand/logo-econexao-transparent.png" type="image/png" />
-
-=======
-    <link rel="icon" href="assets/brand/logo-econexao-transparent.png" type="image/png" />
->>>>>>> origin/main
     <title>ECOnexão — Descubra destinos. Viva experiências.</title>
 
     <style>
@@ -291,6 +286,33 @@
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
+      }
+
+      .nav__play {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.35rem;
+        height: 2.35rem;
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        border-radius: 50%;
+        color: var(--white);
+        background: rgba(255, 255, 255, 0.12);
+        font-size: 0.85rem;
+        line-height: 1;
+        backdrop-filter: blur(8px);
+        transition:
+          transform 180ms ease,
+          background-color 180ms ease,
+          border-color 180ms ease,
+          color 180ms ease;
+      }
+
+      .nav__play:hover {
+        color: var(--green-950);
+        background: var(--gold);
+        border-color: var(--gold);
+        transform: scale(1.08);
       }
 
       .menu-button {
@@ -949,7 +971,6 @@
         display: block;
       }
 
-<<<<<<< HEAD
       .form-status.is-error {
         border-color: rgba(240, 140, 140, 0.45);
         color: #ffd4d4;
@@ -963,10 +984,6 @@
       }
 
       /* Footer */
-
-=======
-      /* Footer */
->>>>>>> origin/main
       .site-footer {
         color: rgba(255, 255, 255, 0.7);
         background: #032a25;
@@ -1081,6 +1098,28 @@
         .nav__cta {
           margin-top: 0.3rem;
           text-align: center;
+        }
+
+        .nav__play {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 0.4rem;
+          padding: 0.85rem 1rem;
+          width: 100%;
+          height: auto;
+          min-height: 2.9rem;
+          border-radius: 999px;
+          border: 1px solid rgba(227, 189, 105, 0.45);
+          background: rgba(227, 189, 105, 0.16);
+          color: var(--gold);
+          font-size: 1.15rem;
+          font-weight: 700;
+        }
+
+        .nav__play:hover {
+          background: var(--gold);
+          color: var(--green-950);
         }
 
         .hero {
@@ -1282,6 +1321,7 @@
           <a href="#destinos">Destinos</a>
           <a href="#negocios">Negócios locais</a>
           <a class="nav__cta" href="#informativo">Receber informativo</a>
+          <a class="nav__play" href="Play" aria-label="Ver apresentação de slides do ECOnexão" title="Apresentação de slides"><span aria-hidden="true">▶</span></a>
         </div>
       </nav>
     </header>
@@ -1313,13 +1353,8 @@
               <img
                 src="assets/screens/app-home.png"
                 alt="Tela inicial do aplicativo ECOnexão com destinos e rotas da Amazônia"
-<<<<<<< HEAD
                 width="391"
                 height="849"
-=======
-                width="575"
-                height="1600"
->>>>>>> origin/main
                 fetchpriority="high"
               />
             </div>
@@ -1341,7 +1376,6 @@
           </div>
         </div>
       </section>
-<<<<<<< HEAD
 
       <section class="problem" id="descoberta" aria-labelledby="titulo-problema">
         <div class="problem__grid container">
