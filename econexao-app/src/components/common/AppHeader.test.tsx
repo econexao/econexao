@@ -152,6 +152,6 @@ describe('AppHeader navigation and fallback', () => {
     });
     const root = tree.root;
     const texts = root.findAllByType(Text).map((t) => t.props.children);
-    expect(texts).toContain('Santarém & Belterra');
+    expect(texts).toContain('Região do Tapajós (Santarém)');
   });
 });

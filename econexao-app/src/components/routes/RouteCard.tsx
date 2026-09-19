@@ -5,7 +5,7 @@ import { theme } from '../../theme/theme';
 import type { RouteSummary } from '../../api/types';
 import { Badge } from '../common/Badge';
 import { makeAccessibleButton } from '../../utils/accessibility';
-import { getRouteCoverImage, getRouteDisplayName } from './routeCoverImage';
+import { getRouteCoverImage, getRouteDisplayName, getRouteCity } from './routeCoverImage';
 
 interface RouteCardProps {
   route: RouteSummary;
@@ -22,6 +22,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
 }) => {
   const coverImage = getRouteCoverImage(route);
   const displayTitle = getRouteDisplayName(route);
+  const displayCity = getRouteCity(route);
 
   return (
     <View style={styles.card}>
@@ -33,11 +34,11 @@ export const RouteCard: React.FC<RouteCardProps> = ({
         {...(onPress
           ? makeAccessibleButton(
               `Rota ${displayTitle}`,
-              `${route.city}, ${route.state_code}. Toque para ver os detalhes.`
+              `${displayCity}, ${route.state_code}. Toque para ver os detalhes.`
             )
           : {
               accessible: true,
-              accessibilityLabel: `Rota ${displayTitle}, ${route.city}, ${route.state_code}`,
+              accessibilityLabel: `Rota ${displayTitle}, ${displayCity}, ${route.state_code}`,
             })}
       >
         <View style={styles.imageContainer}>
@@ -63,7 +64,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
             <View style={styles.locationRow}>
               <Ionicons name="location-sharp" size={14} color={theme.colors.onPrimaryContainer} />
               <Text style={styles.locationText}>
-                {route.city}, {route.state_code}
+                {[displayCity, route.state_code].filter(Boolean).join(', ')}
               </Text>
             </View>
             <Text style={styles.title}>{displayTitle}</Text>

@@ -31,8 +31,8 @@ jest.mock('../hooks/queries', () => {
     ...actual,
     useRegionsQuery: jest.fn().mockReturnValue({
       data: [
-        { id: 'reg-1', name: 'Polo Tapajós', state_code: 'PA' },
-        { id: 'reg-2', name: 'Polo Belterra', state_code: 'PA' },
+        { id: 'reg-1', name: 'Região do Tapajós (Santarém)', state_code: 'PA' },
+        { id: 'reg-2', name: 'Região do Xingu (Altamira)', state_code: 'PA' },
       ],
       isPending: false,
       isError: false,
@@ -126,7 +126,7 @@ describe('E2E Accessibility & WCAG Semantic Audit (ECO-2101 / ECO-2307 / ECO-231
     });
     const regionJson = JSON.stringify(regionTree!.toJSON());
     expect(regionJson).toContain('Selecionar Região');
-    expect(regionJson).toContain('Polo Tapajós');
+    expect(regionJson).toContain('Região do Tapajós (Santarém)');
   });
 
   test('WCAG 2.1.2 / 2.4.3: AccessibleModal implementa aria-modal, foco seguro e diálogo sem bloquear aria-hidden', async () => {

@@ -7,6 +7,8 @@ import {
   getRaizesXinguCoverImage,
   getRouteCoverImage,
   getRouteDisplayName,
+  getRouteCity,
+  getRegionDisplayName,
   getRouteDescription,
   getRouteGalleryImages,
   getRoutePhotoCount,
@@ -268,5 +270,43 @@ describe('getRoutePhotoCount', () => {
   it('returns 0 for null or empty routes', () => {
     expect(getRoutePhotoCount(null)).toBe(0);
     expect(getRoutePhotoCount({})).toBe(0);
+  });
+});
+
+describe('getRouteCity', () => {
+  it('returns "Brasil Novo" for Sítio Raízes do Xingu even if API reports Altamira', () => {
+    expect(getRouteCity({ slug: 'rota-raizes-do-xingu', city: 'Altamira' })).toBe('Brasil Novo');
+    expect(getRouteCity({ id: 'a17a314a-0000-4000-8000-000000000006', city: 'Altamira' })).toBe('Brasil Novo');
+  });
+
+  it('preserves other route cities as reported', () => {
+    expect(getRouteCity({ slug: 'rota-pedral', city: 'Altamira' })).toBe('Altamira');
+    expect(getRouteCity({ slug: 'rota-pindobal', city: 'Belterra' })).toBe('Belterra');
+    expect(getRouteCity(null)).toBe('');
+  });
+});
+
+describe('getRegionDisplayName', () => {
+  it('canonicalizes Altamira region names to "Região do Xingu (Altamira)"', () => {
+    expect(getRegionDisplayName({ slug: 'altamira-xingu', name: 'Região de Altamira / Xingu' })).toBe(
+      'Região do Xingu (Altamira)'
+    );
+    expect(getRegionDisplayName({ id: 'reg-altamira-xingu', name: 'Altamira / Rio Xingu' })).toBe(
+      'Região do Xingu (Altamira)'
+    );
+  });
+
+  it('canonicalizes Santarém/Belterra region names to "Região do Tapajós (Santarém)"', () => {
+    expect(getRegionDisplayName({ slug: 'santarem-belterra', name: 'Santarém e Belterra' })).toBe(
+      'Região do Tapajós (Santarém)'
+    );
+    expect(getRegionDisplayName({ id: 'reg-santarem-belterra', name: 'Santarém / Belterra' })).toBe(
+      'Região do Tapajós (Santarém)'
+    );
+  });
+
+  it('returns raw name for unknown region or empty string for null', () => {
+    expect(getRegionDisplayName({ name: 'Outra Região' })).toBe('Outra Região');
+    expect(getRegionDisplayName(null)).toBe('');
   });
 });

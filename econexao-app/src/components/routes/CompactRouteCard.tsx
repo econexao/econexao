@@ -5,7 +5,7 @@ import { theme } from '../../theme/theme';
 import type { RouteSummary } from '../../api/types';
 import { Badge } from '../common/Badge';
 import { makeAccessibleButton } from '../../utils/accessibility';
-import { getRouteCoverImage, getRouteDisplayName } from './routeCoverImage';
+import { getRouteCoverImage, getRouteDisplayName, getRouteCity } from './routeCoverImage';
 
 interface CompactRouteCardProps {
   route: RouteSummary;
@@ -22,6 +22,7 @@ export const CompactRouteCard: React.FC<CompactRouteCardProps> = ({
 }) => {
   const coverImage = getRouteCoverImage(route);
   const displayTitle = getRouteDisplayName(route);
+  const displayCity = getRouteCity(route);
 
   return (
     <View style={styles.card}>
@@ -33,11 +34,11 @@ export const CompactRouteCard: React.FC<CompactRouteCardProps> = ({
         {...(onPress
           ? makeAccessibleButton(
               `Rota ${displayTitle}`,
-              `${route.city}, ${route.state_code}. Toque para ver os detalhes.`
+              `${displayCity}, ${route.state_code}. Toque para ver os detalhes.`
             )
           : {
               accessible: true,
-              accessibilityLabel: `Rota ${displayTitle}, ${route.city}, ${route.state_code}`,
+              accessibilityLabel: `Rota ${displayTitle}, ${displayCity}, ${route.state_code}`,
             })}
       >
         <View style={styles.imageContainer}>
@@ -73,7 +74,7 @@ export const CompactRouteCard: React.FC<CompactRouteCardProps> = ({
             <View style={styles.infoBadge}>
               <Ionicons name="navigate-outline" size={13} color={theme.colors.brandSage} />
               <Text style={styles.infoText} numberOfLines={1}>
-                {[route.city, route.state_code].filter(Boolean).join(', ')}
+                {[displayCity, route.state_code].filter(Boolean).join(', ')}
               </Text>
             </View>
           </View>
