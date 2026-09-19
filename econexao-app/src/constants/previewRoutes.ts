@@ -1,5 +1,5 @@
 import type { RouteSummary } from '../api/types';
-import { isPindobalRoute } from '../components/routes/routeCoverImage';
+import { isPindobalRoute, getRoutePhotoCount } from '../components/routes/routeCoverImage';
 
 export const PREVIEW_ROUTES: RouteSummary[] = [
   {
@@ -75,13 +75,15 @@ export interface MergeRoutesOptions {
   isAltamiraRegion?: boolean;
 }
 
+const sortRoutesByGalleryPhotoCount = (routes: RouteSummary[]): RouteSummary[] => {
+  return [...routes].sort((a, b) => getRoutePhotoCount(b) - getRoutePhotoCount(a));
+};
+
 /**
- * Merges API routes with preview routes ensuring the canonical #1 to #5 order:
- * #1 Pindobal - Belterra/PA
- * #2 Praia do Amor (Alter do Chão) - Santarém/PA
- * #3 Ponta de Pedras - Santarém/PA
- * #4 Vila Socorro - Santarém/PA
- * #5 Aramanai - Belterra/PA
+ * Merges API routes with preview routes and orders by gallery photo count (descending),
+ * preserving canonical relative order as a stable tie-breaker:
+ * - Routes with more gallery photos appear first (e.g. Pindobal and Raízes do Xingu with 4 photos).
+ * - Routes with 1 photo / cover appear subsequently in canonical order.
  *
  * When isAltamiraRegion is true, Santarém previews are isolated and only Altamira routes are returned.
  * When viewing Santarém or Todas as regiões, Santarém previews are preserved alongside API routes.
@@ -90,9 +92,9 @@ export function mergeRoutesWithPreviews(
   apiRoutes: RouteSummary[] = [],
   options?: MergeRoutesOptions
 ): RouteSummary[] {
-  // If explicitly flagged as Altamira region, return only the API routes without Santarém previews
+  // If explicitly flagged as Altamira region, return only the API routes sorted by photo count
   if (options?.isAltamiraRegion) {
-    return apiRoutes;
+    return sortRoutesByGalleryPhotoCount(apiRoutes);
   }
 
   // If no option was explicitly passed, check if routes are strictly Altamira without Santarém/Belterra
@@ -108,7 +110,7 @@ export function mergeRoutesWithPreviews(
   );
 
   if (hasAltamira && !hasSantarem && apiRoutes.length > 0) {
-    return apiRoutes;
+    return sortRoutesByGalleryPhotoCount(apiRoutes);
   }
 
   const pindobal = apiRoutes.find((r) => isPindobalRoute(r));
@@ -131,12 +133,12 @@ export function mergeRoutesWithPreviews(
     result.push(preview);
   }
 
-  // Any other routes from the API (such as Rota do Pedral when viewing Todas)
+  // Any other routes from the API (such as Rota do Pedral, Raízes do Xingu, etc.)
   for (const other of otherApiRoutes) {
     if (!result.some((r) => r.id === other.id || r.slug === other.slug)) {
       result.push(other);
     }
   }
 
-  return result;
+  return sortRoutesByGalleryPhotoCount(result);
 }

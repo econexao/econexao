@@ -208,6 +208,23 @@ export const getRouteGalleryImages = (route: RouteGallery) => {
 };
 
 /**
+ * Calculates the total photo count available for a route (gallery images or cover fallback).
+ */
+export const getRoutePhotoCount = (
+  route?: (RouteCover & { gallery?: Array<any> }) | null
+): number => {
+  if (!route) return 0;
+  const gallery = getRouteGalleryImages(route as RouteGallery);
+  if (gallery.length > 0) {
+    return gallery.length;
+  }
+  if (getRouteCoverImage(route)) {
+    return 1;
+  }
+  return 0;
+};
+
+/**
  * Standardizes the display name of routes across cards and detail screens.
  * Specifically canonicalizes the Pedral route to "Balneário Luiz do Pedral".
  */

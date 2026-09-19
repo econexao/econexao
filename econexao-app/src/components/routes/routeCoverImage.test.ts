@@ -9,6 +9,7 @@ import {
   getRouteDisplayName,
   getRouteDescription,
   getRouteGalleryImages,
+  getRoutePhotoCount,
   isAmbeRoute,
   isPedralRoute,
   isQuedaDaguaRoute,
@@ -215,5 +216,47 @@ describe('getRouteDescription', () => {
     expect(getRouteDescription({ slug: 'outra-rota', description: 'Descrição da API' })).toBe('Descrição da API');
     expect(getRouteDescription({ slug: 'outra-rota', summary: 'Resumo da API' })).toBe('Resumo da API');
     expect(getRouteDescription(null)).toBe('');
+  });
+});
+
+describe('getRoutePhotoCount', () => {
+  it('returns count from route.gallery when provided by API', () => {
+    expect(
+      getRoutePhotoCount({
+        gallery: [
+          { url: 'https://example.test/1.jpg' },
+          { url: 'https://example.test/2.jpg' },
+          { url: 'https://example.test/3.jpg' },
+        ],
+      })
+    ).toBe(3);
+  });
+
+  it('returns 4 for Pindobal and Sítio Raízes do Xingu fallback galleries', () => {
+    expect(getRoutePhotoCount({ slug: 'rota-pindobal' })).toBe(4);
+    expect(getRoutePhotoCount({ slug: 'rota-raizes-do-xingu' })).toBe(4);
+  });
+
+  it('returns 1 for bundled single-photo routes', () => {
+    expect(getRoutePhotoCount({ slug: 'rota-pedral' })).toBe(1);
+    expect(getRoutePhotoCount({ slug: 'rota-massanori' })).toBe(1);
+    expect(getRoutePhotoCount({ slug: 'rota-ambe' })).toBe(1);
+    expect(getRoutePhotoCount({ slug: 'rota-queda-dagua' })).toBe(1);
+  });
+
+  it('returns 1 for preview routes with bundled cover images', () => {
+    expect(getRoutePhotoCount({ slug: 'rota-alter-do-chao' })).toBe(1);
+    expect(getRoutePhotoCount({ slug: 'rota-ponta-de-pedras' })).toBe(1);
+    expect(getRoutePhotoCount({ slug: 'rota-vila-socorro' })).toBe(1);
+    expect(getRoutePhotoCount({ slug: 'rota-aramanai' })).toBe(1);
+  });
+
+  it('returns 1 when only cover_image_url is present', () => {
+    expect(getRoutePhotoCount({ cover_image_url: 'https://example.test/cover.jpg' })).toBe(1);
+  });
+
+  it('returns 0 for null or empty routes', () => {
+    expect(getRoutePhotoCount(null)).toBe(0);
+    expect(getRoutePhotoCount({})).toBe(0);
   });
 });
