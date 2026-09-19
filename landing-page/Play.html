@@ -542,6 +542,7 @@
       function syncFullscreen() {
         const active = Boolean(document.fullscreenElement);
         if (!active && fullscreenButton.getAttribute("aria-pressed") === "true") fullscreenExitedAt = performance.now();
+        document.documentElement.classList.toggle("is-fullscreen", active);
         fullscreenButton.setAttribute("aria-pressed", String(active));
         fullscreenButton.setAttribute("aria-label", active ? "Sair da tela cheia" : "Entrar em tela cheia");
         fullscreenButton.querySelector(".fullscreen-label").textContent = active ? "Sair da tela cheia" : "Tela cheia";
