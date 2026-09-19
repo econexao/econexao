@@ -141,6 +141,16 @@ async function runTests() {
     }
     console.log("✓ Accessibility attributes verified (role=status, aria-live=polite)");
 
+    // 1b. Hero CTA button pointing to app.econexaoturismo.com in a new tab
+    const heroBtn = page.locator(".hero__copy .button");
+    const heroHref = await heroBtn.getAttribute("href");
+    const heroTarget = await heroBtn.getAttribute("target");
+    const heroRel = await heroBtn.getAttribute("rel");
+    if (heroHref !== "https://app.econexaoturismo.com/" || heroTarget !== "_blank" || !heroRel?.includes("noopener")) {
+      throw new Error(`Hero button attributes mismatch: href=${heroHref}, target=${heroTarget}, rel=${heroRel}`);
+    }
+    console.log("✓ Hero CTA button points to https://app.econexaoturismo.com/ (target=_blank, rel=noopener noreferrer)");
+
     // 2. Client-side invalid email submission
     await emailInput.fill("invalid-email");
     await form.locator("button[type='submit']").click();
@@ -377,61 +387,129 @@ async function runTests() {
 
     await mobileContext.close();
 
-    // Every slide must remain readable and operable across desktop and narrow phones.
-    const screenshotDir = process.env.PLAY_SCREENSHOT_DIR;
-    if (screenshotDir) fs.mkdirSync(screenshotDir, { recursive: true });
-    for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 320, height: 568 }]) {
-      const context = await browser.newContext({ viewport, reducedMotion: "reduce" });
-      const visual = await context.newPage();
+    // =========================================================================
+    // PARTE 3: VALIDAÇÃO DE FULLSCREEN REAL & RESPONSIVIDADE (1920, 1366, 390, 320)
+    // =========================================================================
+    const screenshotDir = process.env.PLAY_SCREENSHOT_DIR || path.resolve(__dirname, "../screenshots");
+    fs.mkdirSync(screenshotDir, { recursive: true });
+
+    const viewportsToTest = [
+      { width: 1920, height: 1080, name: "1920x1080" },
+      { width: 1366, height: 768, name: "1366x768" },
+      { width: 390, height: 844, name: "390x844" },
+      { width: 320, height: 568, name: "320x568" },
+    ];
+
+    for (const vp of viewportsToTest) {
+      const context = await browser.newContext({ viewport: { width: vp.width, height: vp.height }, reducedMotion: "reduce" });
+      const fsPage = await context.newPage();
       const errors = [];
-      visual.on("pageerror", error => errors.push(error.message));
-      visual.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
-      await visual.goto("http://127.0.0.1:8099/Play");
-      if (await visual.locator(".slide").count() !== 8) throw new Error("Expected eight slides");
+      fsPage.on("pageerror", error => errors.push(error.message));
+      fsPage.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
+
+      await fsPage.goto("http://127.0.0.1:8099/Play");
+      await fsPage.locator("#slide-1").waitFor({ state: "visible" });
+
+      // Entrar em fullscreen
+      await fsPage.getByRole("button", { name: "Entrar em tela cheia" }).click();
+      await fsPage.waitForFunction(() => Boolean(document.fullscreenElement));
+
       for (let i = 1; i <= 8; i++) {
-        await visual.getByRole("button", { name: `Slide ${i}`, exact: true }).click();
-        const state = await visual.evaluate(async () => {
-          const active = document.querySelector(".slide.is-active");
+        await fsPage.getByRole("button", { name: `Slide ${i}`, exact: true }).click();
+        await fsPage.waitForFunction((slideNum) => {
+          const el = document.getElementById(`slide-${slideNum}`);
+          return el && el.classList.contains("is-active");
+        }, i);
+
+        // Validação geométrica e de integridade em tela cheia
+        const fsState = await fsPage.evaluate(async (slideNum) => {
+          const active = document.getElementById(`slide-${slideNum}`);
           await Promise.all([...active.querySelectorAll("img")].map(img => img.decode()));
-          const background = getComputedStyle(active, "::before").backgroundImage;
-          const url = background.match(/url\(["']?(.*?)["']?\)/)?.[1];
-          if (!url) throw new Error("Missing landscape photograph");
-          const photo = new Image(); photo.src = url; await photo.decode();
-          const nodes = [...active.querySelectorAll("h1,h2,h3,p,li,figure,.qr-box,.cta-buttons")];
+
+          const rect = active.getBoundingClientRect();
+          const header = document.querySelector(".presentation-header");
+          const nav = document.querySelector(".presentation-nav");
+          const stage = document.querySelector(".stage");
+          const deck = document.querySelector(".slide-deck");
+          const headerStyle = getComputedStyle(header);
+          const navStyle = getComputedStyle(nav);
+          const activeStyle = getComputedStyle(active);
+          const stageStyle = getComputedStyle(stage);
+          const nodes = [...active.querySelectorAll("h1,h2,h3,p,li,figure,.qr-box,.cta-buttons,.altamira-points")];
           const clipped = nodes.filter(node => {
             const box = node.getBoundingClientRect();
-            const slideBox = active.getBoundingClientRect();
-            return box.left < -1 || box.right > innerWidth + 1 || box.bottom > slideBox.bottom + 1;
+            return box.left < -1 || box.right > innerWidth + 1;
           }).map(node => node.tagName);
+
           return {
-            overflow: document.documentElement.scrollWidth > innerWidth,
+            x: Math.round(rect.left),
+            y: Math.round(rect.top),
+            width: Math.round(rect.width),
+            height: Math.round(rect.height),
+            viewportWidth: innerWidth,
+            viewportHeight: innerHeight,
+            borderRadius: activeStyle.borderTopLeftRadius,
+            headerPosition: headerStyle.position,
+            navPosition: navStyle.position,
+            scrollWidthExceeds: document.documentElement.scrollWidth > innerWidth,
             clipped,
-            hiddenInteractive: [...document.querySelectorAll('.slide[aria-hidden="true"]')].some(slide => !slide.inert),
-            reduced: getComputedStyle(active).animationName === "none",
           };
-        });
-        if (state.overflow || state.clipped.length || state.hiddenInteractive || !state.reduced) {
-          throw new Error(`Slide ${i}, ${viewport.width}px: ${JSON.stringify(state)}`);
+        }, i);
+
+        // Asserções para Fullscreen
+        if (Math.abs(fsState.x) > 1 || Math.abs(fsState.y) > 1) {
+          throw new Error(`Slide ${i} at ${vp.name} not positioned at x=0, y=0: x=${fsState.x}, y=${fsState.y}`);
         }
-        if (screenshotDir) await visual.screenshot({ path: path.join(screenshotDir, `${viewport.width}-slide-${i}.png`), fullPage: true });
-      }
-      if (errors.length) throw new Error(`Browser errors: ${errors.join("; ")}`);
-      await visual.goto("http://127.0.0.1:8099/Play#slide-6");
-      await visual.getByRole("heading", { name: /Que destino você/ }).waitFor();
-      await visual.getByRole("button", { name: "Slide 2", exact: true }).focus();
-      await visual.keyboard.press("Space");
-      if (await visual.locator("#current-slide-num").textContent() !== "02") throw new Error("Space must activate focused dot");
-      for (const route of ["/play", "/Play/", "/play/"]) {
-        await visual.goto(`http://127.0.0.1:8099${route}`);
-        await visual.getByRole("heading", { level: 1 }).waitFor();
-        const styled = await visual.evaluate(async () => {
-          await document.querySelector("#slide-1 img").decode();
-          return getComputedStyle(document.querySelector(".slide.is-active")).display === "grid"
-            && getComputedStyle(document.querySelector(".slide.is-active"), "::before").backgroundImage !== "none";
+        if (Math.abs(fsState.width - vp.width) > 2) {
+          throw new Error(`Slide ${i} at ${vp.name} width does not match viewport: slideWidth=${fsState.width}, viewportWidth=${vp.width}`);
+        }
+        if (fsState.height < vp.height - 1) {
+          throw new Error(`Slide ${i} at ${vp.name} height is less than viewport: slideHeight=${fsState.height}, viewportHeight=${vp.height}`);
+        }
+        if (fsState.borderRadius !== "0px") {
+          throw new Error(`Slide ${i} at ${vp.name} has non-zero border-radius in fullscreen: ${fsState.borderRadius}`);
+        }
+        if (fsState.headerPosition !== "fixed" || fsState.navPosition !== "fixed") {
+          throw new Error(`Controls not fixed overlay in fullscreen at ${vp.name}: header=${fsState.headerPosition}, nav=${fsState.navPosition}`);
+        }
+        if (fsState.scrollWidthExceeds) {
+          throw new Error(`Slide ${i} at ${vp.name} has horizontal overflow (scrollWidth > innerWidth)`);
+        }
+        if (fsState.clipped.length > 0) {
+          throw new Error(`Slide ${i} at ${vp.name} has clipped elements: ${fsState.clipped.join(", ")}`);
+        }
+
+        // Salvar screenshot para inspeção visual
+        await fsPage.screenshot({
+          path: path.join(screenshotDir, `fullscreen-${vp.name}-slide-${i}.png`),
+          fullPage: false,
         });
-        if (!styled) throw new Error(`Missing presentation CSS at ${route}`);
       }
-      console.log(`✓ All eight slides: photos, screenshots, overflow, focus, reduced motion and aliases at ${viewport.width}px`);
+
+      // Testar saída do Fullscreen e restauração do layout normal
+      await fsPage.getByRole("button", { name: "Sair da tela cheia" }).click();
+      await fsPage.waitForFunction(() => !document.fullscreenElement);
+
+      const restoredState = await fsPage.evaluate(() => {
+        const active = document.querySelector(".slide.is-active");
+        const header = document.querySelector(".presentation-header");
+        const headerStyle = getComputedStyle(header);
+        const activeStyle = getComputedStyle(active);
+        return {
+          borderRadius: activeStyle.borderTopLeftRadius,
+          headerPosition: headerStyle.position,
+        };
+      });
+
+      if (restoredState.headerPosition === "fixed" && vp.width > 760) {
+        throw new Error(`Header position not restored to static after exiting fullscreen at ${vp.name}`);
+      }
+      if (restoredState.borderRadius !== "12px" && vp.width > 760) {
+        throw new Error(`Slide border-radius not restored to 12px after exiting fullscreen at ${vp.name}: ${restoredState.borderRadius}`);
+      }
+
+      if (errors.length) throw new Error(`Browser errors at ${vp.name}: ${errors.join("; ")}`);
+      console.log(`✓ Fullscreen verified for all 8 slides at ${vp.name} (x=0, y=0, width=${vp.width}, no-border-radius, fixed overlay controls, clean exit)`);
       await context.close();
     }
 

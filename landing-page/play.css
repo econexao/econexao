@@ -219,8 +219,363 @@ h3 { margin:0 0 8px; font-size:19px; font-weight:600; letter-spacing:-.3px; }
 .btn-fullscreen:hover,.btn-fullscreen[aria-pressed="true"] { background:var(--gold); color:#123329; }
 .fullscreen-status { margin:0; }
 .fullscreen-status:not(:empty) { padding:12px 24px; background:#183d34; color:var(--sand); font-size:15px; }
-html:fullscreen { overflow-y:auto; background:#081e1b; }
-@media(max-width:760px) { .fullscreen-label { display:none; } .header-meta { gap:4px; } .btn-exit { padding:0 8px; } .btn-fullscreen { padding:8px; } }
+
+/* Modo Tela Cheia: Slide de ponta a ponta (x=0, y=0, width=100vw, min-height=100vh) com controles sobrepostos */
+html:fullscreen,
+:fullscreen,
+html.is-fullscreen {
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: #081e1b;
+  width: 100%;
+  height: 100%;
+}
+
+html:fullscreen body,
+:fullscreen body,
+html.is-fullscreen body {
+  background: #081e1b;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+html:fullscreen .presentation-header,
+:fullscreen .presentation-header,
+html.is-fullscreen .presentation-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: linear-gradient(180deg, rgba(3, 24, 20, 0.9) 0%, rgba(3, 24, 20, 0.4) 65%, transparent 100%);
+  border-bottom: none;
+  pointer-events: none;
+}
+
+html:fullscreen .presentation-header .header-brand,
+html:fullscreen .presentation-header .header-meta > *,
+:fullscreen .presentation-header .header-brand,
+:fullscreen .presentation-header .header-meta > *,
+html.is-fullscreen .presentation-header .header-brand,
+html.is-fullscreen .presentation-header .header-meta > * {
+  pointer-events: auto;
+}
+
+html:fullscreen .presentation-nav,
+:fullscreen .presentation-nav,
+html.is-fullscreen .presentation-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: linear-gradient(0deg, rgba(3, 24, 20, 0.92) 0%, rgba(3, 24, 20, 0.45) 65%, transparent 100%);
+  border-top: none;
+  pointer-events: none;
+}
+
+html:fullscreen .presentation-nav .btn-nav,
+html:fullscreen .presentation-nav .nav-dot,
+html:fullscreen .presentation-nav .nav-side > *,
+:fullscreen .presentation-nav .btn-nav,
+:fullscreen .presentation-nav .nav-dot,
+:fullscreen .presentation-nav .nav-side > *,
+html.is-fullscreen .presentation-nav .btn-nav,
+html.is-fullscreen .presentation-nav .nav-dot,
+html.is-fullscreen .presentation-nav .nav-side > * {
+  pointer-events: auto;
+}
+
+html:fullscreen .stage,
+:fullscreen .stage,
+html.is-fullscreen .stage {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+html:fullscreen .slide-deck,
+:fullscreen .slide-deck,
+html.is-fullscreen .slide-deck {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+html:fullscreen .slide,
+:fullscreen .slide,
+html.is-fullscreen .slide,
+html:fullscreen .slide[id],
+:fullscreen .slide[id],
+html.is-fullscreen .slide[id] {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border-radius: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(44px, 5vw, 84px);
+  padding: clamp(84px, 8vh, 104px) clamp(36px, 5vw, 96px);
+  grid-template-columns: minmax(400px, 580px) minmax(440px, 660px);
+}
+
+html:fullscreen .slide-title,
+:fullscreen .slide-title,
+html.is-fullscreen .slide-title {
+  font-size: clamp(46px, 4.6vw, 80px);
+  margin-bottom: 22px;
+}
+
+html:fullscreen .slide-text,
+:fullscreen .slide-text,
+html.is-fullscreen .slide-text {
+  font-size: clamp(18px, 1.35vw, 22px);
+  max-width: 530px;
+  margin-bottom: 26px;
+}
+
+html:fullscreen #slide-1,
+:fullscreen #slide-1,
+html.is-fullscreen #slide-1 {
+  grid-template-columns: minmax(420px, 620px) minmax(360px, 520px);
+}
+html:fullscreen .slide-1-app-mockup img,
+:fullscreen .slide-1-app-mockup img,
+html.is-fullscreen .slide-1-app-mockup img {
+  width: clamp(280px, min(24vw, calc((100svh - 220px) * 0.48)), 400px);
+}
+
+html:fullscreen #slide-2,
+:fullscreen #slide-2,
+html.is-fullscreen #slide-2 {
+  grid-template-columns: minmax(400px, 580px) minmax(460px, 640px);
+}
+html:fullscreen .questions-deck,
+:fullscreen .questions-deck,
+html.is-fullscreen .questions-deck {
+  padding: 10px 30px;
+}
+html:fullscreen .q-card,
+:fullscreen .q-card,
+html.is-fullscreen .q-card {
+  padding: 24px 0;
+  gap: 22px;
+}
+html:fullscreen .q-num,
+:fullscreen .q-num,
+html.is-fullscreen .q-num {
+  font-size: 36px;
+}
+html:fullscreen .q-info h3,
+:fullscreen .q-info h3,
+html.is-fullscreen .q-info h3 {
+  font-size: 21px;
+}
+html:fullscreen .q-info p,
+:fullscreen .q-info p,
+html.is-fullscreen .q-info p {
+  font-size: 17px;
+}
+
+html:fullscreen #slide-3,
+:fullscreen #slide-3,
+html.is-fullscreen #slide-3 {
+  grid-template-columns: minmax(400px, 580px) minmax(440px, 620px);
+}
+html:fullscreen #slide-3 .connection-cards,
+:fullscreen #slide-3 .connection-cards,
+html.is-fullscreen #slide-3 .connection-cards {
+  padding-top: 0;
+  gap: 20px;
+}
+html:fullscreen .conn-card,
+:fullscreen .conn-card,
+html.is-fullscreen .conn-card {
+  padding: 26px 32px;
+}
+html:fullscreen .conn-card h3,
+:fullscreen .conn-card h3,
+html.is-fullscreen .conn-card h3 {
+  font-size: 22px;
+}
+html:fullscreen .conn-card p,
+:fullscreen .conn-card p,
+html.is-fullscreen .conn-card p {
+  font-size: 17px;
+}
+
+html:fullscreen #slide-4,
+:fullscreen #slide-4,
+html.is-fullscreen #slide-4 {
+  grid-template-columns: minmax(360px, 480px) minmax(540px, 840px);
+}
+html:fullscreen .app-journey,
+:fullscreen .app-journey,
+html.is-fullscreen .app-journey {
+  gap: 18px;
+}
+html:fullscreen .app-journey figure,
+:fullscreen .app-journey figure,
+html.is-fullscreen .app-journey figure {
+  max-width: 290px;
+}
+html:fullscreen .app-journey figcaption,
+:fullscreen .app-journey figcaption,
+html.is-fullscreen .app-journey figcaption {
+  font-size: 15px;
+}
+
+html:fullscreen #slide-5,
+:fullscreen #slide-5,
+html.is-fullscreen #slide-5 {
+  grid-template-columns: minmax(380px, 520px) minmax(520px, 760px);
+}
+html:fullscreen .route-gallery,
+:fullscreen .route-gallery,
+html.is-fullscreen .route-gallery {
+  gap: 16px;
+}
+html:fullscreen .route-card-item,
+:fullscreen .route-card-item,
+html.is-fullscreen .route-card-item {
+  height: 245px;
+}
+html:fullscreen .route-card-info strong,
+:fullscreen .route-card-info strong,
+html.is-fullscreen .route-card-info strong {
+  font-size: 22px;
+}
+
+html:fullscreen #slide-6,
+:fullscreen #slide-6,
+html.is-fullscreen #slide-6 {
+  grid-template-columns: minmax(380px, 540px) minmax(480px, 700px);
+}
+html:fullscreen .destination-cascade,
+:fullscreen .destination-cascade,
+html.is-fullscreen .destination-cascade {
+  height: 520px;
+}
+
+html:fullscreen #slide-7,
+:fullscreen #slide-7,
+html.is-fullscreen #slide-7 {
+  grid-template-columns: minmax(380px, 540px) minmax(500px, 720px);
+}
+html:fullscreen .business-showcase figure,
+:fullscreen .business-showcase figure,
+html.is-fullscreen .business-showcase figure {
+  height: 360px;
+}
+html:fullscreen .business-showcase strong,
+:fullscreen .business-showcase strong,
+html.is-fullscreen .business-showcase strong {
+  font-size: 34px;
+}
+html:fullscreen .business-invite,
+:fullscreen .business-invite,
+html.is-fullscreen .business-invite {
+  font-size: 17px;
+  padding: 20px 24px;
+}
+
+html:fullscreen #slide-8,
+:fullscreen #slide-8,
+html.is-fullscreen #slide-8 {
+  grid-template-columns: minmax(400px, 600px) minmax(380px, 520px);
+}
+html:fullscreen .qr-box,
+:fullscreen .qr-box,
+html.is-fullscreen .qr-box {
+  padding: 34px;
+}
+html:fullscreen .qr-box img,
+:fullscreen .qr-box img,
+html.is-fullscreen .qr-box img {
+  width: 300px;
+  height: 300px;
+}
+html:fullscreen .qr-label,
+:fullscreen .qr-label,
+html.is-fullscreen .qr-label {
+  font-size: 26px;
+}
+
+@media (max-width: 1100px) {
+  html:fullscreen .slide,
+  :fullscreen .slide,
+  html.is-fullscreen .slide,
+  html:fullscreen .slide[id],
+  :fullscreen .slide[id],
+  html.is-fullscreen .slide[id] {
+    grid-template-columns: 1fr 1fr;
+    padding: clamp(76px, 7vh, 90px) clamp(24px, 4vw, 48px);
+    gap: 32px;
+  }
+}
+
+@media (max-width: 760px) {
+  .fullscreen-label { display:none; }
+  .header-meta { gap:4px; }
+  .btn-exit { padding:0 8px; }
+  .btn-fullscreen { padding:8px; }
+
+  html:fullscreen .slide,
+  :fullscreen .slide,
+  html.is-fullscreen .slide,
+  html:fullscreen .slide[id],
+  :fullscreen .slide[id],
+  html.is-fullscreen .slide[id],
+  html:fullscreen #slide-1,
+  :fullscreen #slide-1,
+  html.is-fullscreen #slide-1,
+  html:fullscreen #slide-2,
+  :fullscreen #slide-2,
+  html.is-fullscreen #slide-2,
+  html:fullscreen #slide-3,
+  :fullscreen #slide-3,
+  html.is-fullscreen #slide-3,
+  html:fullscreen #slide-4,
+  :fullscreen #slide-4,
+  html.is-fullscreen #slide-4,
+  html:fullscreen #slide-5,
+  :fullscreen #slide-5,
+  html.is-fullscreen #slide-5,
+  html:fullscreen #slide-6,
+  :fullscreen #slide-6,
+  html.is-fullscreen #slide-6,
+  html:fullscreen #slide-7,
+  :fullscreen #slide-7,
+  html.is-fullscreen #slide-7,
+  html:fullscreen #slide-8,
+  :fullscreen #slide-8,
+  html.is-fullscreen #slide-8 {
+    grid-template-columns: 1fr;
+    padding: 76px 20px 100px;
+    gap: 24px;
+    min-height: 100vh;
+    min-height: 100svh;
+    align-content: start;
+  }
+}
+
+@media (max-width: 360px) {
+  html:fullscreen .slide,
+  :fullscreen .slide,
+  html.is-fullscreen .slide,
+  html:fullscreen .slide[id],
+  :fullscreen .slide[id],
+  html.is-fullscreen .slide[id] {
+    padding: 72px 16px 96px;
+  }
+}
 
 #slide-8 .qr-box { width:min(440px,100%); }
 #slide-8 .qr-box img { width:min(350px,100%); height:auto; aspect-ratio:1; }
