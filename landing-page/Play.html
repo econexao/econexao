@@ -35,6 +35,9 @@
         <div class="slide-counter" id="slide-counter" aria-live="polite" aria-atomic="true">
           <span id="current-slide-num">01</span> / <span>08</span>
         </div>
+        <button type="button" class="btn-fullscreen" id="btn-fullscreen" aria-label="Entrar em tela cheia" aria-pressed="false" onclick="toggleFullscreen()">
+          <span aria-hidden="true">⛶</span><span class="fullscreen-label">Tela cheia</span>
+        </button>
         <a class="btn-exit" href="/" aria-label="Sair da apresentação e voltar para o site">
           <span aria-hidden="true">✕</span>
           <span>Sair</span>
@@ -42,6 +45,7 @@
       </div>
     </header>
 
+    <p id="fullscreen-status" class="fullscreen-status" role="status" aria-live="polite"></p>
     <!-- Main Presentation Stage -->
     <main class="stage" id="slide-stage" tabindex="0" aria-label="Apresentação de slides do ECOnexão">
       <div class="slide-deck">
@@ -532,6 +536,33 @@
         }
       }
 
+      const fullscreenButton = document.getElementById("btn-fullscreen");
+      const fullscreenStatus = document.getElementById("fullscreen-status");
+      let fullscreenExitedAt = 0;
+      function syncFullscreen() {
+        const active = Boolean(document.fullscreenElement);
+        if (!active && fullscreenButton.getAttribute("aria-pressed") === "true") fullscreenExitedAt = performance.now();
+        fullscreenButton.setAttribute("aria-pressed", String(active));
+        fullscreenButton.setAttribute("aria-label", active ? "Sair da tela cheia" : "Entrar em tela cheia");
+        fullscreenButton.querySelector(".fullscreen-label").textContent = active ? "Sair da tela cheia" : "Tela cheia";
+      }
+      async function toggleFullscreen() {
+        fullscreenStatus.textContent = "";
+        try {
+          if (document.fullscreenElement) {
+            await document.exitFullscreen();
+          } else if (document.fullscreenEnabled && document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+          } else {
+            fullscreenStatus.textContent = "Tela cheia indisponível neste navegador. Você pode continuar a apresentação normalmente.";
+          }
+        } catch {
+          fullscreenStatus.textContent = "Não foi possível ativar a tela cheia. Tente novamente ou abra a apresentação diretamente no navegador.";
+        }
+        syncFullscreen();
+      }
+      document.addEventListener("fullscreenchange", syncFullscreen);
+
       // Keyboard navigation
       window.addEventListener("keydown", (e) => {
         if (e.defaultPrevented) return;
@@ -558,6 +589,13 @@
             goToSlide(TOTAL_SLIDES);
             break;
           case "Escape":
+            if (document.fullscreenElement) {
+              e.preventDefault();
+              toggleFullscreen();
+              return;
+            }
+            // Some browsers exit fullscreen before delivering Escape to the page.
+            if (performance.now() - fullscreenExitedAt < 500) return;
             window.location.href = "/";
             break;
         }

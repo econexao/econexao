@@ -214,3 +214,14 @@ h3 { margin:0 0 8px; font-size:19px; font-weight:600; letter-spacing:-.3px; }
 @media(max-width:360px) { #slide-6 { padding:28px 18px; } .destination-cascade { height:320px; } .destination-invite .instagram-tag { font-size:20px; } }
 
 .destination-cascade figcaption { z-index:4; max-width:94%; padding:10px 14px; border-radius:4px; background:rgba(5,32,26,.94); }
+
+.btn-fullscreen { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-width:44px; min-height:44px; padding:8px 12px; border:1px solid var(--line); border-radius:6px; background:transparent; font-size:14px; }
+.btn-fullscreen:hover,.btn-fullscreen[aria-pressed="true"] { background:var(--gold); color:#123329; }
+.fullscreen-status { margin:0; }
+.fullscreen-status:not(:empty) { padding:12px 24px; background:#183d34; color:var(--sand); font-size:15px; }
+html:fullscreen { overflow-y:auto; background:#081e1b; }
+@media(max-width:760px) { .fullscreen-label { display:none; } .header-meta { gap:4px; } .btn-exit { padding:0 8px; } .btn-fullscreen { padding:8px; } }
+
+#slide-8 .qr-box { width:min(440px,100%); }
+#slide-8 .qr-box img { width:min(350px,100%); height:auto; aspect-ratio:1; }
+@media(max-width:760px) { #slide-8 .qr-box { padding:18px; } #slide-8 .qr-box img { width:100%; } }

@@ -69,3 +69,5 @@ dpl_3HLLC53a11ogsztbjcj3QYzPPmyg. Comparação SHA256 de 19 artefatos passou;
 pipeline staging 35464902454 passou. Smoke público identificou 404 nos aliases
 em minúsculas: com cleanUrls, rewrites devem apontar para /Play sem .html.
 Correção de routing isolada; conteúdo visual e app preservados.
+
+Incremento local: botão de tela cheia nativa, estado acessível e aviso em navegador sem suporte/permissão; QR final ampliado até 350px. Testes de entrada/saída por teclado, manutenção do slide, falha/indisponibilidade e 32 combinações responsivas passaram. Branch codex/landing-play-fullscreen; publicação aguarda novo GO.
