@@ -296,6 +296,7 @@ A RECONCILIAR: 2 | ADIADA: 13 | BLOQUEADA: 4 | BLOQUEADA POR DADOS: 9 | CANCELAD
 
 #### ECO-2614 — Aplicar identidade e cards das rotas na Web
 
+- **Ajuste pontual de capa (19/09/2026):** substituída a referência do fundo da Home pelo asset fornecido `econexao-fundo-B.png`, preservando layout, overlay e controles. Validação LOCAL na branch `codex/home-cover-fundo-b`, base `870a346`: `npm run typecheck`, `npm run export:web` com configuração fixture local e `git diff --check` passaram (exit 0). Smoke Playwright local em 1280×800 e 390×844 confirmou imagem 1254×1254 carregada, ausência de erros de runtime e navegação pelo botão Descobrir Rotas; API/Auth simuladas, sem homologação remota. Revisão independente confirmou hash idêntico ao original e diff restrito; PNG de 2,81 MB pode aumentar o primeiro carregamento. GO do owner recebido em 19/09/2026 para commit, merge em staging e push/publicação; confirmação do artefato remoto pendente neste registro. Rollback: restaurar a referência anterior `home_hero_bg.jpg`, ainda preservada nos assets. Este ajuste não encerra os demais aceites da ECO-2614.
 - **Estado / horizonte / alteração:** PARCIAL / Versão do evento / NOVA.
 - **Dependências ou sucessoras:** ECO-2604, ECO-2610.
 - **Conclusão / aceite:** Logo oficial e layout responsivo; todas as rotas publicadas aparecem na inicial/aba, região correta, título legível, capa autorizada ou placeholder honesto; card leva à rota certa; dados não publicados não parecem prontos.

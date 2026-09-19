@@ -52,7 +52,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.screenContainer}>
       <ImageBackground
-        source={require('../../../assets/images/home_hero_bg.jpg')}
+        source={require('../../../assets/images/econexao-fundo-B.png')}
         style={styles.fullScreenBackground}
         resizeMode="cover"
         accessible={false}
