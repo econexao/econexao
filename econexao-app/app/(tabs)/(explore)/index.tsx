@@ -187,9 +187,9 @@ export default function HomeScreen() {
               <Text style={styles.sectionTitleOnImage}>Rotas Salvas</Text>
               {savedQuery.data?.data?.length ? (
                 <TouchableOpacity
-                  onPress={() => router.push('/(tabs)/(routes)')}
+                  onPress={() => router.push('/(tabs)/(profile)/favorite-routes')}
                   style={styles.seeAllLink}
-                  {...makeAccessibleButton('Ver todas as rotas salvas')}
+                  {...makeAccessibleButton('Ver todas as rotas salvas', 'Navega para a lista de rotas salvas no perfil')}
                 >
                   <Text style={styles.seeAllTextOnImage}>Ver todas</Text>
                   <Ionicons name="chevron-forward" size={15} color="rgba(255, 255, 255, 0.85)" />

@@ -376,19 +376,17 @@ export default function RouteDetailScreen() {
           }
         />
 
-        {/* Start Trip CTA */}
-        <View
-          style={[
-            styles.startTripCard,
-            {
-              backgroundColor: theme.colors.brandForest,
-              borderColor: theme.isHighContrast ? theme.colors.brandDeep : 'transparent',
-              borderWidth: theme.isHighContrast ? 2 : 0,
-            },
-          ]}
-        >
+        {/* Actions: Start Trip CTA & Trip History Link */}
+        <View style={styles.tripActionsContainer}>
           <TouchableOpacity
-            style={styles.startTripButton}
+            style={[
+              styles.startTripCard,
+              {
+                backgroundColor: theme.colors.brandForest,
+                borderColor: theme.isHighContrast ? theme.colors.brandDeep : 'transparent',
+                borderWidth: theme.isHighContrast ? 2 : 0,
+              },
+            ]}
             onPress={handleStartTrip}
             disabled={isStartingTrip}
             {...makeAccessibleButton(
@@ -397,25 +395,46 @@ export default function RouteDetailScreen() {
             )}
           >
             {isStartingTrip ? (
-              <ActivityIndicator size="small" color={theme.colors.surfaceWhite} />
+              <View style={styles.startTripLoadingContent}>
+                <ActivityIndicator size="small" color={theme.colors.surfaceWhite} />
+                <Text style={[styles.startTripText, { color: theme.colors.surfaceWhite }]}>
+                  Iniciando viagem...
+                </Text>
+              </View>
             ) : (
-              <>
-              <View style={styles.tripIconBox}>
-                <Ionicons name="navigate-outline" size={21} color={theme.colors.surfaceWhite} />
+              <View style={styles.startTripContent}>
+                <View style={styles.tripIconBox}>
+                  <Ionicons name="navigate-outline" size={21} color={theme.colors.surfaceWhite} />
+                </View>
+                <View style={styles.tripCopy}>
+                  <Text style={[styles.startTripText, { color: theme.colors.surfaceWhite }]}>
+                    Registrar Início da Viagem
+                  </Text>
+                  <Text style={styles.startTripSubtext}>Ativar registro em tempo real</Text>
+                </View>
+                <Ionicons name="play" size={16} color={theme.colors.surfaceWhite} style={{ opacity: 0.85 }} />
               </View>
-              <View style={styles.tripCopy}>
-                <Text style={[styles.startTripText, { color: theme.colors.surfaceWhite }]}>Registrar Início da Viagem</Text>
-                <Text style={styles.startTripSubtext}>Ativar registro em tempo real</Text>
-              </View>
-              </>
             )}
           </TouchableOpacity>
+
           <TouchableOpacity
-            style={styles.tripArrow}
+            style={[
+              styles.historyTripButton,
+              {
+                borderColor: theme.isHighContrast ? theme.colors.outline : 'rgba(51, 96, 30, 0.15)',
+              },
+            ]}
             onPress={() => router.push('/(tabs)/(profile)/trips')}
-            {...makeAccessibleButton('Abrir histórico de rotas', 'Abre o histórico de viagens do perfil')}
+            {...makeAccessibleButton('Ver histórico de viagens', 'Abre o histórico de viagens do perfil')}
           >
-            <Ionicons name="arrow-forward" size={18} color={theme.colors.surfaceWhite} />
+            <View style={styles.historyIconBox}>
+              <Ionicons name="time-outline" size={18} color={theme.colors.brandForest} />
+            </View>
+            <View style={styles.historyCopy}>
+              <Text style={styles.historyButtonText}>Ver histórico de viagens</Text>
+              <Text style={styles.historyButtonSubtext}>Consultar passeios e trajetos registrados</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={theme.colors.brandForest} />
           </TouchableOpacity>
         </View>
 
@@ -605,22 +624,29 @@ const styles = StyleSheet.create({
     ...theme.typography.headlineSm,
     color: theme.colors.brandForest,
   },
-  startTripCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8,
-    minHeight: 72,
-    borderRadius: theme.radii.lg,
+  tripActionsContainer: {
+    gap: 8,
     marginVertical: 4,
+  },
+  startTripCard: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minHeight: 64,
+    borderRadius: theme.radii.lg,
+    justifyContent: 'center',
     ...theme.shadows.card,
   },
-  startTripButton: {
-    flex: 1,
-    minHeight: 56,
+  startTripContent: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    paddingHorizontal: 4,
+  },
+  startTripLoadingContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    minHeight: 40,
   },
   startTripText: {
     ...theme.typography.labelMd,
@@ -628,8 +654,8 @@ const styles = StyleSheet.create({
   },
   startTripSubtext: { ...theme.typography.bodySm, color: 'rgba(255,255,255,0.78)', fontSize: 11 },
   tripIconBox: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     borderRadius: 12,
     backgroundColor: 'rgba(255,255,255,0.14)',
     alignItems: 'center',
@@ -638,13 +664,38 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.24)',
   },
   tripCopy: { flex: 1, gap: 2 },
-  tripArrow: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.15)',
+  historyTripButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minHeight: 52,
+    borderRadius: theme.radii.md,
+    backgroundColor: theme.colors.surfaceContainerLow,
+    borderWidth: 1,
+  },
+  historyIconBox: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    backgroundColor: 'rgba(51, 96, 30, 0.08)',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  historyCopy: {
+    flex: 1,
+    gap: 2,
+  },
+  historyButtonText: {
+    ...theme.typography.labelMd,
+    color: theme.colors.brandForest,
+    fontWeight: '600',
+  },
+  historyButtonSubtext: {
+    ...theme.typography.bodySm,
+    color: theme.colors.onSurfaceVariant,
+    fontSize: 11,
   },
   alertsContainer: {
     gap: 8,
