@@ -11,6 +11,7 @@ import { RouteMapPreview } from '../../../src/components/routes/RouteMapPreview'
 import { RouteGallery } from '../../../src/components/routes/RouteGallery';
 import { MotionBlock } from '../../../src/components/common/MotionBlock';
 import { GoogleRoutesMapNotice } from '../../../src/components/routes/GoogleRoutesMapNotice';
+import { TripStartModal } from '../../../src/components/routes/TripStartModal';
 import {
   getPindobalCoverImage,
   getPedralCoverImage,
@@ -70,6 +71,8 @@ export default function RouteDetailScreen() {
   }>();
 
   const [isStartingTrip, setIsStartingTrip] = useState(false);
+  const [showTripModal, setShowTripModal] = useState(false);
+  const [isTripSuccess, setIsTripSuccess] = useState(false);
   const detail = useRouteDetailQuery(routeId);
 
   const [originId, setOriginId] = useState<string | undefined>(initialOriginId);
@@ -160,7 +163,12 @@ export default function RouteDetailScreen() {
     router.push(routePath(routeId, 'map', isCustomLocation ? undefined : effectiveOrigin, actorId, undefined, 'select-origin'));
   };
 
-  const handleStartTrip = async () => {
+  const handleOpenTripModal = () => {
+    setIsTripSuccess(false);
+    setShowTripModal(true);
+  };
+
+  const handleConfirmStartTrip = async () => {
     try {
       setIsStartingTrip(true);
       await apiClient.createTrip(routeId);
@@ -168,8 +176,8 @@ export default function RouteDetailScreen() {
         void queryClient.invalidateQueries({ queryKey: queryKeys.myTrips(user.id) });
       }
 
+      setIsTripSuccess(true);
       AccessibilityInfo.announceForAccessibility('Viagem iniciada com sucesso. Bom passeio sustentável!');
-      Alert.alert('Viagem Iniciada', 'Sua viagem foi registrada no histórico do seu perfil.');
     } catch {
       AccessibilityInfo.announceForAccessibility('Erro ao iniciar viagem.');
       Alert.alert('Erro', 'Não foi possível registrar o início da viagem no momento.');
@@ -435,34 +443,24 @@ export default function RouteDetailScreen() {
                 borderWidth: theme.isHighContrast ? 2 : 0,
               },
             ]}
-            onPress={handleStartTrip}
-            disabled={isStartingTrip}
+            onPress={handleOpenTripModal}
             {...makeAccessibleButton(
               'Registrar início de viagem nesta rota',
-              'Inicia a viagem e registra o passeio no histórico do seu perfil'
+              'Abre as informações e confirmação para salvar o início do passeio no histórico do seu perfil'
             )}
           >
-            {isStartingTrip ? (
-              <View style={styles.startTripLoadingContent}>
-                <ActivityIndicator size="small" color={theme.colors.surfaceWhite} />
+            <View style={styles.startTripContent}>
+              <View style={styles.tripIconBox}>
+                <Ionicons name="navigate-outline" size={21} color={theme.colors.surfaceWhite} />
+              </View>
+              <View style={styles.tripCopy}>
                 <Text style={[styles.startTripText, { color: theme.colors.surfaceWhite }]}>
-                  Iniciando viagem...
+                  Registrar Início da Viagem
                 </Text>
+                <Text style={styles.startTripSubtext}>Salva no histórico do seu perfil</Text>
               </View>
-            ) : (
-              <View style={styles.startTripContent}>
-                <View style={styles.tripIconBox}>
-                  <Ionicons name="navigate-outline" size={21} color={theme.colors.surfaceWhite} />
-                </View>
-                <View style={styles.tripCopy}>
-                  <Text style={[styles.startTripText, { color: theme.colors.surfaceWhite }]}>
-                    Registrar Início da Viagem
-                  </Text>
-                  <Text style={styles.startTripSubtext}>Ativar registro em tempo real</Text>
-                </View>
-                <Ionicons name="play" size={16} color={theme.colors.surfaceWhite} style={{ opacity: 0.85 }} />
-              </View>
-            )}
+              <Ionicons name="play" size={16} color={theme.colors.surfaceWhite} style={{ opacity: 0.85 }} />
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -545,6 +543,22 @@ export default function RouteDetailScreen() {
 
         </MotionBlock>
       </ScrollView>
+
+      <TripStartModal
+        visible={showTripModal}
+        routeName={displayTitle}
+        isStarting={isStartingTrip}
+        isSuccess={isTripSuccess}
+        onConfirmStart={handleConfirmStartTrip}
+        onCancel={() => setShowTripModal(false)}
+        onGoToHistory={() => {
+          setShowTripModal(false);
+          router.push('/(tabs)/(profile)/trips');
+        }}
+        onContinueExploring={() => {
+          setShowTripModal(false);
+        }}
+      />
     </View>
   );
 }

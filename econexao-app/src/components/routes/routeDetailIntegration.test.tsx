@@ -908,9 +908,22 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     expect(mockPush).toHaveBeenCalledWith('/(tabs)/(profile)/trips');
     expect(createTripSpy).not.toHaveBeenCalled();
 
-    // Triggering start trip button should call createTrip API
+    // Triggering start trip button opens the informative modal
     await act(async () => {
       await startTripBtn.props.onPress();
+    });
+
+    // Find the confirm button inside the TripStartModal
+    const confirmStartTripBtn = root.find(
+      (node) =>
+        node.type === TouchableOpacity &&
+        node.props.accessibilityLabel === 'Confirmar e iniciar viagem'
+    );
+    expect(confirmStartTripBtn).toBeDefined();
+
+    // Triggering confirmation in modal calls createTrip API
+    await act(async () => {
+      await confirmStartTripBtn.props.onPress();
     });
     expect(createTripSpy).toHaveBeenCalledWith('route-pindobal');
   });
