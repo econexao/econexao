@@ -96,7 +96,7 @@ const ActiveTripDockContent: React.FC<ActiveTripDockContentProps> = ({ userId })
         <View
           style={[
             styles.dockWrapper,
-            theme.shadows.md,
+            theme.shadows.card,
             {
               backgroundColor: theme.colors.surfaceWhite,
               borderColor: theme.isHighContrast ? theme.colors.brandForest : 'rgba(51, 96, 30, 0.2)',

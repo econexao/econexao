@@ -95,7 +95,7 @@ describe('ActiveTripDock Component', () => {
     let tree: renderer.ReactTestRenderer;
     act(() => {
       tree = renderer.create(
-        <AuthContext.Provider value={mockAuthContext}>
+        <AuthContext.Provider value={mockAuthContext as any}>
           <QueryClientProvider client={queryClient}>
             <ActiveTripDock />
           </QueryClientProvider>
