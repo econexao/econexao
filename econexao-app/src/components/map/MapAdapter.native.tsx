@@ -7,6 +7,8 @@ import { theme } from '../../theme/theme';
 import { MapControls } from './MapControls';
 import { SelectedPinCard } from './SelectedPinCard';
 import {
+  ROUTE_DESTINATION_PIN_COLOR,
+  ROUTE_START_PIN_COLOR,
   SELECTION_PIN_COLOR,
   USER_LOCATION_PIN_COLOR,
   filterPinsByDensity,
@@ -19,6 +21,9 @@ import {
   getItemId,
   getItemPinColor,
   getItemPinIcon,
+  getRouteDestinationPinAccessibilityLabel,
+  getRouteEndpoints,
+  getRouteStartPinAccessibilityLabel,
   getSelectionPinAccessibilityLabel,
   getUserLocationAccessibilityLabel,
 } from './MapAdapter.helpers';
@@ -112,6 +117,18 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
     setZoomLevel(nextZoom);
   }, [zoomLevel]);
 
+  const routeEndpoints = useMemo(() => getRouteEndpoints(geometry), [geometry]);
+  const isStartSelected = selectedActorId === 'route-start';
+  const isDestinationSelected = selectedActorId === 'route-destination';
+  const routeStartA11y = useMemo(
+    () => getRouteStartPinAccessibilityLabel(routeEndpoints.start),
+    [routeEndpoints.start]
+  );
+  const routeDestinationA11y = useMemo(
+    () => getRouteDestinationPinAccessibilityLabel(routeEndpoints.destination),
+    [routeEndpoints.destination]
+  );
+
   const selectionPinA11y = useMemo(
     () => getSelectionPinAccessibilityLabel(selectedCoordinate, selectionPinLabel),
     [selectedCoordinate, selectionPinLabel]
@@ -146,6 +163,52 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
             strokeColor={theme.colors.brandForest}
             strokeWidth={5}
           />
+        )}
+
+        {/* Marcador de Início da Rota (Origem) */}
+        {routeEndpoints.start && routeCoordinates.length >= 2 && (
+          <Marker
+            key="route-start-pin"
+            coordinate={routeEndpoints.start}
+            title="Início da Rota"
+            description="Ponto de partida oficial da rota"
+            zIndex={isStartSelected ? 1200 : 800}
+            anchor={{ x: 0.5, y: 1.0 }}
+            onPress={() => onSelectActor('route-start')}
+            accessibilityRole="button"
+            accessibilityLabel={routeStartA11y}
+            accessibilityState={{ selected: isStartSelected }}
+          >
+            <View style={[styles.startPinContainer, isStartSelected && { transform: [{ scale: 1.15 }] }]}>
+              <View style={[styles.startPinHead, isStartSelected && { borderWidth: 2.5, borderColor: '#FFFFFF' }]}>
+                <Ionicons name="play" size={13} color="#FFFFFF" style={{ marginLeft: 2 }} />
+              </View>
+              <View style={styles.startPinPoint} />
+            </View>
+          </Marker>
+        )}
+
+        {/* Marcador de Destino Especial da Rota (Fim) */}
+        {routeEndpoints.destination && routeCoordinates.length >= 2 && (
+          <Marker
+            key="route-destination-pin"
+            coordinate={routeEndpoints.destination}
+            title="Destino da Rota"
+            description="Destino final da rota"
+            zIndex={isDestinationSelected ? 1300 : 850}
+            anchor={{ x: 0.5, y: 1.0 }}
+            onPress={() => onSelectActor('route-destination')}
+            accessibilityRole="button"
+            accessibilityLabel={routeDestinationA11y}
+            accessibilityState={{ selected: isDestinationSelected }}
+          >
+            <View style={[styles.destinationPinContainer, isDestinationSelected && { transform: [{ scale: 1.15 }] }]}>
+              <View style={[styles.destinationPinHead, isDestinationSelected && { borderWidth: 3, borderColor: '#FFFFFF' }]}>
+                <Ionicons name="flag" size={18} color="#FFFFFF" />
+              </View>
+              <View style={styles.destinationPinPoint} />
+            </View>
+          </Marker>
         )}
 
         {renderableItems.map((item) => {
@@ -263,6 +326,70 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
 };
 
 const styles = StyleSheet.create({
+  startPinContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 32,
+    height: 38,
+    filter: 'drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.3))' as any,
+  },
+  startPinHead: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: ROUTE_START_PIN_COLOR,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    zIndex: 2,
+  },
+  startPinPoint: {
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderLeftWidth: 6,
+    borderRightWidth: 6,
+    borderTopWidth: 8,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: ROUTE_START_PIN_COLOR,
+    marginTop: -3,
+    zIndex: 1,
+  },
+  destinationPinContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 44,
+    height: 52,
+    filter: 'drop-shadow(0px 4px 8px rgba(220, 38, 38, 0.45))' as any,
+  },
+  destinationPinHead: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: ROUTE_DESTINATION_PIN_COLOR,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2.5,
+    borderColor: '#FFFFFF',
+    zIndex: 2,
+  },
+  destinationPinPoint: {
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderLeftWidth: 8,
+    borderRightWidth: 8,
+    borderTopWidth: 11,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: ROUTE_DESTINATION_PIN_COLOR,
+    marginTop: -4,
+    zIndex: 1,
+  },
   teardropContainer: {
     alignItems: 'center',
     justifyContent: 'center',
