@@ -914,4 +914,53 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     });
     expect(createTripSpy).toHaveBeenCalledWith('route-pindobal');
   });
+
+  it('renders top quick action buttons (Ver trajeto e Lugares) and places Iniciar Viagem before catalog', async () => {
+    let tree!: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(<RouteDetailScreen />);
+    });
+
+    const root = tree.root;
+
+    // Verify top quick actions presence
+    const viewTrailBtn = root.find(
+      (node) =>
+        node.type === TouchableOpacity &&
+        node.props.accessibilityLabel === 'Ver trajeto no mapa'
+    );
+    expect(viewTrailBtn).toBeDefined();
+
+    const placesBtn = root.find(
+      (node) =>
+        node.type === TouchableOpacity &&
+        node.props.accessibilityLabel === 'Lugares no caminho'
+    );
+    expect(placesBtn).toBeDefined();
+
+    // Triggering "Ver trajeto no mapa" opens map screen
+    await act(async () => {
+      viewTrailBtn.props.onPress();
+    });
+    expect(mockPush).toHaveBeenCalledWith('/route/route-pindobal/map?originId=origin-rodoviaria');
+
+    // Triggering "Lugares no caminho" opens catalog screen
+    await act(async () => {
+      placesBtn.props.onPress();
+    });
+    expect(mockPush).toHaveBeenCalledWith('/route/route-pindobal/catalog?originId=origin-rodoviaria');
+
+    // Verify order in tree: Start Trip button comes before the "Ver todos os lugares e serviços" button
+    const allButtons = root.findAllByType(TouchableOpacity);
+    const startTripIndex = allButtons.findIndex(
+      (b) => b.props.accessibilityLabel === 'Registrar início de viagem nesta rota'
+    );
+    const fullCatalogBtnIndex = allButtons.findIndex(
+      (b) => b.props.accessibilityLabel === 'Ver todos os lugares e serviços'
+    );
+    expect(startTripIndex).toBeGreaterThan(-1);
+    expect(fullCatalogBtnIndex).toBeGreaterThan(-1);
+    expect(startTripIndex).toBeLessThan(fullCatalogBtnIndex);
+  });
 });
+
