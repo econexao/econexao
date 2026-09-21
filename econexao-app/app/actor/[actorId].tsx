@@ -91,6 +91,13 @@ export default function ActorDetailScreen() {
     openExternalLink(url, 'mapa');
   };
 
+  const handleSendEmail = () => {
+    if (!actor?.email) return;
+    const cleanEmail = actor.email.trim();
+    if (!cleanEmail) return;
+    openExternalLink(`mailto:${cleanEmail}`, 'e-mail');
+  };
+
   const handleBack = () => {
     if (router.canGoBack()) {
       router.back();
@@ -153,6 +160,14 @@ export default function ActorDetailScreen() {
     is_favorite: isFavorite,
   };
   const coverImageUrl = actor.cover_media?.url ?? actor.cover_image_url;
+
+  const hasAnyAction = Boolean(
+    actor.phone ||
+    (actor.latitude && actor.longitude) ||
+    actor.instagram ||
+    actor.website ||
+    actor.email
+  );
 
   return (
     <View style={styles.container}>
@@ -232,6 +247,73 @@ export default function ActorDetailScreen() {
             </Text>
           </View>
 
+          {/* Quick Actions (Ligar, Mapa, Instagram, Web, Email) */}
+          {hasAnyAction && (
+            <View style={styles.actionsContainer}>
+              {Boolean(actor.phone) && (
+                <TouchableOpacity
+                  style={styles.actionChip}
+                  onPress={handlePhoneCall}
+                  {...makeAccessibleButton('Ligar para o local', `Abre o discador com o número ${actor.phone}`)}
+                >
+                  <Ionicons name="call" size={15} color={theme.colors.brandForest} />
+                  <Text style={styles.actionChipText}>Ligar</Text>
+                  <Ionicons name="open-outline" size={13} color={theme.colors.brandSage} style={styles.externalIcon} />
+                </TouchableOpacity>
+              )}
+
+              {Boolean(actor.latitude && actor.longitude) && (
+                <TouchableOpacity
+                  style={[styles.actionChip, styles.actionChipPrimary]}
+                  onPress={handleOpenMap}
+                  {...makeAccessibleButton('Ver no mapa', 'Abre o Google Maps em aplicativo externo')}
+                >
+                  <Ionicons name="map" size={15} color={theme.colors.surfaceWhite} />
+                  <Text style={[styles.actionChipText, styles.actionChipTextPrimary]}>Ver no mapa</Text>
+                  <Ionicons name="open-outline" size={13} color={theme.colors.surfaceWhite} style={styles.externalIcon} />
+                </TouchableOpacity>
+              )}
+
+              {Boolean(actor.instagram) && (
+                <TouchableOpacity
+                  style={styles.actionChip}
+                  onPress={handleOpenInstagram}
+                  {...makeAccessibleButton('Abrir Instagram', 'Abre o perfil no Instagram em aplicativo externo')}
+                >
+                  <Ionicons name="logo-instagram" size={15} color={theme.colors.brandForest} />
+                  <Text style={styles.actionChipText}>Instagram</Text>
+                  <Ionicons name="open-outline" size={13} color={theme.colors.brandSage} style={styles.externalIcon} />
+                </TouchableOpacity>
+              )}
+
+              {Boolean(actor.website) && (
+                <TouchableOpacity
+                  style={styles.actionChip}
+                  onPress={handleOpenWebsite}
+                  {...makeAccessibleButton('Abrir Website', 'Abre o site oficial no navegador externo')}
+                >
+                  <Ionicons name="globe-outline" size={15} color={theme.colors.brandForest} />
+                  <Text style={styles.actionChipText}>Website</Text>
+                  <Ionicons name="open-outline" size={13} color={theme.colors.brandSage} style={styles.externalIcon} />
+                </TouchableOpacity>
+              )}
+
+              {Boolean(actor.email) && (
+                <TouchableOpacity
+                  style={styles.actionChip}
+                  onPress={handleSendEmail}
+                  {...makeAccessibleButton('Enviar e-mail', `Abre o aplicativo de e-mail para ${actor.email}`)}
+                >
+                  <Ionicons name="mail-outline" size={15} color={theme.colors.brandForest} />
+                  <Text style={styles.actionChipText}>E-mail</Text>
+                  <Ionicons name="open-outline" size={13} color={theme.colors.brandSage} style={styles.externalIcon} />
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+
+          {hasAnyAction && Boolean(actor.description) && <View style={styles.cardDivider} />}
+
           {actor.description && (
             <Text style={styles.description}>{actor.description}</Text>
           )}
@@ -309,64 +391,6 @@ export default function ActorDetailScreen() {
             </ScrollView>
           </View>
         )}
-
-        {/* Action Buttons / Contacts (ECO-1005) */}
-        <View style={styles.cardSection}>
-          <Text style={styles.sectionTitle}>Contatos e Localização</Text>
-          <View style={styles.contactsGrid}>
-            {actor.phone && (
-              <TouchableOpacity
-                style={styles.contactChip}
-                onPress={handlePhoneCall}
-                {...makeAccessibleButton('Ligar para telefone', actor.phone)}
-              >
-                <Ionicons name="call-outline" size={18} color={theme.colors.brandForest} />
-                <Text style={styles.contactChipText} numberOfLines={1}>
-                  {actor.phone}
-                </Text>
-              </TouchableOpacity>
-            )}
-
-            {actor.website && (
-              <TouchableOpacity
-                style={styles.contactChip}
-                onPress={handleOpenWebsite}
-                {...makeAccessibleButton('Abrir site oficial')}
-              >
-                <Ionicons name="globe-outline" size={18} color={theme.colors.brandForest} />
-                <Text style={styles.contactChipText} numberOfLines={1}>
-                  Website
-                </Text>
-              </TouchableOpacity>
-            )}
-
-            {actor.instagram && (
-              <TouchableOpacity
-                style={styles.contactChip}
-                onPress={handleOpenInstagram}
-                {...makeAccessibleButton('Abrir perfil do Instagram')}
-              >
-                <Ionicons name="logo-instagram" size={18} color={theme.colors.brandForest} />
-                <Text style={styles.contactChipText} numberOfLines={1}>
-                  {actor.instagram}
-                </Text>
-              </TouchableOpacity>
-            )}
-
-            {Boolean(actor.latitude && actor.longitude) && (
-              <TouchableOpacity
-                style={[styles.contactChip, styles.mapChip]}
-                onPress={handleOpenMap}
-                {...makeAccessibleButton('Abrir no Google Maps', 'Ver localização no aplicativo do Google Maps')}
-              >
-                <Ionicons name="map-outline" size={18} color={theme.colors.surfaceWhite} />
-                <Text style={[styles.contactChipText, styles.mapChipText]} numberOfLines={1}>
-                  Abrir no Google Maps
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
 
         {actor.cover_media?.credit ? (
           <Text style={styles.mediaCredit}>Crédito da imagem principal: {actor.cover_media.credit}</Text>
@@ -542,34 +566,46 @@ const styles = StyleSheet.create({
     color: theme.colors.brandForest,
     marginBottom: 12,
   },
-  contactsGrid: {
+  actionsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: 8,
+    marginTop: 4,
+    marginBottom: 4,
   },
-  contactChip: {
+  actionChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
     backgroundColor: theme.colors.surfaceContainerLow,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: theme.radii.lg,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: theme.radii.full,
     borderWidth: 1,
-    borderColor: 'rgba(117, 155, 113, 0.2)',
+    borderColor: 'rgba(117, 155, 113, 0.25)',
     minHeight: theme.spacing.touchMin,
   },
-  mapChip: {
+  actionChipPrimary: {
     backgroundColor: theme.colors.brandForest,
     borderColor: theme.colors.brandForest,
   },
-  contactChipText: {
+  actionChipText: {
     ...theme.typography.labelSm,
     color: theme.colors.brandForest,
     fontWeight: '600',
+    fontSize: 13,
   },
-  mapChipText: {
+  actionChipTextPrimary: {
     color: theme.colors.surfaceWhite,
+  },
+  externalIcon: {
+    marginLeft: 2,
+    opacity: 0.8,
+  },
+  cardDivider: {
+    height: 1,
+    backgroundColor: 'rgba(117, 155, 113, 0.12)',
+    marginVertical: 12,
   },
   mediaCredit: {
     marginHorizontal: theme.spacing.marginMobile,
