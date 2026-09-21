@@ -85,7 +85,7 @@ export default function CatalogScreen() {
         showBack
         fallbackHref={fallbackRoute}
         onBackPress={handleBack}
-        title="Catálogo de Atores"
+        title="Lugares e Serviços"
       />
 
       <View style={styles.headerControls}>
@@ -93,7 +93,7 @@ export default function CatalogScreen() {
           value={q}
           onChangeText={setQ}
           onClear={() => setQ('')}
-          placeholder="Buscar empreendimentos na rota..."
+          placeholder="Buscar lugares e serviços na rota..."
         />
         <CategoryFilters
           categories={categories.data ?? []}
@@ -150,7 +150,7 @@ export default function CatalogScreen() {
             onPress={() => void actorsQuery.fetchNextPage()}
             disabled={actorsQuery.isFetchingNextPage}
             accessibilityRole="button"
-            accessibilityLabel="Carregar mais atores da rota"
+            accessibilityLabel="Carregar mais lugares e serviços da rota"
             accessibilityState={{
               disabled: actorsQuery.isFetchingNextPage,
               busy: actorsQuery.isFetchingNextPage,
@@ -159,13 +159,13 @@ export default function CatalogScreen() {
             {actorsQuery.isFetchingNextPage ? (
               <ActivityIndicator size="small" color="#059669" />
             ) : (
-              <Text style={styles.loadMoreText}>Carregar Mais Estabelecimentos</Text>
+              <Text style={styles.loadMoreText}>Carregar Mais Lugares e Serviços</Text>
             )}
           </TouchableOpacity>
         )}
         {actorsQuery.isError && allActors.length > 0 && (
           <ErrorStateView
-            message="Não foi possível carregar mais estabelecimentos."
+            message="Não foi possível carregar mais lugares e serviços."
             onRetry={() => void actorsQuery.fetchNextPage()}
           />
         )}

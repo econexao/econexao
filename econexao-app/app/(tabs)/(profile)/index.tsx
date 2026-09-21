@@ -229,11 +229,11 @@ export default function ProfileScreen() {
               </View>
             </TouchableOpacity>
 
-            {/* 2. Atores Favoritos */}
+            {/* 2. Lugares e Serviços Salvos */}
             <TouchableOpacity
               style={styles.gridCard}
               onPress={() => router.push('/(tabs)/(profile)/favorite-actors')}
-              {...makeAccessibleButton('Atores Favoritos', 'Visualizar estabelecimentos salvos')}
+              {...makeAccessibleButton('Lugares e Serviços Salvos', 'Visualizar lugares e serviços salvos')}
             >
               <View style={styles.gridCardTop}>
                 <View style={[styles.iconBox, { backgroundColor: '#FFF1F2', borderColor: '#FFE4E6' }]}>
@@ -242,8 +242,8 @@ export default function ProfileScreen() {
                 <Ionicons name="arrow-forward-outline" size={14} color="#A3A89F" />
               </View>
               <View style={styles.gridCardBottom}>
-                <Text style={styles.gridCardTitle}>Atores Favoritos</Text>
-                <Text style={styles.gridCardSubtitle}>Guias e pontos</Text>
+                <Text style={styles.gridCardTitle}>Lugares Salvos</Text>
+                <Text style={styles.gridCardSubtitle}>Pontos e serviços</Text>
               </View>
             </TouchableOpacity>
 

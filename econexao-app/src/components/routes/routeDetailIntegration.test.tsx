@@ -326,7 +326,7 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     const root = tree.root;
 
     const mapBtn = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityLabel === 'Expandir mapa da rota');
-    const catalogBtn = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityLabel === 'Ver catálogo completo');
+    const catalogBtn = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityLabel === 'Ver todos os lugares e serviços');
 
     await act(async () => {
       mapBtn.props.onPress();
@@ -375,7 +375,7 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     await act(async () => {
       buttons.find((node) => node.props.accessibilityLabel === 'Expandir mapa da rota')!
         .props.onPress();
-      buttons.find((node) => node.props.accessibilityLabel === 'Ver catálogo completo')!
+      buttons.find((node) => node.props.accessibilityLabel === 'Ver todos os lugares e serviços')!
         .props.onPress();
     });
 

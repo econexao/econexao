@@ -33,7 +33,7 @@ export const LocalCatalogPreview: React.FC<LocalCatalogPreviewProps> = ({
   return (
     <View style={styles.section}>
       <View style={styles.headerRow}>
-        <Text style={styles.title} accessibilityRole="header">Catálogo Local</Text>
+        <Text style={styles.title} accessibilityRole="header">Lugares e Serviços</Text>
       </View>
 
       {categories.data && categories.data.length > 0 && (
@@ -47,10 +47,10 @@ export const LocalCatalogPreview: React.FC<LocalCatalogPreviewProps> = ({
       )}
 
       {actors.isPending ? (
-        <LoadingView message="Carregando catálogo local..." />
+        <LoadingView message="Carregando lugares e serviços..." />
       ) : actors.isError ? (
         <ErrorStateView
-          message="Não foi possível carregar o catálogo local."
+          message="Não foi possível carregar os lugares e serviços."
           onRetry={() => void actors.refetch()}
         />
       ) : actors.data?.data.length ? (
@@ -68,7 +68,7 @@ export const LocalCatalogPreview: React.FC<LocalCatalogPreviewProps> = ({
         <View style={styles.emptyCard}>
           <Ionicons name="storefront-outline" size={22} color={theme.colors.brandSage} />
           <Text style={styles.emptyText}>
-            Nenhum ator encontrado{selectedCategory ? ' nesta categoria' : ' nesta origem'}.
+            Nenhum local ou serviço encontrado{selectedCategory ? ' nesta categoria' : ' nesta origem'}.
           </Text>
         </View>
       )}
@@ -77,11 +77,11 @@ export const LocalCatalogPreview: React.FC<LocalCatalogPreviewProps> = ({
         style={styles.catalogButton}
         onPress={() => onOpenCatalog(selectedCategory || undefined)}
         {...makeAccessibleButton(
-          'Ver catálogo completo',
-          'Abre todos os atores desta rota preservando a origem e o filtro selecionado.'
+          'Ver todos os lugares e serviços',
+          'Abre todos os lugares e serviços desta rota preservando a origem e o filtro selecionado.'
         )}
       >
-        <Text style={styles.catalogButtonText}>Ver catálogo completo</Text>
+        <Text style={styles.catalogButtonText}>Ver todos os lugares e serviços</Text>
         <Ionicons name="arrow-forward" size={18} color={theme.colors.brandForest} />
       </TouchableOpacity>
     </View>

@@ -966,7 +966,7 @@ export default function MapScreen() {
 
               {/* Loading or Query Error States */}
               {actorsQuery.isFetching && !selectedActorSummary && (
-                <ActivityIndicator size="small" style={{ marginVertical: 2 }} accessibilityLabel="Carregando detalhes do ator" />
+                <ActivityIndicator size="small" style={{ marginVertical: 2 }} accessibilityLabel="Carregando detalhes do local" />
               )}
               {actorsQuery.isError && !selectedActorSummary && (
                 <View accessibilityLiveRegion="polite" style={styles.cardErrorRow}>
@@ -1004,11 +1004,11 @@ export default function MapScreen() {
                   }
                 }}
                 {...makeAccessibleButton(
-                  `Ver ${selectedPin?.name || selectedActorSummary?.name} no catálogo`,
-                  'Abre o catálogo mantendo a origem e o ator selecionados'
+                  `Ver ${selectedPin?.name || selectedActorSummary?.name} em lugares e serviços`,
+                  'Abre os lugares e serviços mantendo a origem e o local selecionados'
                 )}
               >
-                <Text style={styles.cardActionBtnText}>Ver no catálogo</Text>
+                <Text style={styles.cardActionBtnText}>Ver em lugares e serviços</Text>
                 <Ionicons name="chevron-forward" size={16} color={theme.colors.onPrimary} />
               </TouchableOpacity>
             </View>

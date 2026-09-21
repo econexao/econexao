@@ -18,15 +18,15 @@ export default function FavoriteActorsScreen() {
 
   return (
     <View style={styles.container}>
-      <AppHeader showBack fallbackHref="/(tabs)/(profile)" title="Atores Favoritos" />
+      <AppHeader showBack fallbackHref="/(tabs)/(profile)" title="Lugares e Serviços Salvos" />
 
       <ScrollView contentContainerStyle={styles.content}>
         {favActors.isPending ? (
-          <LoadingView message="Carregando atores favoritos..." />
+          <LoadingView message="Carregando lugares e serviços salvos..." />
         ) : favActors.isError ? (
           <ErrorStateView
-            title="Erro ao carregar atores"
-            message="Não foi possível obter seus atores favoritos no momento."
+            title="Erro ao carregar lugares e serviços"
+            message="Não foi possível obter seus lugares e serviços salvos no momento."
             onRetry={() => void favActors.refetch()}
           />
         ) : favActors.data?.length ? (
@@ -41,8 +41,8 @@ export default function FavoriteActorsScreen() {
           ))
         ) : (
           <EmptyStateView
-            title="Nenhum ator favorito"
-            message="Você ainda não salvou nenhum estabelecimento nos seus favoritos."
+            title="Nenhum lugar salvo"
+            message="Você ainda não salvou nenhum local ou serviço nos seus favoritos."
           />
         )}
       </ScrollView>
