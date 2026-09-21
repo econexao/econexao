@@ -463,7 +463,7 @@ describe('MapScreen actor sheet (ECO-0905)', () => {
     await act(async () => pin.props.onPress());
 
     const catalogButton = root.find(
-      (node) => node.props.accessibilityLabel === 'Ver Pousada Pindobal no catálogo'
+      (node) => node.props.accessibilityLabel === 'Ver Pousada Pindobal em lugares e serviços'
     );
     expect(catalogButton.type).toBe(TouchableOpacity);
 

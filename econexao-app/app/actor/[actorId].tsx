@@ -106,7 +106,7 @@ export default function ActorDetailScreen() {
           showBack
           fallbackHref="/(tabs)/(routes)"
           onBackPress={handleBack}
-          title="Detalhe do Ator"
+          title="Detalhes do Local"
         />
         <LoadingView message="Carregando detalhes do estabelecimento..." />
       </View>
@@ -120,10 +120,10 @@ export default function ActorDetailScreen() {
           showBack
           fallbackHref="/(tabs)/(routes)"
           onBackPress={handleBack}
-          title="Detalhe do Ator"
+          title="Detalhes do Local"
         />
         <ErrorStateView
-          title="Ator não encontrado"
+          title="Local não encontrado"
           message="Não foi possível carregar as informações deste estabelecimento."
           onRetry={() => void actorQuery.refetch()}
         />
@@ -266,13 +266,13 @@ export default function ActorDetailScreen() {
                     disabled={galleryScrollX <= 4}
                     onPress={() => galleryRef.current?.scrollTo({ x: Math.max(0, galleryScrollX - 220), animated: !reducedMotion })}
                     style={[styles.galleryControl, galleryScrollX <= 4 && styles.galleryControlDisabled]}
-                    {...makeAccessibleButton('Foto anterior do ator', 'Mostra as fotos anteriores', galleryScrollX <= 4)}
+                    {...makeAccessibleButton('Foto anterior do local', 'Mostra as fotos anteriores', galleryScrollX <= 4)}
                   ><Ionicons name="chevron-back" size={18} color={galleryScrollX > 4 ? theme.colors.brandDeep : theme.colors.outlineVariant} /></TouchableOpacity>
                   <TouchableOpacity
                     disabled={galleryScrollX >= Math.max(0, galleryContentWidth - galleryContainerWidth - 4)}
                     onPress={() => galleryRef.current?.scrollTo({ x: Math.min(Math.max(0, galleryContentWidth - galleryContainerWidth), galleryScrollX + 220), animated: !reducedMotion })}
                     style={[styles.galleryControl, galleryScrollX >= Math.max(0, galleryContentWidth - galleryContainerWidth - 4) && styles.galleryControlDisabled]}
-                    {...makeAccessibleButton('Próxima foto do ator', 'Mostra as próximas fotos', galleryScrollX >= Math.max(0, galleryContentWidth - galleryContainerWidth - 4))}
+                    {...makeAccessibleButton('Próxima foto do local', 'Mostra as próximas fotos', galleryScrollX >= Math.max(0, galleryContentWidth - galleryContainerWidth - 4))}
                   ><Ionicons name="chevron-forward" size={18} color={galleryScrollX < galleryContentWidth - galleryContainerWidth - 4 ? theme.colors.brandDeep : theme.colors.outlineVariant} /></TouchableOpacity>
                 </View>
               )}

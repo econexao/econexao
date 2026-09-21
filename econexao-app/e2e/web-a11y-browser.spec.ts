@@ -557,7 +557,7 @@ test.describe('Validação em Navegador Real & Acessibilidade WCAG 2.1 AA (ECO-2
     // Give the app a moment to render the new screen
     await page.waitForTimeout(5000);
     // Wait for the catalog header to appear (extended timeout)
-    const catalogHeader = page.getByText('Catálogo de Atores');
+    const catalogHeader = page.getByText('Lugares e Serviços');
     await expect(catalogHeader).toBeVisible({ timeout: 60000 });
     // Wait for the search input to appear (extended timeout)
     const searchInput = page.getByLabel('Campo de pesquisa');
