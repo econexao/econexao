@@ -1,5 +1,6 @@
 """Database session management."""
 
+import logging
 from collections.abc import AsyncGenerator
 
 from sqlalchemy import text
@@ -8,10 +9,14 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from app.core.config import settings
 
+logger = logging.getLogger(__name__)
+
 # Engine configuration
 engine = create_async_engine(
     settings.DATABASE_URL.get_secret_value(),
     echo=settings.DATABASE_ECHO,
+    pool_pre_ping=True,
+    pool_recycle=1800,
     future=True,
 )
 
@@ -46,5 +51,6 @@ async def check_database_readiness() -> bool:
                 text("select exists(select 1 from pg_extension where extname = 'postgis')")
             )
             return bool(result.scalar_one())
-    except SQLAlchemyError:
+    except SQLAlchemyError as exc:
+        logger.warning("Database readiness check failed: %s", exc)
         return False

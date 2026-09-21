@@ -5,7 +5,9 @@ import { ApiClientError } from './client';
 export function shouldRetry(failureCount: number, error: Error): boolean {
   if (failureCount >= 2) return false;
   if (error instanceof ApiClientError) {
-    return error.status === 0 || error.status >= 500;
+    // 500 (Internal Server Error) and 4xx are deterministic; do not auto-retry to prevent UI freezing.
+    // 503 (Service Unavailable) and 0 (Network drop) are transient and eligible for limited retry.
+    return error.status === 0 || error.status === 503;
   }
   return true;
 }
