@@ -323,10 +323,17 @@ describe('ECO-1904: Perfil, Trips, Termos Legais e LGPD', () => {
     const startTripBtn = touchables.find(
       (t) => t.props.accessibilityLabel && t.props.accessibilityLabel.includes('Registrar início de viagem')
     );
-    expect(startTripBtn).toBeTruthy();
-
     await act(async () => {
       await startTripBtn!.props.onPress();
+    });
+
+    const confirmModalBtn = tree!.root.findAllByType(TouchableOpacity).find(
+      (t) => t.props.accessibilityLabel === 'Confirmar e iniciar viagem'
+    );
+    expect(confirmModalBtn).toBeTruthy();
+
+    await act(async () => {
+      await confirmModalBtn!.props.onPress();
     });
 
     expect(createTripSpy).toHaveBeenCalledWith('route-test-1');
