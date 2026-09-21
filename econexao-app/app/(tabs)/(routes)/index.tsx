@@ -11,7 +11,7 @@ import { flattenUniquePages, useInfiniteRoutesQuery, useRegionsQuery, useRoutesQ
 import { useOptimisticFavoriteRoute } from '../../../src/hooks/useOptimisticFavoriteRoute';
 import { theme } from '../../../src/theme/theme';
 import type { RouteSummary } from '../../../src/api/types';
-import { isPreviewRoute, mergeRoutesWithPreviews } from '../../../src/constants/previewRoutes';
+import { isRouteAvailable, mergeRoutesWithPreviews } from '../../../src/constants/previewRoutes';
 import { MotionBlock } from '../../../src/components/common/MotionBlock';
 
 export default function RoutesScreen() {
@@ -69,7 +69,7 @@ export default function RoutesScreen() {
         ) : displayRoutes.length > 0 ? (
           <>
             {displayRoutes.map((route) => {
-              const isPreview = isPreviewRoute(route);
+              const isAvailable = isRouteAvailable(route);
               const isFav =
                 (route as RouteSummary & { is_favorite?: boolean }).is_favorite ??
                 savedRouteIds.has(route.id);
@@ -78,8 +78,8 @@ export default function RoutesScreen() {
                   key={route.id}
                   route={route}
                   isFavorite={isFav}
-                  onPress={isPreview ? undefined : () => router.push(`/route/${route.id}`)}
-                  onToggleFavorite={isPreview ? undefined : () => toggleFavorite(route, isFav)}
+                  onPress={isAvailable ? () => router.push(`/route/${route.id}`) : undefined}
+                  onToggleFavorite={isAvailable ? () => toggleFavorite(route, isFav) : undefined}
                 />
               );
             })}

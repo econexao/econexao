@@ -22,7 +22,7 @@ import { useRegionsQuery, useRoutesQuery } from '../../../src/hooks/queries';
 import { useOptimisticFavoriteRoute } from '../../../src/hooks/useOptimisticFavoriteRoute';
 import { theme } from '../../../src/theme/theme';
 import { makeAccessibleButton } from '../../../src/utils/accessibility';
-import { isPreviewRoute, mergeRoutesWithPreviews } from '../../../src/constants/previewRoutes';
+import { isRouteAvailable, mergeRoutesWithPreviews } from '../../../src/constants/previewRoutes';
 import { getRegionDisplayName } from '../../../src/components/routes/routeCoverImage';
 
 export default function HomeScreen() {
@@ -158,15 +158,15 @@ export default function HomeScreen() {
                 contentContainerStyle={styles.carouselScroll}
               >
                 {mergeRoutesWithPreviews(featuredQuery.data?.data ?? [], { isAltamiraRegion }).map((route) => {
-                  const isPreview = isPreviewRoute(route);
+                  const isAvailable = isRouteAvailable(route);
                   const isFav = (route as typeof route & { is_favorite?: boolean }).is_favorite ?? savedRouteIds.has(route.id);
                   return (
                     <CompactRouteCard
                       key={route.id}
                       route={route}
                       isFavorite={isFav}
-                      onPress={isPreview ? undefined : () => router.push(`/route/${route.id}`)}
-                      onToggleFavorite={isPreview ? undefined : () => toggleFavorite(route, isFav)}
+                      onPress={isAvailable ? () => router.push(`/route/${route.id}`) : undefined}
+                      onToggleFavorite={isAvailable ? () => toggleFavorite(route, isFav) : undefined}
                     />
                   );
                 })}

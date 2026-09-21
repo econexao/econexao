@@ -60,8 +60,8 @@ export const PREVIEW_ROUTES: RouteSummary[] = [
   },
 ];
 
-export const isPreviewRoute = (route: { id?: string | null; slug?: string | null }) => {
-  return (
+export const isPreviewRoute = (route: { id?: string | null; slug?: string | null }): boolean => {
+  return Boolean(
     route.id?.startsWith('preview-route-') ||
     route.slug === 'rota-alter-do-chao' ||
     route.slug === 'rota-praia-do-amor' ||
@@ -70,6 +70,30 @@ export const isPreviewRoute = (route: { id?: string | null; slug?: string | null
     route.slug === 'rota-aramanai'
   );
 };
+
+export type RouteAvailability = 'available' | 'upcoming' | 'temporarily_unavailable';
+
+export function getRouteAvailability(route: {
+  id?: string | null;
+  slug?: string | null;
+  status?: string | null;
+}): RouteAvailability {
+  if (isPreviewRoute(route)) {
+    return 'upcoming';
+  }
+  if (route.status && route.status !== 'active') {
+    return 'temporarily_unavailable';
+  }
+  return 'available';
+}
+
+export function isRouteAvailable(route: {
+  id?: string | null;
+  slug?: string | null;
+  status?: string | null;
+}): boolean {
+  return getRouteAvailability(route) === 'available';
+}
 
 export interface MergeRoutesOptions {
   isAltamiraRegion?: boolean;
@@ -80,13 +104,13 @@ const sortRoutesByGalleryPhotoCount = (routes: RouteSummary[]): RouteSummary[] =
 };
 
 /**
- * Merges API routes with preview routes and orders by gallery photo count (descending),
- * preserving canonical relative order as a stable tie-breaker:
- * - Routes with more gallery photos appear first (e.g. Pindobal and Raízes do Xingu with 4 photos).
- * - Routes with 1 photo / cover appear subsequently in canonical order.
+ * Merges API routes with preview routes:
+ * 1. Available active API routes are prioritized first, ordered by gallery photo count.
+ * 2. Inactive / temporarily unavailable API routes follow active ones.
+ * 3. Preview routes ("Em breve") are positioned strictly at the end of the list.
  *
  * When isAltamiraRegion is true, Santarém previews are isolated and only Altamira routes are returned.
- * When viewing Santarém or Todas as regiões, Santarém previews are preserved alongside API routes.
+ * When viewing Santarém or Todas as regiões, Santarém previews are appended at the end of API routes.
  */
 export function mergeRoutesWithPreviews(
   apiRoutes: RouteSummary[] = [],
@@ -120,32 +144,14 @@ export function mergeRoutesWithPreviews(
     return sortRoutesByGalleryPhotoCount(apiRoutes);
   }
 
-  const pindobal = apiRoutes.find((r) => isPindobalRoute(r));
-  const otherApiRoutes = apiRoutes.filter((r) => !isPindobalRoute(r));
-
   const existingSlugs = new Set(apiRoutes.map((r) => r.slug));
   const missingPreviews = PREVIEW_ROUTES.filter((p) => !existingSlugs.has(p.slug));
 
-  const result: RouteSummary[] = [];
+  const activeApiRoutes = apiRoutes.filter((r) => !isPreviewRoute(r) && r.status === 'active');
+  const inactiveApiRoutes = apiRoutes.filter((r) => !isPreviewRoute(r) && r.status !== 'active');
 
-  // #1 Pindobal
-  if (pindobal) {
-    result.push(pindobal);
-  } else if (apiRoutes.length > 0 && !hasAltamira) {
-    result.push(apiRoutes[0]);
-  }
+  const sortedActiveApiRoutes = sortRoutesByGalleryPhotoCount(activeApiRoutes);
+  const sortedInactiveApiRoutes = sortRoutesByGalleryPhotoCount(inactiveApiRoutes);
 
-  // Previews (#2, #3, #4, #5)
-  for (const preview of missingPreviews) {
-    result.push(preview);
-  }
-
-  // Any other routes from the API (such as Rota do Pedral, Raízes do Xingu, etc.)
-  for (const other of otherApiRoutes) {
-    if (!result.some((r) => r.id === other.id || r.slug === other.slug)) {
-      result.push(other);
-    }
-  }
-
-  return sortRoutesByGalleryPhotoCount(result);
+  return [...sortedActiveApiRoutes, ...sortedInactiveApiRoutes, ...missingPreviews];
 }
