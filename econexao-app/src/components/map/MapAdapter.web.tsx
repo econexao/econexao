@@ -8,6 +8,8 @@ import { theme } from '../../theme/theme';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { MapControls } from './MapControls';
 import {
+  ROUTE_DESTINATION_PIN_COLOR,
+  ROUTE_START_PIN_COLOR,
   SELECTION_PIN_COLOR,
   USER_LOCATION_PIN_COLOR,
   filterPinsByDensity,
@@ -21,6 +23,9 @@ import {
   getItemId,
   getItemPinColor,
   getItemPinIcon,
+  getRouteDestinationPinAccessibilityLabel,
+  getRouteEndpoints,
+  getRouteStartPinAccessibilityLabel,
   getSelectionPinAccessibilityLabel,
   getUserLocationAccessibilityLabel,
 } from './MapAdapter.helpers';
@@ -292,6 +297,68 @@ const createSelectionPinIcon = () => {
   });
 };
 
+const createRouteStartPinIcon = (selected: boolean, motionClass = '') => {
+  const width = selected ? 36 : 32;
+  const height = selected ? 44 : 38;
+  const iconSize = selected ? 16 : 14;
+  const color = ROUTE_START_PIN_COLOR;
+  const filterStyle = selected
+    ? 'filter: drop-shadow(0 0 6px rgba(22,163,74,0.9)) drop-shadow(0 4px 10px rgba(0,0,0,0.4)); transform: scale(1.15);'
+    : 'filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));';
+
+  const html = `
+    <div class="econexao-route-start-marker ${selected ? PIN_SELECTED_CLASS : motionClass}" style="width:${width}px;height:${height}px;position:relative;${filterStyle}cursor:pointer;transition:transform 0.15s ease;" aria-label="Ponto de partida">
+      <svg width="${width}" height="${height}" viewBox="0 0 32 38" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+        <path d="M16 37C16 37 30 22.5 30 15C30 7.268 23.732 1 16 1C8.268 1 2 7.268 2 15C2 22.5 16 37 16 37Z" fill="${color}" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/>
+        <g transform="translate(9, 8)" stroke="#FFFFFF" color="#FFFFFF">
+          <svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3" fill="#FFFFFF" />
+          </svg>
+        </g>
+      </svg>
+    </div>
+  `;
+
+  return L.divIcon({
+    className: selected ? 'econexao-route-start-wrapper-selected' : 'econexao-route-start-wrapper',
+    html,
+    iconSize: [width, height],
+    iconAnchor: [width / 2, height],
+  });
+};
+
+const createRouteDestinationPinIcon = (selected: boolean, motionClass = '') => {
+  const width = selected ? 46 : 42;
+  const height = selected ? 56 : 50;
+  const iconSize = selected ? 22 : 20;
+  const color = ROUTE_DESTINATION_PIN_COLOR;
+  const filterStyle = selected
+    ? 'filter: drop-shadow(0 0 8px rgba(220,38,38,0.95)) drop-shadow(0 6px 14px rgba(0,0,0,0.45)); transform: scale(1.15);'
+    : 'filter: drop-shadow(0 0 4px rgba(220,38,38,0.45)) drop-shadow(0 4px 8px rgba(0,0,0,0.35));';
+
+  const html = `
+    <div class="econexao-route-destination-marker ${selected ? PIN_SELECTED_CLASS : motionClass}" style="width:${width}px;height:${height}px;position:relative;${filterStyle}cursor:pointer;transition:transform 0.15s ease;" aria-label="Destino final da rota">
+      <svg width="${width}" height="${height}" viewBox="0 0 42 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+        <path d="M21 49C21 49 40 30 40 20C40 9.507 31.493 1 21 1C10.507 1 2 9.507 2 20C2 30 21 49 21 49Z" fill="${color}" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
+        <circle cx="21" cy="20" r="14" fill="rgba(255,255,255,0.22)" />
+        <g transform="translate(11, 10)" stroke="#FFFFFF" color="#FFFFFF">
+          <svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" fill="#FFFFFF" />
+            <line x1="4" y1="22" x2="4" y2="15" />
+          </svg>
+        </g>
+      </svg>
+    </div>
+  `;
+
+  return L.divIcon({
+    className: selected ? 'econexao-route-dest-wrapper-selected' : 'econexao-route-dest-wrapper',
+    html,
+    iconSize: [width, height],
+    iconAnchor: [width / 2, height],
+  });
+};
+
 const createUserLocationPinIcon = () => {
   const size = 38;
   const iconSize = 18;
@@ -480,6 +547,18 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
     } catch {}
   }, [prefersReducedMotion]);
 
+  const routeEndpoints = useMemo(() => getRouteEndpoints(geometry), [geometry]);
+  const isStartSelected = selectedActorId === 'route-start';
+  const isDestinationSelected = selectedActorId === 'route-destination';
+  const routeStartA11y = useMemo(
+    () => getRouteStartPinAccessibilityLabel(routeEndpoints.start),
+    [routeEndpoints.start]
+  );
+  const routeDestinationA11y = useMemo(
+    () => getRouteDestinationPinAccessibilityLabel(routeEndpoints.destination),
+    [routeEndpoints.destination]
+  );
+
   const selectionPinA11y = useMemo(
     () => getSelectionPinAccessibilityLabel(selectedCoordinate, selectionPinLabel),
     [selectedCoordinate, selectionPinLabel]
@@ -528,6 +607,64 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
               reducedMotion={prefersReducedMotion}
             />
           </>
+        )}
+
+        {/* Marcador de Início da Rota (Origem) */}
+        {routeEndpoints.start && routeCoordinates.length >= 2 && (
+          <Marker
+            key="route-start-pin"
+            position={[routeEndpoints.start.latitude, routeEndpoints.start.longitude]}
+            icon={createRouteStartPinIcon(
+              isStartSelected,
+              prefersReducedMotion ? '' : isStartSelected ? PIN_SELECTED_CLASS : PIN_ENTER_CLASS
+            )}
+            title={routeStartA11y}
+            alt={routeStartA11y}
+            keyboard={true}
+            zIndexOffset={isStartSelected ? 1200 : 800}
+            eventHandlers={{
+              click: (e) => {
+                L.DomEvent.stopPropagation(e as any);
+                onSelectActor('route-start');
+              },
+              keypress: (e: any) => {
+                if (e.originalEvent?.key === 'Enter' || e.originalEvent?.key === ' ') {
+                  e.originalEvent?.preventDefault?.();
+                  L.DomEvent.stopPropagation(e as any);
+                  onSelectActor('route-start');
+                }
+              },
+            }}
+          />
+        )}
+
+        {/* Marcador de Destino Especial da Rota (Fim) */}
+        {routeEndpoints.destination && routeCoordinates.length >= 2 && (
+          <Marker
+            key="route-destination-pin"
+            position={[routeEndpoints.destination.latitude, routeEndpoints.destination.longitude]}
+            icon={createRouteDestinationPinIcon(
+              isDestinationSelected,
+              prefersReducedMotion ? '' : isDestinationSelected ? PIN_SELECTED_CLASS : PIN_ENTER_CLASS
+            )}
+            title={routeDestinationA11y}
+            alt={routeDestinationA11y}
+            keyboard={true}
+            zIndexOffset={isDestinationSelected ? 1300 : 850}
+            eventHandlers={{
+              click: (e) => {
+                L.DomEvent.stopPropagation(e as any);
+                onSelectActor('route-destination');
+              },
+              keypress: (e: any) => {
+                if (e.originalEvent?.key === 'Enter' || e.originalEvent?.key === ' ') {
+                  e.originalEvent?.preventDefault?.();
+                  L.DomEvent.stopPropagation(e as any);
+                  onSelectActor('route-destination');
+                }
+              },
+            }}
+          />
         )}
 
         {renderableItems.map((item) => {

@@ -496,6 +496,9 @@ export default function MapScreen() {
   const selectedActorSummary = actorsList?.find(
     (a: any) => a.id === selectedActorId
   );
+  const isRouteStart = selectedActorId === 'route-start';
+  const isRouteDestination = selectedActorId === 'route-destination';
+  const isRouteEndpoint = isRouteStart || isRouteDestination;
 
   return (
     <View style={styles.container}>
@@ -729,8 +732,121 @@ export default function MapScreen() {
           </AccessibleMapControl>
         )}
 
+        {/* Floating Route Endpoint (Start / Destination) Detail Card */}
+        {!isSelectionMode && isRouteEndpoint && (
+          <View
+            style={styles.floatingCardContainer}
+            accessibilityRole="summary"
+            accessibilityLabel={
+              isRouteStart
+                ? 'Detalhes do ponto de partida da rota'
+                : 'Detalhes do destino final da rota'
+            }
+          >
+            <View style={styles.floatingCard}>
+              <View style={styles.cardMainRow}>
+                <View style={styles.cardPhotoWrapper}>
+                  <View
+                    style={[
+                      styles.cardPhotoFallback,
+                      { backgroundColor: isRouteStart ? '#16A34A18' : '#DC262618' },
+                    ]}
+                  >
+                    <Ionicons
+                      name={isRouteStart ? 'play' : 'flag'}
+                      size={28}
+                      color={isRouteStart ? '#16A34A' : '#DC2626'}
+                      style={isRouteStart ? { marginLeft: 2 } : undefined}
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.cardInfoColumn}>
+                  <View style={styles.cardHeaderRow}>
+                    <View style={styles.cardTagWrapper}>
+                      <Text
+                        style={[
+                          styles.cardCategoryTag,
+                          { color: isRouteStart ? '#16A34A' : '#DC2626' },
+                        ]}
+                      >
+                        {isRouteStart ? 'INÍCIO DA ROTA' : 'DESTINO DA ROTA'}
+                      </Text>
+                    </View>
+
+                    <TouchableOpacity
+                      ref={closeSheetButtonRef}
+                      style={styles.cardCloseBtn}
+                      onPress={closeActorSheet}
+                      {...makeAccessibleButton(
+                        isRouteStart
+                          ? 'Fechar detalhes do ponto de partida'
+                          : 'Fechar detalhes do destino',
+                        'Fecha este card e mantém o mapa interativo'
+                      )}
+                    >
+                      <Ionicons name="close" size={18} color={theme.colors.onSurfaceVariant} />
+                    </TouchableOpacity>
+                  </View>
+
+                  <Text style={styles.cardTitle} numberOfLines={2} accessibilityRole="header">
+                    {isRouteStart ? 'Ponto de Partida' : 'Destino Final'}
+                  </Text>
+
+                  <View style={styles.cardMetaRow}>
+                    <Ionicons
+                      name={isRouteStart ? 'navigate-outline' : 'flag-outline'}
+                      size={13}
+                      color={isRouteStart ? '#16A34A' : '#DC2626'}
+                    />
+                    <Text style={styles.cardAddress} numberOfLines={1}>
+                      {isRouteStart
+                        ? 'Início do percurso oficial desta rota'
+                        : 'Ponto de chegada e término do trajeto'}
+                    </Text>
+                  </View>
+
+                  <View style={styles.cardBadgesRow}>
+                    {isRouteStart ? (
+                      <View style={styles.cardDistanceBadge}>
+                        <Ionicons name="compass-outline" size={11} color="#16A34A" />
+                        <Text style={[styles.cardDistanceText, { color: '#16A34A' }]}>
+                          0,0 km (Marco zero)
+                        </Text>
+                      </View>
+                    ) : (
+                      <>
+                        {typeof mapPayload.geometry?.distance_m === 'number' && (
+                          <View style={styles.cardDistanceBadge}>
+                            <Ionicons
+                              name="navigate-outline"
+                              size={11}
+                              color={theme.colors.brandForest}
+                            />
+                            <Text style={styles.cardDistanceText}>
+                              {(mapPayload.geometry.distance_m / 1000).toFixed(1)} km de extensão
+                            </Text>
+                          </View>
+                        )}
+                        {typeof mapPayload.geometry?.duration_s === 'number' && (
+                          <View style={styles.cardRatingBadge}>
+                            <Ionicons name="time-outline" size={12} color={theme.colors.brandForest} />
+                            <Text style={styles.cardRatingText}>
+                              ~{Math.round(mapPayload.geometry.duration_s / 60)} min
+                            </Text>
+                          </View>
+                        )}
+                      </>
+                    )}
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+        )}
+
         {/* Floating Actor Detail Card (Interactive & Non-blocking) */}
-        {!isSelectionMode && Boolean(selectedActorId) && Boolean(selectedPin || selectedActorSummary) && (
+        {!isSelectionMode && !isRouteEndpoint && Boolean(selectedActorId) && Boolean(selectedPin || selectedActorSummary) && (
           <View
             style={styles.floatingCardContainer}
             accessibilityRole="summary"

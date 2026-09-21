@@ -54,6 +54,42 @@ export const filterPinsByModeAndCategory = <T extends FlexiblePinItem>(
 
 export const SELECTION_PIN_COLOR = '#EA580C';
 export const USER_LOCATION_PIN_COLOR = '#0284C7';
+export const ROUTE_START_PIN_COLOR = '#16A34A';
+export const ROUTE_DESTINATION_PIN_COLOR = '#DC2626';
+
+export const getRouteEndpoints = (
+  geometry?: RouteGeometry | null
+): { start: MapCoordinate | null; destination: MapCoordinate | null } => {
+  const coordinates = getGeometryCoordinates(geometry);
+  if (coordinates.length === 0) {
+    return { start: null, destination: null };
+  }
+  if (coordinates.length === 1) {
+    return { start: coordinates[0], destination: coordinates[0] };
+  }
+  return {
+    start: coordinates[0],
+    destination: coordinates[coordinates.length - 1],
+  };
+};
+
+export const getRouteStartPinAccessibilityLabel = (
+  coord?: MapCoordinate | null,
+  customLabel?: string
+): string => {
+  const base = customLabel || 'Ponto de partida da rota';
+  if (!coord) return base;
+  return `${base}: ${formatCoordinateDisplay(coord)}. Toque para ver detalhes.`;
+};
+
+export const getRouteDestinationPinAccessibilityLabel = (
+  coord?: MapCoordinate | null,
+  customLabel?: string
+): string => {
+  const base = customLabel || 'Destino da rota';
+  if (!coord) return base;
+  return `${base}: ${formatCoordinateDisplay(coord)}. Toque para ver detalhes.`;
+};
 
 export const CONTRACT_PIN_ICONS = [
   'anchor',

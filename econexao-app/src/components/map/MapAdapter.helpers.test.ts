@@ -1,5 +1,7 @@
 import type { MapPin, RouteGeometry } from '../../api/types';
 import {
+  ROUTE_DESTINATION_PIN_COLOR,
+  ROUTE_START_PIN_COLOR,
   SELECTION_PIN_COLOR,
   filterPinsByDensity,
   filterPinsByModeAndCategory,
@@ -13,6 +15,9 @@ import {
   getItemCoordinate,
   getItemPinColor,
   getItemPinIcon,
+  getRouteDestinationPinAccessibilityLabel,
+  getRouteEndpoints,
+  getRouteStartPinAccessibilityLabel,
   getSelectionPinAccessibilityLabel,
   getUserLocationAccessibilityLabel,
   isCoordinateWithinBounds,
@@ -161,6 +166,30 @@ describe('MapAdapter shared geospatial helpers', () => {
       expect(getUserLocationAccessibilityLabel(null)).toBe(
         'Sua localização atual'
       );
+    });
+
+    it('extracts start and destination endpoints from route geometry and generates accessible labels', () => {
+      expect(ROUTE_START_PIN_COLOR).toBe('#16A34A');
+      expect(ROUTE_DESTINATION_PIN_COLOR).toBe('#DC2626');
+
+      expect(getRouteEndpoints(null)).toEqual({ start: null, destination: null });
+      expect(getRouteEndpoints(geometry)).toEqual({
+        start: { latitude: -2.64, longitude: -54.95 },
+        destination: { latitude: -2.6, longitude: -54.9 },
+      });
+
+      const startCoord = { latitude: -2.64, longitude: -54.95 };
+      const destCoord = { latitude: -2.6, longitude: -54.9 };
+
+      expect(getRouteStartPinAccessibilityLabel(startCoord)).toBe(
+        'Ponto de partida da rota: -2.6400, -54.9500. Toque para ver detalhes.'
+      );
+      expect(getRouteStartPinAccessibilityLabel(null)).toBe('Ponto de partida da rota');
+
+      expect(getRouteDestinationPinAccessibilityLabel(destCoord)).toBe(
+        'Destino da rota: -2.6000, -54.9000. Toque para ver detalhes.'
+      );
+      expect(getRouteDestinationPinAccessibilityLabel(null)).toBe('Destino da rota');
     });
 
     it('determina corretamente se uma coordenada está dentro dos limites territoriais da rota (ECO-2609)', () => {
