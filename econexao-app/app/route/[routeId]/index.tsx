@@ -339,16 +339,14 @@ export default function RouteDetailScreen() {
               'Abre o mapa interativo em tela cheia com traçado e pontos de interesse.'
             )}
           >
-            <View style={styles.quickActionIconPrimary}>
-              <Ionicons name="map" size={18} color={theme.colors.surfaceWhite} />
-            </View>
-            <View style={styles.quickActionCopy}>
-              <Text style={[styles.quickActionPrimaryText, { color: theme.colors.surfaceWhite }]}>
-                Ver trajeto
-              </Text>
-              <Text style={styles.quickActionPrimarySubtext}>Mapa e paradas</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.85)" />
+            <Ionicons name="map-outline" size={16} color={theme.colors.surfaceWhite} />
+            <Text
+              style={[styles.quickActionPrimaryText, { color: theme.colors.surfaceWhite }]}
+              numberOfLines={1}
+            >
+              Ver trajeto
+            </Text>
+            <Ionicons name="chevron-forward" size={14} color="rgba(255,255,255,0.7)" />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -356,8 +354,8 @@ export default function RouteDetailScreen() {
               styles.quickActionButton,
               styles.secondaryQuickAction,
               {
-                backgroundColor: theme.colors.surfaceContainerLow,
-                borderColor: theme.isHighContrast ? theme.colors.outline : theme.colors.outlineVariant,
+                backgroundColor: theme.colors.surfaceWhite,
+                borderColor: theme.isHighContrast ? theme.colors.outline : 'rgba(51, 96, 30, 0.20)',
               },
             ]}
             onPress={() => handleOpenFullCatalog()}
@@ -366,16 +364,14 @@ export default function RouteDetailScreen() {
               'Abre o catálogo de lugares, serviços e comércios da rota.'
             )}
           >
-            <View style={styles.quickActionIconSecondary}>
-              <Ionicons name="storefront" size={18} color={theme.colors.brandForest} />
-            </View>
-            <View style={styles.quickActionCopy}>
-              <Text style={[styles.quickActionSecondaryText, { color: theme.colors.brandDeep }]}>
-                Lugares
-              </Text>
-              <Text style={styles.quickActionSecondarySubtext}>No caminho</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={16} color={theme.colors.brandForest} />
+            <Ionicons name="storefront-outline" size={16} color={theme.colors.brandForest} />
+            <Text
+              style={[styles.quickActionSecondaryText, { color: theme.colors.brandDeep }]}
+              numberOfLines={1}
+            >
+              Lugares no caminho
+            </Text>
+            <Ionicons name="chevron-forward" size={14} color={theme.colors.brandForest} />
           </TouchableOpacity>
         </View>
 
@@ -598,67 +594,38 @@ const styles = StyleSheet.create({
   },
   quickActionsContainer: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 10,
     width: '100%',
-    marginVertical: 4,
+    marginVertical: 2,
   },
   quickActionButton: {
     flex: 1,
-    minHeight: 56,
-    borderRadius: theme.radii.lg,
+    minHeight: 42,
+    borderRadius: theme.radii.full,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 8,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    justifyContent: 'center',
+    gap: 6,
     ...theme.shadows.card,
   },
   primaryQuickAction: {
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
   secondaryQuickAction: {
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     borderWidth: 1,
-  },
-  quickActionIconPrimary: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.18)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  quickActionIconSecondary: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: 'rgba(51, 96, 30, 0.08)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  quickActionCopy: {
-    flex: 1,
-    gap: 1,
   },
   quickActionPrimaryText: {
     ...theme.typography.labelMd,
     fontWeight: '700',
-    fontSize: 14,
-  },
-  quickActionPrimarySubtext: {
-    ...theme.typography.bodySm,
-    color: 'rgba(255, 255, 255, 0.82)',
-    fontSize: 11,
+    fontSize: 13,
   },
   quickActionSecondaryText: {
     ...theme.typography.labelMd,
     fontWeight: '700',
-    fontSize: 14,
-  },
-  quickActionSecondarySubtext: {
-    ...theme.typography.bodySm,
-    color: theme.colors.onSurfaceVariant,
-    fontSize: 11,
+    fontSize: 13,
   },
   titleOnImage: {
     color: theme.colors.surfaceWhite,
