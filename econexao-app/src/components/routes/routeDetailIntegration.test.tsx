@@ -339,14 +339,14 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     expect(mockPush).toHaveBeenCalledWith('/route/route-pindobal/catalog?originId=origin-rodoviaria');
   });
 
-  it('opens trip history from the independent arrow action', async () => {
+  it('opens trip history from the dedicated history button', async () => {
     let tree!: renderer.ReactTestRenderer;
     await act(async () => {
       tree = renderer.create(<RouteDetailScreen />);
     });
 
     const historyButton = tree.root.find(
-      (node) => node.type === TouchableOpacity && node.props.accessibilityLabel === 'Abrir histórico de rotas'
+      (node) => node.type === TouchableOpacity && node.props.accessibilityLabel === 'Ver histórico de viagens'
     );
     await act(async () => historyButton.props.onPress());
 
@@ -870,5 +870,48 @@ describe('RouteDetailScreen Integration (ECO-0901..0907)', () => {
     // Selector preserves the last valid origin (Aeroporto)
     const comboboxUpdated = root.find((node) => node.type === TouchableOpacity && node.props.accessibilityRole === 'combobox');
     expect(comboboxUpdated.props.accessibilityLabel).toBe('Saindo de: Aeroporto');
+  });
+
+  it('separates visual and semantic actions for Iniciar Viagem and Ver Histórico with independent targets', async () => {
+    const { apiClient } = require('../../api/client');
+    const createTripSpy = jest.spyOn(apiClient, 'createTrip').mockResolvedValueOnce({
+      data: { id: 'trip-new-1', route_id: 'route-pindobal', status: 'active' },
+    });
+
+    let tree!: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(<RouteDetailScreen />);
+    });
+
+    const root = tree.root;
+
+    // Find the Iniciar Viagem button
+    const startTripBtn = root.find(
+      (node) =>
+        node.type === TouchableOpacity &&
+        node.props.accessibilityLabel === 'Registrar início de viagem nesta rota'
+    );
+    expect(startTripBtn).toBeDefined();
+
+    // Find the Ver Histórico button
+    const historyBtn = root.find(
+      (node) =>
+        node.type === TouchableOpacity &&
+        node.props.accessibilityLabel === 'Ver histórico de viagens'
+    );
+    expect(historyBtn).toBeDefined();
+
+    // Triggering history button should navigate to profile trips without creating a trip
+    await act(async () => {
+      historyBtn.props.onPress();
+    });
+    expect(mockPush).toHaveBeenCalledWith('/(tabs)/(profile)/trips');
+    expect(createTripSpy).not.toHaveBeenCalled();
+
+    // Triggering start trip button should call createTrip API
+    await act(async () => {
+      await startTripBtn.props.onPress();
+    });
+    expect(createTripSpy).toHaveBeenCalledWith('route-pindobal');
   });
 });
