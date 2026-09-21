@@ -263,6 +263,20 @@ export default function RouteDetailScreen() {
   const displayTitle = route ? getRouteDisplayName(route) : '';
   const routeDescription = route ? getRouteDescription(route) : '';
 
+  const handleOpenFullMap = (selectedActorId?: string) => {
+    if (isCustomLocation && previewData && queryClient) {
+      queryClient.setQueryData(queryKeys.routes.ephemeralPreview(routeId), {
+        previewData,
+        originType: originId || MY_LOCATION_ORIGIN_ID,
+      });
+    }
+    router.push(routePath(routeId, 'map', isCustomLocation ? undefined : effectiveOrigin, selectedActorId ?? actorId));
+  };
+
+  const handleOpenFullCatalog = (category?: string) => {
+    router.push(routePath(routeId, 'catalog', isCustomLocation ? undefined : effectiveOrigin, actorId, category));
+  };
+
   return (
     <View style={styles.container}>
       <AppHeader
@@ -307,6 +321,64 @@ export default function RouteDetailScreen() {
           </>
         )}
 
+        {/* Quick Action Exploration Hub */}
+        <View style={styles.quickActionsContainer}>
+          <TouchableOpacity
+            style={[
+              styles.quickActionButton,
+              styles.primaryQuickAction,
+              {
+                backgroundColor: theme.colors.brandForest,
+                borderColor: theme.isHighContrast ? theme.colors.brandDeep : 'transparent',
+                borderWidth: theme.isHighContrast ? 2 : 0,
+              },
+            ]}
+            onPress={() => handleOpenFullMap()}
+            {...makeAccessibleButton(
+              'Ver trajeto no mapa',
+              'Abre o mapa interativo em tela cheia com traçado e pontos de interesse.'
+            )}
+          >
+            <View style={styles.quickActionIconPrimary}>
+              <Ionicons name="map" size={18} color={theme.colors.surfaceWhite} />
+            </View>
+            <View style={styles.quickActionCopy}>
+              <Text style={[styles.quickActionPrimaryText, { color: theme.colors.surfaceWhite }]}>
+                Ver trajeto
+              </Text>
+              <Text style={styles.quickActionPrimarySubtext}>Mapa e paradas</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.85)" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.quickActionButton,
+              styles.secondaryQuickAction,
+              {
+                backgroundColor: theme.colors.surfaceContainerLow,
+                borderColor: theme.isHighContrast ? theme.colors.outline : theme.colors.outlineVariant,
+              },
+            ]}
+            onPress={() => handleOpenFullCatalog()}
+            {...makeAccessibleButton(
+              'Lugares no caminho',
+              'Abre o catálogo de lugares, serviços e comércios da rota.'
+            )}
+          >
+            <View style={styles.quickActionIconSecondary}>
+              <Ionicons name="storefront" size={18} color={theme.colors.brandForest} />
+            </View>
+            <View style={styles.quickActionCopy}>
+              <Text style={[styles.quickActionSecondaryText, { color: theme.colors.brandDeep }]}>
+                Lugares
+              </Text>
+              <Text style={styles.quickActionSecondarySubtext}>No caminho</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={theme.colors.brandForest} />
+          </TouchableOpacity>
+        </View>
+
         <RouteGallery route={route} />
 
         {/* Breve Descrição sobre o Local */}
@@ -319,7 +391,6 @@ export default function RouteDetailScreen() {
             <Text style={styles.descriptionBody}>{routeDescription}</Text>
           </View>
         ) : null}
-
 
         {/* Dynamic preview notice banner */}
         {isCustomLocation && (
@@ -353,30 +424,11 @@ export default function RouteDetailScreen() {
             customLegend={isCustomLocation ? previewData?.legend : undefined}
             customCityBounds={isCustomLocation ? previewData?.city_bounds : undefined}
             isCustomLocation={isCustomLocation}
-            onExpand={(selectedActorId) => {
-              if (isCustomLocation && previewData && queryClient) {
-                queryClient.setQueryData(queryKeys.routes.ephemeralPreview(routeId), {
-                  previewData,
-                  originType: originId || MY_LOCATION_ORIGIN_ID,
-                });
-              }
-              router.push(routePath(routeId, 'map', isCustomLocation ? undefined : effectiveOrigin, selectedActorId ?? actorId));
-            }}
+            onExpand={(selectedActorId) => handleOpenFullMap(selectedActorId)}
           />
         )}
 
-        <LocalCatalogPreview
-          routeId={routeId}
-          originId={isCustomLocation ? undefined : effectiveOrigin}
-          onOpenActor={(selectedActorId) =>
-            router.push(`/actor/${encodeURIComponent(selectedActorId)}`)
-          }
-          onOpenCatalog={(category) =>
-            router.push(routePath(routeId, 'catalog', isCustomLocation ? undefined : effectiveOrigin, actorId, category))
-          }
-        />
-
-        {/* Actions: Start Trip CTA & Trip History Link */}
+        {/* Actions: Start Trip CTA & Trip History Link (Positioned before the catalog) */}
         <View style={styles.tripActionsContainer}>
           <TouchableOpacity
             style={[
@@ -437,6 +489,15 @@ export default function RouteDetailScreen() {
             <Ionicons name="chevron-forward" size={16} color={theme.colors.brandForest} />
           </TouchableOpacity>
         </View>
+
+        <LocalCatalogPreview
+          routeId={routeId}
+          originId={isCustomLocation ? undefined : effectiveOrigin}
+          onOpenActor={(selectedActorId) =>
+            router.push(`/actor/${encodeURIComponent(selectedActorId)}`)
+          }
+          onOpenCatalog={(category) => handleOpenFullCatalog(category)}
+        />
 
         {/* Route Alerts Section */}
         <View style={styles.section}>
@@ -534,6 +595,70 @@ const styles = StyleSheet.create({
     marginTop: -72,
     paddingHorizontal: 16,
     zIndex: 1,
+  },
+  quickActionsContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+    marginVertical: 4,
+  },
+  quickActionButton: {
+    flex: 1,
+    minHeight: 56,
+    borderRadius: theme.radii.lg,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    ...theme.shadows.card,
+  },
+  primaryQuickAction: {
+    justifyContent: 'space-between',
+  },
+  secondaryQuickAction: {
+    justifyContent: 'space-between',
+    borderWidth: 1,
+  },
+  quickActionIconPrimary: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quickActionIconSecondary: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: 'rgba(51, 96, 30, 0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quickActionCopy: {
+    flex: 1,
+    gap: 1,
+  },
+  quickActionPrimaryText: {
+    ...theme.typography.labelMd,
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  quickActionPrimarySubtext: {
+    ...theme.typography.bodySm,
+    color: 'rgba(255, 255, 255, 0.82)',
+    fontSize: 11,
+  },
+  quickActionSecondaryText: {
+    ...theme.typography.labelMd,
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  quickActionSecondarySubtext: {
+    ...theme.typography.bodySm,
+    color: theme.colors.onSurfaceVariant,
+    fontSize: 11,
   },
   titleOnImage: {
     color: theme.colors.surfaceWhite,
