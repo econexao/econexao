@@ -6,6 +6,7 @@ import type { RouteSummary } from '../../api/types';
 import { Badge } from '../common/Badge';
 import { makeAccessibleButton } from '../../utils/accessibility';
 import { getRouteCoverImage, getRouteDisplayName, getRouteCity } from './routeCoverImage';
+import { getRouteAvailability } from '../../constants/previewRoutes';
 
 interface RouteCardProps {
   route: RouteSummary;
@@ -24,21 +25,32 @@ export const RouteCard: React.FC<RouteCardProps> = ({
   const displayTitle = getRouteDisplayName(route);
   const displayCity = getRouteCity(route);
 
+  const availability = getRouteAvailability(route);
+  const isAvailable = availability === 'available' && Boolean(onPress);
+  const isUpcoming = availability === 'upcoming';
+  const isUnavailable = availability === 'temporarily_unavailable';
+
+  const accessibilityLabel = isUpcoming
+    ? `Rota ${displayTitle}, ${displayCity}, ${route.state_code}. Em breve: conteúdo ainda não publicado, não disponível para navegação.`
+    : isUnavailable
+    ? `Rota ${displayTitle}, ${displayCity}, ${route.state_code}. Temporariamente indisponível para navegação.`
+    : `Rota ${displayTitle}, ${displayCity}, ${route.state_code}`;
+
   return (
     <View style={styles.card}>
       <Pressable
         style={styles.cardPressable}
-        onPress={onPress}
-        disabled={!onPress}
-        accessibilityRole={onPress ? 'button' : 'none'}
-        {...(onPress
+        onPress={isAvailable ? onPress : undefined}
+        disabled={!isAvailable}
+        accessibilityRole={isAvailable ? 'button' : 'none'}
+        {...(isAvailable
           ? makeAccessibleButton(
               `Rota ${displayTitle}`,
               `${displayCity}, ${route.state_code}. Toque para ver os detalhes.`
             )
           : {
               accessible: true,
-              accessibilityLabel: `Rota ${displayTitle}, ${displayCity}, ${route.state_code}`,
+              accessibilityLabel,
             })}
       >
         <View style={styles.imageContainer}>
@@ -57,7 +69,11 @@ export const RouteCard: React.FC<RouteCardProps> = ({
           <View style={styles.gradientOverlay} />
 
           <View style={styles.topRow}>
-            {route.is_verified && <Badge type="verified" label="Verificada" />}
+            <View style={styles.badgesContainer}>
+              {route.is_verified && <Badge type="verified" label="Verificada" />}
+              {isUpcoming && <Badge type="upcoming" label="Em breve" />}
+              {isUnavailable && <Badge type="temporarilyUnavailable" label="Temporariamente indisponível" />}
+            </View>
           </View>
 
           <View style={styles.bottomOverlayContent}>
@@ -72,7 +88,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
         </View>
       </Pressable>
 
-      {onToggleFavorite && (
+      {isAvailable && onToggleFavorite && (
         <TouchableOpacity
           style={styles.favoriteButton}
           onPress={(e) => {
@@ -144,6 +160,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     zIndex: 10,
+  },
+  badgesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flexWrap: 'wrap',
   },
   favoriteButton: {
     position: 'absolute',

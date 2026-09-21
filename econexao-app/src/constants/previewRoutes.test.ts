@@ -1,4 +1,10 @@
-import { PREVIEW_ROUTES, isPreviewRoute, mergeRoutesWithPreviews } from './previewRoutes';
+import {
+  PREVIEW_ROUTES,
+  isPreviewRoute,
+  getRouteAvailability,
+  isRouteAvailable,
+  mergeRoutesWithPreviews,
+} from './previewRoutes';
 import type { RouteSummary } from '../api/types';
 
 describe('previewRoutes', () => {
@@ -14,13 +20,22 @@ describe('previewRoutes', () => {
     expect(PREVIEW_ROUTES[3].city).toBe('Belterra');
   });
 
-  it('correctly identifies preview routes', () => {
+  it('correctly identifies preview routes and availability status', () => {
     expect(isPreviewRoute({ id: 'preview-route-alter-do-chao' })).toBe(true);
     expect(isPreviewRoute({ slug: 'rota-ponta-de-pedras' })).toBe(true);
     expect(isPreviewRoute({ slug: 'rota-pindobal' })).toBe(false);
+
+    expect(getRouteAvailability({ id: 'preview-route-alter-do-chao', status: 'active' })).toBe('upcoming');
+    expect(getRouteAvailability({ id: 'real-route-1', status: 'active' })).toBe('available');
+    expect(getRouteAvailability({ id: 'real-route-2', status: 'maintenance' })).toBe('temporarily_unavailable');
+    expect(getRouteAvailability({ id: 'real-route-3', status: 'inactive' })).toBe('temporarily_unavailable');
+
+    expect(isRouteAvailable({ id: 'preview-route-alter-do-chao' })).toBe(false);
+    expect(isRouteAvailable({ id: 'real-route-1', status: 'active' })).toBe(true);
+    expect(isRouteAvailable({ id: 'real-route-2', status: 'inactive' })).toBe(false);
   });
 
-  it('merges Pindobal at #1 and the 4 previews at #2 through #5', () => {
+  it('merges active Pindobal at #1 and the 4 previews at #2 through #5', () => {
     const apiPindobal: RouteSummary = {
       id: 'd437d9db-e5be-465b-9f8a-07ce64229305',
       slug: 'rota-pindobal',
@@ -64,7 +79,7 @@ describe('previewRoutes', () => {
     expect(merged[0].slug).toBe('rota-pedral');
   });
 
-  it('preserves Santarém previews when viewing Todas as regiões (both Pindobal and Pedral present)', () => {
+  it('positions all available active API routes before preview routes when viewing Todas as regiões', () => {
     const apiPindobal: RouteSummary = {
       id: 'd437d9db-e5be-465b-9f8a-07ce64229305',
       slug: 'rota-pindobal',
@@ -92,19 +107,18 @@ describe('previewRoutes', () => {
       is_favorite: false,
     };
 
-    // Neither isAltamiraRegion is true: this is the aggregated "Todas" view
+    // Both active API routes (Pindobal and Pedral) must come BEFORE preview routes
     const merged = mergeRoutesWithPreviews([apiPindobal, apiPedral]);
-    // #1 Pindobal (4 photos), #2-5 Previews (1 photo each), #6 Pedral (1 photo)
     expect(merged).toHaveLength(6);
     expect(merged[0].slug).toBe('rota-pindobal');
-    expect(merged[1].slug).toBe('rota-alter-do-chao');
-    expect(merged[2].slug).toBe('rota-ponta-de-pedras');
-    expect(merged[3].slug).toBe('rota-vila-socorro');
-    expect(merged[4].slug).toBe('rota-aramanai');
-    expect(merged[5].slug).toBe('rota-pedral');
+    expect(merged[1].slug).toBe('rota-pedral');
+    expect(merged[2].slug).toBe('rota-alter-do-chao');
+    expect(merged[3].slug).toBe('rota-ponta-de-pedras');
+    expect(merged[4].slug).toBe('rota-vila-socorro');
+    expect(merged[5].slug).toBe('rota-aramanai');
   });
 
-  it('sorts routes with more gallery photos to the front and preserves tie-break order', () => {
+  it('sorts active routes by gallery photo count and puts preview routes strictly at the end', () => {
     const apiPindobal: RouteSummary = {
       id: 'd437d9db-e5be-465b-9f8a-07ce64229305',
       slug: 'rota-pindobal',
@@ -146,22 +160,16 @@ describe('previewRoutes', () => {
     };
 
     const merged = mergeRoutesWithPreviews([apiPindobal, apiPedral, apiRaizes]);
-    // Both Pindobal (4 photos) and Raízes (4 photos) should come before 1-photo routes:
-    // 1: Pindobal (4 photos)
-    // 2: Raízes do Xingu (4 photos)
-    // 3: Praia do Amor (1 photo)
-    // 4: Ponta de Pedras (1 photo)
-    // 5: Vila Socorro (1 photo)
-    // 6: Aramanai (1 photo)
-    // 7: Pedral (1 photo)
+    // Active routes: Pindobal (4 photos), Raízes (4 photos), Pedral (1 photo)
+    // Then Previews (Em breve) at the tail
     expect(merged).toHaveLength(7);
     expect(merged[0].slug).toBe('rota-pindobal');
     expect(merged[1].slug).toBe('rota-raizes-do-xingu');
-    expect(merged[2].slug).toBe('rota-alter-do-chao');
-    expect(merged[3].slug).toBe('rota-ponta-de-pedras');
-    expect(merged[4].slug).toBe('rota-vila-socorro');
-    expect(merged[5].slug).toBe('rota-aramanai');
-    expect(merged[6].slug).toBe('rota-pedral');
+    expect(merged[2].slug).toBe('rota-pedral');
+    expect(merged[3].slug).toBe('rota-alter-do-chao');
+    expect(merged[4].slug).toBe('rota-ponta-de-pedras');
+    expect(merged[5].slug).toBe('rota-vila-socorro');
+    expect(merged[6].slug).toBe('rota-aramanai');
   });
 
   it('orders routes by gallery count when in Altamira region', () => {
@@ -194,7 +202,6 @@ describe('previewRoutes', () => {
 
     const merged = mergeRoutesWithPreviews([apiPedral, apiRaizes], { isAltamiraRegion: true });
     expect(merged).toHaveLength(2);
-    // Raízes (4 photos) should come before Pedral (1 photo)
     expect(merged[0].slug).toBe('rota-raizes-do-xingu');
     expect(merged[1].slug).toBe('rota-pedral');
   });

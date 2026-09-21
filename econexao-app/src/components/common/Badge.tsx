@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme/theme';
 
 interface BadgeProps {
-  type: 'greenSeal' | 'verified' | 'semturInventory' | 'semtur' | 'warning';
+  type: 'greenSeal' | 'verified' | 'semturInventory' | 'semtur' | 'warning' | 'upcoming' | 'temporarilyUnavailable';
   label?: string;
 }
 
@@ -35,6 +35,30 @@ export const Badge: React.FC<BadgeProps> = ({ type, label }) => {
         <View style={[styles.badgeContainer, styles.verifiedBadge]} accessible accessibilityRole="text" accessibilityLabel={label || 'Verificada'}>
           <Ionicons name="checkmark-circle" size={14} color={theme.colors.onPrimary} />
           <Text style={styles.verifiedText}>{label || 'Verificada'}</Text>
+        </View>
+      );
+    case 'upcoming':
+      return (
+        <View
+          style={[styles.badgeContainer, styles.upcomingBadge]}
+          accessible
+          accessibilityRole="text"
+          accessibilityLabel={`Em breve: ${label || 'Em breve'}`}
+        >
+          <Ionicons name="time-outline" size={13} color="#FFFFFF" />
+          <Text style={styles.upcomingText}>{label || 'Em breve'}</Text>
+        </View>
+      );
+    case 'temporarilyUnavailable':
+      return (
+        <View
+          style={[styles.badgeContainer, styles.unavailableBadge]}
+          accessible
+          accessibilityRole="text"
+          accessibilityLabel={`Temporariamente indisponível: ${label || 'Temporariamente indisponível'}`}
+        >
+          <Ionicons name="pause-circle-outline" size={13} color="#92400E" />
+          <Text style={styles.unavailableText}>{label || 'Temporariamente indisponível'}</Text>
         </View>
       );
     case 'warning':
@@ -91,6 +115,24 @@ const styles = StyleSheet.create({
   warningText: {
     ...theme.typography.labelSm,
     color: theme.colors.onErrorContainer,
+    fontWeight: '700',
+  },
+  upcomingBadge: {
+    backgroundColor: '#1E293B',
+  },
+  upcomingText: {
+    ...theme.typography.labelSm,
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  unavailableBadge: {
+    backgroundColor: '#FEF3C7',
+    borderWidth: 1,
+    borderColor: '#F59E0B',
+  },
+  unavailableText: {
+    ...theme.typography.labelSm,
+    color: '#92400E',
     fontWeight: '700',
   },
 });
