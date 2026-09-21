@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import {
   ActivityIndicator,
   AccessibilityInfo,
@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme/theme';
-import { makeAccessibleButton, setAccessibilityFocusSafely } from '../../utils/accessibility';
+import { makeAccessibleButton } from '../../utils/accessibility';
 import { AccessibleModal } from '../common/AccessibleModal';
 
 export interface TripStartModalProps {
@@ -38,20 +38,6 @@ export const TripStartModal: React.FC<TripStartModalProps> = ({
 }) => {
   const modalTitleRef = useRef<any>(null);
   const successTitleRef = useRef<any>(null);
-
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | null = null;
-    if (visible) {
-      timer = setTimeout(() => {
-        setAccessibilityFocusSafely(isSuccess ? successTitleRef : modalTitleRef);
-      }, 50);
-    }
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-    };
-  }, [visible, isSuccess]);
 
   return (
     <AccessibleModal
