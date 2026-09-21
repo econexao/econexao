@@ -1,83 +1,88 @@
 import React from 'react';
+import { View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../src/theme/theme';
+import { ActiveTripDock } from '../../src/components/trips/ActiveTripDock';
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const bottomInset = insets.bottom;
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: theme.colors.brandForest,
-        tabBarInactiveTintColor: theme.colors.outline,
-        tabBarStyle: {
-          backgroundColor: 'rgba(255, 255, 255, 0.96)',
-          borderTopColor: theme.colors.surfaceContainer,
-          height: 76 + bottomInset,
-          paddingTop: 6,
-          paddingBottom: Math.max(bottomInset, 10),
-          ...theme.shadows.card,
-        },
-        tabBarLabelStyle: {
-          ...theme.typography.labelSm,
-          fontWeight: '600',
-          fontSize: 12,
-          lineHeight: 16,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="(explore)"
-        options={{
-          title: 'Inicial',
-          tabBarLabel: 'Inicial',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />
-          ),
-        }}
-        listeners={({ navigation }) => ({
-          tabPress: (e) => {
-            e.preventDefault();
-            navigation.navigate('(explore)', { screen: 'index' });
+    <View style={{ flex: 1 }}>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: theme.colors.brandForest,
+          tabBarInactiveTintColor: theme.colors.outline,
+          tabBarStyle: {
+            backgroundColor: 'rgba(255, 255, 255, 0.96)',
+            borderTopColor: theme.colors.surfaceContainer,
+            height: 76 + bottomInset,
+            paddingTop: 6,
+            paddingBottom: Math.max(bottomInset, 10),
+            ...theme.shadows.card,
           },
-        })}
-      />
-      <Tabs.Screen
-        name="(routes)"
-        options={{
-          title: 'Rotas',
-          tabBarLabel: 'Rotas',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'compass' : 'compass-outline'} size={size} color={color} />
-          ),
-        }}
-        listeners={({ navigation }) => ({
-          tabPress: (e) => {
-            e.preventDefault();
-            navigation.navigate('(routes)', { screen: 'index' });
+          tabBarLabelStyle: {
+            ...theme.typography.labelSm,
+            fontWeight: '600',
+            fontSize: 12,
+            lineHeight: 16,
           },
-        })}
-      />
-      <Tabs.Screen
-        name="(profile)"
-        options={{
-          title: 'Perfil',
-          tabBarLabel: 'Perfil',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={color} />
-          ),
         }}
-        listeners={({ navigation }) => ({
-          tabPress: (e) => {
-            e.preventDefault();
-            navigation.navigate('(profile)', { screen: 'index' });
-          },
-        })}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="(explore)"
+          options={{
+            title: 'Inicial',
+            tabBarLabel: 'Inicial',
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />
+            ),
+          }}
+          listeners={({ navigation }) => ({
+            tabPress: (e) => {
+              e.preventDefault();
+              navigation.navigate('(explore)', { screen: 'index' });
+            },
+          })}
+        />
+        <Tabs.Screen
+          name="(routes)"
+          options={{
+            title: 'Rotas',
+            tabBarLabel: 'Rotas',
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons name={focused ? 'compass' : 'compass-outline'} size={size} color={color} />
+            ),
+          }}
+          listeners={({ navigation }) => ({
+            tabPress: (e) => {
+              e.preventDefault();
+              navigation.navigate('(routes)', { screen: 'index' });
+            },
+          })}
+        />
+        <Tabs.Screen
+          name="(profile)"
+          options={{
+            title: 'Perfil',
+            tabBarLabel: 'Perfil',
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={color} />
+            ),
+          }}
+          listeners={({ navigation }) => ({
+            tabPress: (e) => {
+              e.preventDefault();
+              navigation.navigate('(profile)', { screen: 'index' });
+            },
+          })}
+        />
+      </Tabs>
+      <ActiveTripDock />
+    </View>
   );
 }
