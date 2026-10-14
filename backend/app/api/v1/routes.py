@@ -125,6 +125,7 @@ async def get_route_detail(
 )
 async def get_route_origins(
     route_id: uuid.UUID,
+    response: Response,
     service: TerritorialServiceDep,
 ) -> RouteOriginListEnvelope:
     origins = await service.get_route_origins(route_id)
@@ -133,6 +134,7 @@ async def get_route_origins(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="A rota solicitada não foi encontrada.",
         )
+    response.headers["Cache-Control"] = "public, max-age=120, stale-while-revalidate=600"
     return origins
 
 
@@ -144,6 +146,7 @@ async def get_route_origins(
 )
 async def get_route_geometry(
     route_id: uuid.UUID,
+    response: Response,
     service: TerritorialServiceDep,
     origin_id: Annotated[uuid.UUID, Query(description="UUID da origem de acesso")],
 ) -> RouteGeometryEnvelope:
@@ -153,6 +156,7 @@ async def get_route_geometry(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Geometria da rota não encontrada para os parâmetros informados.",
         )
+    response.headers["Cache-Control"] = "public, max-age=300, stale-while-revalidate=1200"
     return geometry
 
 
@@ -164,6 +168,7 @@ async def get_route_geometry(
 )
 async def get_route_alerts(
     route_id: uuid.UUID,
+    response: Response,
     service: TerritorialServiceDep,
 ) -> RouteAlertListEnvelope:
     alerts = await service.get_route_alerts(route_id)
@@ -172,6 +177,7 @@ async def get_route_alerts(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="A rota solicitada não foi encontrada.",
         )
+    response.headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=300"
     return alerts
 
 

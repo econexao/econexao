@@ -33,6 +33,8 @@ export function findCachedRouteSummary(
           list.push(...p.data);
         }
       }
+    } else if (data.data && typeof data.data === 'object' && ('id' in data.data || 'slug' in data.data)) {
+      list = [data.data];
     }
     const found = list.find((r) => r && (r.id === routeId || r.slug === routeId));
     if (found) return found;
