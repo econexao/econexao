@@ -81,12 +81,12 @@ export default function RouteDetailScreen() {
   const lastValidOriginIdRef = React.useRef<string | undefined>(initialOriginId);
 
   const isCustomLocation = isDynamicRoutingEnabled && (originId === MY_LOCATION_ORIGIN_ID || originId === CHOOSE_ON_MAP_ORIGIN_ID || Boolean(previewData));
-  const requestedOriginExists = detail.data?.origins.some((origin) => origin.id === originId);
-  const defaultOrigin = detail.data?.origins.find((o) => {
+  const requestedOriginExists = detail.data?.origins?.some((origin) => origin.id === originId);
+  const defaultOrigin = detail.data?.origins?.find((o) => {
     const code = ('code' in o && o.code ? o.code : o.id || '').toLowerCase();
     const name = (o.name || '').toLowerCase();
     return code.includes('rodoviaria') || name.includes('rodoviária') || name.includes('rodoviaria');
-  }) || detail.data?.origins[0];
+  }) || detail.data?.origins?.[0];
   const effectiveOrigin = isCustomLocation ? originId : (requestedOriginExists ? originId : defaultOrigin?.id);
 
   useEffect(() => {

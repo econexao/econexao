@@ -17,6 +17,8 @@ from app.schemas.envelopes import (
     PaginationMeta,
     RegionListEnvelope,
     RegionSchema,
+    RouteDetailEnvelope,
+    RouteDetailSchema,
     RouteListEnvelope,
 )
 from app.services.dependencies import get_territorial_service
@@ -108,6 +110,7 @@ def test_list_routes_passes_filters(api: tuple[TestClient, SimpleNamespace]) -> 
         f"/api/v1/routes?region_id={region_id}&q=pindobal&verified=true&cursor=opaque&limit=10"
     )
     assert response.status_code == 200
+    assert response.headers["cache-control"] == "public, max-age=60, stale-while-revalidate=300"
     assert response.json()["meta"]["total"] == 0
     service.list_routes.assert_awaited_once_with(
         region_id=region_id,
@@ -118,6 +121,29 @@ def test_list_routes_passes_filters(api: tuple[TestClient, SimpleNamespace]) -> 
         limit=10,
         cursor="opaque",
     )
+
+
+def test_get_route_detail_cache_control(api: tuple[TestClient, SimpleNamespace]) -> None:
+    client, service = api
+    route_id = uuid.uuid4()
+    detail = RouteDetailEnvelope(
+        data=RouteDetailSchema(
+            id=route_id,
+            slug="rota-tapajos",
+            title="Rota Tapajós",
+            summary="Resumo da rota",
+            city="Santarém",
+            state_code="PA",
+            status="active",
+            is_verified=True,
+            origins=[],
+        )
+    )
+    service.get_route_detail = AsyncMock(return_value=detail)
+    response = client.get(f"/api/v1/routes/{route_id}")
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "public, max-age=120, stale-while-revalidate=600"
+    assert response.json()["data"]["id"] == str(route_id)
 
 
 def test_saved_routes_require_authentication(api: tuple[TestClient, SimpleNamespace]) -> None:

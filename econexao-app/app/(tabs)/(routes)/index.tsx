@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { AppHeader } from '../../../src/components/common/AppHeader';
 import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/components/common/UIStateViews';
 import { RouteCard } from '../../../src/components/routes/RouteCard';
 import { useApp } from '../../../src/hooks/useApp';
 import { useAuth } from '../../../src/hooks/useAuth';
-import { flattenUniquePages, useInfiniteRoutesQuery, useRegionsQuery, useRoutesQuery } from '../../../src/hooks/queries';
+import { flattenUniquePages, prefetchRouteData, useInfiniteRoutesQuery, useRegionsQuery, useRoutesQuery } from '../../../src/hooks/queries';
 import { useOptimisticFavoriteRoute } from '../../../src/hooks/useOptimisticFavoriteRoute';
 import { theme } from '../../../src/theme/theme';
 import type { RouteSummary } from '../../../src/api/types';
@@ -42,31 +43,22 @@ export default function RoutesScreen() {
   const allRoutes: RouteSummary[] = flattenUniquePages(routesQuery.data?.pages);
   const displayRoutes: RouteSummary[] = mergeRoutesWithPreviews(allRoutes, { isAltamiraRegion });
 
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (displayRoutes.length > 0 && queryClient) {
+      for (const route of displayRoutes) {
+        prefetchRouteData(queryClient, route.id);
+      }
+    }
+  }, [displayRoutes, queryClient]);
+
   return (
     <View style={styles.container}>
       <AppHeader />
       <ScrollView contentContainerStyle={styles.content}>
         <MotionBlock staggerIndex={0}>
-        {regionsQuery.isPending ? (
-          <LoadingView message="Carregando regiões..." />
-        ) : regionsQuery.isError ? (
-          <ErrorStateView
-            message="Não foi possível carregar as regiões disponíveis."
-            onRetry={() => void regionsQuery.refetch()}
-          />
-        ) : hasNoRegions ? (
-          <EmptyStateView
-            title="Nenhuma região disponível"
-            message="O ambiente ainda não possui regiões cadastradas."
-          />
-        ) : routesQuery.isPending && displayRoutes.length === 0 ? (
-          <LoadingView message="Carregando rotas..." />
-        ) : routesQuery.isError && displayRoutes.length === 0 ? (
-          <ErrorStateView
-            message="Não foi possível carregar a lista de rotas."
-            onRetry={() => void routesQuery.refetch()}
-          />
-        ) : displayRoutes.length > 0 ? (
+        {displayRoutes.length > 0 ? (
           <>
             {displayRoutes.map((route) => {
               const isAvailable = isRouteAvailable(route);
@@ -104,6 +96,25 @@ export default function RoutesScreen() {
               <ErrorStateView message="Não foi possível carregar mais rotas." onRetry={() => void routesQuery.fetchNextPage()} />
             )}
           </>
+        ) : regionsQuery.isPending ? (
+          <LoadingView message="Carregando regiões..." />
+        ) : regionsQuery.isError ? (
+          <ErrorStateView
+            message="Não foi possível carregar as regiões disponíveis."
+            onRetry={() => void regionsQuery.refetch()}
+          />
+        ) : hasNoRegions ? (
+          <EmptyStateView
+            title="Nenhuma região disponível"
+            message="O ambiente ainda não possui regiões cadastradas."
+          />
+        ) : routesQuery.isPending ? (
+          <LoadingView message="Carregando rotas..." />
+        ) : routesQuery.isError ? (
+          <ErrorStateView
+            message="Não foi possível carregar a lista de rotas."
+            onRetry={() => void routesQuery.refetch()}
+          />
         ) : (
           <EmptyStateView
             title="Nenhuma rota encontrada"

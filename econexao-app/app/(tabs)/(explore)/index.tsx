@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -11,6 +11,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { RegionSelectorModal } from '../../../src/components/common/RegionSelectorModal';
 import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/components/common/UIStateViews';
@@ -18,7 +19,7 @@ import { MotionBlock } from '../../../src/components/common/MotionBlock';
 import { CompactRouteCard } from '../../../src/components/routes/CompactRouteCard';
 import { useApp } from '../../../src/hooks/useApp';
 import { useAuth } from '../../../src/hooks/useAuth';
-import { useRegionsQuery, useRoutesQuery } from '../../../src/hooks/queries';
+import { prefetchRouteData, useRegionsQuery, useRoutesQuery } from '../../../src/hooks/queries';
 import { useOptimisticFavoriteRoute } from '../../../src/hooks/useOptimisticFavoriteRoute';
 import { theme } from '../../../src/theme/theme';
 import { makeAccessibleButton } from '../../../src/utils/accessibility';
@@ -50,10 +51,24 @@ export default function HomeScreen() {
 
   const savedRouteIds = new Set(savedQuery.data?.data.map((r) => r.id));
 
+  const queryClient = useQueryClient();
+  const featuredRoutes = useMemo(
+    () => mergeRoutesWithPreviews(featuredQuery.data?.data ?? [], { isAltamiraRegion }),
+    [featuredQuery.data?.data, isAltamiraRegion]
+  );
+
+  useEffect(() => {
+    if (featuredRoutes.length > 0 && queryClient) {
+      for (const route of featuredRoutes.slice(0, 5)) {
+        prefetchRouteData(queryClient, route.id);
+      }
+    }
+  }, [featuredRoutes, queryClient]);
+
   return (
     <View style={styles.screenContainer}>
       <ImageBackground
-        source={require('../../../assets/images/econexao-fundo-B.png')}
+        source={require('../../../assets/images/econexao-fundo-B.webp')}
         style={styles.fullScreenBackground}
         resizeMode="cover"
         accessible={false}
@@ -151,13 +166,13 @@ export default function HomeScreen() {
                   onRetry={() => void featuredQuery.refetch()}
                 />
               </View>
-            ) : mergeRoutesWithPreviews(featuredQuery.data?.data ?? [], { isAltamiraRegion }).length ? (
+            ) : featuredRoutes.length ? (
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.carouselScroll}
               >
-                {mergeRoutesWithPreviews(featuredQuery.data?.data ?? [], { isAltamiraRegion }).map((route) => {
+                {featuredRoutes.map((route) => {
                   const isAvailable = isRouteAvailable(route);
                   const isFav = (route as typeof route & { is_favorite?: boolean }).is_favorite ?? savedRouteIds.has(route.id);
                   return (
