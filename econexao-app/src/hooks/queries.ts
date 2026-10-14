@@ -1,8 +1,8 @@
-import { infiniteQueryOptions, queryOptions, useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { infiniteQueryOptions, queryOptions, useInfiniteQuery, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 
 import { apiClient } from '../api/client';
 import { normalizeQueryValue, queryKeys } from '../api/queryKeys';
-import type { GetRouteActorsQuery, GetRouteMapQuery, ListRoutesQuery } from '../api/types';
+import type { GetRouteActorsQuery, GetRouteMapQuery, ListRoutesQuery, RouteDetail, RouteListEnvelope, RouteSummary } from '../api/types';
 import { useAuth } from './useAuth';
 
 export function flattenUniquePages<T extends { id: string }>(
@@ -13,6 +13,64 @@ export function flattenUniquePages<T extends { id: string }>(
     for (const item of page.data) unique.set(item.id, item);
   }
   return [...unique.values()];
+}
+
+export function findCachedRouteSummary(
+  queryClient: QueryClient,
+  routeId: string
+): RouteSummary | undefined {
+  if (!routeId) return undefined;
+  const queries = queryClient.getQueryCache().findAll({ queryKey: ['routes'] });
+  for (const q of queries) {
+    const data = q.state.data as any;
+    if (!data) continue;
+    let list: RouteSummary[] = [];
+    if (Array.isArray(data.data)) {
+      list = data.data;
+    } else if (Array.isArray(data.pages)) {
+      for (const p of data.pages) {
+        if (Array.isArray(p?.data)) {
+          list.push(...p.data);
+        }
+      }
+    }
+    const found = list.find((r) => r && (r.id === routeId || r.slug === routeId));
+    if (found) return found;
+  }
+  return undefined;
+}
+
+export function createPlaceholderRouteDetail(
+  summary: Partial<RouteSummary> & Pick<RouteSummary, 'id' | 'slug' | 'title' | 'city' | 'state_code' | 'status' | 'is_verified'>
+): RouteDetail {
+  return {
+    id: summary.id,
+    slug: summary.slug,
+    title: summary.title,
+    summary: summary.summary ?? null,
+    city: summary.city,
+    state_code: summary.state_code,
+    status: summary.status,
+    is_verified: summary.is_verified,
+    best_season: summary.best_season ?? null,
+    cover_image_url: summary.cover_image_url ?? null,
+    cover_media: summary.cover_media ?? null,
+    is_favorite: (summary as any).is_favorite ?? false,
+    verified_at: null,
+    connectivity: null,
+    road_access: null,
+    payment_info: null,
+    gallery: [],
+    origins: [],
+  };
+}
+
+export function prefetchRouteData(queryClient: QueryClient, routeId: string): void {
+  if (!queryClient || !routeId) return;
+  void queryClient.prefetchQuery(territorialQueries.routeDetail(routeId));
+  void queryClient.prefetchQuery(territorialQueries.routeMap(routeId, {}));
+  void queryClient.prefetchQuery(territorialQueries.routeAlerts(routeId));
+  void queryClient.prefetchQuery(territorialQueries.routeActors(routeId, { limit: 6 }));
 }
 
 export const adminQueries = {
@@ -132,7 +190,27 @@ export const useRoutesQuery = (
   params?: ListRoutesQuery,
   userId?: string
 ) => useQuery(territorialQueries.routes(regionId, params, userId));
-export const useRouteDetailQuery = (routeId: string) => useQuery(territorialQueries.routeDetail(routeId));
+export const useRouteDetailQuery = (routeId: string) => {
+  let queryClient: QueryClient | undefined;
+  try {
+    queryClient = useQueryClient();
+  } catch {
+    queryClient = undefined;
+  }
+
+  return useQuery({
+    ...territorialQueries.routeDetail(routeId),
+    placeholderData: (previousData) => {
+      if (previousData) return previousData;
+      if (!queryClient || !routeId) return undefined;
+      const cached = findCachedRouteSummary(queryClient, routeId);
+      if (cached) {
+        return { data: createPlaceholderRouteDetail(cached) };
+      }
+      return undefined;
+    },
+  });
+};
 export const useRouteOriginsQuery = (routeId: string) => useQuery(territorialQueries.routeOrigins(routeId));
 export const useRouteGeometryQuery = (routeId: string, originId: string) => useQuery(territorialQueries.routeGeometry(routeId, originId));
 export const useRouteAlertsQuery = (routeId: string) => useQuery(territorialQueries.routeAlerts(routeId));
@@ -148,6 +226,12 @@ export const useInfiniteRoutesQuery = (
   params: ListRoutesQuery = {},
   userId?: string
 ) => {
+  let queryClient: QueryClient | undefined;
+  try {
+    queryClient = useQueryClient();
+  } catch {
+    queryClient = undefined;
+  }
   const isAll = !regionId || regionId === 'all';
   return useInfiniteQuery({
     queryKey: ['routes', 'infinite', isAll ? 'all' : regionId, params, userId],
@@ -164,6 +248,25 @@ export const useInfiniteRoutesQuery = (
     getNextPageParam: (lastPage) => lastPage.meta.next_cursor ?? undefined,
     enabled: !params.saved || Boolean(userId),
     meta: { authenticated: params.saved === true, authUserId: params.saved ? userId : undefined },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    placeholderData: (previousData) => {
+      if (previousData) return previousData;
+      if (!queryClient) return undefined;
+      const cached =
+        queryClient.getQueryData<RouteListEnvelope>(
+          queryKeys.routes.list(isAll ? undefined : regionId, { limit: 10 })
+        ) ||
+        queryClient.getQueryData<RouteListEnvelope>(
+          queryKeys.routes.list(isAll ? undefined : regionId, {})
+        );
+      if (cached && Array.isArray(cached.data) && cached.data.length > 0) {
+        return {
+          pages: [cached],
+          pageParams: [undefined],
+        };
+      }
+      return undefined;
+    },
   });
 };
 

@@ -52,6 +52,7 @@ OptionalUserDep = Annotated[AuthenticatedUser | None, Depends(get_optional_curre
     },
 )
 async def list_routes(
+    response: Response,
     service: TerritorialServiceDep,
     current_user: OptionalUserDep,
     region_id: Annotated[uuid.UUID | None, Query(description="Filtrar por UUID da região")] = None,
@@ -70,6 +71,10 @@ async def list_routes(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="É necessário autenticar para consultar rotas salvas.",
         )
+    if not saved and not current_user:
+        response.headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=300"
+    else:
+        response.headers["Cache-Control"] = "private, no-cache"
     try:
         return await service.list_routes(
             region_id=region_id,
@@ -93,9 +98,14 @@ async def list_routes(
 )
 async def get_route_detail(
     route_id: uuid.UUID,
+    response: Response,
     service: TerritorialServiceDep,
     current_user: OptionalUserDep,
 ) -> RouteDetailEnvelope:
+    if not current_user:
+        response.headers["Cache-Control"] = "public, max-age=120, stale-while-revalidate=600"
+    else:
+        response.headers["Cache-Control"] = "private, no-cache"
     detail = await service.get_route_detail(
         route_id, user_id=current_user.id if current_user else None
     )
