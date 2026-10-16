@@ -21,6 +21,7 @@ import {
   getRouteCity,
 } from '../../../src/components/routes/routeCoverImage';
 import { useRouteAlertsQuery, useRouteDetailQuery } from '../../../src/hooks/queries';
+import { useResponsiveLayout } from '../../../src/hooks/useResponsiveLayout';
 import { theme, useAppTheme } from '../../../src/theme/theme';
 
 import { makeAccessibleButton } from '../../../src/utils/accessibility';
@@ -54,6 +55,7 @@ const routePath = (
 export default function RouteDetailScreen() {
   const router = useRouter();
   const theme = useAppTheme();
+  const { isMobile, isTablet, isDesktop } = useResponsiveLayout();
   const { state: appState } = useAppContext();
   const isDynamicRoutingEnabled = Boolean(appState?.featureFlags?.dynamicRouting);
   let queryClient: ReturnType<typeof useQueryClient> | undefined;
@@ -285,140 +287,98 @@ export default function RouteDetailScreen() {
     router.push(routePath(routeId, 'catalog', isCustomLocation ? undefined : effectiveOrigin, actorId, category));
   };
 
-  return (
-    <View style={styles.container}>
-      <AppHeader
-        showBack
-        fallbackHref="/(tabs)/(routes)"
-        onBackPress={handleBack}
-        title={displayTitle}
-      />
-
-      <ScrollView contentContainerStyle={styles.content}>
-        <MotionBlock staggerIndex={0}>
-        {/* Header Hero Section */}
-        {routeHeroImage ? (
-          <View style={styles.pindobalHeroStack}>
-            <View style={[styles.heroSection, styles.heroSectionWithImage]}>
-              <Image
-                source={routeHeroImage}
-                style={styles.heroImage}
-                resizeMode="cover"
-                accessible={false}
-              />
-              <View style={styles.heroOverlay}>
-                <Text style={[styles.title, styles.titleOnImage]}>{displayTitle}</Text>
-                <Text style={[styles.subtitle, styles.subtitleOnImage]}>
-                  {getRouteCity(route)}, {route.state_code}
-                  {route.is_verified && ' • Rota Verificada'}
-                </Text>
-              </View>
-            </View>
-            {originSelector ? <View style={styles.originSelectorOverlay}>{originSelector}</View> : null}
-          </View>
-        ) : (
-          <>
-            <View style={styles.heroSection}>
-              <Text style={styles.title}>{displayTitle}</Text>
-              <Text style={styles.subtitle}>
-                {getRouteCity(route)}, {route.state_code}
-                {route.is_verified && ' • Rota Verificada'}
-              </Text>
-            </View>
-            {originSelector}
-          </>
+  const quickActionsSection = (
+    <View style={styles.quickActionsContainer}>
+      <TouchableOpacity
+        style={[
+          styles.quickActionButton,
+          styles.primaryQuickAction,
+          {
+            backgroundColor: theme.colors.brandForest,
+            borderColor: theme.isHighContrast ? theme.colors.brandDeep : 'transparent',
+            borderWidth: theme.isHighContrast ? 2 : 0,
+          },
+        ]}
+        onPress={() => handleOpenFullMap()}
+        {...makeAccessibleButton(
+          'Ver trajeto no mapa',
+          'Abre o mapa interativo em tela cheia com traçado e pontos de interesse.'
         )}
+      >
+        <Ionicons name="map-outline" size={16} color={theme.colors.surfaceWhite} />
+        <Text
+          style={[styles.quickActionPrimaryText, { color: theme.colors.surfaceWhite }]}
+          numberOfLines={1}
+        >
+          Ver trajeto
+        </Text>
+        <Ionicons name="chevron-forward" size={14} color="rgba(255,255,255,0.7)" />
+      </TouchableOpacity>
 
-        {/* Quick Action Exploration Hub */}
-        <View style={styles.quickActionsContainer}>
-          <TouchableOpacity
-            style={[
-              styles.quickActionButton,
-              styles.primaryQuickAction,
-              {
-                backgroundColor: theme.colors.brandForest,
-                borderColor: theme.isHighContrast ? theme.colors.brandDeep : 'transparent',
-                borderWidth: theme.isHighContrast ? 2 : 0,
-              },
-            ]}
-            onPress={() => handleOpenFullMap()}
-            {...makeAccessibleButton(
-              'Ver trajeto no mapa',
-              'Abre o mapa interativo em tela cheia com traçado e pontos de interesse.'
-            )}
-          >
-            <Ionicons name="map-outline" size={16} color={theme.colors.surfaceWhite} />
-            <Text
-              style={[styles.quickActionPrimaryText, { color: theme.colors.surfaceWhite }]}
-              numberOfLines={1}
-            >
-              Ver trajeto
-            </Text>
-            <Ionicons name="chevron-forward" size={14} color="rgba(255,255,255,0.7)" />
-          </TouchableOpacity>
+      <TouchableOpacity
+        style={[
+          styles.quickActionButton,
+          styles.secondaryQuickAction,
+          {
+            backgroundColor: theme.colors.surfaceWhite,
+            borderColor: theme.isHighContrast ? theme.colors.outline : 'rgba(51, 96, 30, 0.20)',
+          },
+        ]}
+        onPress={() => handleOpenFullCatalog()}
+        {...makeAccessibleButton(
+          'Lugares no caminho',
+          'Abre o catálogo de lugares, serviços e comércios da rota.'
+        )}
+      >
+        <Ionicons name="storefront-outline" size={16} color={theme.colors.brandForest} />
+        <Text
+          style={[styles.quickActionSecondaryText, { color: theme.colors.brandDeep }]}
+          numberOfLines={1}
+        >
+          Lugares no caminho
+        </Text>
+        <Ionicons name="chevron-forward" size={14} color={theme.colors.brandForest} />
+      </TouchableOpacity>
+    </View>
+  );
 
-          <TouchableOpacity
-            style={[
-              styles.quickActionButton,
-              styles.secondaryQuickAction,
-              {
-                backgroundColor: theme.colors.surfaceWhite,
-                borderColor: theme.isHighContrast ? theme.colors.outline : 'rgba(51, 96, 30, 0.20)',
-              },
-            ]}
-            onPress={() => handleOpenFullCatalog()}
-            {...makeAccessibleButton(
-              'Lugares no caminho',
-              'Abre o catálogo de lugares, serviços e comércios da rota.'
-            )}
-          >
-            <Ionicons name="storefront-outline" size={16} color={theme.colors.brandForest} />
-            <Text
-              style={[styles.quickActionSecondaryText, { color: theme.colors.brandDeep }]}
-              numberOfLines={1}
-            >
-              Lugares no caminho
+  const gallerySection = <RouteGallery route={route} />;
+
+  const descriptionSection = routeDescription ? (
+    <View style={styles.descriptionCard} accessible accessibilityLabel="Sobre o local">
+      <View style={styles.descriptionHeaderRow}>
+        <Ionicons name="information-circle-outline" size={18} color={theme.colors.brandForest} />
+        <Text style={styles.descriptionHeading}>Sobre o local</Text>
+      </View>
+      <Text style={styles.descriptionBody}>{routeDescription}</Text>
+    </View>
+  ) : null;
+
+  const mapPreviewSection = (
+    <>
+      {isCustomLocation && (
+        <View style={styles.previewNoticeBanner} accessibilityRole="alert" accessibilityLiveRegion="polite">
+          <Ionicons name="sparkles-outline" size={16} color={theme.colors.brandForest} />
+          <View style={styles.previewNoticeContent}>
+            <Text style={styles.previewNoticeText}>
+              Trajeto sugerido a partir do seu ponto de partida
             </Text>
-            <Ionicons name="chevron-forward" size={14} color={theme.colors.brandForest} />
-          </TouchableOpacity>
+            {previewData && (
+              <Text style={styles.previewNoticeSubtext}>
+                Distância estimada: {(previewData.distance_m / 1000).toFixed(1)} km • Tempo: ~{Math.round(previewData.duration_s / 60)} min
+              </Text>
+            )}
+          </View>
         </View>
+      )}
 
-        <RouteGallery route={route} />
-
-        {/* Breve Descrição sobre o Local */}
-        {routeDescription ? (
-          <View style={styles.descriptionCard} accessible accessibilityLabel="Sobre o local">
-            <View style={styles.descriptionHeaderRow}>
-              <Ionicons name="information-circle-outline" size={18} color={theme.colors.brandForest} />
-              <Text style={styles.descriptionHeading}>Sobre o local</Text>
-            </View>
-            <Text style={styles.descriptionBody}>{routeDescription}</Text>
-          </View>
-        ) : null}
-
-        {/* Dynamic preview notice banner */}
-        {isCustomLocation && (
-          <View style={styles.previewNoticeBanner} accessibilityRole="alert" accessibilityLiveRegion="polite">
-            <Ionicons name="sparkles-outline" size={16} color={theme.colors.brandForest} />
-            <View style={styles.previewNoticeContent}>
-              <Text style={styles.previewNoticeText}>
-                Trajeto sugerido a partir do seu ponto de partida
-              </Text>
-              {previewData && (
-                <Text style={styles.previewNoticeSubtext}>
-                  Distância estimada: {(previewData.distance_m / 1000).toFixed(1)} km • Tempo: ~{Math.round(previewData.duration_s / 60)} min
-                </Text>
-              )}
-            </View>
-          </View>
-        )}
-
-        {isGoogleRoutesPreview && previewData ? (
-          <GoogleRoutesMapNotice
-            distanceMeters={previewData.distance_m}
-            durationSeconds={previewData.duration_s}
-          />
-        ) : (
+      {isGoogleRoutesPreview && previewData ? (
+        <GoogleRoutesMapNotice
+          distanceMeters={previewData.distance_m}
+          durationSeconds={previewData.duration_s}
+        />
+      ) : (
+        <View style={isDesktop ? styles.desktopMapWrapper : undefined}>
           <RouteMapPreview
             routeId={routeId}
             originId={isCustomLocation ? undefined : effectiveOrigin}
@@ -430,117 +390,230 @@ export default function RouteDetailScreen() {
             isCustomLocation={isCustomLocation}
             onExpand={(selectedActorId) => handleOpenFullMap(selectedActorId)}
           />
-        )}
-
-        {/* Actions: Start Trip CTA & Trip History Link (Positioned before the catalog) */}
-        <View style={styles.tripActionsContainer}>
-          <TouchableOpacity
-            style={[
-              styles.startTripCard,
-              {
-                backgroundColor: theme.colors.brandForest,
-                borderColor: theme.isHighContrast ? theme.colors.brandDeep : 'transparent',
-                borderWidth: theme.isHighContrast ? 2 : 0,
-              },
-            ]}
-            onPress={handleOpenTripModal}
-            {...makeAccessibleButton(
-              'Registrar início de viagem nesta rota',
-              'Abre as informações e confirmação para salvar o início do passeio no histórico do seu perfil'
-            )}
-          >
-            <View style={styles.startTripContent}>
-              <View style={styles.tripIconBox}>
-                <Ionicons name="navigate-outline" size={21} color={theme.colors.surfaceWhite} />
-              </View>
-              <View style={styles.tripCopy}>
-                <Text style={[styles.startTripText, { color: theme.colors.surfaceWhite }]}>
-                  Registrar Início da Viagem
-                </Text>
-                <Text style={styles.startTripSubtext}>Salva no histórico do seu perfil</Text>
-              </View>
-              <Ionicons name="play" size={16} color={theme.colors.surfaceWhite} style={{ opacity: 0.85 }} />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.historyTripButton,
-              {
-                borderColor: theme.isHighContrast ? theme.colors.outline : 'rgba(51, 96, 30, 0.15)',
-              },
-            ]}
-            onPress={() => router.push('/(tabs)/(profile)/trips')}
-            {...makeAccessibleButton('Ver histórico de viagens', 'Abre o histórico de viagens do perfil')}
-          >
-            <View style={styles.historyIconBox}>
-              <Ionicons name="time-outline" size={18} color={theme.colors.brandForest} />
-            </View>
-            <View style={styles.historyCopy}>
-              <Text style={styles.historyButtonText}>Ver histórico de viagens</Text>
-              <Text style={styles.historyButtonSubtext}>Consultar passeios e trajetos registrados</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={16} color={theme.colors.brandForest} />
-          </TouchableOpacity>
         </View>
+      )}
+    </>
+  );
 
-        <LocalCatalogPreview
-          routeId={routeId}
-          originId={isCustomLocation ? undefined : effectiveOrigin}
-          onOpenActor={(selectedActorId) =>
-            router.push(`/actor/${encodeURIComponent(selectedActorId)}`)
-          }
-          onOpenCatalog={(category) => handleOpenFullCatalog(category)}
+  const tripActionsSection = (
+    <View style={styles.tripActionsContainer}>
+      <TouchableOpacity
+        style={[
+          styles.startTripCard,
+          {
+            backgroundColor: theme.colors.brandForest,
+            borderColor: theme.isHighContrast ? theme.colors.brandDeep : 'transparent',
+            borderWidth: theme.isHighContrast ? 2 : 0,
+          },
+        ]}
+        onPress={handleOpenTripModal}
+        {...makeAccessibleButton(
+          'Registrar início de viagem nesta rota',
+          'Abre as informações e confirmação para salvar o início do passeio no histórico do seu perfil'
+        )}
+      >
+        <View style={styles.startTripContent}>
+          <View style={styles.tripIconBox}>
+            <Ionicons name="navigate-outline" size={21} color={theme.colors.surfaceWhite} />
+          </View>
+          <View style={styles.tripCopy}>
+            <Text style={[styles.startTripText, { color: theme.colors.surfaceWhite }]}>
+              Registrar Início da Viagem
+            </Text>
+            <Text style={styles.startTripSubtext}>Salva no histórico do seu perfil</Text>
+          </View>
+          <Ionicons name="play" size={16} color={theme.colors.surfaceWhite} style={{ opacity: 0.85 }} />
+        </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.historyTripButton,
+          {
+            borderColor: theme.isHighContrast ? theme.colors.outline : 'rgba(51, 96, 30, 0.15)',
+          },
+        ]}
+        onPress={() => router.push('/(tabs)/(profile)/trips')}
+        {...makeAccessibleButton('Ver histórico de viagens', 'Abre o histórico de viagens do perfil')}
+      >
+        <View style={styles.historyIconBox}>
+          <Ionicons name="time-outline" size={18} color={theme.colors.brandForest} />
+        </View>
+        <View style={styles.historyCopy}>
+          <Text style={styles.historyButtonText}>Ver histórico de viagens</Text>
+          <Text style={styles.historyButtonSubtext}>Consultar passeios e trajetos registrados</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={16} color={theme.colors.brandForest} />
+      </TouchableOpacity>
+    </View>
+  );
+
+  const catalogSection = (
+    <LocalCatalogPreview
+      routeId={routeId}
+      originId={isCustomLocation ? undefined : effectiveOrigin}
+      onOpenActor={(selectedActorId) =>
+        router.push(`/actor/${encodeURIComponent(selectedActorId)}`)
+      }
+      onOpenCatalog={(category) => handleOpenFullCatalog(category)}
+    />
+  );
+
+  const alertsSection = (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>Alertas da Rota</Text>
+      {alerts.isPending ? (
+        <LoadingView message="Carregando alertas..." />
+      ) : alerts.isError ? (
+        <ErrorStateView
+          message="Erro ao carregar alertas."
+          onRetry={() => void alerts.refetch()}
         />
+      ) : alerts.data && alerts.data.length > 0 ? (
+        <View style={styles.alertsContainer}>
+          {alerts.data.map((alert) => {
+            let alertColor: string = theme.colors.brandForest;
+            let alertBg: string = 'rgba(51, 96, 30, 0.08)';
+            let alertIcon: keyof typeof Ionicons.glyphMap = 'information-circle-outline';
 
-        {/* Route Alerts Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Alertas da Rota</Text>
-          {alerts.isPending ? (
-            <LoadingView message="Carregando alertas..." />
-          ) : alerts.isError ? (
-            <ErrorStateView
-              message="Erro ao carregar alertas."
-              onRetry={() => void alerts.refetch()}
-            />
-          ) : alerts.data && alerts.data.length > 0 ? (
-            <View style={styles.alertsContainer}>
-              {alerts.data.map((alert) => {
-                let alertColor: string = theme.colors.brandForest;
-                let alertBg: string = 'rgba(51, 96, 30, 0.08)';
-                let alertIcon: keyof typeof Ionicons.glyphMap = 'information-circle-outline';
+            if (alert.severity === 'warning') {
+              alertColor = theme.colors.brandSun;
+              alertBg = 'rgba(217, 119, 6, 0.1)';
+              alertIcon = 'warning-outline';
+            } else if (alert.severity === 'critical') {
+              alertColor = theme.colors.error;
+              alertBg = 'rgba(220, 38, 38, 0.1)';
+              alertIcon = 'alert-circle-outline';
+            }
 
-                if (alert.severity === 'warning') {
-                  alertColor = theme.colors.brandSun;
-                  alertBg = 'rgba(217, 119, 6, 0.1)';
-                  alertIcon = 'warning-outline';
-                } else if (alert.severity === 'critical') {
-                  alertColor = theme.colors.error;
-                  alertBg = 'rgba(220, 38, 38, 0.1)';
-                  alertIcon = 'alert-circle-outline';
-                }
+            return (
+              <View key={alert.id} style={[styles.alertCard, { backgroundColor: alertBg }]}>
+                <Ionicons name={alertIcon} size={20} color={alertColor} />
+                <View style={styles.alertTextWrapper}>
+                  <Text style={[styles.alertTitle, { color: alertColor }]}>
+                    {alert.title}
+                  </Text>
+                  <Text style={styles.alertMessage}>{alert.message}</Text>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      ) : (
+        <View style={styles.emptyAlertsCard}>
+          <Ionicons name="checkmark-circle-outline" size={18} color={theme.colors.brandForest} />
+          <Text style={styles.emptyAlertsText}>Nenhum alerta ativo no momento.</Text>
+        </View>
+      )}
+    </View>
+  );
 
-                return (
-                  <View key={alert.id} style={[styles.alertCard, { backgroundColor: alertBg }]}>
-                    <Ionicons name={alertIcon} size={20} color={alertColor} />
-                    <View style={styles.alertTextWrapper}>
-                      <Text style={[styles.alertTitle, { color: alertColor }]}>
-                        {alert.title}
-                      </Text>
-                      <Text style={styles.alertMessage}>{alert.message}</Text>
-                    </View>
-                  </View>
-                );
-              })}
+  const desktopHeroHeader = routeHeroImage ? (
+    <View style={[styles.heroSection, styles.heroSectionWithImage, styles.heroSectionDesktop]}>
+      <Image
+        source={routeHeroImage}
+        style={styles.heroImage}
+        resizeMode="cover"
+        accessible={false}
+      />
+      <View style={styles.heroOverlay}>
+        <Text style={[styles.title, styles.titleOnImage]}>{displayTitle}</Text>
+        <Text style={[styles.subtitle, styles.subtitleOnImage]}>
+          {getRouteCity(route)}, {route.state_code}
+          {route.is_verified && ' • Rota Verificada'}
+        </Text>
+      </View>
+    </View>
+  ) : (
+    <View style={styles.heroSection}>
+      <Text style={styles.title}>{displayTitle}</Text>
+      <Text style={styles.subtitle}>
+        {getRouteCity(route)}, {route.state_code}
+        {route.is_verified && ' • Rota Verificada'}
+      </Text>
+    </View>
+  );
+
+  return (
+    <View style={styles.container}>
+      <AppHeader
+        showBack
+        fallbackHref="/(tabs)/(routes)"
+        onBackPress={handleBack}
+        title={displayTitle}
+      />
+
+      <ScrollView
+        contentContainerStyle={[
+          styles.content,
+          isTablet && styles.contentTablet,
+          isDesktop && styles.contentDesktop,
+        ]}
+      >
+        <MotionBlock staggerIndex={0}>
+          {isDesktop ? (
+            <View style={styles.desktopSplitContainer}>
+              {/* Left Column (~58-60% width): Hero, Description, Gallery, Places & Services */}
+              <View style={styles.desktopLeftColumn}>
+                {desktopHeroHeader}
+                {descriptionSection}
+                {gallerySection}
+                {catalogSection}
+              </View>
+
+              {/* Right Column (~40-42% width): Origin selector, Quick actions, Map preview, Trip start, Alerts */}
+              <View style={styles.desktopRightColumn}>
+                {originSelector}
+                {quickActionsSection}
+                {mapPreviewSection}
+                {tripActionsSection}
+                {alertsSection}
+              </View>
             </View>
           ) : (
-            <View style={styles.emptyAlertsCard}>
-              <Ionicons name="checkmark-circle-outline" size={18} color={theme.colors.brandForest} />
-              <Text style={styles.emptyAlertsText}>Nenhum alerta ativo no momento.</Text>
-            </View>
-          )}
-        </View>
+            <>
+              {/* Header Hero Section */}
+              {routeHeroImage ? (
+                <View style={styles.pindobalHeroStack}>
+                  <View style={[styles.heroSection, styles.heroSectionWithImage]}>
+                    <Image
+                      source={routeHeroImage}
+                      style={styles.heroImage}
+                      resizeMode="cover"
+                      accessible={false}
+                    />
+                    <View style={styles.heroOverlay}>
+                      <Text style={[styles.title, styles.titleOnImage]}>{displayTitle}</Text>
+                      <Text style={[styles.subtitle, styles.subtitleOnImage]}>
+                        {getRouteCity(route)}, {route.state_code}
+                        {route.is_verified && ' • Rota Verificada'}
+                      </Text>
+                    </View>
+                  </View>
+                  {originSelector ? <View style={styles.originSelectorOverlay}>{originSelector}</View> : null}
+                </View>
+              ) : (
+                <>
+                  <View style={styles.heroSection}>
+                    <Text style={styles.title}>{displayTitle}</Text>
+                    <Text style={styles.subtitle}>
+                      {getRouteCity(route)}, {route.state_code}
+                      {route.is_verified && ' • Rota Verificada'}
+                    </Text>
+                  </View>
+                  {originSelector}
+                </>
+              )}
 
+              {quickActionsSection}
+              {gallerySection}
+              {descriptionSection}
+              {mapPreviewSection}
+              {tripActionsSection}
+              {catalogSection}
+              {alertsSection}
+            </>
+          )}
         </MotionBlock>
       </ScrollView>
 
@@ -575,6 +648,41 @@ const styles = StyleSheet.create({
     padding: theme.spacing.marginMobile,
     paddingBottom: 36,
     gap: 24,
+  },
+  contentTablet: {
+    maxWidth: 760,
+    width: '100%',
+    alignSelf: 'center',
+  },
+  contentDesktop: {
+    maxWidth: 1200,
+    width: '100%',
+    alignSelf: 'center',
+    paddingHorizontal: 24,
+  },
+  desktopSplitContainer: {
+    flexDirection: 'row',
+    gap: 32,
+    width: '100%',
+    alignItems: 'flex-start',
+  },
+  desktopLeftColumn: {
+    flex: 59,
+    flexBasis: 0,
+    minWidth: 0,
+    gap: 24,
+  },
+  desktopRightColumn: {
+    flex: 41,
+    flexBasis: 0,
+    minWidth: 0,
+    gap: 24,
+  },
+  heroSectionDesktop: {
+    height: 380,
+  },
+  desktopMapWrapper: {
+    minHeight: 300,
   },
   heroSection: {
     gap: 4,
