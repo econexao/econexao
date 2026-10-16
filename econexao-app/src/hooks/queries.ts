@@ -67,8 +67,15 @@ export function createPlaceholderRouteDetail(
   };
 }
 
+import { isPreviewRoute } from '../constants/previewRoutes';
+
+export function prefetchRouteDetailOnly(queryClient: QueryClient, routeId: string): void {
+  if (!queryClient || !routeId || isPreviewRoute({ id: routeId, slug: routeId })) return;
+  void queryClient.prefetchQuery(territorialQueries.routeDetail(routeId));
+}
+
 export function prefetchRouteData(queryClient: QueryClient, routeId: string): void {
-  if (!queryClient || !routeId) return;
+  if (!queryClient || !routeId || isPreviewRoute({ id: routeId, slug: routeId })) return;
   void queryClient.prefetchQuery(territorialQueries.routeDetail(routeId));
   void queryClient.prefetchQuery(territorialQueries.routeMap(routeId, {}));
   void queryClient.prefetchQuery(territorialQueries.routeAlerts(routeId));
@@ -216,9 +223,55 @@ export const useRouteDetailQuery = (routeId: string) => {
 export const useRouteOriginsQuery = (routeId: string) => useQuery(territorialQueries.routeOrigins(routeId));
 export const useRouteGeometryQuery = (routeId: string, originId: string) => useQuery(territorialQueries.routeGeometry(routeId, originId));
 export const useRouteAlertsQuery = (routeId: string) => useQuery(territorialQueries.routeAlerts(routeId));
-export const useRouteActorsQuery = (routeId: string, params?: GetRouteActorsQuery) => useQuery(territorialQueries.routeActors(routeId, params));
-export const useRouteMapQuery = (routeId: string, params?: GetRouteMapQuery) =>
-  useQuery(territorialQueries.routeMap(routeId, params));
+export const useRouteActorsQuery = (routeId: string, params?: GetRouteActorsQuery) => {
+  let queryClient: QueryClient | undefined;
+  try {
+    queryClient = useQueryClient();
+  } catch {
+    queryClient = undefined;
+  }
+
+  return useQuery({
+    ...territorialQueries.routeActors(routeId, params),
+    placeholderData: (previousData) => {
+      if (previousData) return previousData;
+      if (!queryClient || !routeId || !params?.origin_id) return undefined;
+      return queryClient.getQueryData(
+        queryKeys.routes.actors(routeId, {
+          ...params,
+          q: normalizeQueryValue(params.q),
+          category: normalizeQueryValue(params.category),
+          origin_id: undefined,
+          cursor: normalizeQueryValue(params.cursor),
+        })
+      );
+    },
+  });
+};
+
+export const useRouteMapQuery = (routeId: string, params?: GetRouteMapQuery) => {
+  let queryClient: QueryClient | undefined;
+  try {
+    queryClient = useQueryClient();
+  } catch {
+    queryClient = undefined;
+  }
+
+  return useQuery({
+    ...territorialQueries.routeMap(routeId, params),
+    placeholderData: (previousData) => {
+      if (previousData) return previousData;
+      if (!queryClient || !routeId || !params?.origin_id) return undefined;
+      return queryClient.getQueryData(
+        queryKeys.routes.map(routeId, {
+          origin_id: undefined,
+          layer: params.layer ?? undefined,
+          category: normalizeQueryValue(params.category),
+        })
+      );
+    },
+  });
+};
 export const useActorCategoriesQuery = () => useQuery(territorialQueries.actorCategories());
 export const useActorDetailQuery = (actorId: string) => useQuery(territorialQueries.actorDetail(actorId));
 export const useBootstrapQuery = (userId: string) => useQuery(territorialQueries.bootstrap(userId));

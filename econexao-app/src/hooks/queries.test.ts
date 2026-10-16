@@ -120,11 +120,15 @@ describe('route prefetch and placeholder cache helpers', () => {
     expect(placeholder.gallery).toEqual([]);
   });
 
-  it('prefetches route queries when prefetchRouteData is called', () => {
+  it('prefetches route queries when prefetchRouteData is called and skips preview routes', () => {
     const qc = new QueryClient();
     const prefetchSpy = jest.spyOn(qc, 'prefetchQuery').mockResolvedValue(undefined);
     prefetchRouteData(qc, 'route-1');
     expect(prefetchSpy).toHaveBeenCalledTimes(4);
+
+    prefetchSpy.mockClear();
+    prefetchRouteData(qc, 'preview-route-alter-do-chao');
+    expect(prefetchSpy).not.toHaveBeenCalled();
   });
 });
 

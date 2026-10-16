@@ -19,7 +19,7 @@ import { MotionBlock } from '../../../src/components/common/MotionBlock';
 import { CompactRouteCard } from '../../../src/components/routes/CompactRouteCard';
 import { useApp } from '../../../src/hooks/useApp';
 import { useAuth } from '../../../src/hooks/useAuth';
-import { prefetchRouteData, useRegionsQuery, useRoutesQuery } from '../../../src/hooks/queries';
+import { prefetchRouteData, prefetchRouteDetailOnly, useRegionsQuery, useRoutesQuery } from '../../../src/hooks/queries';
 import { useOptimisticFavoriteRoute } from '../../../src/hooks/useOptimisticFavoriteRoute';
 import { theme } from '../../../src/theme/theme';
 import { makeAccessibleButton } from '../../../src/utils/accessibility';
@@ -53,17 +53,21 @@ export default function HomeScreen() {
 
   const queryClient = useQueryClient();
   const featuredRoutes = useMemo(
-    () => mergeRoutesWithPreviews(featuredQuery.data?.data ?? [], { isAltamiraRegion }),
-    [featuredQuery.data?.data, isAltamiraRegion]
+    () => (featuredQuery.data ? mergeRoutesWithPreviews(featuredQuery.data.data ?? [], { isAltamiraRegion }) : []),
+    [featuredQuery.data, isAltamiraRegion]
   );
 
   useEffect(() => {
-    if (featuredRoutes.length > 0 && queryClient) {
-      for (const route of featuredRoutes.slice(0, 5)) {
-        prefetchRouteData(queryClient, route.id);
+    if (!featuredQuery.data?.data?.length || !queryClient) return;
+    const availableRoutes = featuredRoutes.filter((r) => isRouteAvailable(r)).slice(0, 3);
+    if (availableRoutes.length === 0) return;
+    const timer = setTimeout(() => {
+      for (const route of availableRoutes) {
+        prefetchRouteDetailOnly(queryClient, route.id);
       }
-    }
-  }, [featuredRoutes, queryClient]);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [featuredQuery.data?.data, featuredRoutes, queryClient]);
 
   return (
     <View style={styles.screenContainer}>
@@ -137,9 +141,37 @@ export default function HomeScreen() {
           {/* Seção 1: Rotas em Destaque */}
           <View style={styles.carouselSection}>
 
-            {regionsQuery.isPending ? (
+            {featuredRoutes.length > 0 ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.carouselScroll}
+              >
+                {featuredRoutes.map((route) => {
+                  const isAvailable = isRouteAvailable(route);
+                  const isFav = (route as typeof route & { is_favorite?: boolean }).is_favorite ?? savedRouteIds.has(route.id);
+                  return (
+                    <CompactRouteCard
+                      key={route.id}
+                      route={route}
+                      isFavorite={isFav}
+                      onPrefetch={isAvailable && queryClient ? () => prefetchRouteData(queryClient, route.id) : undefined}
+                      onPress={isAvailable ? () => router.push(`/route/${route.id}`) : undefined}
+                      onToggleFavorite={isAvailable ? () => toggleFavorite(route, isFav) : undefined}
+                    />
+                  );
+                })}
+              </ScrollView>
+            ) : (featuredQuery.isPending && !featuredQuery.data) ? (
               <View style={styles.stateWrapper}>
-                <LoadingView message="Carregando regiões..." />
+                <LoadingView message="Carregando rotas em destaque..." />
+              </View>
+            ) : featuredQuery.isError && !featuredQuery.data ? (
+              <View style={styles.stateWrapper}>
+                <ErrorStateView
+                  message="Não foi possível carregar as rotas em destaque."
+                  onRetry={() => void featuredQuery.refetch()}
+                />
               </View>
             ) : regionsQuery.isError ? (
               <View style={styles.stateWrapper}>
@@ -155,37 +187,6 @@ export default function HomeScreen() {
                   message="O ambiente ainda não possui regiões cadastradas."
                 />
               </View>
-            ) : (featuredQuery.isPending && !featuredQuery.data) ? (
-              <View style={styles.stateWrapper}>
-                <LoadingView message="Carregando rotas em destaque..." />
-              </View>
-            ) : featuredQuery.isError && !featuredQuery.data ? (
-              <View style={styles.stateWrapper}>
-                <ErrorStateView
-                  message="Não foi possível carregar as rotas em destaque."
-                  onRetry={() => void featuredQuery.refetch()}
-                />
-              </View>
-            ) : featuredRoutes.length ? (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.carouselScroll}
-              >
-                {featuredRoutes.map((route) => {
-                  const isAvailable = isRouteAvailable(route);
-                  const isFav = (route as typeof route & { is_favorite?: boolean }).is_favorite ?? savedRouteIds.has(route.id);
-                  return (
-                    <CompactRouteCard
-                      key={route.id}
-                      route={route}
-                      isFavorite={isFav}
-                      onPress={isAvailable ? () => router.push(`/route/${route.id}`) : undefined}
-                      onToggleFavorite={isAvailable ? () => toggleFavorite(route, isFav) : undefined}
-                    />
-                  );
-                })}
-              </ScrollView>
             ) : (
               <View style={styles.stateWrapper}>
                 <EmptyStateView
@@ -212,9 +213,33 @@ export default function HomeScreen() {
               ) : null}
             </View>
 
-            {regionsQuery.isPending ? (
+            {savedQuery.data?.data.length ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.carouselScroll}
+              >
+                {savedQuery.data.data.map((route) => (
+                  <CompactRouteCard
+                    key={route.id}
+                    route={route}
+                    isFavorite={true}
+                    onPrefetch={queryClient ? () => prefetchRouteData(queryClient, route.id) : undefined}
+                    onPress={() => router.push(`/route/${route.id}`)}
+                    onToggleFavorite={() => toggleFavorite(route, true)}
+                  />
+                ))}
+              </ScrollView>
+            ) : savedQuery.isPending ? (
               <View style={styles.stateWrapper}>
-                <LoadingView message="Carregando regiões..." />
+                <LoadingView message="Carregando rotas salvas..." />
+              </View>
+            ) : savedQuery.isError ? (
+              <View style={styles.stateWrapper}>
+                <ErrorStateView
+                  message="Não foi possível carregar suas rotas salvas."
+                  onRetry={() => void savedQuery.refetch()}
+                />
               </View>
             ) : regionsQuery.isError ? (
               <View style={styles.stateWrapper}>
@@ -230,33 +255,6 @@ export default function HomeScreen() {
                   message="Cadastre uma região para explorar e salvar rotas."
                 />
               </View>
-            ) : savedQuery.isPending ? (
-              <View style={styles.stateWrapper}>
-                <LoadingView message="Carregando rotas salvas..." />
-              </View>
-            ) : savedQuery.isError ? (
-              <View style={styles.stateWrapper}>
-                <ErrorStateView
-                  message="Não foi possível carregar suas rotas salvas."
-                  onRetry={() => void savedQuery.refetch()}
-                />
-              </View>
-            ) : savedQuery.data?.data.length ? (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.carouselScroll}
-              >
-                {savedQuery.data.data.map((route) => (
-                  <CompactRouteCard
-                    key={route.id}
-                    route={route}
-                    isFavorite={true}
-                    onPress={() => router.push(`/route/${route.id}`)}
-                    onToggleFavorite={() => toggleFavorite(route, true)}
-                  />
-                ))}
-              </ScrollView>
             ) : (
               <View style={styles.stateWrapper}>
                 <EmptyStateView

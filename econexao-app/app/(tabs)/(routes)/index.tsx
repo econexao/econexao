@@ -8,7 +8,7 @@ import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/compon
 import { RouteCard } from '../../../src/components/routes/RouteCard';
 import { useApp } from '../../../src/hooks/useApp';
 import { useAuth } from '../../../src/hooks/useAuth';
-import { flattenUniquePages, prefetchRouteData, useInfiniteRoutesQuery, useRegionsQuery, useRoutesQuery } from '../../../src/hooks/queries';
+import { flattenUniquePages, prefetchRouteData, prefetchRouteDetailOnly, useInfiniteRoutesQuery, useRegionsQuery, useRoutesQuery } from '../../../src/hooks/queries';
 import { useOptimisticFavoriteRoute } from '../../../src/hooks/useOptimisticFavoriteRoute';
 import { theme } from '../../../src/theme/theme';
 import type { RouteSummary } from '../../../src/api/types';
@@ -41,17 +41,23 @@ export default function RoutesScreen() {
 
   const savedRouteIds = new Set(savedRoutesQuery.data?.data?.map((r) => r.id));
   const allRoutes: RouteSummary[] = flattenUniquePages(routesQuery.data?.pages);
-  const displayRoutes: RouteSummary[] = mergeRoutesWithPreviews(allRoutes, { isAltamiraRegion });
+  const displayRoutes: RouteSummary[] = routesQuery.data
+    ? mergeRoutesWithPreviews(allRoutes, { isAltamiraRegion })
+    : [];
 
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (displayRoutes.length > 0 && queryClient) {
-      for (const route of displayRoutes) {
-        prefetchRouteData(queryClient, route.id);
+    if (!allRoutes.length || !queryClient) return;
+    const availableRoutes = displayRoutes.filter((r) => isRouteAvailable(r)).slice(0, 3);
+    if (availableRoutes.length === 0) return;
+    const timer = setTimeout(() => {
+      for (const route of availableRoutes) {
+        prefetchRouteDetailOnly(queryClient, route.id);
       }
-    }
-  }, [displayRoutes, queryClient]);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [allRoutes.length, displayRoutes, queryClient]);
 
   return (
     <View style={styles.container}>
@@ -70,6 +76,7 @@ export default function RoutesScreen() {
                   key={route.id}
                   route={route}
                   isFavorite={isFav}
+                  onPrefetch={isAvailable && queryClient ? () => prefetchRouteData(queryClient, route.id) : undefined}
                   onPress={isAvailable ? () => router.push(`/route/${route.id}`) : undefined}
                   onToggleFavorite={isAvailable ? () => toggleFavorite(route, isFav) : undefined}
                 />
@@ -96,8 +103,13 @@ export default function RoutesScreen() {
               <ErrorStateView message="Não foi possível carregar mais rotas." onRetry={() => void routesQuery.fetchNextPage()} />
             )}
           </>
-        ) : regionsQuery.isPending ? (
-          <LoadingView message="Carregando regiões..." />
+        ) : routesQuery.isPending ? (
+          <LoadingView message="Carregando rotas..." />
+        ) : routesQuery.isError ? (
+          <ErrorStateView
+            message="Não foi possível carregar a lista de rotas."
+            onRetry={() => void routesQuery.refetch()}
+          />
         ) : regionsQuery.isError ? (
           <ErrorStateView
             message="Não foi possível carregar as regiões disponíveis."
@@ -107,13 +119,6 @@ export default function RoutesScreen() {
           <EmptyStateView
             title="Nenhuma região disponível"
             message="O ambiente ainda não possui regiões cadastradas."
-          />
-        ) : routesQuery.isPending ? (
-          <LoadingView message="Carregando rotas..." />
-        ) : routesQuery.isError ? (
-          <ErrorStateView
-            message="Não foi possível carregar a lista de rotas."
-            onRetry={() => void routesQuery.refetch()}
           />
         ) : (
           <EmptyStateView
