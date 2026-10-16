@@ -245,10 +245,12 @@ describe('TabLayout safe area and layout test', () => {
       const blurredStyle = ReactNative.StyleSheet.flatten(pressable.props.style);
       expect(blurredStyle.outlineWidth).toBeUndefined();
 
-      // Test Click / Press
+      // Test Click / Press prevents default browser navigation and calls onPress
+      const mockEventPreventDefault = jest.fn();
       await act(async () => {
-        pressable.props.onPress?.({} as any);
+        pressable.props.onPress?.({ preventDefault: mockEventPreventDefault } as any);
       });
+      expect(mockEventPreventDefault).toHaveBeenCalledTimes(1);
       expect(mockOnPress).toHaveBeenCalledTimes(1);
     });
   });

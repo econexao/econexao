@@ -80,7 +80,7 @@ export default function HomeScreen() {
         accessible={false}
       >
         {/* Scrim Overlay contínuo com escurecimento progressivo para legibilidade AAA */}
-        <View style={styles.scrimOverlay} />
+        <View style={[styles.scrimOverlay, isDesktop && styles.scrimOverlayDesktop]} />
 
         <ScrollView
           contentContainerStyle={[
@@ -90,14 +90,14 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Espaçamento superior com respeito a safe-area para respiro no banner */}
-          <View style={[styles.heroTopSpacer, { height: Math.max(insets.top + 20, 32) }]} />
+          <View style={[styles.heroTopSpacer, { height: Math.max(insets.top + 20, isDesktop ? 44 : 32) }]} />
 
           {/* Bloco do Hero com MotionBlock */}
           <MotionBlock style={[styles.heroBlock, isDesktop && styles.heroBlockDesktop]}>
-            <View style={styles.heroLogoContainer}>
+            <View style={[styles.heroLogoContainer, isDesktop && styles.heroLogoContainerDesktop]}>
               <Image
                 source={require('../../../assets/images/logo-horizontal.png')}
-                style={styles.heroLogo}
+                style={[styles.heroLogo, isDesktop && styles.heroLogoDesktop]}
                 resizeMode="contain"
                 accessibilityLabel="ECOnexão Turismo de Experiência"
                 accessible={true}
@@ -105,7 +105,7 @@ export default function HomeScreen() {
             </View>
 
             <View style={styles.heroTextContainer}>
-              <Text style={styles.heroTitle}>
+              <Text style={[styles.heroTitle, isDesktop && styles.heroTitleDesktop]}>
                 Descubra destinos,{'\n'}viva experiências
               </Text>
             </View>
@@ -432,22 +432,43 @@ const styles = StyleSheet.create({
     borderRadius: theme.radii.xl,
     padding: 16,
   },
+  scrimOverlayDesktop: {
+    backgroundColor: 'rgba(10, 26, 6, 0.62)',
+  },
   scrollContentDesktop: {
     maxWidth: 1280,
     width: '100%',
     alignSelf: 'center',
     paddingHorizontal: 32,
+    paddingBottom: 140,
   },
   heroBlockDesktop: {
     paddingHorizontal: 0,
+    marginBottom: 44,
+  },
+  heroLogoContainerDesktop: {
+    maxWidth: 420,
+    marginBottom: 20,
+  },
+  heroLogoDesktop: {
+    width: '100%',
+    height: 135,
+  },
+  heroTitleDesktop: {
+    fontSize: 48,
+    lineHeight: 56,
+    maxWidth: 720,
   },
   heroControlsDesktop: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    gap: 20,
+    marginTop: 20,
   },
   ctaButtonDesktop: {
     maxWidth: 320,
+    paddingVertical: 16,
+    paddingHorizontal: 28,
     alignSelf: 'flex-start',
   },
   stateWrapperDesktop: {
@@ -455,5 +476,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'flex-start',
     marginHorizontal: 0,
+    padding: 24,
   },
 });

@@ -1,5 +1,4 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Pressable, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Pressable, Image, type StyleProp, type ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme/theme';
 import type { RouteSummary } from '../../api/types';
@@ -14,6 +13,7 @@ interface CompactRouteCardProps {
   onPrefetch?: () => void;
   onToggleFavorite?: () => void;
   isFavorite?: boolean;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const CompactRouteCard: React.FC<CompactRouteCardProps> = ({
@@ -22,6 +22,7 @@ export const CompactRouteCard: React.FC<CompactRouteCardProps> = ({
   onPrefetch,
   onToggleFavorite,
   isFavorite = false,
+  style,
 }) => {
   const coverImage = getRouteCoverImage(route);
   const displayTitle = getRouteDisplayName(route);
@@ -39,7 +40,7 @@ export const CompactRouteCard: React.FC<CompactRouteCardProps> = ({
     : `Rota ${displayTitle}, ${displayCity}, ${route.state_code}`;
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, style]}>
       <Pressable
         style={styles.cardPressable}
         onPress={isAvailable ? onPress : undefined}

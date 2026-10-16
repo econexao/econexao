@@ -16,6 +16,7 @@ import { theme } from '../../theme/theme';
 import { makeAccessibleButton } from '../../utils/accessibility';
 import { CompactRouteCard } from './CompactRouteCard';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { useResponsiveLayout } from '../../hooks/useResponsiveLayout';
 
 export interface RouteCarouselSectionProps {
   title: string;
@@ -62,7 +63,10 @@ export const RouteCarouselSection: React.FC<RouteCarouselSectionProps> = ({
   const [containerWidth, setContainerWidth] = useState(0);
   const [announcement, setAnnouncement] = useState('');
   const reducedMotion = useReducedMotion();
+  const { isDesktop } = useResponsiveLayout();
 
+  const cardWidth = isDesktop ? 280 : CARD_WIDTH;
+  const scrollAmount = (cardWidth + CARD_GAP) * 2;
   const isOnImage = variant === 'onImage';
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -76,7 +80,7 @@ export const RouteCarouselSection: React.FC<RouteCarouselSectionProps> = ({
 
   const scrollPrev = () => {
     if (!scrollRef.current) return;
-    const targetX = Math.max(0, scrollX - SCROLL_AMOUNT);
+    const targetX = Math.max(0, scrollX - scrollAmount);
     scrollRef.current.scrollTo({ x: targetX, animated: !reducedMotion });
     setAnnouncement(`Mostrando rotas anteriores de ${title}`);
   };
@@ -84,7 +88,7 @@ export const RouteCarouselSection: React.FC<RouteCarouselSectionProps> = ({
   const scrollNext = () => {
     if (!scrollRef.current) return;
     const maxX = Math.max(0, contentWidth - containerWidth);
-    const targetX = Math.min(maxX, scrollX + SCROLL_AMOUNT);
+    const targetX = Math.min(maxX, scrollX + scrollAmount);
     scrollRef.current.scrollTo({ x: targetX, animated: !reducedMotion });
     setAnnouncement(`Mostrando próximas rotas de ${title}`);
   };
@@ -234,6 +238,7 @@ export const RouteCarouselSection: React.FC<RouteCarouselSectionProps> = ({
                   key={route.id}
                   route={route}
                   isFavorite={isFav}
+                  style={isDesktop ? styles.cardDesktop : undefined}
                   onPrefetch={onPrefetchRoute ? () => onPrefetchRoute(route.id) : undefined}
                   onPress={() => onSelectRoute(route)}
                   onToggleFavorite={
@@ -404,5 +409,8 @@ const styles = StyleSheet.create({
     height: 1,
     opacity: 0,
     overflow: 'hidden',
+  },
+  cardDesktop: {
+    width: 280,
   },
 });

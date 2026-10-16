@@ -18,11 +18,21 @@ export const WebTabButton = React.forwardRef<any, WebTabButtonProps>((props, ref
   const [isHovered, setIsHovered] = React.useState(false);
   const [isFocused, setIsFocused] = React.useState(false);
 
+  const handlePress = (e: any) => {
+    if (Platform.OS === 'web' && e && typeof e.preventDefault === 'function') {
+      const hasModifierKey = e.metaKey || e.altKey || e.ctrlKey || e.shiftKey;
+      if (!hasModifierKey) {
+        e.preventDefault();
+      }
+    }
+    props.onPress?.(e);
+  };
+
   return (
     <Pressable
       ref={ref}
       {...props}
-      onPress={props.onPress}
+      onPress={handlePress}
       onHoverIn={(e: any) => {
         setIsHovered(true);
         props.onHoverIn?.(e);
