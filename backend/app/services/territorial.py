@@ -43,7 +43,9 @@ from app.services.media_resolution import MediaResolutionService
 # In-memory simple cache dictionaries with TTL
 _REGIONS_CACHE: dict[str, Any] = {"data": None, "expires_at": 0.0}
 _CATEGORIES_CACHE: dict[str, Any] = {"data": None, "expires_at": 0.0}
-_PUBLIC_ROUTES_CACHE: dict[tuple[str | None, bool | None, int], tuple[RouteListEnvelope, float]] = {}
+_PUBLIC_ROUTES_CACHE: dict[
+    tuple[str | None, bool | None, int], tuple[RouteListEnvelope, float]
+] = {}
 
 
 class TerritorialService:
