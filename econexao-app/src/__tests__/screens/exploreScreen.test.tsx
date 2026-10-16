@@ -137,16 +137,16 @@ describe('HomeScreen Responsive Layout (Mobile 375px vs Desktop 1280px)', () => 
     const ctaButton = root!.root.findByProps({ accessibilityLabel: 'Descobrir rotas' });
     const ctaStyles = ReactNative.StyleSheet.flatten(ctaButton.props.style);
     expect(ctaStyles.maxWidth).toBe(320);
-    expect(ctaStyles.alignSelf).toBe('flex-start');
 
-    // State wrapper check (for empty state when no routes)
+    // State wrapper check (for centered empty state card when no routes)
     const stateWrappers = root!.root.findAll((el) => {
       const flat = ReactNative.StyleSheet.flatten(el.props?.style);
-      return Boolean(flat && flat.maxWidth === 640);
+      return Boolean(flat && flat.maxWidth === 800 && flat.padding === 28);
     });
     expect(stateWrappers.length).toBeGreaterThan(0);
     const stateWrapperStyles = ReactNative.StyleSheet.flatten(stateWrappers[0].props.style);
-    expect(stateWrapperStyles.maxWidth).toBe(640);
-    expect(stateWrapperStyles.alignSelf).toBe('flex-start');
+    expect(stateWrapperStyles.maxWidth).toBe(800);
+    expect(stateWrapperStyles.alignSelf).toBe('center');
+    expect(stateWrapperStyles.backgroundColor).toBe('#FFFFFF');
   });
 });

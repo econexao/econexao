@@ -104,7 +104,7 @@ export default function HomeScreen() {
               />
             </View>
 
-            <View style={styles.heroTextContainer}>
+            <View style={[styles.heroTextContainer, isDesktop && styles.heroTextContainerDesktop]}>
               <Text style={[styles.heroTitle, isDesktop && styles.heroTitleDesktop]}>
                 Descubra destinos,{'\n'}viva experiências
               </Text>
@@ -233,7 +233,7 @@ export default function HomeScreen() {
             />
           ) : (
             <View style={styles.carouselSection}>
-              <View style={styles.sectionHeaderRow}>
+              <View style={[styles.sectionHeaderRow, isDesktop && styles.sectionHeaderRowDesktop]}>
                 <Text style={styles.sectionTitleOnImage}>Rotas Salvas</Text>
               </View>
               {savedQuery.isPending ? (
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   scrimOverlayDesktop: {
-    backgroundColor: 'rgba(10, 26, 6, 0.62)',
+    backgroundColor: 'rgba(8, 22, 6, 0.68)',
   },
   scrollContentDesktop: {
     maxWidth: 1280,
@@ -445,23 +445,33 @@ const styles = StyleSheet.create({
   heroBlockDesktop: {
     paddingHorizontal: 0,
     marginBottom: 44,
+    alignItems: 'center',
+    alignSelf: 'center',
   },
   heroLogoContainerDesktop: {
     maxWidth: 420,
     marginBottom: 20,
+    alignItems: 'center',
+    alignSelf: 'center',
   },
   heroLogoDesktop: {
     width: '100%',
     height: 135,
   },
+  heroTextContainerDesktop: {
+    alignItems: 'center',
+  },
   heroTitleDesktop: {
     fontSize: 48,
     lineHeight: 56,
     maxWidth: 720,
+    textAlign: 'center',
   },
   heroControlsDesktop: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
     gap: 20,
     marginTop: 20,
   },
@@ -469,13 +479,24 @@ const styles = StyleSheet.create({
     maxWidth: 320,
     paddingVertical: 16,
     paddingHorizontal: 28,
-    alignSelf: 'flex-start',
+  },
+  sectionHeaderRowDesktop: {
+    maxWidth: 800,
+    width: '100%',
+    alignSelf: 'center',
+    paddingHorizontal: 0,
   },
   stateWrapperDesktop: {
-    maxWidth: 640,
+    maxWidth: 800,
     width: '100%',
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     marginHorizontal: 0,
-    padding: 24,
+    padding: 28,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 4,
   },
 });
