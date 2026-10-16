@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -16,6 +16,8 @@ import { SignedOutScreen } from '../src/components/auth/SignedOutScreen';
 import { theme } from '../src/theme/theme';
 import { AuthContext, AuthProvider } from '../src/auth/AuthProvider';
 import { ServerStateProvider } from '../src/api/ServerStateProvider';
+import { queryClient } from '../src/api/queryClient';
+import { territorialQueries } from '../src/hooks/queries';
 import { NetworkStatusBar } from '../src/components/common/NetworkStatusBar';
 import { ErrorBoundary } from '../src/components/common/ErrorBoundary';
 
@@ -72,6 +74,13 @@ export default function RootLayout() {
     HankenGrotesk_700Bold,
     HankenGrotesk_800ExtraBold,
   });
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'test') {
+      void queryClient.prefetchQuery(territorialQueries.regions());
+      void queryClient.prefetchQuery(territorialQueries.routes(undefined, { limit: 10 }));
+    }
+  }, []);
 
   if (!fontsLoaded) {
     return <LoadingView message="Carregando tipografia e recursos do ECOnexão..." />;

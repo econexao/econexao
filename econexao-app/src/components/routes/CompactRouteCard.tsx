@@ -11,6 +11,7 @@ import { getRouteAvailability } from '../../constants/previewRoutes';
 interface CompactRouteCardProps {
   route: RouteSummary;
   onPress?: () => void;
+  onPrefetch?: () => void;
   onToggleFavorite?: () => void;
   isFavorite?: boolean;
 }
@@ -18,6 +19,7 @@ interface CompactRouteCardProps {
 export const CompactRouteCard: React.FC<CompactRouteCardProps> = ({
   route,
   onPress,
+  onPrefetch,
   onToggleFavorite,
   isFavorite = false,
 }) => {
@@ -41,6 +43,8 @@ export const CompactRouteCard: React.FC<CompactRouteCardProps> = ({
       <Pressable
         style={styles.cardPressable}
         onPress={isAvailable ? onPress : undefined}
+        onPressIn={isAvailable ? onPrefetch : undefined}
+        onHoverIn={isAvailable ? onPrefetch : undefined}
         disabled={!isAvailable}
         accessibilityRole={isAvailable ? 'button' : 'none'}
         {...(isAvailable

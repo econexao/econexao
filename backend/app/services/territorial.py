@@ -43,6 +43,9 @@ from app.services.media_resolution import MediaResolutionService
 # In-memory simple cache dictionaries with TTL
 _REGIONS_CACHE: dict[str, Any] = {"data": None, "expires_at": 0.0}
 _CATEGORIES_CACHE: dict[str, Any] = {"data": None, "expires_at": 0.0}
+_PUBLIC_ROUTES_CACHE: dict[
+    tuple[str | None, bool | None, int], tuple[RouteListEnvelope, float]
+] = {}
 
 
 class TerritorialService:
@@ -137,6 +140,25 @@ class TerritorialService:
         limit: int = 20,
         cursor: str | None = None,
     ) -> RouteListEnvelope:
+        is_cacheable = not saved and not (q and q.strip()) and not cursor
+        cache_key = (str(region_id) if region_id else None, verified, limit)
+        now = time.monotonic()
+
+        if is_cacheable and cache_key in _PUBLIC_ROUTES_CACHE:
+            cached_envelope, expires_at = _PUBLIC_ROUTES_CACHE[cache_key]
+            if expires_at > now:
+                if not user_id:
+                    return cached_envelope
+                route_ids = [r.id for r in cached_envelope.data]
+                favorite_ids = await self.repo.get_favorite_route_ids(user_id, route_ids)
+                return RouteListEnvelope(
+                    data=[
+                        r.model_copy(update={"is_favorite": r.id in favorite_ids})
+                        for r in cached_envelope.data
+                    ],
+                    meta=cached_envelope.meta,
+                )
+
         decoded = decode_cursor(cursor, "routes", 2)
         after = (str(decoded[0]), uuid.UUID(str(decoded[1]))) if decoded else None
         routes, total, has_more = await self.repo.list_routes(
@@ -179,8 +201,20 @@ class TerritorialService:
             else None
         )
         meta = PaginationMeta(total=total, limit=limit, next_cursor=next_cursor)
+        envelope = RouteListEnvelope(data=summaries, meta=meta)
 
-        return RouteListEnvelope(data=summaries, meta=meta)
+        if is_cacheable:
+            base_envelope = (
+                RouteListEnvelope(
+                    data=[s.model_copy(update={"is_favorite": False}) for s in summaries],
+                    meta=meta,
+                )
+                if user_id
+                else envelope
+            )
+            _PUBLIC_ROUTES_CACHE[cache_key] = (base_envelope, now + 120.0)
+
+        return envelope
 
     async def get_route_detail(
         self, route_id: uuid.UUID, user_id: uuid.UUID | None = None
