@@ -168,6 +168,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     paddingHorizontal: 24,
+    paddingBottom: 140,
   },
   cardsStack: {
     width: '100%',
