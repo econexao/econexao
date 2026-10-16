@@ -23,6 +23,7 @@ import { AccountDeletionModal } from '../../../src/components/profile/AccountDel
 import { apiClient } from '../../../src/api/client';
 import { useMyProfileQuery } from '../../../src/hooks/queries';
 import { useAuth } from '../../../src/hooks/useAuth';
+import { useResponsiveLayout } from '../../../src/hooks/useResponsiveLayout';
 import { queryKeys } from '../../../src/api/queryKeys';
 import { queryClient } from '../../../src/api/queryClient';
 import { theme, useAppTheme } from '../../../src/theme/theme';
@@ -32,6 +33,7 @@ import { MotionBlock } from '../../../src/components/common/MotionBlock';
 export default function ProfileScreen() {
   const router = useRouter();
   const theme = useAppTheme();
+  const { isWide, isDesktop } = useResponsiveLayout({ contentMaxWidth: 800 });
   const { user, signOut } = useAuth();
   const profileQuery = useMyProfileQuery(user?.id);
   const profile = profileQuery.data;
@@ -98,7 +100,7 @@ export default function ProfileScreen() {
     <View style={styles.container}>
       <AppHeader title="Meu Perfil" />
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={[styles.content, isWide && styles.contentWide]}>
         <MotionBlock staggerIndex={0}>
         {/* Banner de Convidado / Salvar Conta com Google (ADR 0007 / ECO-2606) */}
         {isAnonymous && (
@@ -106,7 +108,7 @@ export default function ProfileScreen() {
             colors={['#1C3B0F', '#284B18', '#33601E']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.guestBanner}
+            style={[styles.guestBanner, isWide && styles.guestBannerWide]}
           >
             <View style={styles.guestBannerContent}>
               <View style={styles.guestBannerIconWrapper}>
@@ -141,7 +143,7 @@ export default function ProfileScreen() {
         )}
 
         {/* Profile Info Header Card */}
-        <View style={styles.profileHeaderCard}>
+        <View style={[styles.profileHeaderCard, isWide && styles.profileHeaderCardWide]}>
           <View style={styles.avatarRow}>
             <TouchableOpacity
               style={styles.avatarContainer}
@@ -210,10 +212,10 @@ export default function ProfileScreen() {
         <View style={styles.menuSection}>
           <Text style={styles.sectionHeaderTitle}>Minha Conta & Preferências</Text>
 
-          <View style={styles.gridContainer}>
+          <View style={[styles.gridContainer, isWide && styles.gridContainerWide]}>
             {/* 1. Rotas Salvas */}
             <TouchableOpacity
-              style={styles.gridCard}
+              style={[styles.gridCard, isWide && styles.gridCardWide]}
               onPress={() => router.push('/(tabs)/(profile)/favorite-routes')}
               {...makeAccessibleButton('Rotas Salvas', 'Visualizar suas rotas favoritadas')}
             >
@@ -231,7 +233,7 @@ export default function ProfileScreen() {
 
             {/* 2. Lugares e Serviços Salvos */}
             <TouchableOpacity
-              style={styles.gridCard}
+              style={[styles.gridCard, isWide && styles.gridCardWide]}
               onPress={() => router.push('/(tabs)/(profile)/favorite-actors')}
               {...makeAccessibleButton('Lugares e Serviços Salvos', 'Visualizar lugares e serviços salvos')}
             >
@@ -249,7 +251,7 @@ export default function ProfileScreen() {
 
             {/* 3. Histórico de Viagens */}
             <TouchableOpacity
-              style={styles.gridCard}
+              style={[styles.gridCard, isWide && styles.gridCardWide]}
               onPress={() => router.push('/(tabs)/(profile)/trips')}
               {...makeAccessibleButton('Histórico de Viagens', 'Ver passeios e trajetos realizados')}
             >
@@ -267,7 +269,7 @@ export default function ProfileScreen() {
 
             {/* 4. Acessibilidade */}
             <TouchableOpacity
-              style={styles.gridCard}
+              style={[styles.gridCard, isWide && styles.gridCardWide]}
               onPress={() => router.push('/(tabs)/(profile)/accessibility')}
               {...makeAccessibleButton('Acessibilidade', 'Ajustar opções visuais e de contraste')}
             >
@@ -285,7 +287,7 @@ export default function ProfileScreen() {
 
             {/* 5. Ajuda & Suporte */}
             <TouchableOpacity
-              style={styles.gridCard}
+              style={[styles.gridCard, isWide && styles.gridCardWide]}
               onPress={() => router.push('/(tabs)/(profile)/support')}
               {...makeAccessibleButton('Ajuda & Suporte', 'Acessar documentação e contatos')}
             >
@@ -303,7 +305,7 @@ export default function ProfileScreen() {
 
             {/* 6. Termos & Privacidade */}
             <TouchableOpacity
-              style={styles.gridCard}
+              style={[styles.gridCard, isWide && styles.gridCardWide]}
               onPress={() => router.push('/(tabs)/(profile)/legal')}
               {...makeAccessibleButton('Termos & Privacidade LGPD', 'Acessar termos de uso e política de privacidade')}
             >
@@ -322,9 +324,9 @@ export default function ProfileScreen() {
         </View>
 
         {/* Account Deletion & Session Action (Sign Out / LGPD) */}
-        <View style={styles.accountActionsSection}>
+        <View style={[styles.accountActionsSection, isWide && styles.accountActionsSectionWide]}>
           {!isAnonymous ? (
-            <View style={styles.actionButtonsRow}>
+            <View style={[styles.actionButtonsRow, isWide && styles.actionButtonsRowWide]}>
               <TouchableOpacity
                 style={styles.signOutButton}
                 onPress={handleSignOut}
@@ -345,7 +347,7 @@ export default function ProfileScreen() {
             </View>
           ) : (
             <TouchableOpacity
-              style={styles.signInButton}
+              style={[styles.signInButton, isWide && styles.signInButtonWide]}
               onPress={() => {
                 setAuthInitialMode('signin');
                 setIsAuthModalVisible(true);
@@ -701,5 +703,40 @@ const styles = StyleSheet.create({
     color: '#8E9588',
     fontWeight: '500',
     paddingTop: 4,
+  },
+  contentWide: {
+    maxWidth: 800,
+    width: '100%',
+    alignSelf: 'center',
+    paddingHorizontal: 24,
+  },
+  guestBannerWide: {
+    maxWidth: 800,
+    width: '100%',
+    alignSelf: 'center',
+  },
+  profileHeaderCardWide: {
+    padding: 20,
+  },
+  gridContainerWide: {
+    gap: 14,
+  },
+  gridCardWide: {
+    width: '31.8%',
+  },
+  accountActionsSectionWide: {
+    maxWidth: 480,
+    width: '100%',
+    alignSelf: 'center',
+  },
+  actionButtonsRowWide: {
+    maxWidth: 480,
+    width: '100%',
+    alignSelf: 'center',
+  },
+  signInButtonWide: {
+    maxWidth: 320,
+    width: '100%',
+    alignSelf: 'center',
   },
 });

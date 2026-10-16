@@ -2,6 +2,7 @@ import React, { useContext, useMemo, useState } from 'react';
 import {
   AccessibilityInfo,
   Alert,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -12,6 +13,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../../auth/AuthProvider';
 import { useMyTripsQuery } from '../../hooks/queries';
+import { useResponsiveLayout } from '../../hooks/useResponsiveLayout';
 import { apiClient } from '../../api/client';
 import { queryKeys } from '../../api/queryKeys';
 import type { TripSchema } from '../../api/types';
@@ -28,6 +30,7 @@ interface ActiveTripDockContentProps {
 const ActiveTripDockContent: React.FC<ActiveTripDockContentProps> = ({ userId }) => {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
+  const { isWide } = useResponsiveLayout();
   const queryClient = useQueryClient();
   const tripsQuery = useMyTripsQuery(userId);
 
@@ -45,7 +48,8 @@ const ActiveTripDockContent: React.FC<ActiveTripDockContentProps> = ({ userId })
 
   const isPaused = activeTrip.status === 'paused';
   const routeTitle = activeTrip.route_title || 'Trilha / Rota Ecológica';
-  const bottomOffset = 76 + insets.bottom + 12;
+  const isDesktopWeb = Platform.OS === 'web' && isWide;
+  const bottomOffset = isDesktopWeb ? 68 + 16 + 12 : 76 + insets.bottom + 12;
 
   const handleTransition = async (action: 'pause' | 'resume' | 'finish') => {
     setIsTransitioning(true);

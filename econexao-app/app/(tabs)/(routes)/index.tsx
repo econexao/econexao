@@ -8,6 +8,7 @@ import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/compon
 import { RouteCard } from '../../../src/components/routes/RouteCard';
 import { useApp } from '../../../src/hooks/useApp';
 import { useAuth } from '../../../src/hooks/useAuth';
+import { useResponsiveLayout } from '../../../src/hooks/useResponsiveLayout';
 import { flattenUniquePages, prefetchRouteData, prefetchRouteDetailOnly, useInfiniteRoutesQuery, useRegionsQuery, useRoutesQuery } from '../../../src/hooks/queries';
 import { useOptimisticFavoriteRoute } from '../../../src/hooks/useOptimisticFavoriteRoute';
 import { theme } from '../../../src/theme/theme';
@@ -19,6 +20,7 @@ export default function RoutesScreen() {
   const router = useRouter();
   const { state } = useApp();
   const { user } = useAuth();
+  const { isTablet, isDesktop, isWide, horizontalMargin } = useResponsiveLayout();
   const regionsQuery = useRegionsQuery();
 
   const isAllRegions = !state.activeRegionId || state.activeRegionId === 'all';
@@ -62,30 +64,43 @@ export default function RoutesScreen() {
   return (
     <View style={styles.container}>
       <AppHeader />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={[styles.content, isWide && styles.contentWide]}>
         <MotionBlock staggerIndex={0}>
         {displayRoutes.length > 0 ? (
           <>
-            {displayRoutes.map((route) => {
-              const isAvailable = isRouteAvailable(route);
-              const isFav =
-                (route as RouteSummary & { is_favorite?: boolean }).is_favorite ??
-                savedRouteIds.has(route.id);
-              return (
-                <RouteCard
-                  key={route.id}
-                  route={route}
-                  isFavorite={isFav}
-                  onPrefetch={isAvailable && queryClient ? () => prefetchRouteData(queryClient, route.id) : undefined}
-                  onPress={isAvailable ? () => router.push(`/route/${route.id}`) : undefined}
-                  onToggleFavorite={isAvailable ? () => toggleFavorite(route, isFav) : undefined}
-                />
-              );
-            })}
+            <View style={isWide ? styles.cardsGrid : styles.cardsStack}>
+              {displayRoutes.map((route) => {
+                const isAvailable = isRouteAvailable(route);
+                const isFav =
+                  (route as RouteSummary & { is_favorite?: boolean }).is_favorite ??
+                  savedRouteIds.has(route.id);
+                return (
+                  <View
+                    key={route.id}
+                    style={[
+                      styles.cardWrapper,
+                      isDesktop
+                        ? styles.cardWrapperDesktop
+                        : isTablet
+                        ? styles.cardWrapperTablet
+                        : styles.cardWrapperMobile,
+                    ]}
+                  >
+                    <RouteCard
+                      route={route}
+                      isFavorite={isFav}
+                      onPrefetch={isAvailable && queryClient ? () => prefetchRouteData(queryClient, route.id) : undefined}
+                      onPress={isAvailable ? () => router.push(`/route/${route.id}`) : undefined}
+                      onToggleFavorite={isAvailable ? () => toggleFavorite(route, isFav) : undefined}
+                    />
+                  </View>
+                );
+              })}
+            </View>
 
             {routesQuery.hasNextPage && (
               <TouchableOpacity
-                style={styles.loadMoreButton}
+                style={[styles.loadMoreButton, isWide && styles.loadMoreButtonWide]}
                 onPress={() => void routesQuery.fetchNextPage()}
                 disabled={routesQuery.isFetchingNextPage}
                 accessibilityRole="button"
@@ -100,31 +115,37 @@ export default function RoutesScreen() {
               </TouchableOpacity>
             )}
             {routesQuery.isError && (
-              <ErrorStateView message="Não foi possível carregar mais rotas." onRetry={() => void routesQuery.fetchNextPage()} />
+              <View style={[styles.stateWrapper, isWide && styles.stateWrapperWide]}>
+                <ErrorStateView message="Não foi possível carregar mais rotas." onRetry={() => void routesQuery.fetchNextPage()} />
+              </View>
             )}
           </>
-        ) : routesQuery.isPending ? (
-          <LoadingView message="Carregando rotas..." />
-        ) : routesQuery.isError ? (
-          <ErrorStateView
-            message="Não foi possível carregar a lista de rotas."
-            onRetry={() => void routesQuery.refetch()}
-          />
-        ) : regionsQuery.isError ? (
-          <ErrorStateView
-            message="Não foi possível carregar as regiões disponíveis."
-            onRetry={() => void regionsQuery.refetch()}
-          />
-        ) : hasNoRegions ? (
-          <EmptyStateView
-            title="Nenhuma região disponível"
-            message="O ambiente ainda não possui regiões cadastradas."
-          />
         ) : (
-          <EmptyStateView
-            title="Nenhuma rota encontrada"
-            message="Não há rotas cadastradas para a região selecionada."
-          />
+          <View style={[styles.stateWrapper, isWide && styles.stateWrapperWide]}>
+            {routesQuery.isPending ? (
+              <LoadingView message="Carregando rotas..." />
+            ) : routesQuery.isError ? (
+              <ErrorStateView
+                message="Não foi possível carregar a lista de rotas."
+                onRetry={() => void routesQuery.refetch()}
+              />
+            ) : regionsQuery.isError ? (
+              <ErrorStateView
+                message="Não foi possível carregar as regiões disponíveis."
+                onRetry={() => void regionsQuery.refetch()}
+              />
+            ) : hasNoRegions ? (
+              <EmptyStateView
+                title="Nenhuma região disponível"
+                message="O ambiente ainda não possui regiões cadastradas."
+              />
+            ) : (
+              <EmptyStateView
+                title="Nenhuma rota encontrada"
+                message="Não há rotas cadastradas para a região selecionada."
+              />
+            )}
+          </View>
         )}
         </MotionBlock>
       </ScrollView>
@@ -142,6 +163,33 @@ const styles = StyleSheet.create({
     gap: 16,
     paddingBottom: 40,
   },
+  contentWide: {
+    maxWidth: 1200,
+    width: '100%',
+    alignSelf: 'center',
+    paddingHorizontal: 24,
+  },
+  cardsStack: {
+    width: '100%',
+  },
+  cardsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 24,
+    width: '100%',
+  },
+  cardWrapper: {
+    width: '100%',
+  },
+  cardWrapperMobile: {
+    width: '100%',
+  },
+  cardWrapperTablet: {
+    width: '48%',
+  },
+  cardWrapperDesktop: {
+    width: '31.5%',
+  },
   loadMoreButton: {
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
@@ -151,9 +199,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 8,
   },
+  loadMoreButtonWide: {
+    maxWidth: 320,
+    width: '100%',
+    alignSelf: 'center',
+  },
   loadMoreText: {
     color: '#059669',
     fontSize: 14,
     fontWeight: '600',
+  },
+  stateWrapper: {
+    width: '100%',
+  },
+  stateWrapperWide: {
+    maxWidth: 640,
+    alignSelf: 'center',
   },
 });

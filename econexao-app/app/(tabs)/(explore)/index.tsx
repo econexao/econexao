@@ -16,9 +16,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { RegionSelectorModal } from '../../../src/components/common/RegionSelectorModal';
 import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/components/common/UIStateViews';
 import { MotionBlock } from '../../../src/components/common/MotionBlock';
-import { CompactRouteCard } from '../../../src/components/routes/CompactRouteCard';
+import { RouteCarouselSection } from '../../../src/components/routes/RouteCarouselSection';
 import { useApp } from '../../../src/hooks/useApp';
 import { useAuth } from '../../../src/hooks/useAuth';
+import { useResponsiveLayout } from '../../../src/hooks/useResponsiveLayout';
 import { prefetchRouteData, prefetchRouteDetailOnly, useRegionsQuery, useRoutesQuery } from '../../../src/hooks/queries';
 import { useOptimisticFavoriteRoute } from '../../../src/hooks/useOptimisticFavoriteRoute';
 import { theme } from '../../../src/theme/theme';
@@ -31,6 +32,7 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { state } = useApp();
   const { user } = useAuth();
+  const { isDesktop, isWide } = useResponsiveLayout();
   const [isRegionModalOpen, setIsRegionModalOpen] = useState(false);
 
   const regionsQuery = useRegionsQuery();
@@ -81,14 +83,17 @@ export default function HomeScreen() {
         <View style={styles.scrimOverlay} />
 
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[
+            styles.scrollContent,
+            isDesktop && styles.scrollContentDesktop,
+          ]}
           showsVerticalScrollIndicator={false}
         >
           {/* Espaçamento superior com respeito a safe-area para respiro no banner */}
           <View style={[styles.heroTopSpacer, { height: Math.max(insets.top + 20, 32) }]} />
 
           {/* Bloco do Hero com MotionBlock */}
-          <MotionBlock style={styles.heroBlock}>
+          <MotionBlock style={[styles.heroBlock, isDesktop && styles.heroBlockDesktop]}>
             <View style={styles.heroLogoContainer}>
               <Image
                 source={require('../../../assets/images/logo-horizontal.png')}
@@ -105,7 +110,7 @@ export default function HomeScreen() {
               </Text>
             </View>
 
-            <View style={styles.heroControls}>
+            <View style={[styles.heroControls, isDesktop && styles.heroControlsDesktop]}>
               {/* Pílula de seleção de região */}
               <TouchableOpacity
                 style={styles.regionSelectorPill}
@@ -128,7 +133,7 @@ export default function HomeScreen() {
 
               {/* Botão de ação primário CTA */}
               <TouchableOpacity
-                style={styles.ctaButton}
+                style={[styles.ctaButton, isDesktop && styles.ctaButtonDesktop]}
                 onPress={() => router.push('/(tabs)/(routes)')}
                 {...makeAccessibleButton('Descobrir rotas', 'Navega para o catálogo de rotas')}
               >
@@ -139,131 +144,133 @@ export default function HomeScreen() {
           </MotionBlock>
 
           {/* Seção 1: Rotas em Destaque */}
-          <View style={styles.carouselSection}>
-
-            {featuredRoutes.length > 0 ? (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.carouselScroll}
-              >
-                {featuredRoutes.map((route) => {
-                  const isAvailable = isRouteAvailable(route);
-                  const isFav = (route as typeof route & { is_favorite?: boolean }).is_favorite ?? savedRouteIds.has(route.id);
-                  return (
-                    <CompactRouteCard
-                      key={route.id}
-                      route={route}
-                      isFavorite={isFav}
-                      onPrefetch={isAvailable && queryClient ? () => prefetchRouteData(queryClient, route.id) : undefined}
-                      onPress={isAvailable ? () => router.push(`/route/${route.id}`) : undefined}
-                      onToggleFavorite={isAvailable ? () => toggleFavorite(route, isFav) : undefined}
-                    />
-                  );
-                })}
-              </ScrollView>
-            ) : (featuredQuery.isPending && !featuredQuery.data) ? (
-              <View style={styles.stateWrapper}>
-                <LoadingView message="Carregando rotas em destaque..." />
+          {featuredRoutes.length > 0 ? (
+            <RouteCarouselSection
+              title="Rotas em Destaque"
+              variant="onImage"
+              routes={featuredRoutes}
+              savedRouteIds={savedRouteIds}
+              onSelectRoute={(route) => {
+                if (isRouteAvailable(route)) {
+                  router.push(`/route/${route.id}`);
+                }
+              }}
+              onToggleFavorite={(route, currentFav) => {
+                if (isRouteAvailable(route)) {
+                  toggleFavorite(route, currentFav);
+                }
+              }}
+              onPrefetchRoute={(routeId) => {
+                if (queryClient) {
+                  prefetchRouteData(queryClient, routeId);
+                }
+              }}
+            />
+          ) : (
+            <View style={styles.carouselSection}>
+              <View style={styles.sectionHeaderRow}>
+                <Text style={styles.sectionTitleOnImage}>Rotas em Destaque</Text>
               </View>
-            ) : featuredQuery.isError && !featuredQuery.data ? (
-              <View style={styles.stateWrapper}>
-                <ErrorStateView
-                  message="Não foi possível carregar as rotas em destaque."
-                  onRetry={() => void featuredQuery.refetch()}
-                />
-              </View>
-            ) : regionsQuery.isError ? (
-              <View style={styles.stateWrapper}>
-                <ErrorStateView
-                  message="Não foi possível carregar as regiões disponíveis."
-                  onRetry={() => void regionsQuery.refetch()}
-                />
-              </View>
-            ) : hasNoRegions ? (
-              <View style={styles.stateWrapper}>
-                <EmptyStateView
-                  title="Nenhuma região disponível"
-                  message="O ambiente ainda não possui regiões cadastradas."
-                />
-              </View>
-            ) : (
-              <View style={styles.stateWrapper}>
-                <EmptyStateView
-                  title="Nenhuma rota em destaque"
-                  message="Não há rotas cadastradas para a região selecionada."
-                />
-              </View>
-            )}
-          </View>
+              {featuredQuery.isPending && !featuredQuery.data ? (
+                <View style={[styles.stateWrapper, isDesktop && styles.stateWrapperDesktop]}>
+                  <LoadingView message="Carregando rotas em destaque..." />
+                </View>
+              ) : featuredQuery.isError && !featuredQuery.data ? (
+                <View style={[styles.stateWrapper, isDesktop && styles.stateWrapperDesktop]}>
+                  <ErrorStateView
+                    message="Não foi possível carregar as rotas em destaque."
+                    onRetry={() => void featuredQuery.refetch()}
+                  />
+                </View>
+              ) : regionsQuery.isError ? (
+                <View style={[styles.stateWrapper, isDesktop && styles.stateWrapperDesktop]}>
+                  <ErrorStateView
+                    message="Não foi possível carregar as regiões disponíveis."
+                    onRetry={() => void regionsQuery.refetch()}
+                  />
+                </View>
+              ) : hasNoRegions ? (
+                <View style={[styles.stateWrapper, isDesktop && styles.stateWrapperDesktop]}>
+                  <EmptyStateView
+                    title="Nenhuma região disponível"
+                    message="O ambiente ainda não possui regiões cadastradas."
+                  />
+                </View>
+              ) : (
+                <View style={[styles.stateWrapper, isDesktop && styles.stateWrapperDesktop]}>
+                  <EmptyStateView
+                    title="Nenhuma rota em destaque"
+                    message="Não há rotas cadastradas para a região selecionada."
+                  />
+                </View>
+              )}
+            </View>
+          )}
 
           {/* Seção 2: Rotas Salvas */}
-          <View style={styles.carouselSection}>
-            <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitleOnImage}>Rotas Salvas</Text>
-              {savedQuery.data?.data?.length ? (
-                <TouchableOpacity
-                  onPress={() => router.push('/(tabs)/(profile)/favorite-routes')}
-                  style={styles.seeAllLink}
-                  {...makeAccessibleButton('Ver todas as rotas salvas', 'Navega para a lista de rotas salvas no perfil')}
-                >
-                  <Text style={styles.seeAllTextOnImage}>Ver todas</Text>
-                  <Ionicons name="chevron-forward" size={15} color="rgba(255, 255, 255, 0.85)" />
-                </TouchableOpacity>
-              ) : null}
-            </View>
-
-            {savedQuery.data?.data.length ? (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.carouselScroll}
-              >
-                {savedQuery.data.data.map((route) => (
-                  <CompactRouteCard
-                    key={route.id}
-                    route={route}
-                    isFavorite={true}
-                    onPrefetch={queryClient ? () => prefetchRouteData(queryClient, route.id) : undefined}
-                    onPress={() => router.push(`/route/${route.id}`)}
-                    onToggleFavorite={() => toggleFavorite(route, true)}
+          {savedQuery.data?.data && savedQuery.data.data.length > 0 ? (
+            <RouteCarouselSection
+              title="Rotas Salvas"
+              variant="onImage"
+              routes={savedQuery.data.data}
+              savedRouteIds={savedRouteIds}
+              seeAllLink={{
+                label: 'Ver todas',
+                hint: 'Navega para a lista de rotas salvas no perfil',
+                onPress: () => router.push('/(tabs)/(profile)/favorite-routes'),
+              }}
+              onSelectRoute={(route) => {
+                router.push(`/route/${route.id}`);
+              }}
+              onToggleFavorite={(route) => {
+                toggleFavorite(route, true);
+              }}
+              onPrefetchRoute={(routeId) => {
+                if (queryClient) {
+                  prefetchRouteData(queryClient, routeId);
+                }
+              }}
+            />
+          ) : (
+            <View style={styles.carouselSection}>
+              <View style={styles.sectionHeaderRow}>
+                <Text style={styles.sectionTitleOnImage}>Rotas Salvas</Text>
+              </View>
+              {savedQuery.isPending ? (
+                <View style={[styles.stateWrapper, isDesktop && styles.stateWrapperDesktop]}>
+                  <LoadingView message="Carregando rotas salvas..." />
+                </View>
+              ) : savedQuery.isError ? (
+                <View style={[styles.stateWrapper, isDesktop && styles.stateWrapperDesktop]}>
+                  <ErrorStateView
+                    message="Não foi possível carregar suas rotas salvas."
+                    onRetry={() => void savedQuery.refetch()}
                   />
-                ))}
-              </ScrollView>
-            ) : savedQuery.isPending ? (
-              <View style={styles.stateWrapper}>
-                <LoadingView message="Carregando rotas salvas..." />
-              </View>
-            ) : savedQuery.isError ? (
-              <View style={styles.stateWrapper}>
-                <ErrorStateView
-                  message="Não foi possível carregar suas rotas salvas."
-                  onRetry={() => void savedQuery.refetch()}
-                />
-              </View>
-            ) : regionsQuery.isError ? (
-              <View style={styles.stateWrapper}>
-                <ErrorStateView
-                  message="Não foi possível carregar as regiões disponíveis."
-                  onRetry={() => void regionsQuery.refetch()}
-                />
-              </View>
-            ) : hasNoRegions ? (
-              <View style={styles.stateWrapper}>
-                <EmptyStateView
-                  title="Nenhuma região disponível"
-                  message="Cadastre uma região para explorar e salvar rotas."
-                />
-              </View>
-            ) : (
-              <View style={styles.stateWrapper}>
-                <EmptyStateView
-                  title="Nenhuma rota salva"
-                  message="Explore as rotas e toque no marcador para salvar seus destinos preferidos."
-                />
-              </View>
-            )}
-          </View>
+                </View>
+              ) : regionsQuery.isError ? (
+                <View style={[styles.stateWrapper, isDesktop && styles.stateWrapperDesktop]}>
+                  <ErrorStateView
+                    message="Não foi possível carregar as regiões disponíveis."
+                    onRetry={() => void regionsQuery.refetch()}
+                  />
+                </View>
+              ) : hasNoRegions ? (
+                <View style={[styles.stateWrapper, isDesktop && styles.stateWrapperDesktop]}>
+                  <EmptyStateView
+                    title="Nenhuma região disponível"
+                    message="Cadastre uma região para explorar e salvar rotas."
+                  />
+                </View>
+              ) : (
+                <View style={[styles.stateWrapper, isDesktop && styles.stateWrapperDesktop]}>
+                  <EmptyStateView
+                    title="Nenhuma rota salva"
+                    message="Explore as rotas e toque no marcador para salvar seus destinos preferidos."
+                  />
+                </View>
+              )}
+            </View>
+          )}
         </ScrollView>
       </ImageBackground>
 
@@ -424,5 +431,29 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.92)',
     borderRadius: theme.radii.xl,
     padding: 16,
+  },
+  scrollContentDesktop: {
+    maxWidth: 1280,
+    width: '100%',
+    alignSelf: 'center',
+    paddingHorizontal: 32,
+  },
+  heroBlockDesktop: {
+    paddingHorizontal: 0,
+  },
+  heroControlsDesktop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  ctaButtonDesktop: {
+    maxWidth: 320,
+    alignSelf: 'flex-start',
+  },
+  stateWrapperDesktop: {
+    maxWidth: 640,
+    width: '100%',
+    alignSelf: 'flex-start',
+    marginHorizontal: 0,
   },
 });
