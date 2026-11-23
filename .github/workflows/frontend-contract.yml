@@ -8,6 +8,7 @@ on:
       - "econexao-app/**"
       - "landing-page/**"
       - ".github/workflows/frontend-contract.yml"
+      - ".github/workflows/staging-deploy.yml"
   push:
     branches: [main, master]
     paths:
