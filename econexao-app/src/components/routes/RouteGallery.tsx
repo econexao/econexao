@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import {
+  Animated,
   Image,
   Modal,
   ScrollView,
@@ -18,10 +19,13 @@ import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { makeAccessibleButton } from '../../utils/accessibility';
 import { getRouteGalleryImages } from './routeCoverImage';
 
+const CARD_STEP = 172;
+
 export const RouteGallery: React.FC<{ route: RouteDetail }> = ({ route }) => {
   const images = getRouteGalleryImages(route);
   const scrollRef = useRef<ScrollView>(null);
   const [scrollX, setScrollX] = useState(0);
+  const animatedX = useRef(new Animated.Value(0)).current;
   const [contentWidth, setContentWidth] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
   const [loaded, setLoaded] = useState<Record<string, boolean>>({});
@@ -64,7 +68,7 @@ export const RouteGallery: React.FC<{ route: RouteDetail }> = ({ route }) => {
           <View style={styles.controls}>
             <TouchableOpacity
               disabled={!canPrev}
-              onPress={() => move(-160)}
+              onPress={() => move(-CARD_STEP)}
               style={[styles.control, !canPrev && styles.disabled]}
               {...makeAccessibleButton('Foto anterior da rota', 'Mostra as fotos anteriores', !canPrev)}
             >
@@ -72,7 +76,7 @@ export const RouteGallery: React.FC<{ route: RouteDetail }> = ({ route }) => {
             </TouchableOpacity>
             <TouchableOpacity
               disabled={!canNext}
-              onPress={() => move(160)}
+              onPress={() => move(CARD_STEP)}
               style={[styles.control, !canNext && styles.disabled]}
               {...makeAccessibleButton('Próxima foto da rota', 'Mostra as próximas fotos', !canNext)}
             >
@@ -86,16 +90,36 @@ export const RouteGallery: React.FC<{ route: RouteDetail }> = ({ route }) => {
         ref={scrollRef}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.gallery}
-        onScroll={(event) => setScrollX(event.nativeEvent.contentOffset.x)}
+        contentContainerStyle={[styles.gallery, { paddingRight: Math.max(theme.spacing.marginMobile, containerWidth - 160) }]}
+        snapToInterval={CARD_STEP}
+        decelerationRate="fast"
+        onScroll={(event) => {
+          const x = event.nativeEvent.contentOffset.x;
+          setScrollX(x);
+          animatedX.setValue(x);
+        }}
         onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}
         onContentSizeChange={(width) => setContentWidth(width)}
         scrollEventThrottle={16}
         accessibilityLabel={`Galeria com ${images.length} fotos da rota`}
       >
         {images.map((image, index) => (
-          <TouchableOpacity
+          <Animated.View
             key={image.key}
+            style={[
+              styles.galleryCard,
+              !reducedMotion && {
+                opacity: animatedX.interpolate({ inputRange: [(index - 1) * CARD_STEP, index * CARD_STEP, (index + 1) * CARD_STEP], outputRange: [0.7, 1, 0.7], extrapolate: 'clamp' }),
+                transform: [
+                  { perspective: 700 },
+                  { scale: animatedX.interpolate({ inputRange: [(index - 1) * CARD_STEP, index * CARD_STEP, (index + 1) * CARD_STEP], outputRange: [0.88, 1, 0.88], extrapolate: 'clamp' }) },
+                  { rotateY: animatedX.interpolate({ inputRange: [(index - 1) * CARD_STEP, index * CARD_STEP, (index + 1) * CARD_STEP], outputRange: ['-12deg', '0deg', '12deg'], extrapolate: 'clamp' }) },
+                ],
+              },
+              reducedMotion && index !== Math.round(scrollX / CARD_STEP) && styles.inactiveCard,
+            ]}
+          >
+          <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => setSelectedImageIndex(index)}
             {...makeAccessibleButton(
@@ -105,12 +129,13 @@ export const RouteGallery: React.FC<{ route: RouteDetail }> = ({ route }) => {
           >
             <Image
               source={image.source}
-              style={[styles.image, index === 0 && styles.firstImage, !loaded[image.key] && styles.imageLoading]}
+              style={[styles.image, !loaded[image.key] && styles.imageLoading]}
               resizeMode="cover"
               onLoad={() => setLoaded((current) => ({ ...current, [image.key]: true }))}
               accessible={false}
             />
           </TouchableOpacity>
+          </Animated.View>
         ))}
       </ScrollView>
 
@@ -208,15 +233,16 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surfaceWhite,
   },
   disabled: { opacity: 0.4 },
-  gallery: { gap: 12, paddingRight: theme.spacing.marginMobile },
+  gallery: { gap: 12, paddingVertical: 8, paddingRight: theme.spacing.marginMobile },
+  galleryCard: { width: 160, borderRadius: theme.radii.lg, ...theme.shadows.card },
+  inactiveCard: { opacity: 0.7 },
   image: {
-    width: 128,
-    height: 96,
+    width: 160,
+    height: 104,
     borderRadius: theme.radii.lg,
     backgroundColor: theme.colors.surfaceContainerLow,
   },
   imageLoading: { opacity: 0.35 },
-  firstImage: { width: 152 },
   fullscreenModalContainer: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.95)',

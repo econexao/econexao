@@ -1,3 +1,4 @@
+import { DeveloperCredits } from '../../../src/components/common/DeveloperCredits';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert, ActivityIndicator, AccessibilityInfo, Image } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -345,7 +346,7 @@ export default function RouteDetailScreen() {
   const gallerySection = <RouteGallery route={route} />;
 
   const descriptionSection = routeDescription ? (
-    <View style={styles.descriptionCard} accessible accessibilityLabel="Sobre o local">
+    <View style={[styles.descriptionCard, !isDesktop && styles.descriptionCardMobile]} accessible accessibilityLabel="Sobre o local">
       <View style={styles.descriptionHeaderRow}>
         <Ionicons name="information-circle-outline" size={18} color={theme.colors.brandForest} />
         <Text style={styles.descriptionHeading}>Sobre o local</Text>
@@ -615,6 +616,7 @@ export default function RouteDetailScreen() {
             </>
           )}
         </MotionBlock>
+        <DeveloperCredits />
       </ScrollView>
 
       <TripStartModal
@@ -769,6 +771,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.outlineVariant,
   },
+  descriptionCardMobile: { marginTop: 16 },
   descriptionHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',

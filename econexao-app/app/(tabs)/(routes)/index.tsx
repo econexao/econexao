@@ -1,3 +1,4 @@
+import { DeveloperCredits } from '../../../src/components/common/DeveloperCredits';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -148,6 +149,7 @@ export default function RoutesScreen() {
           </View>
         )}
         </MotionBlock>
+        <DeveloperCredits />
       </ScrollView>
     </View>
   );

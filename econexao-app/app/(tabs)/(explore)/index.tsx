@@ -1,3 +1,4 @@
+import { DeveloperCredits } from '../../../src/components/common/DeveloperCredits';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ScrollView,
@@ -271,6 +272,7 @@ export default function HomeScreen() {
               )}
             </View>
           )}
+          <DeveloperCredits />
         </ScrollView>
       </ImageBackground>
 

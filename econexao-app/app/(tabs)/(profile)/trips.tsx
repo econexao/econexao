@@ -1,3 +1,4 @@
+import { DeveloperCredits } from '../../../src/components/common/DeveloperCredits';
 import React, { useMemo, useState } from 'react';
 import { AccessibilityInfo, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -149,6 +150,7 @@ export default function TripsHistoryScreen() {
           </>
         )}
         </MotionBlock>
+        <DeveloperCredits />
       </ScrollView>
     </View>
   );

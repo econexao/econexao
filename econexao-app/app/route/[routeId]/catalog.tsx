@@ -1,3 +1,4 @@
+import { DeveloperCredits } from '../../../src/components/common/DeveloperCredits';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -170,6 +171,7 @@ export default function CatalogScreen() {
           />
         )}
         </MotionBlock>
+        <DeveloperCredits />
       </ScrollView>
     </View>
   );

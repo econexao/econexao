@@ -1,3 +1,4 @@
+import { DeveloperCredits } from '../../src/components/common/DeveloperCredits';
 import React, { useRef, useState } from 'react';
 import {
   ScrollView,
@@ -396,6 +397,7 @@ export default function ActorDetailScreen() {
           <Text style={styles.mediaCredit}>Crédito da imagem principal: {actor.cover_media.credit}</Text>
         ) : null}
         </MotionBlock>
+        <DeveloperCredits />
       </ScrollView>
     </View>
   );

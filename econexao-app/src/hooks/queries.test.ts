@@ -96,6 +96,7 @@ describe('route prefetch and placeholder cache helpers', () => {
 
     const notFound = findCachedRouteSummary(qc, 'inexistent');
     expect(notFound).toBeUndefined();
+    qc.clear();
   });
 
   it('creates placeholder route detail from summary with empty origins and gallery', () => {

@@ -180,8 +180,9 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
             accessibilityState={{ selected: isStartSelected }}
           >
             <View style={[styles.startPinContainer, isStartSelected && { transform: [{ scale: 1.15 }] }]}>
+              <Text style={[styles.endpointLabel, { backgroundColor: '#14532d' }]}>INÍCIO</Text>
               <View style={[styles.startPinHead, isStartSelected && { borderWidth: 2.5, borderColor: '#FFFFFF' }]}>
-                <Ionicons name="play" size={13} color="#FFFFFF" style={{ marginLeft: 2 }} />
+                <Ionicons name="play" size={20} color="#FFFFFF" style={{ marginLeft: 2 }} />
               </View>
               <View style={styles.startPinPoint} />
             </View>
@@ -203,6 +204,7 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
             accessibilityState={{ selected: isDestinationSelected }}
           >
             <View style={[styles.destinationPinContainer, isDestinationSelected && { transform: [{ scale: 1.15 }] }]}>
+              <Text style={[styles.endpointLabel, { backgroundColor: '#991b1b' }]}>DESTINO</Text>
               <View style={[styles.destinationPinHead, isDestinationSelected && { borderWidth: 3, borderColor: '#FFFFFF' }]}>
                 <Ionicons name="flag" size={18} color="#FFFFFF" />
               </View>
@@ -285,11 +287,12 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
             coordinate={userLocation}
             title={userLocationLabel || 'Sua Localização Atual'}
             description={userLocationA11y}
-            pinColor={USER_LOCATION_PIN_COLOR}
             zIndex={1500}
             accessibilityRole="image"
             accessibilityLabel={userLocationA11y}
-          />
+          >
+            <View style={styles.userLocationPin}><Ionicons name="person" size={20} color="#FFFFFF" /></View>
+          </Marker>
         )}
 
         {selectedCoordinate && (
@@ -329,14 +332,14 @@ const styles = StyleSheet.create({
   startPinContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 32,
-    height: 38,
+    width: 70,
+    height: 72,
     filter: 'drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.3))' as any,
   },
   startPinHead: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: ROUTE_START_PIN_COLOR,
     alignItems: 'center',
     justifyContent: 'center',
@@ -361,8 +364,8 @@ const styles = StyleSheet.create({
   destinationPinContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 44,
-    height: 52,
+    width: 76,
+    height: 72,
     filter: 'drop-shadow(0px 4px 8px rgba(220, 38, 38, 0.45))' as any,
   },
   destinationPinHead: {
@@ -390,6 +393,8 @@ const styles = StyleSheet.create({
     marginTop: -4,
     zIndex: 1,
   },
+  endpointLabel: { color: '#FFFFFF', fontSize: 9, fontWeight: '800', overflow: 'hidden', borderRadius: 9, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1, borderColor: '#FFFFFF' },
+  userLocationPin: { width: 38, height: 38, borderRadius: 19, backgroundColor: USER_LOCATION_PIN_COLOR, borderWidth: 3, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
   teardropContainer: {
     alignItems: 'center',
     justifyContent: 'center',

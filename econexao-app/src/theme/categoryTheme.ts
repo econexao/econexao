@@ -1,5 +1,4 @@
 import type { Ionicons } from '@expo/vector-icons';
-import { getCategoryIonicons } from '../components/catalog/CategoryFilters';
 
 export interface CategoryVisualMeta {
   slug: string;
@@ -138,7 +137,7 @@ export const getCategoryVisualMeta = (slug?: string | null, label?: string | nul
     label: label || 'Outros',
     color: '#6B7280',
     badgeTextColor: '#4B5563',
-    icon: getCategoryIonicons(normalizedSlug) || 'help-circle-outline',
+    icon: 'help-circle-outline',
     lucideIcon: 'help-circle',
     order: 100,
   };

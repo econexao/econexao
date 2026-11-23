@@ -33,7 +33,9 @@ import type { FlexiblePinItem, MapAdapterProps, MapCoordinate } from './MapAdapt
 
 const MIN_ZOOM = 3;
 const MAX_ZOOM = 19;
+const EMPTY_PINS: FlexiblePinItem[] = [];
 const PIN_ENTER_CLASS = 'econexao-pin-enter';
+const PIN_EXIT_CLASS = 'econexao-pin-exit';
 const PIN_SELECTED_CLASS = 'econexao-pin-selected';
 const ROUTE_HIGHLIGHT_CLASS = 'econexao-route-highlight';
 
@@ -42,13 +44,17 @@ const ensurePinMotionStyles = () => {
   const style = document.createElement('style');
   style.id = 'econexao-pin-motion-styles';
   style.textContent = `
-    @keyframes econexao-pin-enter { from { opacity: 0; transform: translateY(6px) scale(.88); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes econexao-pin-enter { 0% { opacity: 0; transform: translateY(12px) scale(.25); } 65% { opacity: 1; transform: translateY(-3px) scale(1.12); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes econexao-pin-exit { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: translateY(6px) scale(.15); } }
     @keyframes econexao-pin-selected { from { transform: scale(.94); } 60% { transform: scale(1.06); } to { transform: scale(1); } }
-    .${PIN_ENTER_CLASS} { animation: econexao-pin-enter 180ms cubic-bezier(.2,0,0,1) both; transform-origin: 50% 100%; }
+    @keyframes econexao-location-pulse { 0%, 100% { box-shadow: 0 0 0 4px white, 0 0 0 8px rgba(2,132,199,.25); } 50% { box-shadow: 0 0 0 4px white, 0 0 0 15px rgba(2,132,199,.10); } }
+    .econexao-user-location-pulse { animation: econexao-location-pulse 2.8s ease-in-out infinite; }
+    .${PIN_ENTER_CLASS} { animation: econexao-pin-enter 360ms cubic-bezier(.2,0,0,1) both; transform-origin: 50% 100%; }
+    .${PIN_EXIT_CLASS} { animation: econexao-pin-exit 400ms ease-in both; transform-origin: 50% 100%; pointer-events: none; }
     .${PIN_SELECTED_CLASS} { animation: econexao-pin-selected 180ms cubic-bezier(.2,0,0,1) both; transform-origin: 50% 100%; }
     .${ROUTE_HIGHLIGHT_CLASS} { stroke-dasharray: 14 10; animation: econexao-route-highlight 650ms cubic-bezier(.2,0,0,1) both; pointer-events: none; }
     @keyframes econexao-route-highlight { from { stroke-dashoffset: 220; opacity: .2; } to { stroke-dashoffset: 0; opacity: .72; } }
-    @media (prefers-reduced-motion: reduce) { .${PIN_ENTER_CLASS}, .${PIN_SELECTED_CLASS}, .${ROUTE_HIGHLIGHT_CLASS} { animation: none !important; } }
+    @media (prefers-reduced-motion: reduce) { .${PIN_ENTER_CLASS}, .${PIN_EXIT_CLASS}, .${PIN_SELECTED_CLASS}, .${ROUTE_HIGHLIGHT_CLASS}, .econexao-user-location-pulse { animation: none !important; } }
   `;
   document.head.appendChild(style);
 };
@@ -170,6 +176,7 @@ const createPinIcon = (
   selected: boolean,
   variant: 'full' | 'simple' | 'none' = 'full',
   motionClass = '',
+  delay = 0,
   actorSummary?: {
     google_rating?: number | null;
     rating_count?: number | null;
@@ -252,7 +259,7 @@ const createPinIcon = (
   const strokeWidth = isHighlighted ? 2.5 : 1.5;
 
   const teardropHtml = `
-    <div class="econexao-teardrop-marker ${isHighlighted ? PIN_SELECTED_CLASS : motionClass}" style="width:${width}px;height:${height}px;position:relative;${filterStyle}cursor:pointer;transition:transform 0.15s ease;">
+    <div class="econexao-teardrop-marker ${isHighlighted ? PIN_SELECTED_CLASS : motionClass}" style="width:${width}px;height:${height}px;position:relative;${filterStyle}cursor:pointer;animation-delay:${delay}ms;transition:transform 0.15s ease;">
       <svg width="${width}" height="${height}" viewBox="0 0 38 46" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
         <path d="M19 45C19 45 36 27.5 36 18C36 8.61116 28.3888 1 19 1C9.61116 1 2 8.61116 2 18C2 27.5 19 45 19 45Z" fill="${color}" stroke="#FFFFFF" stroke-width="${strokeWidth}" stroke-linejoin="round"/>
         <g transform="translate(10, 9)" stroke="#FFFFFF" color="#FFFFFF">
@@ -273,7 +280,7 @@ const createPinIcon = (
 };
 
 
-const createSelectionPinIcon = () => {
+const createSelectionPinIcon = (reducedMotion: boolean) => {
   const size = 42;
   const iconSize = 20;
   const color = SELECTION_PIN_COLOR;
@@ -282,7 +289,7 @@ const createSelectionPinIcon = () => {
     'box-shadow:0 0 0 3px #FFFFFF, 0 0 0 6px rgba(234,88,12,0.8), 0 6px 16px rgba(0,0,0,0.45); transform:scale(1.1);';
 
   const html = `
-    <div style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;background:${color};border:3px solid #FFFFFF;color:#FFFFFF;transition:transform 0.15s ease,box-shadow 0.15s ease;cursor:grab;${ringStyle}" aria-label="Marcador de seleção">
+    <div class="${reducedMotion ? '' : 'econexao-user-location-pulse'}" style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;background:${color};border:3px solid #FFFFFF;color:#FFFFFF;transition:transform 0.15s ease,box-shadow 0.15s ease;cursor:grab;${ringStyle}" aria-label="Marcador de seleção">
       <svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" style="display:block;" aria-hidden="true">
         ${svgContent}
       </svg>
@@ -298,16 +305,17 @@ const createSelectionPinIcon = () => {
 };
 
 const createRouteStartPinIcon = (selected: boolean, motionClass = '') => {
-  const width = selected ? 36 : 32;
-  const height = selected ? 44 : 38;
-  const iconSize = selected ? 16 : 14;
+  const width = selected ? 54 : 50;
+  const height = selected ? 64 : 60;
+  const iconSize = 16;
   const color = ROUTE_START_PIN_COLOR;
   const filterStyle = selected
     ? 'filter: drop-shadow(0 0 6px rgba(22,163,74,0.9)) drop-shadow(0 4px 10px rgba(0,0,0,0.4)); transform: scale(1.15);'
     : 'filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));';
 
   const html = `
-    <div class="econexao-route-start-marker ${selected ? PIN_SELECTED_CLASS : motionClass}" style="width:${width}px;height:${height}px;position:relative;${filterStyle}cursor:pointer;transition:transform 0.15s ease;" aria-label="Ponto de partida">
+    <div class="econexao-route-start-marker ${motionClass}" style="width:${width}px;height:${height}px;position:relative;${filterStyle}cursor:pointer;transition:transform 0.15s ease;" aria-label="Ponto de partida">
+      <span style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);padding:3px 7px;border-radius:10px;background:#14532d;color:white;font:700 10px system-ui;letter-spacing:.3px;white-space:nowrap;border:2px solid white;">INÍCIO</span>
       <svg width="${width}" height="${height}" viewBox="0 0 32 38" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
         <path d="M16 37C16 37 30 22.5 30 15C30 7.268 23.732 1 16 1C8.268 1 2 7.268 2 15C2 22.5 16 37 16 37Z" fill="${color}" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/>
         <g transform="translate(9, 8)" stroke="#FFFFFF" color="#FFFFFF">
@@ -328,16 +336,17 @@ const createRouteStartPinIcon = (selected: boolean, motionClass = '') => {
 };
 
 const createRouteDestinationPinIcon = (selected: boolean, motionClass = '') => {
-  const width = selected ? 46 : 42;
-  const height = selected ? 56 : 50;
-  const iconSize = selected ? 22 : 20;
+  const width = selected ? 54 : 50;
+  const height = selected ? 64 : 60;
+  const iconSize = 20;
   const color = ROUTE_DESTINATION_PIN_COLOR;
   const filterStyle = selected
     ? 'filter: drop-shadow(0 0 8px rgba(220,38,38,0.95)) drop-shadow(0 6px 14px rgba(0,0,0,0.45)); transform: scale(1.15);'
     : 'filter: drop-shadow(0 0 4px rgba(220,38,38,0.45)) drop-shadow(0 4px 8px rgba(0,0,0,0.35));';
 
   const html = `
-    <div class="econexao-route-destination-marker ${selected ? PIN_SELECTED_CLASS : motionClass}" style="width:${width}px;height:${height}px;position:relative;${filterStyle}cursor:pointer;transition:transform 0.15s ease;" aria-label="Destino final da rota">
+    <div class="econexao-route-destination-marker ${motionClass}" style="width:${width}px;height:${height}px;position:relative;${filterStyle}cursor:pointer;transition:transform 0.15s ease;" aria-label="Destino final da rota">
+      <span style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);padding:3px 7px;border-radius:10px;background:#991b1b;color:white;font:700 10px system-ui;letter-spacing:.3px;white-space:nowrap;border:2px solid white;">DESTINO</span>
       <svg width="${width}" height="${height}" viewBox="0 0 42 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
         <path d="M21 49C21 49 40 30 40 20C40 9.507 31.493 1 21 1C10.507 1 2 9.507 2 20C2 30 21 49 21 49Z" fill="${color}" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
         <circle cx="21" cy="20" r="14" fill="rgba(255,255,255,0.22)" />
@@ -359,16 +368,16 @@ const createRouteDestinationPinIcon = (selected: boolean, motionClass = '') => {
   });
 };
 
-const createUserLocationPinIcon = () => {
+const createUserLocationPinIcon = (reducedMotion: boolean) => {
   const size = 38;
   const iconSize = 18;
   const color = USER_LOCATION_PIN_COLOR;
-  const svgContent = getPinIconSvg('user-location');
+  const svgContent = '<circle cx="12" cy="8" r="3.5" fill="currentColor"/><path d="M5 20c0-4 3-6 7-6s7 2 7 6" fill="currentColor"/>';
   const ringStyle =
     'box-shadow:0 0 0 3px #FFFFFF, 0 0 0 6px rgba(2,132,199,0.75), 0 4px 12px rgba(0,0,0,0.35); transform:scale(1.05);';
 
   const html = `
-    <div class="econexao-user-location-marker" style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2.5px solid #FFFFFF;color:#FFFFFF;transition:transform 0.15s ease,box-shadow 0.15s ease;${ringStyle}" aria-label="Sua localização atual">
+    <div class="econexao-user-location-marker ${reducedMotion ? '' : 'econexao-user-location-pulse'}" style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2.5px solid #FFFFFF;color:#FFFFFF;transition:transform 0.15s ease,box-shadow 0.15s ease;${ringStyle}" aria-label="Sua localização atual">
       <svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" style="display:block;" aria-hidden="true">
         ${svgContent}
       </svg>
@@ -387,8 +396,16 @@ const MapEventsHandler: React.FC<{
   selectionMode?: boolean;
   onSelectCoordinate?: (coord: MapCoordinate) => void;
   onZoomChange: (zoom: number) => void;
-}> = ({ selectionMode, onSelectCoordinate, onZoomChange }) => {
+  onViewportChange: (bounds: { north: number; south: number; east: number; west: number }) => void;
+}> = ({ selectionMode, onSelectCoordinate, onZoomChange, onViewportChange }) => {
   const map = useMap();
+
+  const updateViewport = () => {
+    const bounds = map.getBounds();
+    onViewportChange({ north: bounds.getNorth(), south: bounds.getSouth(), east: bounds.getEast(), west: bounds.getWest() });
+  };
+
+  useEffect(() => { updateViewport(); }, [map]);
 
   useMapEvents({
     click: (e) => {
@@ -397,6 +414,7 @@ const MapEventsHandler: React.FC<{
       }
     },
     zoomend: () => onZoomChange(map.getZoom()),
+    moveend: updateViewport,
   });
 
   return null;
@@ -464,24 +482,18 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   actorSummaries,
 }) => {
   const mapRef = useRef<LeafletMap | null>(null);
-  const items = pins ?? actors ?? [];
+  const items = pins ?? actors ?? EMPTY_PINS;
   const routeCoordinates = useMemo(() => getGeometryCoordinates(geometry), [geometry]);
   const fitCoordinates = useMemo(
     () => getFitCoordinates(bounds, geometry, items),
     [bounds, geometry, items]
   );
   const prefersReducedMotion = useReducedMotion();
-  const seenPinIdsRef = useRef<Set<string>>(new Set());
   const motionRouteSignature = useMemo(() => JSON.stringify(routeCoordinates), [routeCoordinates]);
-  const previousMotionRouteSignatureRef = useRef(motionRouteSignature);
 
   useEffect(() => {
     ensurePinMotionStyles();
-    if (previousMotionRouteSignatureRef.current !== motionRouteSignature) {
-      seenPinIdsRef.current.clear();
-      previousMotionRouteSignatureRef.current = motionRouteSignature;
-    }
-  }, [motionRouteSignature]);
+  }, []);
   const leafletBounds = useMemo(() => toLeafletBounds(fitCoordinates), [fitCoordinates]);
   const initialRegion = useMemo(() => getInitialRegion(fitCoordinates), [fitCoordinates]);
 
@@ -498,6 +510,7 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   }, [initialRegion]);
 
   const [zoomLevel, setZoomLevel] = useState(calculatedInitialZoom);
+  const [viewport, setViewport] = useState<{ north: number; south: number; east: number; west: number } | null>(null);
 
   useEffect(() => {
     setZoomLevel(calculatedInitialZoom);
@@ -516,12 +529,38 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
 
   // Controle determinístico de densidade e colisão por nível de zoom
   const renderableItems = useMemo(
-    () => filterPinsByDensity(items, zoomLevel, selectedActorId),
-    [items, zoomLevel, selectedActorId]
+    () => filterPinsByDensity(items, zoomLevel, selectedActorId).filter((item) => {
+      const coordinate = getItemCoordinate(item);
+      return coordinate && (!viewport || (coordinate.latitude <= viewport.north && coordinate.latitude >= viewport.south && coordinate.longitude <= viewport.east && coordinate.longitude >= viewport.west));
+    }),
+    [items, zoomLevel, selectedActorId, viewport]
   );
+  const [displayedPins, setDisplayedPins] = useState<Array<{ item: FlexiblePinItem; phase: 'enter' | 'exit' | 'stable'; delay: number }>>([]);
+  const pinIconCache = useRef(new Map<string, { item: FlexiblePinItem; selected: boolean; variant: string; phase: string; delay: number; summary: unknown; icon: L.DivIcon | null }>());
   useEffect(() => {
-    renderableItems.forEach((item) => seenPinIdsRef.current.add(getItemId(item)));
-  }, [renderableItems]);
+    const nextIds = new Set(renderableItems.map(getItemId));
+    setDisplayedPins((current) => {
+      const currentById = new Map(current.map((entry) => [getItemId(entry.item), entry]));
+      let enteringIndex = 0;
+      const next: Array<{ item: FlexiblePinItem; phase: 'enter' | 'exit' | 'stable'; delay: number }> = renderableItems.map((item) => {
+        const previous = currentById.get(getItemId(item));
+        if (!previous || previous.phase === 'exit') {
+          return { item, phase: prefersReducedMotion ? 'stable' as const : 'enter' as const, delay: Math.min(enteringIndex++ * 35, 420) };
+        }
+        return { ...previous, item };
+      });
+      if (!prefersReducedMotion) {
+        current.forEach((entry) => {
+          if (!nextIds.has(getItemId(entry.item))) next.push({ ...entry, phase: 'exit', delay: 0 });
+        });
+      }
+      return next;
+    });
+    if (prefersReducedMotion) return;
+    const exitTimer = setTimeout(() => setDisplayedPins((current) => current.filter((entry) => entry.phase !== 'exit')), 400);
+    const enterTimer = setTimeout(() => setDisplayedPins((current) => current.map((entry) => entry.phase === 'enter' ? { ...entry, phase: 'stable', delay: 0 } : entry)), 780);
+    return () => { clearTimeout(exitTimer); clearTimeout(enterTimer); };
+  }, [renderableItems, prefersReducedMotion]);
 
   const recenter = useCallback(() => {
     if (leafletBounds && mapRef.current) {
@@ -550,6 +589,16 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
   const routeEndpoints = useMemo(() => getRouteEndpoints(geometry), [geometry]);
   const isStartSelected = selectedActorId === 'route-start';
   const isDestinationSelected = selectedActorId === 'route-destination';
+  const endpointsAppeared = useRef(false);
+  const startIcon = useMemo(() => createRouteStartPinIcon(
+    isStartSelected, !prefersReducedMotion && !endpointsAppeared.current ? PIN_ENTER_CLASS : ''
+  ), [isStartSelected, prefersReducedMotion]);
+  const destinationIcon = useMemo(() => createRouteDestinationPinIcon(
+    isDestinationSelected, !prefersReducedMotion && !endpointsAppeared.current ? PIN_ENTER_CLASS : ''
+  ), [isDestinationSelected, prefersReducedMotion]);
+  useEffect(() => {
+    if (routeEndpoints.start && routeEndpoints.destination && routeCoordinates.length >= 2) endpointsAppeared.current = true;
+  }, [routeEndpoints, routeCoordinates.length]);
   const routeStartA11y = useMemo(
     () => getRouteStartPinAccessibilityLabel(routeEndpoints.start),
     [routeEndpoints.start]
@@ -593,6 +642,7 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
           selectionMode={selectionMode}
           onSelectCoordinate={onSelectCoordinate}
           onZoomChange={setZoomLevel}
+          onViewportChange={setViewport}
         />
 
         {routeCoordinates.length >= 2 && (
@@ -614,10 +664,7 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
           <Marker
             key="route-start-pin"
             position={[routeEndpoints.start.latitude, routeEndpoints.start.longitude]}
-            icon={createRouteStartPinIcon(
-              isStartSelected,
-              prefersReducedMotion ? '' : isStartSelected ? PIN_SELECTED_CLASS : PIN_ENTER_CLASS
-            )}
+            icon={startIcon}
             title={routeStartA11y}
             alt={routeStartA11y}
             keyboard={true}
@@ -643,10 +690,7 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
           <Marker
             key="route-destination-pin"
             position={[routeEndpoints.destination.latitude, routeEndpoints.destination.longitude]}
-            icon={createRouteDestinationPinIcon(
-              isDestinationSelected,
-              prefersReducedMotion ? '' : isDestinationSelected ? PIN_SELECTED_CLASS : PIN_ENTER_CLASS
-            )}
+            icon={destinationIcon}
             title={routeDestinationA11y}
             alt={routeDestinationA11y}
             keyboard={true}
@@ -667,16 +711,19 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
           />
         )}
 
-        {renderableItems.map((item) => {
+        {displayedPins.map(({ item, phase, delay }) => {
           const coordinate = getItemCoordinate(item);
           if (!coordinate) return null;
           const itemId = getItemId(item);
           const isSelected = itemId === selectedActorId;
           const a11yLabel = getItemAccessibilityLabel(item, isSelected);
           const actorSummary = actorSummariesById.get(itemId);
-          const firstSeen = !seenPinIdsRef.current.has(itemId);
-          const motionClass = prefersReducedMotion ? '' : isSelected ? PIN_SELECTED_CLASS : firstSeen ? PIN_ENTER_CLASS : '';
-          const pinIcon = createPinIcon(item, isSelected, pinCardVariant, motionClass, actorSummary);
+          const motionClass = prefersReducedMotion ? '' : phase === 'exit' ? PIN_EXIT_CLASS : isSelected ? PIN_SELECTED_CLASS : phase === 'enter' ? PIN_ENTER_CLASS : '';
+          const cached = pinIconCache.current.get(itemId);
+          const pinIcon = cached && cached.item === item && cached.selected === isSelected && cached.variant === pinCardVariant && cached.phase === motionClass && cached.delay === delay && cached.summary === actorSummary
+            ? cached.icon
+            : createPinIcon(item, isSelected, pinCardVariant, motionClass, delay, actorSummary);
+          pinIconCache.current.set(itemId, { item, selected: isSelected, variant: pinCardVariant, phase: motionClass, delay, summary: actorSummary, icon: pinIcon });
           if (!pinIcon) return null;
 
           return (
@@ -686,13 +733,15 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
               icon={pinIcon}
               title={a11yLabel}
               alt={a11yLabel}
-              keyboard={true}
+              keyboard={phase !== 'exit'}
               eventHandlers={{
                 click: (e) => {
+                  if (phase === 'exit') return;
                   L.DomEvent.stopPropagation(e as any);
                   onSelectActor(itemId);
                 },
                 keypress: (e: any) => {
+                  if (phase === 'exit') return;
                   if (e.originalEvent?.key === 'Enter' || e.originalEvent?.key === ' ') {
                     e.originalEvent?.preventDefault?.();
                     L.DomEvent.stopPropagation(e as any);
@@ -709,7 +758,7 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
         {userLocation && (
           <Marker
             position={[userLocation.latitude, userLocation.longitude]}
-            icon={createUserLocationPinIcon()}
+            icon={createUserLocationPinIcon(prefersReducedMotion)}
             title={userLocationA11y}
             alt={userLocationA11y}
             keyboard={true}
@@ -725,7 +774,7 @@ export const MapAdapter: React.FC<MapAdapterProps> = ({
         {selectedCoordinate && (
           <Marker
             position={[selectedCoordinate.latitude, selectedCoordinate.longitude]}
-            icon={createSelectionPinIcon()}
+            icon={createSelectionPinIcon(prefersReducedMotion)}
             title={selectionPinA11y}
             alt={selectionPinA11y}
             draggable={true}
