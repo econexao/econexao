@@ -1,3 +1,4 @@
+import { DeveloperCredits } from '../../../src/components/common/DeveloperCredits';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -45,6 +46,7 @@ export default function FavoriteActorsScreen() {
             message="Você ainda não salvou nenhum local ou serviço nos seus favoritos."
           />
         )}
+        <DeveloperCredits />
       </ScrollView>
     </View>
   );

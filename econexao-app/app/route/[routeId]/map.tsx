@@ -10,7 +10,8 @@ import { CategoryFilters } from '../../../src/components/catalog/CategoryFilters
 import { MapAdapter } from '../../../src/components/map/MapAdapter';
 import { GooglePlacePhoto } from '../../../src/components/common/GooglePlacePhoto';
 import { EmptyStateView, ErrorStateView, LoadingView } from '../../../src/components/common/UIStateViews';
-import { useRouteActorsQuery, useRouteMapQuery } from '../../../src/hooks/queries';
+import { useRouteActorsQuery, useRouteDetailQuery, useRouteMapQuery } from '../../../src/hooks/queries';
+import { getRouteCoverImage } from '../../../src/components/routes/routeCoverImage';
 import { theme } from '../../../src/theme/theme';
 import { makeAccessibleButton, setAccessibilityFocusSafely } from '../../../src/utils/accessibility';
 import {
@@ -157,6 +158,8 @@ export default function MapScreen() {
   const mapQuery = useRouteMapQuery(routeId, {
     origin_id: originId,
   });
+  const routeDetail = useRouteDetailQuery(routeId);
+  const destinationCover = routeDetail.data ? getRouteCoverImage(routeDetail.data) : undefined;
   const actorsQuery = useRouteActorsQuery(routeId, {
     origin_id: originId,
     category: selectedCategory || undefined,
@@ -746,6 +749,9 @@ export default function MapScreen() {
             <View style={styles.floatingCard}>
               <View style={styles.cardMainRow}>
                 <View style={styles.cardPhotoWrapper}>
+                  {!isRouteStart && destinationCover ? (
+                    <Image source={destinationCover} style={styles.cardPhoto} resizeMode="cover" accessibilityLabel="Foto de capa da rota" />
+                  ) : (
                   <View
                     style={[
                       styles.cardPhotoFallback,
@@ -759,6 +765,7 @@ export default function MapScreen() {
                       style={isRouteStart ? { marginLeft: 2 } : undefined}
                     />
                   </View>
+                  )}
                 </View>
 
                 <View style={styles.cardInfoColumn}>

@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet } from 'react-native';
 import type { ActorCategory, MapLegendItem } from '../../api/types';
 import { FilterChip } from '../common/FilterChip';
 import { Ionicons } from '@expo/vector-icons';
+import { getCategoryVisualMeta } from '../../theme/categoryTheme';
 
 interface CategoryFiltersProps {
   categories: Array<ActorCategory | MapLegendItem>;
@@ -117,6 +118,7 @@ export const CategoryFilters: React.FC<CategoryFiltersProps> = ({
             isSelected={selectedCategory === slug}
             onPress={() => onSelectCategory(slug)}
             icon={getCategoryIonicons(cat.icon) ?? undefined}
+            color={getCategoryVisualMeta(slug, cat.label).badgeTextColor}
           />
         );
       })}

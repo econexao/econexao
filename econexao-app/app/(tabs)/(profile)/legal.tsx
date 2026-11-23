@@ -1,3 +1,4 @@
+import { DeveloperCredits } from '../../../src/components/common/DeveloperCredits';
 import React, { useState, useEffect, useRef } from 'react';
 import {
   ScrollView,
@@ -337,6 +338,7 @@ export default function LegalAndPrivacyScreen() {
             Mapas e dados geoespaciais são fornecidos sob a licença OpenStreetMap / ODbL e dados da Google Routes API sob os termos da Google Maps Platform. Fotos comunitárias são atribuídas conforme a política editorial estabelecida no ADR 0008.
           </Text>
         </View>
+        <DeveloperCredits />
       </ScrollView>
 
       {/* Modal Acessível de Revogação de Consentimento */}

@@ -6,10 +6,12 @@ import {
   View,
   ScrollView,
   AccessibilityInfo,
+  Animated,
 } from 'react-native';
 import * as Linking from 'expo-linking';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme/theme';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { makeAccessibleButton, setAccessibilityFocusSafely } from '../../utils/accessibility';
 import { AccessibleModal } from '../common/AccessibleModal';
 import {
@@ -32,6 +34,8 @@ export const DynamicLocationConsentModal: React.FC<DynamicLocationConsentModalPr
 }) => {
   const [isAdult, setIsAdult] = useState(false);
   const [hasAgreedTerms, setHasAgreedTerms] = useState(false);
+  const reducedMotion = useReducedMotion();
+  const pulse = useRef(new Animated.Value(1)).current;
 
   const modalTitleRef = useRef<any>(null);
   const adultCheckboxRef = useRef<any>(null);
@@ -48,6 +52,16 @@ export const DynamicLocationConsentModal: React.FC<DynamicLocationConsentModalPr
   }, [visible]);
 
   const canContinue = isAdult && hasAgreedTerms;
+
+  useEffect(() => {
+    if (!visible || !canContinue || reducedMotion) { pulse.setValue(1); return; }
+    const animation = Animated.loop(Animated.sequence([
+      Animated.timing(pulse, { toValue: 1.025, duration: 1500, useNativeDriver: true }),
+      Animated.timing(pulse, { toValue: 1, duration: 1500, useNativeDriver: true }),
+    ]), { iterations: 2 });
+    animation.start();
+    return () => { animation.stop(); pulse.setValue(1); };
+  }, [visible, canContinue, reducedMotion, pulse]);
 
   const handleConfirm = async () => {
     if (!canContinue) {
@@ -107,6 +121,12 @@ export const DynamicLocationConsentModal: React.FC<DynamicLocationConsentModalPr
               </Text>
             </View>
 
+            <View style={styles.illustration} accessible={false}>
+              <Ionicons name="location" size={30} color={theme.colors.brandForest} />
+              <View style={styles.illustrationLine} />
+              <Ionicons name="shield-checkmark" size={30} color={theme.colors.brandForest} />
+            </View>
+
             {/* Version / Status badge */}
             <View style={styles.badgeContainer}>
               <Text style={styles.badgeText}>
@@ -116,7 +136,7 @@ export const DynamicLocationConsentModal: React.FC<DynamicLocationConsentModalPr
 
             {/* Short base text required by LGPD spec */}
             <Text style={styles.baseText}>
-              Para calcular o trajeto, o ECOnexão enviará temporariamente sua localização e o destino da rota à Google Routes API. O ECOnexão não salva sua localização nem a registra em logs. Você pode cancelar e usar uma origem fixa.
+              Para mostrar seu trajeto, o ECOnexão envia temporariamente sua localização e o destino à Google Routes API. Sua localização não é salva nem registrada em logs pelo ECOnexão. Se preferir, você pode cancelar e usar uma origem fixa.
             </Text>
 
             {/* Link to full policy */}
@@ -188,6 +208,7 @@ export const DynamicLocationConsentModal: React.FC<DynamicLocationConsentModalPr
                 <Text style={styles.cancelButtonText}>Cancelar e usar origem fixa</Text>
               </TouchableOpacity>
 
+              <Animated.View style={{ transform: [{ scale: pulse }] }}>
               <TouchableOpacity
                 style={[styles.confirmButton, !canContinue && styles.confirmButtonDisabled]}
                 onPress={handleConfirm}
@@ -211,6 +232,7 @@ export const DynamicLocationConsentModal: React.FC<DynamicLocationConsentModalPr
                   Concordar e continuar
                 </Text>
               </TouchableOpacity>
+              </Animated.View>
             </View>
           </ScrollView>
         </View>
@@ -246,6 +268,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
+  illustration: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
+    backgroundColor: 'rgba(51,96,30,0.07)', borderRadius: 20, paddingVertical: 12,
+  },
+  illustrationLine: { width: 48, borderTopWidth: 2, borderStyle: 'dashed', borderColor: theme.colors.brandSage },
   iconBadge: {
     width: 40,
     height: 40,
@@ -351,6 +378,7 @@ const styles = StyleSheet.create({
     ...theme.typography.labelMd,
     color: theme.colors.onPrimary,
     fontWeight: '700',
+    fontSize: 16,
   },
   confirmButtonTextDisabled: {
     color: theme.colors.outline,

@@ -70,14 +70,14 @@ export const ActorCard: React.FC<ActorCardProps> = ({
             />
           ) : (
             <View
-              style={styles.placeholderImage}
+              style={[styles.placeholderImage, isCompact && { backgroundColor: `${categoryMeta.color}12` }]}
               accessible
               accessibilityRole="image"
               accessibilityLabel={`Imagem não disponível para ${actor.name || 'estabelecimento'}`}
             >
               <Ionicons
                 name={isCompact ? categoryMeta.icon : 'storefront-outline'}
-                size={isCompact ? 24 : 40}
+                size={isCompact ? 21 : 40}
                 color={isCompact ? categoryMeta.color : theme.colors.brandSage}
               />
             </View>
@@ -117,7 +117,7 @@ export const ActorCard: React.FC<ActorCardProps> = ({
 
           {!isCompact && <Text style={styles.name}>{actor.name}</Text>}
           {actor.address ? (
-            <Text style={styles.address} numberOfLines={1}>
+            <Text style={[styles.address, isCompact && styles.compactAddress]} numberOfLines={1}>
               <Ionicons name="location-outline" size={13} color={theme.colors.brandSage} /> {actor.address}
             </Text>
           ) : null}
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   compactPressable: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 72,
+    minHeight: 62,
     paddingHorizontal: 10,
   },
   imageContainer: {
@@ -186,9 +186,9 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   compactImageContainer: {
-    width: 50,
-    height: 50,
-    minHeight: 50,
+    width: 40,
+    height: 40,
+    minHeight: 40,
     borderRadius: 10,
     overflow: 'hidden',
     flexShrink: 0,
@@ -228,11 +228,12 @@ const styles = StyleSheet.create({
   },
   compactContent: {
     flex: 1,
-    paddingVertical: 9,
-    paddingLeft: 12,
+    paddingVertical: 8,
+    paddingLeft: 10,
     paddingRight: 2,
     justifyContent: 'center',
   },
+  compactAddress: { marginBottom: 0 },
   compactHeaderRow: { marginBottom: 2, gap: 8 },
   compactName: { flex: 1, marginBottom: 0, fontSize: 15, lineHeight: 19 },
   compactCategoryTag: {

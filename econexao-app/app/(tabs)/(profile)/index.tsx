@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react';
+import { DeveloperCredits } from '../../../src/components/common/DeveloperCredits';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -10,6 +11,7 @@ import {
   ActivityIndicator,
   AccessibilityInfo,
   Platform,
+  Animated,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,6 +31,8 @@ import { queryClient } from '../../../src/api/queryClient';
 import { theme, useAppTheme } from '../../../src/theme/theme';
 import { makeAccessibleButton } from '../../../src/utils/accessibility';
 import { MotionBlock } from '../../../src/components/common/MotionBlock';
+import { MotionPressable } from '../../../src/components/common/MotionPressable';
+import { useReducedMotion } from '../../../src/hooks/useReducedMotion';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -43,8 +47,19 @@ export default function ProfileScreen() {
   const [isAccountDeletionModalVisible, setIsAccountDeletionModalVisible] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const avatarBusyRef = useRef(false);
+  const reducedMotion = useReducedMotion();
+  const signInPulse = useRef(new Animated.Value(1)).current;
 
   const isAnonymous = user ? (user.is_anonymous === true && !user.email) : true;
+  useEffect(() => {
+    if (!isAnonymous || reducedMotion || isAuthModalVisible) { signInPulse.setValue(1); return; }
+    const animation = Animated.sequence([
+      Animated.timing(signInPulse, { toValue: 1.015, duration: 550, useNativeDriver: true }),
+      Animated.timing(signInPulse, { toValue: 1, duration: 550, useNativeDriver: true }),
+    ]);
+    animation.start();
+    return () => { animation.stop(); signInPulse.setValue(1); };
+  }, [isAnonymous, reducedMotion, isAuthModalVisible, signInPulse]);
   const googleName = (user?.user_metadata?.full_name || user?.user_metadata?.name || '').trim();
   const userName =
     profile?.name ||
@@ -104,46 +119,36 @@ export default function ProfileScreen() {
         <MotionBlock staggerIndex={0}>
         {/* Banner de Convidado / Salvar Conta com Google (ADR 0007 / ECO-2606) */}
         {isAnonymous && (
-          <LinearGradient
-            colors={['#1C3B0F', '#284B18', '#33601E']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={[styles.guestBanner, isWide && styles.guestBannerWide]}
-          >
+          <LinearGradient colors={['#152B1B', '#24452A', '#31593A']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.guestBanner, isWide && styles.guestBannerWide]}>
             <View style={styles.guestBannerContent}>
               <View style={styles.guestBannerIconWrapper}>
-                <Ionicons name="sparkles" size={16} color="#FDE047" />
+                <Ionicons name="bookmark-outline" size={20} color="#DCECD5" />
               </View>
 
               <View style={styles.guestBannerTextCol}>
-                <View style={styles.guestBannerTitleRow}>
-                  <Text style={styles.guestBannerTitle}>Salvar Favoritos</Text>
-                  <View style={styles.guestBannerBadge}>
-                    <Text style={styles.guestBannerBadgeText}>100% Grátis</Text>
-                  </View>
-                </View>
-                <Text style={styles.guestBannerSubtitle} numberOfLines={1}>
-                  Vincule com Google e não perca dados
+                <Text style={styles.guestBannerTitle}>Suas descobertas, sempre com você</Text>
+                <Text style={styles.guestBannerSubtitle}>
+                  Entre com Google para guardar suas rotas e lugares favoritos.
                 </Text>
               </View>
-
+            </View>
               <TouchableOpacity
                 style={styles.guestBannerButton}
                 onPress={() => {
                   setAuthInitialMode('link');
                   setIsAuthModalVisible(true);
                 }}
-                {...makeAccessibleButton('Salvar conta', 'Abrir opções de login e vinculação')}
+                {...makeAccessibleButton('Usar conta Google', 'Abre as opções para vincular sua conta, incluindo Google')}
               >
-                <Ionicons name="logo-google" size={14} color="#EA4335" style={{ marginRight: 4 }} />
-                <Text style={styles.guestBannerButtonText}>Salvar</Text>
+                <Ionicons name="logo-google" size={17} color="#4285F4" />
+                <Text style={styles.guestBannerButtonText}>Usar conta Google</Text>
+                <Ionicons name="arrow-forward" size={16} color="#24452A" />
               </TouchableOpacity>
-            </View>
           </LinearGradient>
         )}
 
         {/* Profile Info Header Card */}
-        <View style={[styles.profileHeaderCard, isWide && styles.profileHeaderCardWide]}>
+        <View style={[styles.profileHeaderCard, isAnonymous && styles.profileHeaderAfterBanner, isWide && styles.profileHeaderCardWide]}>
           <View style={styles.avatarRow}>
             <TouchableOpacity
               style={styles.avatarContainer}
@@ -346,7 +351,8 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             </View>
           ) : (
-            <TouchableOpacity
+            <Animated.View style={{ transform: [{ scale: signInPulse }] }}>
+            <MotionPressable
               style={[styles.signInButton, isWide && styles.signInButtonWide]}
               onPress={() => {
                 setAuthInitialMode('signin');
@@ -354,16 +360,15 @@ export default function ProfileScreen() {
               }}
               {...makeAccessibleButton('Entrar na minha conta', 'Acessar sua conta com e-mail ou Google')}
             >
-              <Ionicons name="log-in-outline" size={18} color="#284B18" />
+              <Ionicons name="log-in-outline" size={18} color="#FFFFFF" />
               <Text style={styles.signInButtonText}>Entrar na Minha Conta</Text>
-            </TouchableOpacity>
+              <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
+            </MotionPressable>
+            </Animated.View>
           )}
-
-          <Text style={styles.versionFooterText}>
-            ECOnexão Sustentável v2.4 • Amazônia Viva
-          </Text>
         </View>
         </MotionBlock>
+        <DeveloperCredits />
       </ScrollView>
 
       {/* Edit Profile Modal */}
@@ -402,11 +407,12 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   guestBanner: {
-    borderRadius: 14,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    borderRadius: 16,
+    padding: 16,
+    gap: 14,
+    borderWidth: 1,
+    borderColor: '#41694A',
     overflow: 'hidden',
-    ...theme.shadows.card,
   },
   guestBannerContent: {
     flexDirection: 'row',
@@ -415,10 +421,10 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   guestBannerIconWrapper: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: 'rgba(220, 236, 213, 0.14)',
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
@@ -427,53 +433,32 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
   },
-  guestBannerTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
   guestBannerTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '700',
     color: '#FFFFFF',
     fontFamily: theme.typography.headlineSm.fontFamily,
   },
-  guestBannerBadge: {
-    backgroundColor: 'rgba(251, 191, 36, 0.25)',
-    borderColor: 'rgba(251, 191, 36, 0.45)',
-    borderWidth: 1,
-    borderRadius: 4,
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-  },
-  guestBannerBadgeText: {
-    color: '#FEF08A',
-    fontSize: 9,
-    fontWeight: '700',
-  },
   guestBannerSubtitle: {
-    fontSize: 11,
-    color: 'rgba(225, 238, 219, 0.9)',
-    marginTop: 2,
+    fontSize: 12,
+    lineHeight: 17,
+    color: '#D5E3D2',
+    marginTop: 3,
   },
   guestBannerButton: {
     backgroundColor: '#FFFFFF',
-    paddingVertical: 7,
-    paddingHorizontal: 12,
-    borderRadius: 8,
+    minHeight: 44,
+    paddingHorizontal: 14,
+    borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    flexShrink: 0,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+    gap: 6,
+    alignSelf: 'flex-start',
   },
   guestBannerButtonText: {
-    color: '#142A0B',
-    fontSize: 11,
+    color: '#1D3E25',
+    fontSize: 13,
     fontWeight: '700',
   },
   profileHeaderCard: {
@@ -485,6 +470,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(117, 155, 113, 0.18)',
     ...theme.shadows.card,
   },
+  profileHeaderAfterBanner: { marginTop: 12 },
   avatarRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -572,6 +558,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   menuSection: {
+    marginTop: 20,
     gap: 8,
   },
   sectionHeaderTitle: {
@@ -627,7 +614,7 @@ const styles = StyleSheet.create({
     lineHeight: 12,
   },
   accountActionsSection: {
-    marginTop: 2,
+    marginTop: 18,
     gap: 10,
   },
   actionButtonsRow: {
@@ -680,12 +667,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#284B18',
+    minHeight: 52,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: 'rgba(117, 155, 113, 0.35)',
+    borderColor: '#284B18',
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -695,14 +683,7 @@ const styles = StyleSheet.create({
   signInButtonText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#284B18',
-  },
-  versionFooterText: {
-    textAlign: 'center',
-    fontSize: 10,
-    color: '#8E9588',
-    fontWeight: '500',
-    paddingTop: 4,
+    color: '#FFFFFF',
   },
   contentWide: {
     maxWidth: 800,

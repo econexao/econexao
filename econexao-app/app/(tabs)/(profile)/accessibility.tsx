@@ -1,3 +1,4 @@
+import { DeveloperCredits } from '../../../src/components/common/DeveloperCredits';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View, Switch, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -230,6 +231,7 @@ export default function AccessibilityPreferencesScreen() {
             Suas preferências são aplicadas instantaneamente e sincronizadas com a sua conta no ECOnexão.
           </Text>
         </View>
+        <DeveloperCredits />
       </ScrollView>
     </View>
   );

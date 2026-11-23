@@ -1,3 +1,4 @@
+import { DeveloperCredits } from '../../../src/components/common/DeveloperCredits';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -50,6 +51,7 @@ export default function FavoriteRoutesScreen() {
             message="Você ainda não salvou nenhuma rota nos seus favoritos."
           />
         )}
+        <DeveloperCredits />
       </ScrollView>
     </View>
   );

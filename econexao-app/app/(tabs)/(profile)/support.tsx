@@ -1,3 +1,4 @@
+import { DeveloperCredits } from '../../../src/components/common/DeveloperCredits';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View, TouchableOpacity, Linking, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -116,6 +117,7 @@ export default function SupportScreen() {
             )}
           </>
         )}
+        <DeveloperCredits />
       </ScrollView>
     </View>
   );

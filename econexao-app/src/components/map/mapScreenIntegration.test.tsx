@@ -26,6 +26,7 @@ jest.mock('../../hooks/queries', () => ({
   useActorCategoriesQuery: jest.fn(),
   useRouteActorsQuery: jest.fn(),
   useRouteMapQuery: jest.fn(),
+  useRouteDetailQuery: jest.fn(() => ({ data: undefined })),
 }));
 
 jest.mock('../../auth/locationConsent', () => ({

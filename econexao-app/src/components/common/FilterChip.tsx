@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme/theme';
 import { makeAccessibleButton } from '../../utils/accessibility';
 import { MotionPressable } from './MotionPressable';
@@ -10,6 +11,7 @@ interface FilterChipProps {
   isSelected: boolean;
   onPress: () => void;
   icon?: keyof typeof Ionicons.glyphMap;
+  color?: string;
 }
 
 export const FilterChip: React.FC<FilterChipProps> = ({
@@ -17,12 +19,14 @@ export const FilterChip: React.FC<FilterChipProps> = ({
   isSelected,
   onPress,
   icon,
+  color,
 }) => {
   return (
     <MotionPressable
       style={[
         styles.chip,
         isSelected ? styles.chipSelected : styles.chipUnselected,
+        color && (isSelected ? { backgroundColor: color } : { borderColor: `${color}99`, backgroundColor: `${color}1A` }),
       ]}
       onPress={onPress}
       {...makeAccessibleButton(
@@ -31,11 +35,14 @@ export const FilterChip: React.FC<FilterChipProps> = ({
       )}
       accessibilityState={{ disabled: false, selected: isSelected }}
     >
+      {color && !isSelected && (
+        <LinearGradient colors={[`${color}30`, `${color}12`]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} pointerEvents="none" />
+      )}
       {icon && (
         <Ionicons
           name={icon}
           size={16}
-          color={isSelected ? theme.colors.onPrimary : theme.colors.brandForest}
+          color={isSelected ? theme.colors.onPrimary : color || theme.colors.brandForest}
           style={styles.icon}
         />
       )}
@@ -60,6 +67,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,
+    overflow: 'hidden',
   },
   chipSelected: {
     backgroundColor: theme.colors.brandForest,
@@ -81,7 +89,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   textUnselected: {
-    color: theme.colors.onSurfaceVariant,
+    color: theme.colors.onSurface,
     fontWeight: '600',
   },
 });
