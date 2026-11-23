@@ -106,7 +106,7 @@ export default function HomeScreen() {
 
             <View style={[styles.heroTextContainer, isDesktop && styles.heroTextContainerDesktop]}>
               <Text style={[styles.heroTitle, isDesktop && styles.heroTitleDesktop]}>
-                OI{'\n'}Descubra destinos,{'\n'}viva experiências
+                Descubra destinos,{'\n'}viva experiências
               </Text>
             </View>
 
