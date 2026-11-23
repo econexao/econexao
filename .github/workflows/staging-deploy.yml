@@ -43,6 +43,11 @@ jobs:
           enable-cache: true
           cache-dependency-glob: backend/uv.lock
 
+      - name: Verify production dependency startup
+        run: |
+          uv sync --frozen --no-dev
+          uv run --frozen --no-dev python -c "import app.main"
+
       - name: Install dependencies from frozen lock
         run: uv sync --frozen --extra dev
 
