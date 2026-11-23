@@ -6,8 +6,9 @@ services:
     name: econexao-backend
     runtime: python
     rootDir: backend
-    buildCommand: "pip install uv && uv sync --frozen --no-dev"
-    startCommand: ".venv/bin/uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    buildCommand: >-
+      test -n "$VIRTUAL_ENV" && pip install uv==0.10.6 && uv sync --frozen --no-dev --active && python -c "import app.main"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     healthCheckPath: /api/v1/health
     plan: starter
     region: ohio
