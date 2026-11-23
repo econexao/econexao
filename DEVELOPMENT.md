@@ -127,8 +127,8 @@ O backend é executado como Web Service nativo Python no Render, sem dependênci
 
 - **Blueprint declarativo:** [`render.yaml`](../render.yaml) na raiz do repositório.
 - **Root Directory:** `backend`
-- **Build Command:** `pip install uv && uv sync --frozen --no-dev` (Render Native Python)
-- **Start Command:** `.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- **Build Command:** `test -n "$VIRTUAL_ENV" && pip install uv==0.10.6 && uv sync --frozen --no-dev --active && python -c "import app.main"` (Render Native Python)
+- **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 - **Health Check:** `/api/v1/health` (e `/api/v1/health/live`)
 - **Graceful Shutdown:** Gerenciado nativamente via `lifespan` com descarte de conexões do pool PostgreSQL.
 - **Variáveis de ambiente:** Configuradas com `sync: false` no blueprint e injetadas de forma criptografada no Dashboard do Render (sem expor segredos no repositório).

@@ -4,6 +4,9 @@ API de domínio FastAPI da ECOnexão. O backend expõe os endpoints sob
 `/api/v1`; migrations e políticas de banco permanecem exclusivamente em
 `../supabase/migrations`.
 
+O build do Render usa as versões de `uv.lock` no ambiente Python ativo;
+consulte `../render.yaml` e `../DEVELOPMENT.md` para o comando de deploy.
+
 ## Desenvolvimento local
 
 Requer Python 3.13.
